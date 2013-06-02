@@ -33,6 +33,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 import org.jboss.netty.channel.Channel;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
@@ -385,7 +386,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	@Override
 	public void dispose() {
 		if (SpoutConfiguration.SHOW_CONNECTIONS.getBoolean()) {
-			engine.getLogger().info("Channel disconnected: " + channel + ".");
+			engine.getLogger().log(Level.INFO, "Channel disconnected: {0}.", channel);
 		}
 	}
 

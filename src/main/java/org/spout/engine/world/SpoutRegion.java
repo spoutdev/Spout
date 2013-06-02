@@ -293,7 +293,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			dataForRegion = new ChunkDataForRegion();
 			newChunk = ChunkFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
 			if (newChunk == null) {
-				Spout.getLogger().severe("Unable to load chunk at location " + (getChunkX() + x) + ", " + (getChunkY() + y) + ", " + (getChunkZ() + z) + " in region " + this + ", regenerating chunks");
+				Spout.getLogger().log(Level.SEVERE, "Unable to load chunk at location {0}, {1}, {2} in region {3}, regenerating chunks", new Object[]{getChunkX() + x, getChunkY() + y, getChunkZ() + z, this});
 				fileExists = false;
 			}
 		}
@@ -305,8 +305,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 				checkChunkLoaded(generatedChunk, loadopt);
 				return generatedChunk;
 			} else {
-				Spout.getLogger().severe("Chunk failed to generate!  (" + loadopt + ")");
-				Spout.getLogger().info("Region " + this + ", chunk " + (getChunkX() + x) + ", " + (getChunkY() + y) + ", " + (getChunkZ() + z) + " : " + chunks[x][y][z]);
+				Spout.getLogger().log(Level.SEVERE, "Chunk failed to generate!  ({0})", loadopt);
+				Spout.getLogger().log(Level.INFO, "Region {0}, chunk {1}, {2}, {3} : {4}", new Object[]{this, getChunkX() + x, getChunkY() + y, getChunkZ() + z, chunks[x][y][z]});
 				Thread.dumpStack();
 			}
 		}
@@ -701,7 +701,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			try {
 				ent.tick(dt);
 			} catch (Exception e) {
-				Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
+				Spout.getEngine().getLogger().log(Level.SEVERE, "Unhandled exception during tick for {0}", ent.toString());
 				e.printStackTrace();
 			}
 		}
@@ -998,7 +998,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 					try {
 						synchronizer.updateBlock(chunk, (int) block.getX(), (int) block.getY(), (int) block.getZ());
 					} catch (Exception e) {
-						Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
+						Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to {0}", player.getName());
 					}
 				}
 			} else {

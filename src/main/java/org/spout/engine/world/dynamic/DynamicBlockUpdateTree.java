@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Block;
@@ -162,7 +163,7 @@ public class DynamicBlockUpdateTree {
 			try {
 				((DynamicMaterial)m).onFirstUpdate(b, currentTime);
 			} catch (RuntimeException e) {
-				Spout.getLogger().severe("Unable to execute dynamic update for " + m.getClass().getSimpleName());
+				Spout.getLogger().log(Level.SEVERE, "Unable to execute dynamic update for {0}", m.getClass().getSimpleName());
 				throw e;
 			}
 		}
@@ -358,7 +359,7 @@ public class DynamicBlockUpdateTree {
 			try {
 				dm.onDynamicUpdate(b, update.getNextUpdate(), update.getData());
 			} catch (RuntimeException e) {
-				Spout.getLogger().severe("Unable to execute dynamic update for " + dm.getClass().getSimpleName());
+				Spout.getLogger().log(Level.SEVERE, "Unable to execute dynamic update for {0}", dm.getClass().getSimpleName());
 				throw e;
 			}
 			lastUpdates++;

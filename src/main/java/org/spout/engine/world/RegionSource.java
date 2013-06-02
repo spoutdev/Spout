@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
@@ -108,13 +109,13 @@ public class RegionSource implements Iterable<Region> {
 							
 							r.unlinkNeighbours();
 						} else {
-							Spout.getLogger().info("Tried to remove region " + r + " but region removal failed");
+							Spout.getLogger().log(Level.INFO, "Tried to remove region {0} but region removal failed", r);
 						}
 					} else {
 						Spout.getLogger().info("Unable to close region file, streams must be open");
 					}
 				} else {
-					Spout.getLogger().info("Region was not empty when attempting to remove, active chunks returns " + r.getNumLoadedChunks());
+					Spout.getLogger().log(Level.INFO, "Region was not empty when attempting to remove, active chunks returns {0}", r.getNumLoadedChunks());
 				}
 			}
 		});
@@ -167,8 +168,7 @@ public class RegionSource implements Iterable<Region> {
 
 		int threshold = warnThreshold.get();
 		if (regionsLoaded.getAndIncrement() > threshold) {
-			Spout.getLogger().info("Warning: number of spout regions exceeds " + threshold + " when creating (" +
-                x + ", " + y + ", " + z + ")");
+			Spout.getLogger().log(Level.INFO, "Warning: number of spout regions exceeds {0} when creating ({1}, {2}, {3})", new Object[]{threshold, x, y, z});
 			Thread.dumpStack();
 			warnThreshold.addAndGet(10);
 		}

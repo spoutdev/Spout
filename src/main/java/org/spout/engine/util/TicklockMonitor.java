@@ -26,6 +26,7 @@
  */
 package org.spout.engine.util;
 
+import java.util.logging.Level;
 import org.spout.api.Spout;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
@@ -56,7 +57,7 @@ public class TicklockMonitor extends Thread {
 			long upTime = Spout.getEngine().getScheduler().getUpTime();
 			
 			if (tickTime > threshold && upTime != lastUpTime) {
-				Spout.getLogger().info("Current Tick Time exceeds " + (threshold / 1000) + " seconds");
+				Spout.getLogger().log(Level.INFO, "Current Tick Time exceeds {0} seconds", (threshold / 1000));
 				AsyncExecutorUtils.dumpAllStacks();
 				// TODO - need to have this provide some reporting
 				/*AsyncExecutor e = AsyncExecutorUtils.getWaitingExecutor();

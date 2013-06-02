@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.spout.api.Spout;
 import org.spout.api.resource.ResourceNotFoundException;
@@ -143,7 +144,7 @@ public class CommonFileSystem implements FileSystem {
 		}
 
 		// No path found? Open our jar and grab the fallback 'file' scheme
-		Spout.getEngine().getLogger().warning("Tried to load " + path + " it isn't found!  Using system fallback");
+		Spout.getEngine().getLogger().log(Level.WARNING, "Tried to load {0} it isn''t found!  Using system fallback", path);
 		String scheme = path.getScheme();
 		if (!scheme.equals("file")) {
 			throw new ResourceNotFoundException(path.toString());
@@ -235,10 +236,10 @@ public class CommonFileSystem implements FileSystem {
 			throw new IllegalArgumentException("An exception occurred when loading the resource at " + uri.toString(), e);
 		} catch (ResourceNotFoundException e) {
 			// not found in path, try to load fallback resource
-			Spout.getLogger().warning("No resource found at " + uri.toString() + ", loading fallback...");
+			Spout.getLogger().log(Level.WARNING, "No resource found at {0}, loading fallback...", uri.toString());
 			String fallback = getLoader(uri.getScheme()).getFallback(); // assumption: loader is never null here
 			if (fallback == null) {
-				Spout.getLogger().warning("No resource found at " + uri.toString() + " and has no fallback resource.");
+				Spout.getLogger().log(Level.WARNING, "No resource found at {0} and has no fallback resource.", uri.toString());
 				return null;
 			}
 

@@ -28,6 +28,7 @@ package org.spout.engine.command;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.logging.Level;
 
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
@@ -154,7 +155,7 @@ public class ServerCommands extends CommonCommands{
 	public void banIp(CommandContext args, CommandSource source) {
 		if (source instanceof Player) {
 			getEngine().getLogger().info(((Player) source).getAddress().getHostAddress());
-			getEngine().getLogger().info("Args: " + args.length());
+			getEngine().getLogger().log(Level.INFO, "Args: {0}", args.length());
 		}
 
 		String address = args.getString(0);

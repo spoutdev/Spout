@@ -161,7 +161,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot{
 
 	@SuppressWarnings("unchecked")
 	public SpoutEntity toEntity(SpoutEngine engine) {
-		return new SpoutEntity(engine, location, viewDistance, uniqueId, false, dataMap, components.toArray(new Class[0]));
+		return new SpoutEntity(engine, location, viewDistance, uniqueId, false, dataMap, components.toArray(new Class[components.size()]));
 	}
 
 	@Override

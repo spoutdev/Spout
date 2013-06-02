@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.lwjgl.opengl.*;
 
@@ -470,18 +471,18 @@ public class ClientShader implements SpoutShader {
 		
 		for(Entry<String, ShaderVariable> var : variables.entrySet()){
 			if(map.remove(var.getKey()) == null){
-				Spout.getLogger().warning( "In " + shaderName + " Uniform " + var.getKey() + " don't exist");
+				Spout.getLogger().log( Level.WARNING, "In {0} Uniform {1} don''t exist", new Object[]{shaderName, var.getKey()});
 			}
 		}
 		
 		for(Entry<String, TextureSamplerShaderVariable> var : textures.entrySet()){
 			if(map.remove(var.getKey()) == null){
-				Spout.getLogger().warning( "In " + shaderName + " Uniform " + var.getKey() + " don't exist");
+				Spout.getLogger().log( Level.WARNING, "In {0} Uniform {1} don''t exist", new Object[]{shaderName, var.getKey()});
 			}
 		}
 		
 		for(Entry<String, AttrUniInfo> var : map.entrySet()){
-			Spout.getLogger().warning( "In " + shaderName + " Uniform " + var.getKey() + " not assigned");
+			Spout.getLogger().log( Level.WARNING, "In {0} Uniform {1} not assigned", new Object[]{shaderName, var.getKey()});
 		}
 	}
 
