@@ -30,6 +30,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.lwjgl.opengl.Display;
+
 import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
@@ -149,7 +151,7 @@ public class SpoutInputManager implements InputManager {
 		}
 
 		// Handle mouse
-		if (org.lwjgl.input.Mouse.isCreated()) {
+		if (org.lwjgl.input.Mouse.isCreated() && Display.isActive()) {
 			int x, y;
 			while (org.lwjgl.input.Mouse.next()) {
 
