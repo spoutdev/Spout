@@ -44,9 +44,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.component.BaseComponentHolder;
+import org.spout.api.component.BaseComponentOwner;
 import org.spout.api.component.Component;
-import org.spout.api.component.type.EntityComponent;
+import org.spout.api.component.entity.EntityComponent;
+import org.spout.api.component.world.WorldComponent;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
@@ -56,8 +57,8 @@ import org.spout.api.event.Cause;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.event.server.RetrieveDataEvent;
-import org.spout.api.event.world.PlayerEnterWorldEvent;
-import org.spout.api.event.world.PlayerExitWorldEvent;
+import org.spout.api.event.world.EntityEnterWorldEvent;
+import org.spout.api.event.world.EntityExitWorldEvent;
 import org.spout.api.event.world.WorldSaveEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
@@ -78,7 +79,6 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.model.Model;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
@@ -104,7 +104,7 @@ import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 
-public class SpoutWorld extends BaseComponentHolder implements AsyncManager, World {
+public class SpoutWorld extends BaseComponentOwner implements AsyncManager, World {
 	private SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * The server of this world.
@@ -200,7 +200,6 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	public static final WeakReference<SpoutWorld> NULL_WEAK_REFERENCE = new WeakReference<SpoutWorld>(null);
 	
 	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<Long, SetQueue<SpoutColumn>>();
-	Model skydome;
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, StringMap lightingMap) {
@@ -588,9 +587,16 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 				return;
 			}
 			region.getEntityManager().addEntity((SpoutEntity) e);
+			//Alert world components that an entity entered
+			for (Component component : values()) {
+				if (component instanceof WorldComponent) {
+					((WorldComponent) component).onSpawn(event);
+				}
+			}
+			//Alert entity components that their owner spawned
 			for (Component component : e.values()) {
 				if (component instanceof EntityComponent) {
-					((EntityComponent) component).onSpawned();
+					((EntityComponent) component).onSpawned(event);
 				}
 			}
 		} else {
@@ -764,12 +770,12 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	public void addPlayer(Player player) {
 		players.add(player);
-		engine.getEventManager().callDelayedEvent(new PlayerEnterWorldEvent(this, player));
+		engine.getEventManager().callDelayedEvent(new EntityEnterWorldEvent(this, player));
 	}
 
 	public void removePlayer(Player player) {
 		players.remove(player);
-		engine.getEventManager().callDelayedEvent(new PlayerExitWorldEvent(this, player));
+		engine.getEventManager().callDelayedEvent(new EntityExitWorldEvent(this, player));
 	}
 
 	@Override
@@ -1459,16 +1465,6 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
 		return regionFileManager.getChunkOutputStream(c);
-	}
-
-	@Override
-	public Model getSkydomeModel() {
-		return skydome;
-	}
-
-	@Override
-	public void setSkydomeModel(Model model) {
-		this.skydome = model;
 	}
 
 	@Override

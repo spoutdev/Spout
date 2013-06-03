@@ -36,7 +36,7 @@ import java.util.logging.Level;
 import gnu.trove.procedure.TShortObjectProcedure;
 
 import org.spout.api.Spout;
-import org.spout.api.component.BlockComponentHolder;
+import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.geo.cuboid.ChunkSnapshot.BlockComponentSnapshot;
@@ -75,10 +75,8 @@ import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
 public class ChunkFiles {
-	
-	private static final TypeChecker<List<? extends CompoundTag>> checkerListCompoundTag = TypeChecker.tList(CompoundTag.class);
-	
 	public static final byte CHUNK_VERSION = 5;
+	private static final TypeChecker<List<? extends CompoundTag>> checkerListCompoundTag = TypeChecker.tList(CompoundTag.class);
 	
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, ChunkDataForRegion dataForRegion) {
 		SpoutChunk chunk = null;
@@ -202,7 +200,7 @@ public class ChunkFiles {
 		//Load data associated with block components
 		loadBlockComponents(chunk, componentsList);
 		//Attach block components
-		chunk.getBlockComponentHolder().forEachEntry(new AttachComponentProcedure());
+		chunk.getBlockComponentOwners().forEachEntry(new AttachComponentProcedure());
 		return chunk;
 	}
 	
@@ -299,10 +297,10 @@ public class ChunkFiles {
 			short packed = (Short) map.get("packed").getValue();
 			ByteArrayTag data = (ByteArrayTag) map.get("data");
 
-			BlockComponentHolder component = chunk.getBlockComponentHolder().get(packed);
+			BlockComponentOwner component = chunk.getBlockComponentOwners().get(packed);
 			if (component != null) {
 				try {
-					component.getData().deserialize(data.getValue());
+					component.getDatatable().deserialize(data.getValue());
 				} catch (IOException e) {
 					Spout.getLogger().log(Level.SEVERE, "Unhandled exception deserializing block component data", e);
 				}
@@ -375,9 +373,9 @@ public class ChunkFiles {
 		return new DynamicBlockUpdate(packed, nextUpdate, data);
 	}
 	
-	private static class AttachComponentProcedure implements TShortObjectProcedure<BlockComponentHolder> {
+	private static class AttachComponentProcedure implements TShortObjectProcedure<BlockComponentOwner> {
 		@Override
-		public boolean execute(short a, BlockComponentHolder b) {
+		public boolean execute(short a, BlockComponentOwner b) {
 			for (Component c : b.values()) {
 				try {
 					c.onAttached();

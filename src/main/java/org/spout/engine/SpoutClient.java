@@ -54,7 +54,7 @@ import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
-import org.spout.api.component.impl.CameraComponent;
+import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
@@ -303,7 +303,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
 		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap(), getEngineItemMap());
 
-		SerializableMap map = world.getData();
+		SerializableMap map = world.getDatatable();
 		try {
 			map.deserialize(data);
 		} catch (IOException e) {

@@ -47,6 +47,7 @@ import org.lwjgl.opengl.Util;
 
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.component.world.SkydomeComponent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
@@ -64,7 +65,7 @@ import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
 
 import org.spout.engine.batcher.SpriteBatch;
-import org.spout.engine.entity.component.SpoutSceneComponent;
+import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.resource.ClientRenderMaterial;
 import org.spout.engine.filesystem.resource.ClientRenderTexture;
 import org.spout.engine.gui.DebugScreen;
@@ -218,7 +219,7 @@ public class SpoutRenderer {
 		client.getInputManager().execute(dt);
 
 		final Camera camera = client.getPlayer().getType(Camera.class);
-		final Model skydome = (Model) client.getWorld().getData().get("skydome");
+		final SkydomeComponent skydome = client.getWorld().get(SkydomeComponent.class);
 
 		// Render reflected world
 		if (useReflexion) {
@@ -230,15 +231,15 @@ public class SpoutRenderer {
 				camera.updateReflectedView();
 
 
-				if (skydome != null) {
-					skydome.getRenderMaterial().getShader().setUniform("View", camera.getRotation());
-					skydome.getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
-					skydome.getRenderMaterial().getShader().setUniform("Model", ident);
-					BaseMesh reflectedSkydomeMesh = (BaseMesh) skydome.getMesh();
+				if (skydome != null && skydome.getModel() != null) {
+					skydome.getModel().getRenderMaterial().getShader().setUniform("View", camera.getRotation());
+					skydome.getModel().getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
+					skydome.getModel().getRenderMaterial().getShader().setUniform("Model", ident);
+					BaseMesh reflectedSkydomeMesh = (BaseMesh) skydome.getModel().getMesh();
 					if (!reflectedSkydomeMesh.isBatched()) {
 						reflectedSkydomeMesh.batch();
 					}
-					reflectedSkydomeMesh.render(skydome.getRenderMaterial());
+					reflectedSkydomeMesh.render(skydome.getModel().getRenderMaterial());
 				}
 			}
 
@@ -256,15 +257,15 @@ public class SpoutRenderer {
 		if (camera != null) {
 			camera.updateView();
 
-			if (skydome != null) {
-				skydome.getRenderMaterial().getShader().setUniform("View", camera.getRotation());
-				skydome.getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
-				skydome.getRenderMaterial().getShader().setUniform("Model", ident);
-				BaseMesh skydomeMesh = (BaseMesh) skydome.getMesh();
+			if (skydome != null && skydome.getModel() != null) {
+				skydome.getModel().getRenderMaterial().getShader().setUniform("View", camera.getRotation());
+				skydome.getModel().getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
+				skydome.getModel().getRenderMaterial().getShader().setUniform("Model", ident);
+				BaseMesh skydomeMesh = (BaseMesh) skydome.getModel().getMesh();
 				if (!skydomeMesh.isBatched()) {
 					skydomeMesh.batch();
 				}
-				skydomeMesh.render(skydome.getRenderMaterial());
+				skydomeMesh.render(skydome.getModel().getRenderMaterial());
 			}
 		}
 

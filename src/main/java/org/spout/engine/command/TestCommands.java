@@ -46,8 +46,17 @@ import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
-import org.spout.api.component.impl.AnimationComponent;
-import org.spout.api.component.impl.InteractComponent;
+import org.spout.api.component.entity.AnimationComponent;
+import org.spout.api.component.entity.InteractComponent;
+import org.spout.api.component.widget.RenderPartComponent;
+import org.spout.api.component.widget.SliderComponent;
+import org.spout.api.component.widget.SpinnerComponent;
+import org.spout.api.component.widget.TextFieldComponent;
+import org.spout.api.component.widget.button.ButtonComponent;
+import org.spout.api.component.widget.button.CheckBoxComponent;
+import org.spout.api.component.widget.button.RadioComponent;
+import org.spout.api.component.widget.list.ComboBoxComponent;
+import org.spout.api.component.widget.list.ItemListComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
@@ -60,15 +69,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
-import org.spout.api.gui.component.SliderComponent;
-import org.spout.api.gui.component.SpinnerComponent;
-import org.spout.api.gui.component.TextFieldComponent;
-import org.spout.api.gui.component.TextureComponent;
-import org.spout.api.gui.component.button.ButtonComponent;
-import org.spout.api.gui.component.button.CheckBoxComponent;
-import org.spout.api.gui.component.button.RadioComponent;
-import org.spout.api.gui.component.list.ComboBoxComponent;
-import org.spout.api.gui.component.list.ItemListComponent;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
@@ -76,10 +76,11 @@ import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.Plugin;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.component.entity.SpoutModelComponent;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.world.SpoutChunk;
 
@@ -181,7 +182,7 @@ public class TestCommands {
 		} else if (flag.equalsIgnoreCase("textfield")) {
 			widget.add(TextFieldComponent.class);
 		} else if (flag.equalsIgnoreCase("rect")) {
-			widget.add(TextureComponent.class);
+			widget.add(RenderPartComponent.class);
 		} else {
 			throw new CommandException("Component not found.");
 		}
@@ -427,7 +428,7 @@ public class TestCommands {
 			return;
 		}
 
-		EntityRendererComponent rendererComponent = e.get(EntityRendererComponent.class);
+		SpoutModelComponent rendererComponent = e.get(SpoutModelComponent.class);
 
 		if (rendererComponent.getModels().isEmpty()) {
 			source.sendMessage("No model on this entity");
@@ -493,7 +494,7 @@ public class TestCommands {
 
 		source.sendMessage("Entity " + id + " animation stopped ");
 	}
-	
+
 	@Command(aliases = {"profpop"}, desc = "Prints the populator profiler results to console", min = 0, max = 0)
 	public void profilePopulator(CommandContext args, CommandSource source) {
 		Spout.getLogger().info("");

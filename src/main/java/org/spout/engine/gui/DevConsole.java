@@ -34,10 +34,10 @@ import java.util.List;
 
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.component.widget.RenderPartPacksComponent;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
-import org.spout.api.gui.component.LabelComponent;
-import org.spout.api.gui.component.RenderPartsHolderComponent;
+import org.spout.api.component.widget.LabelComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.Rectangle;
@@ -74,7 +74,8 @@ public class DevConsole extends Screen {
 	public void init() {
 		setGrabsMouse(true);
 		setTakesInput(false);
-		final RenderPartsHolderComponent bg = background.add(RenderPartsHolderComponent.class);
+
+		final RenderPartPacksComponent bg = background.add(RenderPartPacksComponent.class);
 		final RenderPartPack bg_pack = new RenderPartPack(SpoutRenderMaterials.GUI_COLOR);
 		
 		// The display messages background

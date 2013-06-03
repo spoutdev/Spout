@@ -1,5 +1,5 @@
 Name: "FallbackEntity"
 Components:
-    - org.spout.engine.entity.component.EntityRendererComponent
+    - org.spout.engine.component.entity.SpoutModelComponent
 Data:
     notnull: 1

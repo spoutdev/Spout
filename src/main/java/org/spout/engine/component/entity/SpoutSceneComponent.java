@@ -24,13 +24,13 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.entity.component;
+package org.spout.engine.component.entity;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.ClientOnly;
 import org.spout.api.collision.BoundingBox;
-import org.spout.api.component.impl.SceneComponent;
+import org.spout.api.component.entity.SceneComponent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -50,7 +50,6 @@ public class SpoutSceneComponent extends SceneComponent {
 	private final AtomicReference<Vector3> forces = new AtomicReference<Vector3>(Vector3.ZERO);
 	private final AtomicFloat mass = new AtomicFloat(0);
 	private final AtomicReference<BoundingBox> area = new AtomicReference<BoundingBox>(null);
-
 	//Client/Rendering
 	private final Transform render = new Transform();
 	private Vector3 position = Vector3.ONE;
@@ -70,7 +69,7 @@ public class SpoutSceneComponent extends SceneComponent {
 	public Transform getTransform() {
 		return snapshot.copy();
 	}
-	
+
 	public Transform getLiveTransform() {
 		return live.copy();
 	}
@@ -172,7 +171,7 @@ public class SpoutSceneComponent extends SceneComponent {
 	@Override
 	public SpoutSceneComponent impulse(Vector3 impulse) {
 		Vector3 impulses = this.impulses.get();
-		while(!this.impulses.compareAndSet(impulses, impulses.add(impulse))) {
+		while (!this.impulses.compareAndSet(impulses, impulses.add(impulse))) {
 			impulses = this.impulses.get();
 		}
 		return this;
@@ -197,7 +196,7 @@ public class SpoutSceneComponent extends SceneComponent {
 	@Override
 	public SpoutSceneComponent force(Vector3 force) {
 		Vector3 forces = this.forces.get();
-		while(!this.forces.compareAndSet(forces, forces.add(force))) {
+		while (!this.forces.compareAndSet(forces, forces.add(force))) {
 			forces = this.forces.get();
 		}
 		return this;
@@ -341,17 +340,17 @@ public class SpoutSceneComponent extends SceneComponent {
 		position = snapshot.getPosition();
 
 		scale = snapshot.getScale();
-		
-		Quaternion qDiff = new Quaternion(	snapshot.getRotation().getX()-render.getRotation().getX(),
-											snapshot.getRotation().getY()-render.getRotation().getY(),
-											snapshot.getRotation().getZ()-render.getRotation().getZ(),
-											snapshot.getRotation().getW()-render.getRotation().getW(), false);
 
-		if (qDiff.getX()*qDiff.getX()+qDiff.getY()*qDiff.getY()+qDiff.getZ()*qDiff.getZ() > 2){
+		Quaternion qDiff = new Quaternion(snapshot.getRotation().getX() - render.getRotation().getX(),
+				snapshot.getRotation().getY() - render.getRotation().getY(),
+				snapshot.getRotation().getZ() - render.getRotation().getZ(),
+				snapshot.getRotation().getW() - render.getRotation().getW(), false);
+
+		if (qDiff.getX() * qDiff.getX() + qDiff.getY() * qDiff.getY() + qDiff.getZ() * qDiff.getZ() > 2) {
 			rotate = new Quaternion(-snapshot.getRotation().getX(),
-									-snapshot.getRotation().getY(),
-									-snapshot.getRotation().getZ(),
-									-snapshot.getRotation().getW(), false);
+					-snapshot.getRotation().getY(),
+					-snapshot.getRotation().getZ(),
+					-snapshot.getRotation().getW(), false);
 		} else {
 			rotate = snapshot.getRotation();
 		}
@@ -359,18 +358,18 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	/**
 	 * Interpolates the render transform for Spout rendering. This only kicks in when the entity has no body.
-	 * @param dt time since last interpolation.
+	 * @param dtp time since last interpolation.
 	 */
 	public void interpolateRender(float dtp) {
-		
-		float dt = dtp*80f/20f;
-		
-		render.setPosition(render.getPosition().multiply(1-dt).add(position.multiply(dt)));
+
+		float dt = dtp * 80f / 20f;
+
+		render.setPosition(render.getPosition().multiply(1 - dt).add(position.multiply(dt)));
 		Quaternion q = render.getRotation();
-		render.setRotation(new Quaternion(	q.getX()*(1-dt) + rotate.getX()*dt,
-													q.getY()*(1-dt) + rotate.getY()*dt,
-													q.getZ()*(1-dt) + rotate.getZ()*dt,
-													q.getW()*(1-dt) + rotate.getW()*dt,false));
-		render.setScale(render.getScale().multiply(1-dt).add(scale.multiply(dt)));
+		render.setRotation(new Quaternion(q.getX() * (1 - dt) + rotate.getX() * dt,
+				q.getY() * (1 - dt) + rotate.getY() * dt,
+				q.getZ() * (1 - dt) + rotate.getZ() * dt,
+				q.getW() * (1 - dt) + rotate.getW() * dt, false));
+		render.setScale(render.getScale().multiply(1 - dt).add(scale.multiply(dt)));
 	}
 }

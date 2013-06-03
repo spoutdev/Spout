@@ -70,8 +70,8 @@ public class SpoutEntitySnapshot implements EntitySnapshot{
 		this.viewDistance = e.getViewDistance();
 		this.observer = e.isObserver();
 		this.savable = e.isSavable();
-		if (e.getData().size() > 0) {
-			this.dataMap = e.getData().deepCopy();
+		if (e.getDatatable().size() > 0) {
+			this.dataMap = e.getDatatable().deepCopy();
 		} else {
 			this.dataMap = new ManagedHashMap();
 		}

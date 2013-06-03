@@ -45,7 +45,7 @@ public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatabl
 		Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
 		// TODO: Give datatable access to packet
 		try {
-			entity.getData().deserialize(message.getCompressedData(), true);
+			entity.getDatatable().deserialize(message.getCompressedData(), true);
 		} catch (IOException e) {
 			Spout.getLogger().log(Level.SEVERE, "Exception deserializing compressed datatable", e);
 		}

@@ -37,16 +37,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import org.spout.api.Engine;
-import org.spout.api.component.BaseComponentHolder;
+import org.spout.api.component.BaseComponentOwner;
 import org.spout.api.component.Component;
-import org.spout.api.component.impl.ModelHolderComponent;
-import org.spout.api.component.impl.NetworkComponent;
-import org.spout.api.component.impl.SceneComponent;
-import org.spout.api.component.type.EntityComponent;
+import org.spout.api.component.entity.EntityComponent;
+import org.spout.api.component.entity.ModelComponent;
+import org.spout.api.component.entity.NetworkComponent;
+import org.spout.api.component.entity.SceneComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
-import org.spout.api.event.player.PlayerInteractEvent.Action;
+import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -62,8 +62,8 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
 
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
-import org.spout.engine.entity.component.EntityRendererComponent;
-import org.spout.engine.entity.component.SpoutSceneComponent;
+import org.spout.engine.component.entity.SpoutModelComponent;
+import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
@@ -72,7 +72,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
-public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshotable {
+public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = -1;
 	private static final Iterator<IntVector3> INITIAL_TICK = new ArrayList<IntVector3>().iterator();
 	private static final Iterator<IntVector3> OBSERVING = new ArrayList<IntVector3>().iterator();
@@ -106,7 +106,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	protected SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
 		this(engine, transform, viewDistance, uid, load, (byte[])null, components);
-		this.getData().putAll(dataMap);
+		this.getDatatable().putAll(dataMap);
 	}
 
 	public SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
@@ -146,7 +146,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 		if (dataMap != null) {
 			try {
-				this.getData().deserialize(dataMap);
+				this.getDatatable().deserialize(dataMap);
 			} catch (IOException e) {
 				engine.getLogger().log(Level.SEVERE, "Unable to deserialize entity data", e);
 			}
@@ -170,10 +170,10 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	protected <T extends Component> T add(Class<T> type, boolean attach) {
 		if (type.equals(SceneComponent.class)) {
 			return super.add(type, SpoutSceneComponent.class, attach);
-		} else if (type.equals(ModelHolderComponent.class)) {
-			T component = super.add(type, EntityRendererComponent.class, attach);
+		} else if (type.equals(ModelComponent.class)) {
+			T component = super.add(type, SpoutModelComponent.class, attach);
 			if (getEngine() instanceof SpoutClient) {
-				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().add((EntityRendererComponent) component);
+				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().add((SpoutModelComponent) component);
 			}
 			return component;
 		}
@@ -182,10 +182,10 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public  <T extends Component> T detach(Class<? extends Component> type) {
-		if (type.equals(ModelHolderComponent.class)) {
+		if (type.equals(ModelComponent.class)) {
 			T component = super.detach(type);
 			if (getEngine() instanceof SpoutClient) {
-				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().remove((EntityRendererComponent) component);
+				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().remove((SpoutModelComponent) component);
 			}
 			return component;
 		}
@@ -345,6 +345,21 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	@Override
+	public void interact(EntityInteractEvent event) {
+		if (event == null) {
+			throw new IllegalStateException("Attempt made to interact entity with a null interaction event");
+		}
+		if (event.isCancelled()) {
+			return;
+		}
+		for (final Component component : values()) {
+			if (component instanceof EntityComponent) {
+				((EntityComponent) component).onInteract(event);
+			}
+		}
+	}
+
+	@Override
 	public World getWorld() {
 		return entityManager.get().getRegion().getWorld();
 	}
@@ -445,15 +460,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	@Override
 	public SceneComponent getScene() {
 		return scene;
-	}
-
-	@Override
-	public void interact(Action action, Entity source) {
-		for (Component component : this.values()) {
-			if (component instanceof EntityComponent) {
-				((EntityComponent) component).onInteract(action, source);
-			}
-		}
 	}
 
 	@Override

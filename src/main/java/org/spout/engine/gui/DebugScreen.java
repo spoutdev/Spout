@@ -35,7 +35,7 @@ import org.spout.api.chat.ChatArguments;
 import org.spout.api.gui.DebugHud;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
-import org.spout.api.gui.component.LabelComponent;
+import org.spout.api.component.widget.LabelComponent;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.Plugin;

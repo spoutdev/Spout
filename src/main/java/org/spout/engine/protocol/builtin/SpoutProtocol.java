@@ -33,7 +33,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
-import org.spout.api.component.impl.NetworkComponent;
+import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.protocol.Message;

@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.entity.component;
+package org.spout.engine.component.entity;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -35,8 +35,7 @@ import java.util.Map;
 import org.lwjgl.BufferUtils;
 
 import org.spout.api.Spout;
-import org.spout.api.component.impl.AnimationComponent;
-import org.spout.api.component.impl.ModelHolderComponent;
+import org.spout.api.component.entity.AnimationComponent;
 import org.spout.api.event.entity.AnimationEndEvent;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
@@ -101,7 +100,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 	//TODO move this in model
 	public void batchSkeleton() {
-		final ModelHolderComponent models = getOwner().get(ModelHolderComponent.class);
+		final SpoutModelComponent models = getOwner().get(SpoutModelComponent.class);
 
 		for (Model model : models.getModels()) {
 
@@ -205,10 +204,10 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 	public void render(Model model) {
 		int count = 0;
-		
+
 		List<AnimationPlayed> list = animations.get(model);
 
-		if(list != null){
+		if (list != null) {
 			for (AnimationPlayed ac : list) {
 				int i;
 

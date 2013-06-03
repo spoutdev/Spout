@@ -33,7 +33,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
-import org.spout.api.gui.component.ControlComponent;
+import org.spout.api.component.widget.ControlComponent;
 import org.spout.api.plugin.Plugin;
 
 public class FocusTest {

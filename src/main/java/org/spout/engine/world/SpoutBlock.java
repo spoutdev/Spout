@@ -33,8 +33,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.Spout;
-import org.spout.api.component.BlockComponentHolder;
+import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
+import org.spout.api.component.DatatableComponent;
 import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.LoadOption;
@@ -336,45 +337,54 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public <T extends Component> T add(Class<T> type) {
-		return getChunk().getBlockComponentHolder(x, y, z, true).add(type);
+		return getChunk().getBlockComponentOwner(x, y, z, true).add(type);
 	}
 
 	@Override
 	public <T extends Component> T detach(Class<? extends Component> type) {
-		BlockComponentHolder holder = getChunk().getBlockComponentHolder(x, y, z, false);
-		if (holder != null) {
-			return holder.detach(type);
+		BlockComponentOwner owner = getChunk().getBlockComponentOwner(x, y, z, false);
+		if (owner != null) {
+			return owner.detach(type);
 		}
 		return null;
 	}
 
 	@Override
 	public Collection<Component> values() {
-		return getChunk().getBlockComponentHolder(x, y, z, true).values();
+		return getChunk().getBlockComponentOwner(x, y, z, true).values();
+	}
+
+	@Override
+	public DatatableComponent getDatatable() {
+		BlockComponentOwner owner = getChunk().getBlockComponentOwner(x, y, z, false);
+		if (owner == null) {
+			throw new IllegalStateException("The datatable is only available on blocks who have a BlockComponentOwner (blocks with components added)");
+		}
+		return owner.getDatatable();
 	}
 
 	@Override
 	public <T extends Component> T get(Class<T> type) {
-		return getChunk().getBlockComponentHolder(x, y, z, true).get(type);
+		return getChunk().getBlockComponentOwner(x, y, z, true).get(type);
 	}
 
 	@Override
 	public <T> T getType(Class<T> type) {
-		return getChunk().getBlockComponentHolder(x, y, z, true).getType(type);
+		return getChunk().getBlockComponentOwner(x, y, z, true).getType(type);
 	}
 
 	@Override
 	public <T extends Component> T getExact(Class<T> type) {
-		return getChunk().getBlockComponentHolder(x, y, z, true).getExact(type);
+		return getChunk().getBlockComponentOwner(x, y, z, true).getExact(type);
 	}
 
 	@Override
 	public <T extends Component> Collection<T> getAll(Class<T> type) {
-		return getChunk().getBlockComponentHolder(x, y, z, true).getAll(type);
+		return getChunk().getBlockComponentOwner(x, y, z, true).getAll(type);
 	}
 
 	@Override
 	public <T> Collection<T> getAllOfType(Class<T> type) {
-		return getChunk().getBlockComponentHolder(x, y, z, true).getAllOfType(type);
+		return getChunk().getBlockComponentOwner(x, y, z, true).getAllOfType(type);
 	}
 }

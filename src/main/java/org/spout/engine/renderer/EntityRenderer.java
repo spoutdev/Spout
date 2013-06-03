@@ -37,7 +37,7 @@ import org.spout.api.Spout;
 import org.spout.api.model.Model;
 import org.spout.api.render.Camera;
 
-import org.spout.engine.entity.component.EntityRendererComponent;
+import org.spout.engine.component.entity.SpoutModelComponent;
 import org.spout.engine.filesystem.resource.ClientTexture;
 import org.spout.engine.mesh.BaseMesh;
 
@@ -48,21 +48,21 @@ import org.spout.engine.mesh.BaseMesh;
  * -- Keep a cache of all EntityRendererComponents who share a model. This cuts down on all rendering.
  */
 public class EntityRenderer {
-	private final List<EntityRendererComponent> RENDERERS = new ArrayList<EntityRendererComponent>();
-	private final Map<Model, List<EntityRendererComponent>> RENDERERS_PER_MODEL = new HashMap<Model, List<EntityRendererComponent>>();
+	private final List<SpoutModelComponent> RENDERERS = new ArrayList<SpoutModelComponent>();
+	private final Map<Model, List<SpoutModelComponent>> RENDERERS_PER_MODEL = new HashMap<Model, List<SpoutModelComponent>>();
 	private int count = 0;
 
-	public void add(EntityRendererComponent renderer) {
+	public void add(SpoutModelComponent renderer) {
 		RENDERERS.add(renderer);
 		count++;
 	}
 
-	public void remove(EntityRendererComponent renderer) {
+	public void remove(SpoutModelComponent renderer) {
 		RENDERERS.remove(renderer);
 		//Cleanup models
 		//TODO Keep the model (not the renderer) cached always?
 		for (final Model model : renderer.getModels()) {
-			final List<EntityRendererComponent> modelRenderers = RENDERERS_PER_MODEL.get(model);
+			final List<SpoutModelComponent> modelRenderers = RENDERERS_PER_MODEL.get(model);
 			modelRenderers.remove(renderer);
 			if (modelRenderers.isEmpty()) {
 				RENDERERS_PER_MODEL.remove(model);
@@ -76,15 +76,15 @@ public class EntityRenderer {
 		final Camera camera = ((Client) Spout.getEngine()).getPlayer().getType(Camera.class);
 
 		//Loop through all renderers and add models as needed.
-		for (final EntityRendererComponent renderer : RENDERERS) {
+		for (final SpoutModelComponent renderer : RENDERERS) {
 			final List<Model> models = renderer.getModels();
 			if (models.isEmpty()) {
 				continue;
 			}
 			for (final Model model : models) {
-				List<EntityRendererComponent> modelRenderers = RENDERERS_PER_MODEL.get(model);
+				List<SpoutModelComponent> modelRenderers = RENDERERS_PER_MODEL.get(model);
 				if (modelRenderers == null) {
-					modelRenderers = new ArrayList<EntityRendererComponent>();
+					modelRenderers = new ArrayList<SpoutModelComponent>();
 					RENDERERS_PER_MODEL.put(model, modelRenderers);
 				}
 				if (((ClientTexture) model.getRenderMaterial().getValue("Diffuse")).isLoaded()) {
@@ -95,9 +95,9 @@ public class EntityRenderer {
 		}
 
 		//Call renderers based on models
-		for (Entry<Model, List<EntityRendererComponent>> entry : RENDERERS_PER_MODEL.entrySet()) {
+		for (Entry<Model, List<SpoutModelComponent>> entry : RENDERERS_PER_MODEL.entrySet()) {
 			final Model model = entry.getKey();
-			final List<EntityRendererComponent> renderers = entry.getValue();
+			final List<SpoutModelComponent> renderers = entry.getValue();
 			final BaseMesh mesh = (BaseMesh) model.getMesh();
 			//Prep mesh for rendering
 			mesh.preDraw();
@@ -107,7 +107,7 @@ public class EntityRenderer {
 			model.getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
 
 			//Render
-			for (EntityRendererComponent renderer : renderers) {
+			for (SpoutModelComponent renderer : renderers) {
 				renderer.update(model, dt);
 				renderer.draw(model);
 			}

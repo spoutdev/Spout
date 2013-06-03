@@ -30,8 +30,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.spout.api.component.BaseComponentHolder;
+import org.spout.api.component.BaseComponentOwner;
 import org.spout.api.component.Component;
+import org.spout.api.component.widget.ControlComponent;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.geo.discrete.Transform2D;
@@ -40,14 +41,13 @@ import org.spout.api.gui.Focusable;
 import org.spout.api.gui.RenderPartContainer;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
-import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
 
 import org.spout.engine.batcher.SpriteBatch;
 
-public class SpoutWidget extends BaseComponentHolder implements Widget {
+public class SpoutWidget extends BaseComponentOwner implements Widget {
 	private List<RenderPartPack> renderPartCache = new LinkedList<RenderPartPack>();
 	private boolean renderCacheClean = false;
 	private boolean dirty = true;

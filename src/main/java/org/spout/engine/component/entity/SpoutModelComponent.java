@@ -24,16 +24,16 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.entity.component;
+package org.spout.engine.component.entity;
 
-import org.spout.api.component.impl.ModelHolderComponent;
+import org.spout.api.component.entity.ModelComponent;
 import org.spout.api.math.Matrix;
 import org.spout.api.model.Model;
 import org.spout.api.render.effect.SnapshotEntity;
 
 import org.spout.engine.mesh.BaseMesh;
 
-public class EntityRendererComponent extends ModelHolderComponent {
+public class SpoutModelComponent extends ModelComponent {
 	private SpoutAnimationComponent animationComponent;
 	private boolean rendered = false;
 

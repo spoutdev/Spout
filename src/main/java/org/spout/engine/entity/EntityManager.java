@@ -37,7 +37,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 
-import org.spout.engine.entity.component.SpoutSceneComponent;
+import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.world.SpoutChunk;

@@ -34,10 +34,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.spout.api.component.BlockComponentHolder;
+import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
-
-import org.spout.api.component.type.BlockComponent;
+import org.spout.api.component.block.BlockComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
@@ -89,8 +88,8 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		if (type == EntityType.BOTH) {
 			this.entities = Collections.unmodifiableList(getEntities(chunk));
 			BlockSnapshotProcedure procedure = new BlockSnapshotProcedure(chunk);
-			synchronized (chunk.getBlockComponentHolder()) {
-				chunk.getBlockComponentHolder().forEachEntry(procedure);
+			synchronized (chunk.getBlockComponentOwners()) {
+				chunk.getBlockComponentOwners().forEachEntry(procedure);
 			}
 			this.blockComponents = Collections.unmodifiableList(procedure.snapshots);
 		} else if (type == EntityType.ENTITIES) {
@@ -99,8 +98,8 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		} else if (type == EntityType.BLOCK_COMPONENTS) {
 			this.entities = null;
 			BlockSnapshotProcedure procedure = new BlockSnapshotProcedure(chunk);
-			synchronized (chunk.getBlockComponentHolder()) {
-				chunk.getBlockComponentHolder().forEachEntry(procedure);
+			synchronized (chunk.getBlockComponentOwners()) {
+				chunk.getBlockComponentOwners().forEachEntry(procedure);
 			}
 			this.blockComponents = Collections.unmodifiableList(procedure.snapshots);
 		} else {
@@ -291,7 +290,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		private final Set<Class<? extends BlockComponent>> clazz;
 		private final SerializableMap data;
 
-		private SpoutBlockComponentSnapshot(int x, int y, int z, BlockComponentHolder holder, SerializableMap data) {
+		private SpoutBlockComponentSnapshot(int x, int y, int z, BlockComponentOwner holder, SerializableMap data) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
@@ -329,7 +328,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 	}
 
-	private static class BlockSnapshotProcedure implements TShortObjectProcedure<BlockComponentHolder> {
+	private static class BlockSnapshotProcedure implements TShortObjectProcedure<BlockComponentOwner> {
 		private final SpoutChunk chunk;
 		private final ArrayList<BlockComponentSnapshot> snapshots = new ArrayList<BlockComponentSnapshot>();
 
@@ -338,11 +337,11 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 
 		@Override
-		public boolean execute(short index, BlockComponentHolder component) {
+		public boolean execute(short index, BlockComponentOwner component) {
 			int x = NibbleQuadHashed.key1(index) + chunk.getBlockX();
 			int y = NibbleQuadHashed.key2(index) + chunk.getBlockY();
 			int z = NibbleQuadHashed.key3(index) + chunk.getBlockZ();
-			snapshots.add(new SpoutBlockComponentSnapshot(x, y, z, component, component.getData()));
+			snapshots.add(new SpoutBlockComponentSnapshot(x, y, z, component, component.getDatatable()));
 			return true;
 		}
 	}

@@ -104,7 +104,7 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.entity.component.SpoutSceneComponent;
+import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.versioned.ChunkFiles;
 import org.spout.engine.mesh.ChunkMesh;

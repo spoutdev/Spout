@@ -49,7 +49,7 @@ import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
 
-import org.spout.engine.entity.component.SpoutSceneComponent;
+import org.spout.engine.component.entity.SpoutSceneComponent;
 
 public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;

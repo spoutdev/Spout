@@ -38,7 +38,7 @@ import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.component.Component;
-import org.spout.api.component.type.EntityComponent;
+import org.spout.api.component.entity.EntityComponent;
 import org.spout.api.plugin.CommonClassLoader;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
@@ -46,9 +46,8 @@ import org.spout.api.util.typechecker.TypeChecker;
 import org.spout.engine.filesystem.resource.ClientEntityPrefab;
 
 public class EntityPrefabLoader extends ResourceLoader {
-
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
-	private static final TypeChecker<List<? extends String>> checkerListString =  TypeChecker.tList(String.class);
+	private static final TypeChecker<List<? extends String>> checkerListString = TypeChecker.tList(String.class);
 
 	public EntityPrefabLoader() {
 		super("entity", "entity://Spout/fallbacks/entity.sep");
@@ -64,16 +63,16 @@ public class EntityPrefabLoader extends ResourceLoader {
 
 		final Yaml yaml = new Yaml();
 		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(in));
-		
+
 		if (!(resourceProperties.containsKey("Name")) || !(resourceProperties.containsKey("Components")) || !(resourceProperties.containsKey("Data"))) {
 			throw new IllegalStateException("A property is missing (Name, Components or Data)");
 		}
-		
+
 		final Object name = resourceProperties.get("Name");
 		if (!(name instanceof String)) {
 			throw new IllegalStateException("Tried to load an entity prefab but wasn't given a name");
 		}
-		
+
 		final List<? extends String> componentsPath = checkerListString.check(resourceProperties.get("Components"));
 		final List<Class<? extends Component>> components = new ArrayList<Class<? extends Component>>();
 		for (String path : componentsPath) {
@@ -85,7 +84,7 @@ public class EntityPrefabLoader extends ResourceLoader {
 					componentClass = Class.forName(path);
 				}
 			} catch (ClassNotFoundException e) {
-				throw new IllegalStateException("A component is missing: "+path);
+				throw new IllegalStateException("A component is missing: " + path);
 			}
 			if (EntityComponent.class.isAssignableFrom(componentClass)) {
 				components.add((Class<? extends EntityComponent>) componentClass);
@@ -93,11 +92,11 @@ public class EntityPrefabLoader extends ResourceLoader {
 				throw new IllegalStateException("This is not an entity component.");
 			}
 		}
-		
+
 		final Map<? extends String, ?> datasOld = checkerMapStringObject.check(resourceProperties.get("Data"));
 		final Map<String, Object> datas = new HashMap<String, Object>();
 		datas.putAll(datasOld);
-		
-		return new ClientEntityPrefab((Client) engine, (String)name, components, datas);
+
+		return new ClientEntityPrefab((Client) engine, (String) name, components, datas);
 	}
 }

@@ -33,7 +33,7 @@ import java.util.Map;
 
 import org.spout.api.Client;
 import org.spout.api.component.Component;
-import org.spout.api.component.impl.ModelHolderComponent;
+import org.spout.api.component.entity.ModelComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
 import org.spout.api.geo.discrete.Point;
@@ -77,7 +77,7 @@ public class ClientEntityPrefab implements EntityPrefab {
 		}
 
 		if (data.containsKey("Model")) {
-			entity.add(ModelHolderComponent.class).addModel((String) data.get("Model"));
+			entity.add(ModelComponent.class).addModel((String) data.get("Model"));
 		}
 
 		return entity;
@@ -91,7 +91,7 @@ public class ClientEntityPrefab implements EntityPrefab {
 		}
 
 		if (data.containsKey("Model")) {
-			entity.add(ModelHolderComponent.class).addModel((String) data.get("Model"));
+			entity.add(ModelComponent.class).addModel((String) data.get("Model"));
 		}
 
 		return entity;

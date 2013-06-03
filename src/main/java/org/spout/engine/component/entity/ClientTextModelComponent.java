@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.entity.component;
+package org.spout.engine.component.entity;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.spout.api.chat.style.ColorChatStyle;
 import org.spout.api.chat.style.ResetChatStyle;
-import org.spout.api.component.impl.TextModelComponent;
+import org.spout.api.component.entity.TextModelComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Matrix;

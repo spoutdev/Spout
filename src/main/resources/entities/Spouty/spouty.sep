@@ -1,7 +1,7 @@
 Name: "Spouty"
 Components:
-    - org.spout.engine.entity.component.SpoutAnimationComponent
-    - org.spout.engine.entity.component.EntityRendererComponent
+    - org.spout.engine.component.entity.SpoutAnimationComponent
+    - org.spout.engine.component.entity.SpoutModelComponent
 Data:
     Health: 20
     Damages: 1

@@ -107,7 +107,7 @@ import org.spout.engine.command.SyncedRootCommand;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.entity.component.SpoutSceneComponent;
+import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.filesystem.versioned.WorldFiles;
