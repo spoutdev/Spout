@@ -179,6 +179,11 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 
 	@Override
+	public boolean isValidChar(char c) {
+		return indexOf(c) < glyphBounds.length;
+	}
+
+	@Override
 	public Rectangle getPixelBounds(char c) {//
 		return glyphBounds[indexOf(c)];
 	}

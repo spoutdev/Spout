@@ -57,8 +57,6 @@ import org.teleal.cling.transport.spi.InitializationException;
 
 import org.spout.api.Platform;
 import org.spout.api.Server;
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.command.CommandSource;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Listener;
@@ -194,7 +192,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 				EngineStopEvent stopEvent = new EngineStopEvent(message);
 				getEventManager().callEvent(stopEvent);
 				for (Player player : getOnlinePlayers()) {
-					((SpoutPlayer) player).kick(true, new Object[]{stopEvent.getMessage()});
+					((SpoutPlayer) player).kick(true, stopEvent.getMessage());
 				}
 				if (upnpService != null) {
 					upnpService.shutdown();
@@ -358,23 +356,17 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public void broadcastMessage(Object... message) {
+	public void broadcastMessage(String message) {
 		broadcastMessage(STANDARD_BROADCAST_PERMISSION, message);
 	}
 
 	@Override
-	public void broadcastMessage(String permission, Object... message) {
-		ChatArguments args = new ChatArguments(message);
-		for (PermissionsSubject player : getAllWithNode(permission)) {
-			if (player instanceof CommandSource) {
-				((CommandSource) player).sendMessage(args);
+	public void broadcastMessage(String permission, String message) {
+		for (PermissionsSubject subject : getAllWithNode(permission)) {
+			if (subject instanceof CommandSource) {
+				((CommandSource) subject).sendMessage(message);
 			}
 		}
-	}
-
-	@Override
-	public void broadcastMessage(ChatChannel chatChannel, Object... message) {
-		chatChannel.broadcastToReceivers(new ChatArguments(message));
 	}
 
 	@Override

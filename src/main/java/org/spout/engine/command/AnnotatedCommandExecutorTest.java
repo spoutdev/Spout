@@ -24,13 +24,24 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.chat.style;
+package org.spout.engine.command;
 
-import org.fusesource.jansi.Ansi;
+import org.spout.api.command.CommandArguments;
+import org.spout.api.command.CommandSource;
+import org.spout.api.command.annotated.Command;
 
-public class ResetJansiFormatter extends JansiStyleFormatter {
-	@Override
-	public void format(Ansi ansi, String text) {
-		ansi.reset().a(text);
+public class AnnotatedCommandExecutorTest {
+	public static final class RootExecutor {
+		@Command(aliases = "root", desc = "Root command")
+		public void root(CommandSource source, CommandArguments args) {
+			source.sendMessage("Executed root command 'root " + args.getJoinedString(0) + "'.");
+		}
+	}
+
+	public static final class ChildExecutor {
+		@Command(aliases = "child", desc = "Child command")
+		public void child(CommandSource source, CommandArguments args) {
+			source.sendMessage("Executed child command 'root " + args.getJoinedString(0) + "'.");
+		}
 	}
 }

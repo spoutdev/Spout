@@ -26,7 +26,7 @@
  */
 package org.spout.engine.command;
 
-import org.spout.api.command.CommandContext;
+import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 
@@ -40,7 +40,7 @@ public class RendererCommands {
 	}
 
 	@Command(aliases = {"r_wireframe"}, desc = "Toggles Wireframe for the renderer")
-	public void toggleWireframe(CommandContext args, CommandSource source) {
+	public void toggleWireframe(CommandSource source, CommandArguments args) {
 
 		client.getScheduler().enqueueRenderTask(new Runnable() {
 			@Override

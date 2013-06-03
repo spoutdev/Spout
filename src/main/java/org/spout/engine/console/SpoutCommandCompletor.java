@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.chat.console;
+package org.spout.engine.console;
 
 import java.util.List;
 import java.util.SortedSet;
@@ -33,6 +33,7 @@ import java.util.TreeSet;
 import jline.Completor;
 
 import org.spout.api.Engine;
+import org.spout.api.command.Command;
 
 /**
  * A copy of {@link jline.SimpleCompletor} that uses a set of strings sourced
@@ -52,8 +53,9 @@ public class SpoutCommandCompletor implements Completor {
 						List candidates) {
 		String start = (buffer == null) ? "" : buffer;
 		TreeSet<String> all = new TreeSet<String>();
-		all.addAll(engine.getRootCommand().getChildNames());
-
+		for (Command cmd : engine.getCommandManager().getCommands()) {
+			all.add(cmd.getName());
+		}
 		SortedSet<String> matches = all.tailSet(start);
 
 		for (String can : matches) {

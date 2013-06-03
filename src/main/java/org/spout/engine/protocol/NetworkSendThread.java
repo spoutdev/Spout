@@ -174,7 +174,7 @@ public class NetworkSendThread {
 				}
 			} catch (Exception e) {
 				try {
-					node.getSession().disconnect(false, new Object[] {"Socket Error!"});
+					node.getSession().disconnect(false, "Socket Error!");
 				} catch (Exception e2) {
 					try {
 						Spout.getLogger().info("Unable to cleanly close session for " + node.getSession().getPlayer().getName());

@@ -26,12 +26,13 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
-import org.spout.api.chat.ChatArguments;
+import org.spout.api.Spout;
+import org.spout.api.command.Command;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
+
 import org.spout.engine.protocol.builtin.message.CommandMessage;
-import org.spout.engine.SpoutEngine;
 
 public class CommandMessageHandler extends MessageHandler<CommandMessage> {
 	@Override
@@ -40,10 +41,11 @@ public class CommandMessageHandler extends MessageHandler<CommandMessage> {
 			return;
 		}
 		Player player = session.getPlayer();
-		String command = ((SpoutEngine) session.getEngine()).getRootCommand().getChildName(message.getCommand());
+		Command command = Spout.getCommandManager().getCommand(message.getCommand());
 		if (command == null) {
-			player.sendMessage("Unknown command id: ", message.getCommand());
+			player.sendMessage("Unknown command id: " + message.getCommand());
+			return;
 		}
-		player.processCommand(command, new ChatArguments(message.getArguments()));
+		player.processCommand(command.getName(), message.getArguments());
 	}
 }

@@ -31,9 +31,9 @@ import java.net.InetSocketAddress;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.Spout;
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
 import org.spout.api.component.entity.NetworkComponent;
+import org.spout.api.command.CommandArguments;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.protocol.Message;
@@ -82,18 +82,17 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	@Override
-	public Message getKickMessage(ChatArguments message) {
-		Command cmd = Spout.getEngine().getRootCommand().getChild("disconnect");
+	public Message getKickMessage(String message) {
+		Command cmd = Spout.getCommandManager().getCommand("disconnect", false);
 		if (cmd != null) {
-			return getCommandMessage(cmd, message);
-		} else {
-			return null;
+			return getCommandMessage(cmd, new CommandArguments(message.split(" ")));
 		}
+		return null;
 	}
 
 	@Override
-	public Message getCommandMessage(Command command, ChatArguments message) {
-		return new CommandMessage(command, message.getArguments());
+	public Message getCommandMessage(Command command, CommandArguments args) {
+		return new CommandMessage(command, args.toArray());
 	}
 
 	@Override

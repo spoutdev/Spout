@@ -31,7 +31,6 @@ import java.util.Map;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.gui.DebugHud;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
@@ -85,82 +84,82 @@ import org.spout.api.render.SpoutRenderMaterials;
  * - If you want to just draw a rectangle with a solid color on the screen, setSprite(new Color(r, g, b, a)) to whatever you like and
  * setSource(new Rectangle(0f, 0f, 0f, 0f)). This will render your entire sprite with the color you chose!
  */
-
 public class DebugScreen extends Screen implements DebugHud {
-		// The Internal Spout-dummy plugin
-		private final SpoutMetaPlugin plugin;
-		// Spout's debug messages
-		private final Map<Integer, Widget> spoutMessages = new HashMap<Integer, Widget>();
-		// The hashmap that contains the plugin's debug messages
-		private final Map<Plugin, Widget> messages = new HashMap<Plugin, Widget>();
+	// The Internal Spout-dummy plugin
+	private final SpoutMetaPlugin plugin;
+	// Spout's debug messages
+	private final Map<Integer, Widget> spoutMessages = new HashMap<Integer, Widget>();
+	// The hashmap that contains the plugin's debug messages
+	private final Map<Plugin, Widget> messages = new HashMap<Plugin, Widget>();
 
-		public DebugScreen() {
-			plugin = ((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin();
-			init();
-		}
+	public DebugScreen() {
+		plugin = ((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin();
+		init();
+	}
 
-		@Override
-		public void open() {
-			((Client) Spout.getEngine()).getScreenStack().openScreen(this);
-		}
+	@Override
+	public void open() {
+		((Client) Spout.getEngine()).getScreenStack().openScreen(this);
+	}
 
-		@Override
-		public void close() {
-			((Client) Spout.getEngine()).getScreenStack().closeScreen(this);
-		}
+	@Override
+	public void close() {
+		((Client) Spout.getEngine()).getScreenStack().closeScreen(this);
+	}
 
-		@Override
-		public void reset() {
-			removeWidgets();
-			init();
-			spoutMessages.clear();
-			messages.clear();
-		}
-		
-		/**
-		 * Spout can display more than one line
-		 * @param id, arg
-		 */
-		public void spoutUpdate(int id, ChatArguments arg) {
-			if (spoutMessages.containsKey(id)) {
-				LabelComponent lbl = spoutMessages.get(id).get(LabelComponent.class);
-				if (!arg.toFormatString().equals(lbl.getText().toFormatString())) {
-					lbl.setText(arg);
-				}
-			} else {
-				Widget w = new SpoutWidget();
-				w.getTransform().setPosition(-0.975f, 0.9f - (id * 0.075f));
-				LabelComponent lbl = w.add(LabelComponent.class);
-				lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
+	@Override
+	public void reset() {
+		removeWidgets();
+		init();
+		spoutMessages.clear();
+		messages.clear();
+	}
+
+	/**
+	 * Spout can display more than one line
+	 *
+	 * @param id, arg
+	 */
+	public void spoutUpdate(int id, String arg) {
+		if (spoutMessages.containsKey(id)) {
+			LabelComponent lbl = spoutMessages.get(id).get(LabelComponent.class);
+			if (!arg.equals(lbl.getText())) {
 				lbl.setText(arg);
-				spoutMessages.put(id, w);
-				attachWidget(plugin, w);
 			}
+		} else {
+			Widget w = new SpoutWidget();
+			w.getTransform().setPosition(-0.975f, 0.9f - (id * 0.075f));
+			LabelComponent lbl = w.add(LabelComponent.class);
+			lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
+			lbl.setText(arg);
+			spoutMessages.put(id, w);
+			attachWidget(plugin, w);
 		}
-		
-		@Override
-		public void updateParameter(Plugin plug, ChatArguments arg) {
-			if (messages.containsKey(plug)) {
-				LabelComponent lbl = messages.get(plug).get(LabelComponent.class);
-				if (!arg.toFormatString().equals(lbl.getText().toFormatString())) {
-					lbl.setText(arg);
-				}
-			} else {
-				Widget w = new SpoutWidget();
-				w.getTransform().setPosition(0, 0.9f - (messages.size() * 0.05f));
-				LabelComponent lbl = w.add(LabelComponent.class);
-				lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
-				lbl.setText(arg);
-				messages.put(plug, w);
-				attachWidget(plug, w);
-			}
-		}
+	}
 
-		/**
-		 * Constructs the default Spout debug HUD
-		 */
-		private void init() {
-			setGrabsMouse(true);
-			setTakesInput(false);
+	@Override
+	public void updateParameter(Plugin plug, String arg) {
+		if (messages.containsKey(plug)) {
+			LabelComponent lbl = messages.get(plug).get(LabelComponent.class);
+			if (!arg.equals(lbl.getText())) {
+				lbl.setText(arg);
+			}
+		} else {
+			Widget w = new SpoutWidget();
+			w.getTransform().setPosition(0, 0.9f - (messages.size() * 0.05f));
+			LabelComponent lbl = w.add(LabelComponent.class);
+			lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
+			lbl.setText(arg);
+			messages.put(plug, w);
+			attachWidget(plug, w);
 		}
+	}
+
+	/**
+	 * Constructs the default Spout debug HUD
+	 */
+	private void init() {
+		setGrabsMouse(true);
+		setTakesInput(false);
+	}
 }

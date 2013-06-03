@@ -50,10 +50,8 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.spout.api.Client;
 import org.spout.api.Platform;
 import org.spout.api.audio.SoundManager;
-import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
-import org.spout.api.command.annotated.SimpleInjector;
+import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
 import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.event.engine.EngineStartEvent;
@@ -71,6 +69,7 @@ import org.spout.api.resource.FileSystem;
 
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputCommands;
+import org.spout.engine.command.RendererCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
@@ -140,10 +139,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.start(checkWorlds);
 
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
-		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(this, new SimpleInjector(this));
 
 		// Register commands
-		getRootCommand().addSubCommands(this, InputCommands.class, commandRegFactory);
+		AnnotatedCommandExecutorFactory.create(new InputCommands(this));
+		AnnotatedCommandExecutorFactory.create(new RendererCommands(this));
 
 		while (super.getDefaultWorld() == null) {
 			try {
@@ -233,8 +232,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 			return false;
 		}
 
-		// dispose buffers and sources in open al
-		soundManager.clear();
+		// de-init OpenAL
+		soundManager.destroy();
+		soundManager = null;
 
 		rendering = false;
 		stopMessage = message;

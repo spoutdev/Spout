@@ -28,7 +28,6 @@ package org.spout.engine.listener;
 
 import java.net.InetAddress;
 
-import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.component.Component;
 import org.spout.api.component.world.WorldComponent;
 import org.spout.api.entity.Player;
@@ -77,7 +76,7 @@ public class SpoutServerListener implements Listener {
 					player.kick();
 				}
 			} else {
-				server.getEventManager().callEvent(new PlayerJoinEvent(player, ChatStyle.WHITE, player.getDisplayName(), ChatStyle.CYAN, " has joined the game"));
+				server.getEventManager().callEvent(new PlayerJoinEvent(player, player.getDisplayName() + " has joined the game"));
 			}
 		} else {
 			event.getSession().disconnect("Player is already online");
@@ -101,12 +100,12 @@ public class SpoutServerListener implements Listener {
 		}
 
 		if (banEvent != null && !banEvent.isCancelled()) {
-			event.disallow(!banEvent.getMessage().getPlainString().isEmpty() ? banEvent.getMessage() : server.getAccessManager().getBanMessage(banEvent.getBanType()));
+			event.disallow(banEvent.getMessage() != null ? banEvent.getMessage() : server.getAccessManager().getBanMessage(banEvent.getBanType()));
 			return;
 		}
 
 		if (whitelistEvent != null && !whitelistEvent.isCancelled()) {
-			event.disallow(!whitelistEvent.getMessage().getPlainString().isEmpty() ? whitelistEvent.getMessage() : server.getAccessManager().getWhitelistMessage());
+			event.disallow(whitelistEvent.getMessage() != null ? whitelistEvent.getMessage() : server.getAccessManager().getWhitelistMessage());
 			return;
 		}
 
