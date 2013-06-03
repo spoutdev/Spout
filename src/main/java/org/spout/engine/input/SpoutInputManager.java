@@ -59,12 +59,12 @@ public class SpoutInputManager implements InputManager {
 	private boolean redirected = false;
 
 	public SpoutInputManager() {
-		bind(new Binding("forward", Keyboard.get(SpoutInputConfiguration.FORWARD.getString())).setAsync(true));
-		bind(new Binding("backward", Keyboard.get(SpoutInputConfiguration.BACKWARD.getString())).setAsync(true));
-		bind(new Binding("left", Keyboard.get(SpoutInputConfiguration.LEFT.getString())).setAsync(true));
-		bind(new Binding("right", Keyboard.get(SpoutInputConfiguration.RIGHT.getString())).setAsync(true));
-		bind(new Binding("jump", Keyboard.get(SpoutInputConfiguration.UP.getString())).setAsync(true));
-		bind(new Binding("crouch", Keyboard.get(SpoutInputConfiguration.DOWN.getString())).setAsync(true));
+		bind(new Binding("forward", Keyboard.valueOf(SpoutInputConfiguration.FORWARD.getString().toUpperCase())).setAsync(true));
+		bind(new Binding("backward", Keyboard.valueOf(SpoutInputConfiguration.BACKWARD.getString().toUpperCase())).setAsync(true));
+		bind(new Binding("left", Keyboard.valueOf(SpoutInputConfiguration.LEFT.getString().toUpperCase())).setAsync(true));
+		bind(new Binding("right", Keyboard.valueOf(SpoutInputConfiguration.RIGHT.getString().toUpperCase())).setAsync(true));
+		bind(new Binding("jump", Keyboard.valueOf(SpoutInputConfiguration.UP.getString().toUpperCase())).setAsync(true));
+		bind(new Binding("crouch", Keyboard.valueOf(SpoutInputConfiguration.DOWN.getString().toUpperCase())).setAsync(true));
 		bind(new Binding("select_down", org.spout.api.input.Mouse.MOUSE_SCROLLDOWN).setAsync(true));
 		bind(new Binding("select_up", org.spout.api.input.Mouse.MOUSE_SCROLLUP).setAsync(true));
 		bind(new Binding("left_click", org.spout.api.input.Mouse.MOUSE_BUTTON0).setAsync(true));
