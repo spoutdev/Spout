@@ -138,6 +138,15 @@ public interface SoundManager {
 	public void clear();
 
 	/**
+	 * Returns true if the sound system has been destroyed. If so,
+	 * {@link #init()} will need to be called before performing on this system
+	 * any further.
+	 *
+	 * @return true if has been destroyed
+	 */
+	public boolean isDestroyed();
+
+	/**
 	 * De-initializes the sound system and clears all sounds and sources.
 	 */
 	public void destroy();
