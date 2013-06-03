@@ -174,7 +174,7 @@ public class SpoutSoundSource extends SoundSource {
 	}
 
 	@Override
-	public void finalize() {
+	protected void finalize() {
 		if (!disposed) {
 			dispose();
 		}

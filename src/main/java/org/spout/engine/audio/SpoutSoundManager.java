@@ -173,7 +173,7 @@ public class SpoutSoundManager implements SoundManager {
 	}
 
 	@Override
-	public void finalize() {
+	protected void finalize() {
 		if (!isDestroyed()) {
 			destroy();
 		}

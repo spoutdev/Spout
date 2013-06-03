@@ -73,7 +73,7 @@ public class ClientSound extends Sound {
 	}
 
 	@Override
-	public void finalize() {
+	protected void finalize() {
 		if (!disposed) {
 			dispose();
 		}
