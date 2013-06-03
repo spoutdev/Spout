@@ -62,7 +62,7 @@ public class SpoutSoundSource extends SoundSource {
 	}
 
 	@Override
-	public void doPlay() {
+	protected void doPlay() {
 		assertNotDisposed();
 		alSourcePlay(id);
 	}
@@ -171,6 +171,13 @@ public class SpoutSoundSource extends SoundSource {
 	@Override
 	public SoundState getState() {
 		return SoundState.get(getInteger(AL_SOURCE_STATE));
+	}
+
+	@Override
+	public void finalize() {
+		if (!disposed) {
+			dispose();
+		}
 	}
 
 	private void setInteger(int k, int v) {

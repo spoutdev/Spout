@@ -162,9 +162,21 @@ public class SpoutSoundManager implements SoundManager {
 	}
 
 	@Override
+	public boolean isDestroyed() {
+		return !AL.isCreated();
+	}
+
+	@Override
 	public void destroy() {
 		clear();
 		AL.destroy();
+	}
+
+	@Override
+	public void finalize() {
+		if (!isDestroyed()) {
+			destroy();
+		}
 	}
 
 	/**

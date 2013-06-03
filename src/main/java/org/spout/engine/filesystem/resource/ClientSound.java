@@ -72,6 +72,13 @@ public class ClientSound extends Sound {
 		return getInt(AL_SIZE);
 	}
 
+	@Override
+	public void finalize() {
+		if (!disposed) {
+			dispose();
+		}
+	}
+
 	private int getInt(int property) {
 		assertNotDisposed();
 		return alGetBufferi(id, property);
