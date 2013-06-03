@@ -34,18 +34,41 @@ import java.lang.annotation.Target;
 /**
  * This allows for annotation-based command registration.
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
+	/**
+	 * Returns all the aliases this command is recognized under.
+	 *
+	 * @return aliases of command
+	 */
 	public String[] aliases();
 
+	/**
+	 * Returns the proper usage of the command.
+	 *
+	 * @return proper usage
+	 */
 	public String usage() default "";
 
+	/**
+	 * Returns a description of the command.
+	 *
+	 * @return description of the command
+	 */
 	public String desc();
 
-	public String flags() default "";
-
+	/**
+	 * Returns the minimum amount of arguments for the command to run.
+	 *
+	 * @return minimum to run
+	 */
 	public int min() default 0;
 
+	/**
+	 * Returns the maximum amount of arguments for the command to run.
+	 *
+	 * @return max to run
+	 */
 	public int max() default -1;
 }

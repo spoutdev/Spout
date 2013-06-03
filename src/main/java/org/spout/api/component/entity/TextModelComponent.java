@@ -26,7 +26,6 @@
  */
 package org.spout.api.component.entity;
 
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.Font;
@@ -38,11 +37,11 @@ public class TextModelComponent extends EntityComponent {
 	protected boolean dirty = true;
 	protected boolean lookCamera = true;
 
-	public ChatArguments getText() {
+	public String getText() {
 		return getDatatable().get(KEY_TEXT);
 	}
 
-	public void setText(ChatArguments text) {
+	public void setText(String text) {
 		getDatatable().put(KEY_TEXT, text);
 		dirty = true;
 	}
@@ -82,11 +81,11 @@ public class TextModelComponent extends EntityComponent {
 		this.lookCamera = yes;
 	}
 
-	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKey<ChatArguments>() {
-		private final ChatArguments DEFAULT_VALUE = new ChatArguments("(your text here)");
+	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKey<String>() {
+		private final String DEFAULT_VALUE = "(your text here)";
 
 		@Override
-		public ChatArguments getDefaultValue() {
+		public String getDefaultValue() {
 			return DEFAULT_VALUE;
 		}
 

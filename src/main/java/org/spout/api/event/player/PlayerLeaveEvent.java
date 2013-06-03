@@ -28,7 +28,6 @@ package org.spout.api.event.player;
 
 import java.util.List;
 
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
 
@@ -37,18 +36,18 @@ import org.spout.api.event.HandlerList;
  */
 public class PlayerLeaveEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
-	private ChatArguments message;
+	private String message;
 
-	public PlayerLeaveEvent(Player p, Object... message) {
+	public PlayerLeaveEvent(Player p, String message) {
 		super(p);
-		this.message = new ChatArguments(message);
+		this.message = message;
 	}
 
 	/**
 	 * Gets the message to be sent to all players when leaving.
 	 * @return message to be sent.
 	 */
-	public ChatArguments getMessage() {
+	public String getMessage() {
 		return message;
 	}
 
@@ -56,11 +55,8 @@ public class PlayerLeaveEvent extends PlayerEvent {
 	 * Sets the message to be sent to all players when leaving.
 	 * @param message to be sent.
 	 */
-	public void setMessage(Object... message) {
-		if (message.length == 1 && message[0] instanceof List<?>) {
-			message = ((List<?>) message[0]).toArray();
-		}
-		this.message = new ChatArguments(message);
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	/**

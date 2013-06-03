@@ -29,7 +29,6 @@ package org.spout.api;
 import java.util.Collection;
 import java.util.List;
 
-import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.util.access.AccessManager;
@@ -63,33 +62,23 @@ public interface Server extends Engine {
 	 * Broadcasts the given message to all players
 	 *
 	 * The implementation of broadcast is identical to iterating over
-	 * {@link #getOnlinePlayers()} and invoking {@link Player#sendMessage(Object...)} for
+	 * {@link #getOnlinePlayers()} and invoking {@link Player#sendMessage(String)} for
 	 * each player.
 	 *
 	 * @param message to send
 	 */
-	public void broadcastMessage(Object... message);
+	public void broadcastMessage(String message);
 
 	/**
 	 * Broadcasts the given message to all players
 	 *
 	 * The implementation of broadcast is identical to calling a {@link org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent}
-	 * event, iterating over each element in getReceivers, invoking {@link org.spout.api.command.CommandSource#sendMessage(Object...)} for
+	 * event, iterating over each element in getReceivers, invoking {@link org.spout.api.command.CommandSource#sendMessage(String)} for
 	 * each CommandSource.
 	 *
 	 * @param message to send
 	 */
-	public void broadcastMessage(String permission, Object... message);
-
-	/**
-	 * Broadcasts the given message to a certain ChatChannel
-	 *
-	 * The implementation of broadcast will broadcast the formatted message to the listeners of a specific ChatChannel.
-	 *
-	 * @param chatChannel to broadcast the message to
-	 * @param message to send
-	 */
-	public void broadcastMessage(ChatChannel chatChannel, Object... message);
+	public void broadcastMessage(String permission, String message);
 
 	/**
 	 * Gets the {@link Player} by the given username. <br/>

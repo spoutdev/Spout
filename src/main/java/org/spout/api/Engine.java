@@ -37,13 +37,9 @@ import java.util.logging.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroup;
 
-import org.spout.api.chat.channel.ChatChannel;
-import org.spout.api.chat.channel.ChatChannelFactory;
-import org.spout.api.chat.channel.PermissionChatChannel;
-import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.RootCommand;
+import org.spout.api.command.CommandManager;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventManager;
@@ -75,7 +71,6 @@ public interface Engine extends Named {
 	 */
 	public static final String STANDARD_BROADCAST_PERMISSION = "spout.broadcast.standard";
 	public static final String STANDARD_CHAT_PREFIX = "spout.chat.receive.";
-	public static final ChatChannel STANDARD_BROADCAST_CHANNEL = new PermissionChatChannel("Standard Broadcasts", STANDARD_BROADCAST_PERMISSION);
 
 	/**
 	 * Returns the String version of the API.
@@ -369,14 +364,6 @@ public interface Engine extends Named {
 	public File getWorldFolder();
 
 	/**
-	 * Returns the game's root {@link Command}. <br/>
-	 * <br/>
-	 * All command registration and execution is performed through here.
-	 * @return the {@link Engine}'s root {@link Command}
-	 */
-	public RootCommand getRootCommand();
-
-	/**
 	 * Returns the game's {@link EventManager} Event listener registration and
 	 * calling is handled through this.
 	 * @return Our EventManager instance
@@ -507,29 +494,15 @@ public interface Engine extends Named {
 	public CommandSource getCommandSource();
 
 	/**
-	 * Get the manager responsible for completions
-	 * @return The completion manager
-	 */
-	public CompletionManager getCompletionManager();
-
-	/**
 	 * Gets the default permissions handler for the engine
 	 * @return The default permissions handler
 	 */
 	public DefaultPermissions getDefaultPermissions();
 
 	/**
-	 * Return the engine's chat channel factory.
-	 * This is used to create the default chat channel for in-engine command sources.
+	 * Returns the engine's {@link CommandManager}.
 	 *
-	 * @return The channel factory
+	 * @return command manager
 	 */
-	public ChatChannelFactory getChatChannelFactory();
-
-	/**
-	 * Set the new factory for the server's chat channels
-	 *
-	 * @param factory The factory to set
-	 */
-	public void setChatChannelFactory(ChatChannelFactory factory);
+	public CommandManager getCommandManager();
 }

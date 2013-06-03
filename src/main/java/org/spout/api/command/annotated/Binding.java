@@ -34,12 +34,31 @@ import java.lang.annotation.Target;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
 
-@Target({ElementType.METHOD, ElementType.TYPE})
+/**
+ * Represents a key-binding used with the {@link Command} annotation in
+ * {@link AnnotatedCommandExecutor}s.
+ */
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Binding {
-	public Keyboard[] keys() default {};
+	/**
+	 * Returns the keys that this command is bound to.
+	 *
+	 * @return keys command is bound to
+	 */
+	public Keyboard[] value() default {};
 
+	/**
+	 * Returns the mouse buttons this command is bound to.
+	 *
+	 * @return mouse buttons
+	 */
 	public Mouse[] mouse() default {};
-	
+
+	/**
+	 * Returns true if this binding should be run asynchronously.
+	 *
+	 * @return true if should run async
+	 */
 	public boolean async() default false;
 }

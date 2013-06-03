@@ -26,25 +26,24 @@
  */
 package org.spout.api.event.player;
 
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
 
 public class PlayerWhitelistKickEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
-	private ChatArguments message;
+	private String message;
 
-	public PlayerWhitelistKickEvent(Player p, Object... message) {
+	public PlayerWhitelistKickEvent(Player p, String message) {
 		super(p);
-		this.message = new ChatArguments(message);
+		this.message = message;
 	}
 
-	public ChatArguments getMessage() {
+	public String getMessage() {
 		return message;
 	}
 
-	public void setMessage(Object... message) {
-		this.message = new ChatArguments(message);
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	@Override

@@ -30,23 +30,21 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.FormattedLogRecord;
-
 public class PluginLogger extends Logger {
 	private final Plugin plugin;
-	private ChatArguments tag;
+	private String tag;
 
 	public PluginLogger(Plugin plugin) {
 		super(plugin.getClass().getCanonicalName(), null);
 		setLevel(Level.ALL);
 		setParent(plugin.getEngine().getLogger());
-		tag = new ChatArguments("[" + plugin.getDescription().getName() + "] ");
+		tag = "[" + plugin.getDescription().getName() + "]";
 		this.plugin = plugin;
 	}
 
 	@Override
 	public void log(LogRecord logRecord) {
+		/* TODO: Fix logging
 		final FormattedLogRecord record = new FormattedLogRecord(logRecord.getLevel(), new ChatArguments(tag, logRecord.getMessage()));
 		record.setLoggerName(logRecord.getLoggerName());
 		record.setMillis(logRecord.getMillis());
@@ -58,7 +56,7 @@ public class PluginLogger extends Logger {
 		record.setSourceMethodName(logRecord.getSourceMethodName());
 		record.setThreadID(logRecord.getThreadID());
 		record.setThrown(logRecord.getThrown());
-		super.log(record);
+		super.log(record); */
 	}
 
 	/**
@@ -73,7 +71,7 @@ public class PluginLogger extends Logger {
 	 * Sets the tag prefix'd to the plugin's logger.
 	 * @param tag The new tag for the logger
 	 */
-	public void setTag(ChatArguments tag) {
+	public void setTag(String tag) {
 		this.tag = tag;
 	}
 
@@ -81,7 +79,7 @@ public class PluginLogger extends Logger {
 	 * Gets the tag prefix'd to the plugin's logger.
 	 * @return The tag
 	 */
-	public ChatArguments getTag() {
+	public String getTag() {
 		return tag;
 	}
 }

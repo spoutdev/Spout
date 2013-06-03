@@ -24,13 +24,23 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.chat.style.html;
+package org.spout.api.command.filter;
+
+import org.spout.api.command.Command;
+import org.spout.api.command.CommandArguments;
+import org.spout.api.command.CommandSource;
+import org.spout.api.exception.CommandException;
 
 /**
- * @author zml2008
+ * Filters certain criteria before a command's final execution.
  */
-public class ColorHTMLStyleFormatter extends HTMLStyleFormatter {
-	public ColorHTMLStyleFormatter(String color) {
-		super("span", "style", "color: " + color);
-	}
+public interface CommandFilter {
+	/**
+	 * Returns true if the execution should continue.
+	 *
+	 * @param source of command
+	 * @param args command arguments
+	 * @return true if execution should continue
+	 */
+	public void validate(Command command, CommandSource source, CommandArguments args) throws CommandException;
 }

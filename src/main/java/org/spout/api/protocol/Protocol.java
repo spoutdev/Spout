@@ -38,8 +38,8 @@ import java.util.logging.Level;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.spout.api.Spout;
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
+import org.spout.api.command.CommandArguments;
 import org.spout.api.exception.UnknownPacketException;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
@@ -164,15 +164,15 @@ public abstract class Protocol {
 	 * @param message The kick reason
 	 * @return The kick message
 	 */
-	public abstract Message getKickMessage(ChatArguments message);
+	public abstract Message getKickMessage(String message);
 
 	/**
-	 * Gets a command packet for a given {@link Command} and {@link ChatArguments}
+	 * Gets a command packet for a given {@link Command} and {@link String}
 	 *
 	 * @param command The command to execute
 	 * @return The command packet
 	 */
-	public abstract Message getCommandMessage(Command command, ChatArguments arguments);
+	public abstract Message getCommandMessage(Command command, CommandArguments args);
 
 	/**
 	 * Gets the introduction message that the client sends to the server on connect

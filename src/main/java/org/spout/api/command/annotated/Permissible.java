@@ -24,45 +24,24 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.chat;
+package org.spout.api.command.annotated;
 
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class FormattedLogRecord extends LogRecord {
-	private static final long serialVersionUID = 1L;
+/**
+ * Command methods that require a specific permission node should be annotated
+ * with this.
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Permissible {
 	/**
-	 * Construct a LogRecord with the given level and message values.
-	 * <p/>
-	 * The sequence property will be initialized with a new unique value.
-	 * These sequence values are allocated in increasing order within a VM.
-	 * <p/>
-	 * The millis property will be initialized to the current time.
-	 * <p/>
-	 * The thread ID property will be initialized with a unique ID for
-	 * the current thread.
-	 * <p/>
-	 * All other properties will be initialized to "null".
-	 * @param level a logging level value
-	 * @param msg the raw non-localized logging message (may be null)
+	 * Returns the permission node associated with this command.
+	 *
+	 * @return permission node
 	 */
-	private final ChatArguments arguments;
-
-	public FormattedLogRecord(Level level, ChatArguments arguments) {
-		super(level, arguments.getPlainString());
-		this.arguments = arguments;
-	}
-
-	public FormattedLogRecord(Level level, String msg) {
-		this(level, new ChatArguments(msg));
-	}
-
-	@Override
-	public String getMessage() {
-		return arguments.asString();
-	}
-
-	public ChatArguments getFormattedMessage() {
-		return arguments;
-	}
+	public String value();
 }

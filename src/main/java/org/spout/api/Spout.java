@@ -29,6 +29,7 @@ package org.spout.api;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.spout.api.command.CommandManager;
 import org.spout.api.event.EventManager;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.resource.FileSystem;
@@ -207,5 +208,14 @@ public final class Spout {
 	 */
 	public static FileSystem getFileSystem() {
 		return instance.getFileSystem();
+	}
+
+	/**
+	 * Returns the engine's specified CommandManager.
+	 *
+	 * @return engine command manager
+	 */
+	public static CommandManager getCommandManager() {
+		return instance.getCommandManager();
 	}
 }

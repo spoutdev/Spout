@@ -24,39 +24,23 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.chat;
+package org.spout.api.command.annotated;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A storage class for a source ChatArguments to prevent users from modifying the original ChatArguments and its placeholders
+ * Represents a filter of a command. Specified filter class must have an empty constructor.
  */
-public class ChatTemplate {
-	private final ChatArguments source;
-
-	public ChatTemplate(ChatArguments source) {
-		this.source = source;
-	}
-
-	public ChatArguments getArguments() {
-		return new ChatArguments(source.getArguments());
-	}
-
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Filter {
 	/**
-	 * Passes through to {@link ChatArguments#fromFormatString(String)} to create a new ChatTemplate from a format string
-	 * @param formatString The format string
-	 * @return The new ChatTemplate object
-	 * @see ChatArguments#fromFormatString(String)
+	 * Filters to validate before execution.
+	 *
+	 * @return filters
 	 */
-	public static ChatTemplate fromFormatString(String formatString) {
-		return new ChatTemplate(ChatArguments.fromFormatString(formatString));
-	}
-
-	/**
-	 * Converts this ChatTemplate to a format string by using {@link ChatArguments#toFormatString()}
-	 * The toFormatString() method is called on the original ChatArguments passed in.
-	 * @return The format string
-	 * @see ChatArguments#toFormatString()
-	 */
-	public String toFormatString() {
-		return source.toFormatString();
-	}
+	public Class<? extends org.spout.api.command.filter.CommandFilter>[] value();
 }

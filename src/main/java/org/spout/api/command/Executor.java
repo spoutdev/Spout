@@ -24,21 +24,21 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.chat.channel;
+package org.spout.api.command;
 
-import org.spout.api.command.CommandSource;
+import org.spout.api.exception.CommandException;
 
 /**
- * A factory to create new chat channel instances
+ * Represents something that handles {@link Command} execution.
  */
-public interface ChatChannelFactory {
+public interface Executor {
 	/**
-	 * Returns a ChatChannel instance to be used as the channel for {@code source}.
-	 * Does not necessarily have to be a new instance of a channel object,
-	 * as channel objects can be shared by multiple users.
+	 * Executes the command as per the implementation's specification.
 	 *
-	 * @param source The source the resulting channel will be attached to
-	 * @return The new channel object
+	 * @param source of command
+	 * @param command to handle
+	 * @param args arguments of the command
+	 * @throws CommandException if there is a problem with execution
 	 */
-	public ChatChannel create(CommandSource source);
+	public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException;
 }

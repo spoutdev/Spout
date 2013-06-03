@@ -26,17 +26,15 @@
  */
 package org.spout.api.event.player;
 
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
 
 /**
  * Called when a player is attempting to log in.<br/>
- * This is called after the {@link PlayerPreLoginEvent} but before the {@link PlayerJoinEvent}
  */
 public class PlayerLoginEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
-	private ChatArguments message;
+	private String message;
 	private boolean allowed = true;
 
 	public PlayerLoginEvent(Player p) {
@@ -55,7 +53,7 @@ public class PlayerLoginEvent extends PlayerEvent {
 	 * Gets the message to use if the player cannot log in.
 	 * @return Current message
 	 */
-	public ChatArguments getMessage() {
+	public String getMessage() {
 		return message;
 	}
 
@@ -63,8 +61,8 @@ public class PlayerLoginEvent extends PlayerEvent {
 	 * Sets the message to use if the player cannot log in.
 	 * @param message The message to set
 	 */
-	public void setMessage(Object... message) {
-		this.message = new ChatArguments(message);
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	/**
@@ -78,9 +76,9 @@ public class PlayerLoginEvent extends PlayerEvent {
 	 * Disallows the player from logging in, with the given reason
 	 * @param message Kick message to display to the user
 	 */
-	public void disallow(Object... message) {
+	public void disallow(String message) {
 		allowed = false;
-		this.message = new ChatArguments(message);
+		this.message = message;
 	}
 
 	@Override

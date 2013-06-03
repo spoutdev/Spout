@@ -28,48 +28,48 @@ package org.spout.api.command.annotated;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 import org.spout.api.command.Command;
-import org.spout.api.command.CommandContext;
-import org.spout.api.command.CommandExecutor;
+import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
+import org.spout.api.command.Executor;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.WrappedCommandException;
 
-public abstract class AnnotatedCommandExecutor implements CommandExecutor {
+/**
+ * Allows for method-registration of commands.
+ */
+public final class AnnotatedCommandExecutor implements Executor {
 	private final Object instance;
-	private final Method method;
+	private final Map<Command, Method> cmdMap;
 
-	public AnnotatedCommandExecutor(Object instance, Method method) {
+	protected AnnotatedCommandExecutor(Object instance, Map<Command, Method> cmdMap) {
 		this.instance = instance;
-		this.method = method;
+		this.cmdMap = cmdMap;
 	}
 
 	@Override
-	public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
-		try {
-			List<Object> commandArgs = new ArrayList<Object>(4);
-			commandArgs.add(args);
-			commandArgs.add(source);
-			commandArgs.addAll(getAdditionalArgs(source, command));
-			method.invoke(instance, commandArgs.toArray());
-		} catch (IllegalAccessException e) {
-			throw new WrappedCommandException(e);
-		} catch (InvocationTargetException e) {
-			if (e.getCause() == null) {
+	public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
+		Method method = cmdMap.get(command);
+		if (method != null) {
+			method.setAccessible(true);
+			try {
+				method.invoke(instance, source, args);
+			} catch (IllegalAccessException e) {
+				throw new WrappedCommandException(e);
+			} catch (InvocationTargetException e) {
+				Throwable cause = e.getCause();
+				if (cause == null) {
+					throw new WrappedCommandException(e);
+				}
+
+				if (cause instanceof CommandException) {
+					throw (CommandException) cause;
+				}
+
 				throw new WrappedCommandException(e);
 			}
-
-			Throwable cause = e.getCause();
-			if (cause instanceof CommandException) {
-				throw (CommandException) cause;
-			}
-
-			throw new WrappedCommandException(cause);
 		}
 	}
-
-	public abstract List<Object> getAdditionalArgs(CommandSource source, Command command);
 }

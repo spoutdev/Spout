@@ -94,7 +94,7 @@ public interface Player extends CommandSource, Entity {
 	 * Kicks the player for the given reason.
 	 * @param reason the message to send to the player.
 	 */
-	public void kick(Object... reason);
+	public void kick(String reason);
 
 	/**
 	 * Bans the player without giving a reason.
@@ -112,7 +112,7 @@ public interface Player extends CommandSource, Entity {
 	 * @param kick whether to kick or not
 	 * @param reason for ban
 	 */
-	public void ban(boolean kick, Object... reason);
+	public void ban(boolean kick, String reason);
 
 	/**
 	 * Gets the current input state of the player
