@@ -34,7 +34,6 @@ import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
-import org.spout.api.event.player.PlayerInteractEvent;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.GenericMath;

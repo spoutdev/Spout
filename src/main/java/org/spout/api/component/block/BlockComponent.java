@@ -30,7 +30,8 @@ import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
-import org.spout.api.event.player.PlayerInteractEvent;
+import org.spout.api.event.entity.EntityInteractEvent;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 
 public abstract class BlockComponent extends Component {
@@ -51,11 +52,25 @@ public abstract class BlockComponent extends Component {
 	 * Gets the position of this block component
 	 * @return position
 	 */
-	public Point getPosition() {
+	public Point getPoint() {
 		if (getOwner() == null) {
-			throw new IllegalStateException("Must have an attached owner!");
+			throw new IllegalStateException("This component has no owner and therefore no point");
 		}
 		return new Point(getOwner().getWorld(), getOwner().getX(), getOwner().getY(), getOwner().getZ());
+	}
+
+	/**
+	 * Gets the {@link Block} who owns this component.
+	 *
+	 * The structure of BlockComponents differ from the other {@link ComponentOwner}s. {@link BlockComponentOwner} is what does BlockComponent
+	 * management but Block itself owns the block. To keep things easy to access, this convenience method is provided.
+	 * @return the block associated with the BlockComponentOwner
+	 */
+	public Block getBlock() {
+		if (getOwner() == null) {
+			throw new IllegalStateException("This component has no owner and therefore no block");
+		}
+		return getOwner().getBlock();
 	}
 
 	/**
@@ -73,6 +88,6 @@ public abstract class BlockComponent extends Component {
 	 * Called when the owner is interacted.
 	 * @param event the event which was fired, resolved, and now passed on to the components.
 	 */
-	public void onInteract(final PlayerInteractEvent event) {
+	public void onInteract(final EntityInteractEvent event) {
 	}
 }

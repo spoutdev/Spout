@@ -62,7 +62,7 @@ public class EntityChangeWorldEvent extends EntityEvent {
 
 	/**
 	 * Sets the world that the entity will be moved to.
-	 * @param The world the entity will be moved to.
+	 * @param target world the entity will be moved to.
 	 */
 	public void setTarget(World target) {
 		this.target = target;

@@ -32,7 +32,10 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.geo.World;
 
 /**
- * Called when a {@link org.spout.api.entity.Entity} exits a {@link World}.
+ * Called when a {@link org.spout.api.entity.Entity} leaves a {@link World}.
+ *
+ * This is not to be confused with {@see org.spout.api.event.entity.EntityDespawnEvent} where
+ * that event is fired when the entity is de-spawned.
  */
 public class EntityExitWorldEvent extends WorldEvent {
 	private static final HandlerList handlers = new HandlerList();

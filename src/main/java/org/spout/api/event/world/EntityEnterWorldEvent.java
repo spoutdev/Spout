@@ -33,6 +33,9 @@ import org.spout.api.geo.World;
 
 /**
  * Called when a {@link org.spout.api.entity.Entity} enters a {@link World}.
+ *
+ * This is not to be confused with {@see org.spout.api.event.entity.EntitySpawnEvent} where
+ * that event is fired when the entity is initially spawned.
  */
 public class EntityEnterWorldEvent extends WorldEvent {
 	private static final HandlerList handlers = new HandlerList();

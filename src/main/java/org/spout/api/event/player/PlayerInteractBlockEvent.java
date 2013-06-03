@@ -24,40 +24,41 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.entity;
+package org.spout.api.event.player;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
+import org.spout.api.event.Result;
+import org.spout.api.event.entity.EntityInteractBlockEvent;
+import org.spout.api.geo.cuboid.Block;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.block.BlockFace;
 
 /**
- * Called when an {@link Entity} is dying.
- * Implements {@link Cancellable}. Canceling this prevents the entity from dying or being removed from the world.
+ * Called when a {@link Player} interacts with a {@link Block}.
  */
-public class EntityDeathEvent extends EntityEvent implements Cancellable {
-	private static HandlerList handlers = new HandlerList();
-	private final LinkedList<ItemStack> drops;
+public class PlayerInteractBlockEvent extends EntityInteractBlockEvent implements Cancellable {
+	private static final HandlerList handlers = new HandlerList();
+	private Action action;
 
-	public EntityDeathEvent(Entity e) {
-		super(e);
-		drops = new LinkedList<ItemStack>();
+	public PlayerInteractBlockEvent(Player p, Block block, Point point, BlockFace face, Action action) {
+		super(p, block, point, face);
+		this.action = action;
 	}
 
 	/**
-	 * Gets a {@link List} of {@link ItemStack} to drop.
-	 * @return The list of items to drop.
+	 * Gets the action by the {@link Player} that caused the interaction.
+	 * @return the action
 	 */
-	public List<ItemStack> getDrops() {
-		return drops;
+	public Action getAction() {
+		return action;
 	}
 
 	@Override
 	public void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
+		super.setCancelled(cancelled);
 	}
 
 	@Override

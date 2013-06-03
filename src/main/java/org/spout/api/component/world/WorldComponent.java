@@ -31,6 +31,8 @@ import org.spout.api.component.ComponentOwner;
 import org.spout.api.event.entity.EntityChangeWorldEvent;
 import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
+import org.spout.api.event.world.EntityEnterWorldEvent;
+import org.spout.api.event.world.EntityExitWorldEvent;
 import org.spout.api.geo.World;
 
 public abstract class WorldComponent extends Component {
@@ -52,9 +54,9 @@ public abstract class WorldComponent extends Component {
 	 * <p/>
 	 * This is only fired when the entity enters this owning world from another owning world. If you want to
 	 * perform logic on a spawning entity for this owning world, {@see #onSpawn(org.spout.api.event.entity.EntitySpawnEvent)}.
-	 * @param event see {@link org.spout.api.event.entity.EntityChangeWorldEvent}
+	 * @param event see {@link org.spout.api.event.world.EntityEnterWorldEvent}
 	 */
-	public void onEnter(final EntityChangeWorldEvent event) {
+	public void onEnter(final EntityEnterWorldEvent event) {
 	}
 
 	/**
@@ -62,9 +64,9 @@ public abstract class WorldComponent extends Component {
 	 * <p/>
 	 * This is only fired when the entity will leave this owning world for another owning world. If you want to perform
 	 * logic on a de-spawning entity, {@see #onDespawn(org.spout.api.event.entity.EntityDespawnEvent)}.
-	 * @param event see {@link org.spout.api.event.entity.EntityChangeWorldEvent}
+	 * @param event see {@link org.spout.api.event.world.EntityExitWorldEvent}
 	 */
-	public void onExit(final EntityChangeWorldEvent event) {
+	public void onExit(final EntityExitWorldEvent event) {
 	}
 
 	/**
