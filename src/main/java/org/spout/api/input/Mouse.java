@@ -36,8 +36,8 @@ public enum Mouse {
 	MOUSE_SCROLLUP(0x0A),
 	MOUSE_SCROLLDOWN(0x0B);
 
-	private final int id;
 	private static final TIntObjectMap<Mouse> idMap = new TIntObjectHashMap<Mouse>(Mouse.values().length);
+	private final int id;
 
 	static {
 		for (Mouse button : Mouse.values()) {

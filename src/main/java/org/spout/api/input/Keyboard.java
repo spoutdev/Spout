@@ -26,9 +26,6 @@
  */
 package org.spout.api.input;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
@@ -159,25 +156,16 @@ public enum Keyboard {
 	KEY_SLEEP(0xDF);
 
 	private static final TIntObjectMap<Keyboard> idMap = new TIntObjectHashMap<Keyboard>(Keyboard.values().length);
-	private static final Map<String, Keyboard> stringMap = new HashMap<String, Keyboard>(Keyboard.values().length);
 	private final int id;
 
 	static {
 		for (Keyboard key : Keyboard.values()) {
 			idMap.put(key.id, key);
 		}
-
-		for (Keyboard key : Keyboard.values()) {
-			stringMap.put(key.toString(), key);
-		}
 	}
 
 	public static Keyboard get(int id) {
 		return idMap.get(id);
-	}
-
-	public static Keyboard get(String name) {
-		return stringMap.get(name);
 	}
 
 	private Keyboard(int id) {
