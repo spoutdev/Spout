@@ -72,7 +72,7 @@ public class ClientCommands extends CommonCommands {
 
 	@Command(aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key", min = 2)
 	public void bind(CommandSource source, CommandArguments args) throws CommandException {
-		getEngine().getInputManager().bind(new Binding(args.getJoinedString(1), Keyboard.get(args.getString(0))));
+		getEngine().getInputManager().bind(new Binding(args.getJoinedString(1), Keyboard.valueOf(args.getString(0).toUpperCase())));
 	}
 
 	@Command(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!", min = 1, max = -1)
