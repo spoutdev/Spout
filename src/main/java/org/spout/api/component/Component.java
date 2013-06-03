@@ -65,6 +65,9 @@ public abstract class Component implements Tickable {
 	 * @return the component owner
 	 */
 	public ComponentOwner getOwner() {
+		if (owner == null) {
+			throw new IllegalStateException("Trying to access the owner of this component before it was attached");
+		}
 		return owner;
 	}
 
