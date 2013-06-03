@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandBatch;
@@ -102,9 +103,9 @@ public class CommonCommands {
 		engine.getLogger().info("[--------------Thread Stack Dump--------------]");
 		while (i.hasNext()) {
 			Entry<Thread, StackTraceElement[]> e = i.next();
-			engine.getLogger().info("Thread: " + e.getKey().getName());
+			engine.getLogger().log(Level.INFO, "Thread: {0}", e.getKey().getName());
 			for (StackTraceElement element : e.getValue()) {
-				engine.getLogger().info("    " + element.toString());
+				engine.getLogger().log(Level.INFO, "    {0}", element.toString());
 			}
 			engine.getLogger().info("");
 		}

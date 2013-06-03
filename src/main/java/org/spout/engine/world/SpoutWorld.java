@@ -40,6 +40,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Platform;
@@ -206,7 +207,7 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 		this.engine = engine;
 		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
 			name = Long.toHexString(System.currentTimeMillis());
-			getEngine().getLogger().severe("World name " + name + " is not valid, using " + name + " instead");
+			getEngine().getLogger().log(Level.SEVERE, "World name {0} is not valid, using {1} instead", new Object[]{name, name});
 		}
 		this.name = name;
 		this.uid = uid;
@@ -283,7 +284,7 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 		if (region != null) {
 			return region.getChunk(x, y, z, loadopt);
 		} else if (loadopt.loadIfNeeded() && loadopt.generateIfNeeded()) {
-			getEngine().getLogger().info("Warning unable to load region: " + x + ", " + y + ", " + z + ":" + loadopt);
+			getEngine().getLogger().log(Level.INFO, "Warning unable to load region: {0}, {1}, {2}:{3}", new Object[]{x, y, z, loadopt});
 		}
 		return null;
 	}
@@ -1149,7 +1150,7 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 			r.unload(save);
 			progress++;
 			if (save && progress % 4 == 0) {
-				getEngine().getLogger().info("Saving world [" + getName() + "], " + (int) (progress * 100F / total) + "% Complete");
+				getEngine().getLogger().log(Level.INFO, "Saving world [{0}], {1}% Complete", new Object[]{getName(), (int) (progress * 100F / total)});
 			}
 		}
 	}

@@ -29,6 +29,7 @@ package org.spout.engine.protocol;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
 import org.spout.api.Spout;
@@ -177,7 +178,7 @@ public class NetworkSendThread {
 					node.getSession().disconnect(false, "Socket Error!");
 				} catch (Exception e2) {
 					try {
-						Spout.getLogger().info("Unable to cleanly close session for " + node.getSession().getPlayer().getName());
+						Spout.getLogger().log(Level.INFO, "Unable to cleanly close session for {0}", node.getSession().getPlayer().getName());
 					} catch (Exception e3) {
 						Spout.getLogger().info("Unable to cleanly close session for unknown player (Unable to get player name)");
 					}

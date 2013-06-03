@@ -29,6 +29,7 @@ package org.spout.engine.world;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -99,7 +100,7 @@ public class SpoutBlock implements Block {
 		if (chunk == null || !chunk.isLoaded()) {
 			chunk = loadChunk();
 			if (chunk == null) {
-				Spout.getLogger().info("Warning: unable to load chunk for block " + this);
+				Spout.getLogger().log(Level.INFO, "Warning: unable to load chunk for block {0}", this);
 				this.chunk.set(SpoutChunk.NULL_WEAK_REFERENCE);
 			} else {
 				this.chunk.set(chunk.getWeakReference());

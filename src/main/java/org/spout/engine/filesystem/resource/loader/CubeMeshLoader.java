@@ -80,7 +80,7 @@ public class CubeMeshLoader extends ResourceLoader {
 					int uv = Integer.parseInt(sp[i]) - 1; //Begin at 1 ?
 					ar.add(uvs.get(uv));
 				}
-				textures.add(ar.toArray(new Vector2[0]));
+				textures.add(ar.toArray(new Vector2[ar.size()]));
 				ar.clear();
 			}else if (s.startsWith("rotate ")) { // rotate Phi Theta
 				String[] sp = s.split(" ");
@@ -121,7 +121,7 @@ public class CubeMeshLoader extends ResourceLoader {
 		}
 
 		scan.close();
-		return CubeMeshFactory.generateCubeMesh(textures.toArray(new Vector2[0][]));
+		return CubeMeshFactory.generateCubeMesh(textures.toArray(new Vector2[textures.size()][]));
 	}
 
 	@Override

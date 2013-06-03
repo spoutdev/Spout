@@ -1331,7 +1331,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 						}
 					}
 				} catch (Exception e) {
-					Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
+					Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with {0}", populator.toString());
 					e.printStackTrace();
 				}
 			}
@@ -1351,7 +1351,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				time += bean.getCurrentThreadCpuTime();
 				populatorAdd(populator, time);
 			} catch (Exception e) {
-				Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
+				Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with {0}", populator.toString());
 				e.printStackTrace();
 			}
 		}
@@ -1372,7 +1372,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			time += bean.getCurrentThreadCpuTime();
 			populatorAdd(populator, time);
 		} catch (Exception e) {
-			Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
+			Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with {0}", populator.toString());
 			e.printStackTrace();
 		}
 	}

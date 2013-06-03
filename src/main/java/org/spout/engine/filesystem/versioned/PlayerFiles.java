@@ -149,9 +149,9 @@ public class PlayerFiles {
 				String time = formatter.format(new Date(System.currentTimeMillis()));
 				File backup = new File(playerDir, fileName + "_" + time + ".bak");
 				if (!playerData.renameTo(backup)) {
-					Spout.getLogger().log(Level.SEVERE, "Failed to back up corrupt player data " + name);
+					Spout.getLogger().log(Level.SEVERE, "Failed to back up corrupt player data {0}", name);
 				} else {
-					Spout.getLogger().log(Level.WARNING, "Successfully backed up corrupt player data for " + name);
+					Spout.getLogger().log(Level.WARNING, "Successfully backed up corrupt player data for {0}", name);
 				}
 			} finally {
 				try {

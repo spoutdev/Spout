@@ -29,6 +29,7 @@ package org.spout.engine;
 import java.awt.Canvas;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
@@ -128,15 +129,15 @@ public class SpoutRenderer {
 
 		if (Spout.debugMode()) {
 			client.getLogger().info("SpoutClient Information");
-			client.getLogger().info("Operating System: " + System.getProperty("os.name"));
-			client.getLogger().info("Renderer Mode: " + client.getRenderMode().toString());
-			client.getLogger().info("GL21: " + GLContext.getCapabilities().OpenGL21 + " GL32: " + GLContext.getCapabilities().OpenGL32);
-			client.getLogger().info("Resolution: " + Display.getWidth() + "x" + Display.getHeight());
+			client.getLogger().log(Level.INFO, "Operating System: {0}", System.getProperty("os.name"));
+			client.getLogger().log(Level.INFO, "Renderer Mode: {0}", client.getRenderMode().toString());
+			client.getLogger().log(Level.INFO, "GL21: {0} GL32: {1}", new Object[]{GLContext.getCapabilities().OpenGL21, GLContext.getCapabilities().OpenGL32});
+			client.getLogger().log(Level.INFO, "Resolution: {0}x{1}", new Object[]{Display.getWidth(), Display.getHeight()});
 			client.getLogger().info("OpenGL Information");
-			client.getLogger().info("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
-			client.getLogger().info("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
-			client.getLogger().info("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
-			client.getLogger().info("Max Textures: " + GL11.glGetInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
+			client.getLogger().log(Level.INFO, "Vendor: {0}", GL11.glGetString(GL11.GL_VENDOR));
+			client.getLogger().log(Level.INFO, "OpenGL Version: {0}", GL11.glGetString(GL11.GL_VERSION));
+			client.getLogger().log(Level.INFO, "GLSL Version: {0}", GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
+			client.getLogger().log(Level.INFO, "Max Textures: {0}", GL11.glGetInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
 			String extensions = "Extensions Supported: ";
 			if (client.getRenderMode() == RenderMode.GL30 || client.getRenderMode() == RenderMode.GL40) {
 				for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {

@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
@@ -339,7 +340,7 @@ public class TestCommands {
 
 		e.getScene().setPosition(new Point(e.getWorld(), x, y, z));
 
-		engine.getLogger().info("Entity " + id + " move to " + x + " " + y + " " + z);
+		engine.getLogger().log(Level.INFO, "Entity {0} move to {1} {2} {3}", new Object[]{id, x, y, z});
 	}
 
 	@Command(aliases = {"rotate"}, desc = "Rotate a entity with his Id", min = 4, max = 4)
@@ -367,7 +368,7 @@ public class TestCommands {
 		}
 		e.getScene().setRotation(e.getScene().getTransform().getRotation().rotate(0, pitch, yaw, roll));
 
-		engine.getLogger().info("Entity " + id + " rotate to " + pitch + " " + yaw + " " + roll);
+		engine.getLogger().log(Level.INFO, "Entity {0} rotate to {1} {2} {3}", new Object[]{id, pitch, yaw, roll});
 	}
 
 	@Command(aliases = {"scale"}, desc = "Scale a entity with his Id", min = 4, max = 4)
@@ -398,7 +399,7 @@ public class TestCommands {
 		transform.scale(new Vector3(x, y, z));
 		e.getScene().setTransform(transform);
 
-		engine.getLogger().info("Entity " + id + " scale to " + x + " " + y + " " + z);
+		engine.getLogger().log(Level.INFO, "Entity {0} scale to {1} {2} {3}", new Object[]{id, x, y, z});
 	}
 
 	@Command(aliases = {"animstart"}, desc = "Launch a animation his Id", min = 2, max = 3)
@@ -499,9 +500,9 @@ public class TestCommands {
 			totalPopulator += e.getValue();
 		}
 		for (Entry<Class<? extends Populator>, Long> e : SpoutChunk.getProfileResults()) {
-			Spout.getLogger().info(e.getKey().getSimpleName() + " " + e.getValue() + " (" + (0.10 * ((e.getValue() * 1000) / totalPopulator)) + ")");
+			Spout.getLogger().log(Level.INFO, "{0} {1} ({2})", new Object[]{e.getKey().getSimpleName(), e.getValue(), 0.10 * ((e.getValue() * 1000) / totalPopulator)});
 		}
-		Spout.getLogger().info("Total " + totalPopulator);
+		Spout.getLogger().log(Level.INFO, "Total {0}", totalPopulator);
 		Spout.getLogger().info("");
 		Spout.getLogger().info("Decorator profiler results");
 		long totalDecorator = 0;
@@ -509,9 +510,9 @@ public class TestCommands {
 			totalDecorator += e.getValue();
 		}
 		for (Entry<Class<? extends Decorator>, Long> e : Biome.getProfileResults()) {
-			Spout.getLogger().info(e.getKey().getSimpleName() + " " + e.getValue() + " (" + (0.10 * ((e.getValue() * 1000) / totalDecorator)) + ")");
+			Spout.getLogger().log(Level.INFO, "{0} {1} ({2})", new Object[]{e.getKey().getSimpleName(), e.getValue(), 0.10 * ((e.getValue() * 1000) / totalDecorator)});
 		}
-		Spout.getLogger().info("Total " + totalDecorator);
+		Spout.getLogger().log(Level.INFO, "Total {0}", totalDecorator);
 	}
 
 	/**

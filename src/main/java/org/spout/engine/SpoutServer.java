@@ -258,7 +258,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public Session newSession(Channel channel) {
 		Protocol protocol = getProtocol(channel.getLocalAddress());
 		if (SpoutConfiguration.SHOW_CONNECTIONS.getBoolean()) {
-			getLogger().info("Downstream channel connected: " + channel + ".");
+			getLogger().log(Level.INFO, "Downstream channel connected: {0}.", channel);
 		}
 		return new SpoutServerSession<SpoutServer>(this, channel, protocol);
 	}
@@ -413,7 +413,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 									int port = ((InetSocketAddress) binding.getAddress()).getPort();
 									ServiceInfo info = ServiceInfo.create("pipework._tcp.local.", "Spout Server", port, "");
 									jmdns.registerService(info);
-									getLogger().info("Started Bonjour Service Discovery on port: " + port);
+									getLogger().log(Level.INFO, "Started Bonjour Service Discovery on port: {0}", port);
 								}
 							}
 						} catch (IOException e) {

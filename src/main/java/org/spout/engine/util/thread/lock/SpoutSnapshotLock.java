@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
 
 import org.spout.api.Spout;
 import org.spout.api.scheduler.SnapshotLock;
@@ -198,9 +199,9 @@ public class SpoutSnapshotLock implements SnapshotLock {
 				long held = System.currentTimeMillis() - oldLockInfo.oldestLock;
 				if (held > target) {
 					if (plugin instanceof Named) {
-						Spout.getLogger().info("Snapshot lock held for " + held + "ms by " + ((Named) plugin).getName());
+						Spout.getLogger().log(Level.INFO, "Snapshot lock held for {0}ms by {1}", new Object[]{held, ((Named) plugin).getName()});
 					} else {
-						Spout.getLogger().info("Snapshot lock held for " + held + "ms by " + plugin.getClass().getSimpleName());
+						Spout.getLogger().log(Level.INFO, "Snapshot lock held for {0}ms by {1}", new Object[]{held, plugin.getClass().getSimpleName()});
 					}
 				}
 			}

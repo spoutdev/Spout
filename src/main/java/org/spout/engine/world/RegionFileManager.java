@@ -29,6 +29,7 @@ package org.spout.engine.world;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -105,7 +106,7 @@ public class RegionFileManager {
 		}
 		for (BAAWrapper regionFile : cache.values()) {
 			if (!regionFile.attemptClose()) {
-				Spout.getLogger().info("Unable to close region file " + regionFile.getFilename());
+				Spout.getLogger().log(Level.INFO, "Unable to close region file {0}", regionFile.getFilename());
 			}
 		}
 	}

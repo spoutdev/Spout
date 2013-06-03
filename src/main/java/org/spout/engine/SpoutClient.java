@@ -38,6 +38,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -379,7 +380,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			files = new String[]{"liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so"};
 			osPath = "linux/";
 		} else {
-			getLogger().severe("Error loading natives of operating system type: " + SystemUtils.OS_NAME);
+			getLogger().log(Level.SEVERE, "Error loading natives of operating system type: {0}", SystemUtils.OS_NAME);
 			return;
 		}
 
