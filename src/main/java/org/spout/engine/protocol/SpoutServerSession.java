@@ -33,8 +33,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
 
 import org.spout.api.Spout;
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.protocol.Message;
@@ -60,26 +58,26 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 		super.send(upstream, force, message);
 	}
 
-	public Object[] getDefaultLeaveMessage() {
+	public String getDefaultLeaveMessage() {
 		if (getPlayer() == null) {
-			return new Object[]{ChatStyle.WHITE, "Unknown", ChatStyle.CYAN, " has left the game"};
+			return "Unknown player has left the game";
 		} else {
-			return new Object[]{ChatStyle.WHITE, getPlayer().getDisplayName(), ChatStyle.CYAN, " has left the game"};
+			return getPlayer().getDisplayName() + " has left the game";
 		}
 	}
 
 	@Override
-	public boolean disconnect(Object... reason) {
+	public boolean disconnect(String reason) {
 		return disconnect(true, reason);
 	}
 
 	@Override
-	public boolean disconnect(boolean kick, Object... reason) {
+	public boolean disconnect(boolean kick, String reason) {
 		return disconnect(kick, false, reason);
 	}
 
 	@Override
-	public boolean disconnect(boolean kick, boolean stop, Object... reason) {
+	public boolean disconnect(boolean kick, boolean stop, String reason) {
 		if (getPlayer() != null) {
 			PlayerLeaveEvent event;
 			if (kick) {
@@ -87,9 +85,8 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 				if (event.isCancelled()) {
 					return false;
 				}
-				List<Object> args = ((PlayerKickEvent) event).getKickReason().getArguments();
-				reason = args.toArray(new Object[args.size()]);
-				getEngine().getCommandSource().sendMessage("Player ", getPlayer().getName(), " kicked: ", reason);
+				reason = ((PlayerKickEvent) event).getKickReason();
+				getEngine().getCommandSource().sendMessage("Player " + getPlayer().getName() + " kicked: " + reason);
 			} else {
 				event = new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage());
 			}
@@ -98,7 +95,7 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 		Protocol protocol = getProtocol();
 		Message kickMessage = null;
 		if (protocol != null) {
-			kickMessage = protocol.getKickMessage(new ChatArguments(reason));
+			kickMessage = protocol.getKickMessage(reason);
 		}
 		if (kickMessage != null) {
 			channel.write(kickMessage).addListener(ChannelFutureListener.CLOSE);
@@ -121,10 +118,11 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 				getEngine().getEventManager().callEvent(leaveEvent);
 			}
 
-			ChatArguments text = leaveEvent.getMessage();
-			if (text != null && text.getArguments().size() > 0) {
-				getEngine().broadcastMessage(text);
+			String msg = leaveEvent.getMessage();
+			if (msg != null) {
+				getEngine().broadcastMessage(msg);
 			}
+
 			try {
 				player.disconnect(!stop); //can not save async if the engine is stopping
 			} catch (Exception e) {

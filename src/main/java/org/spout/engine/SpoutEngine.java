@@ -52,14 +52,9 @@ import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import org.spout.api.Engine;
-import org.spout.api.Platform;
-import org.spout.api.chat.channel.ChatChannelFactory;
-import org.spout.api.chat.completion.CompletionManager;
-import org.spout.api.chat.completion.CompletionManagerImpl;
-import org.spout.api.command.CommandRegistrationsFactory;
+import org.spout.api.command.CommandManager;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
-import org.spout.api.command.annotated.SimpleInjector;
+import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventManager;
@@ -95,15 +90,13 @@ import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
 
-import org.spout.engine.chat.SpoutChatChannelFactory;
-import org.spout.engine.chat.console.ConsoleManager;
+import org.spout.engine.command.AnnotatedCommandExecutorTest;
+import org.spout.engine.console.ConsoleManager;
 import org.spout.engine.command.ClientCommands;
 import org.spout.engine.command.CommonCommands;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.MessagingCommands;
-import org.spout.engine.command.RendererCommands;
 import org.spout.engine.command.ServerCommands;
-import org.spout.engine.command.SyncedRootCommand;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutPlayer;
@@ -128,6 +121,7 @@ import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
+import static org.spout.api.lang.Translation.broadcast;
 import static org.spout.api.lang.Translation.log;
 import static org.spout.api.lang.Translation.tr;
 
@@ -149,12 +143,11 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
 	private final SpoutConfiguration config = new SpoutConfiguration();
 	private final SpoutInputConfiguration inputConfig = new SpoutInputConfiguration();
-	private final CompletionManager completions = new CompletionManagerImpl();
-	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
 	private final SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
 	private final SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
 	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<SocketAddress, Protocol>();
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
+	protected final CommandManager cmdManager = new CommandManager();
 	private String logFile;
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
@@ -162,7 +155,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	private SpoutApplication arguments;
 	private MemoryReclamationThread reclamation = null;
 	private DefaultPermissions defaultPerms;
-	private ChatChannelFactory chatChannelFactory = new SpoutChatChannelFactory();
 
 	public SpoutEngine() {
 		logFile = "log-%D.txt";
@@ -212,30 +204,31 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
 
-		final CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(this, new SimpleInjector(this));
-
 		// Register commands
+		Object exe;
 		switch (getPlatform()) {
 			case CLIENT:
-				getRootCommand().addSubCommands(this, ClientCommands.class, commandRegFactory);
+				exe = new ClientCommands(this);
 				break;
 			case SERVER:
-				getRootCommand().addSubCommands(this, ServerCommands.class, commandRegFactory);
+				exe = new ServerCommands(this);
 				break;
 			default:
-				getRootCommand().addSubCommands(this, CommonCommands.class, commandRegFactory);
+				exe = new CommonCommands(this);
+				break;
 		}
+		AnnotatedCommandExecutorFactory.create(exe);
 
-		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
-		InputCommands.setupInputCommands(this, getRootCommand());
+		AnnotatedCommandExecutorFactory.create(new MessagingCommands(this));
+		InputCommands.setupInputCommands(this);
 
 		if (debugMode()) {
-			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
+			AnnotatedCommandExecutorFactory.create(new TestCommands(this));
+			// testing the annotated command API at runtime
+			AnnotatedCommandExecutorFactory.create(new AnnotatedCommandExecutorTest.RootExecutor());
+			AnnotatedCommandExecutorFactory.create(new AnnotatedCommandExecutorTest.ChildExecutor(), cmdManager.getCommand("root"));
 		}
 
-		if (getPlatform() == Platform.CLIENT) {
-			getRootCommand().addSubCommands(this, RendererCommands.class, commandRegFactory);
-		}
 		Protocol.registerProtocol(new SpoutProtocol());
 
 		//Setup the Material Registry
@@ -522,11 +515,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	@Override
 	public File getWorldFolder() {
 		return CommonFileSystem.WORLDS_DIRECTORY;
-	}
-
-	@Override
-	public SyncedRootCommand getRootCommand() {
-		return rootCommand;
 	}
 
 	@Override
@@ -849,23 +837,8 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	@Override
-	public CompletionManager getCompletionManager() {
-		return completions;
-	}
-
-	@Override
 	public DefaultPermissions getDefaultPermissions() {
 		return defaultPerms;
-	}
-
-	@Override
-	public ChatChannelFactory getChatChannelFactory() {
-		return chatChannelFactory;
-	}
-
-	@Override
-	public void setChatChannelFactory(ChatChannelFactory factory) {
-		this.chatChannelFactory = factory;
 	}
 
 	private class SessionTask implements Runnable {
@@ -896,5 +869,10 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	@Override
 	public int getSequence() {
 		return 0;
+	}
+
+	@Override
+	public CommandManager getCommandManager() {
+		return cmdManager;
 	}
 }

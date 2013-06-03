@@ -35,7 +35,6 @@ import org.lwjgl.opengl.Display;
 import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
@@ -254,28 +253,28 @@ public class SpoutInputManager implements InputManager {
 		// Mouse moved on x-axis
 		if (!redirected) {
 			if (dx != 0) {
-				player.processCommand("dx", new ChatArguments(dx));
+				player.processCommand("dx", Integer.toString(dx));
 			}
 
 			// Mouse moved on y-axis
 			if (dy != 0) {
-				player.processCommand("dy", new ChatArguments(dy));
+				player.processCommand("dy", Integer.toString(dy));
 			}
 		}
 	}
 
 	private void executeBindings(Set<Binding> bindings, Player player, boolean pressed) {
-		ChatArguments args = new ChatArguments(pressed ? "+" : "-");
+		String arg = pressed ? "+" : "-";
 		//Queue up sync bindings first
 		for (Binding binding : bindings) {
 			if (!binding.isAsync()) {
-				player.getEngine().getScheduler().scheduleSyncDelayedTask(null, new BindingTask(player, binding.getCommand(), args));
+				player.getEngine().getScheduler().scheduleSyncDelayedTask(null, new BindingTask(player, binding.getCommand(), arg));
 			}
 		}
 		//Execute async bindings
 		for (Binding binding : bindings) {
 			if (binding.isAsync()) {
-				player.processCommand(binding.getCommand(), args);
+				player.processCommand(binding.getCommand(), arg);
 			}
 		}
 	}
@@ -283,8 +282,9 @@ public class SpoutInputManager implements InputManager {
 	private static class BindingTask implements Runnable {
 		private final Player player;
 		private final String command;
-		private final ChatArguments arguments;
-		BindingTask(Player player, String command, ChatArguments arguments) {
+		private final String[] arguments;
+
+		BindingTask(Player player, String command, String... arguments) {
 			this.player = player;
 			this.command = command;
 			this.arguments = arguments;

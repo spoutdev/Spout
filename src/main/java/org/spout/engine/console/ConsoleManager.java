@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.chat.console;
+package org.spout.engine.console;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -35,10 +35,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jline.Completor;
 import org.spout.api.Engine;
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.ChatLogFormatter;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.chat.style.JansiStyleHandler;
+import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.logging.LoggerOutputStream;
 import org.spout.logging.file.RotatingFileHandler;
 import org.spout.logging.jline.CommandCallback;
@@ -54,7 +52,6 @@ public final class ConsoleManager {
 	public ConsoleManager(SpoutEngine engine) {
 		this.engine = engine;
 		source = new ConsoleCommandSource(engine);
-
 		Runtime.getRuntime().addShutdownHook(new ServerShutdownThread(engine));
 	}
 
@@ -69,11 +66,11 @@ public final class ConsoleManager {
 		}
 
 		Handler jLineHandler = new JLineHandler(new CommandTask(), Arrays.asList(new Completor[]{new SpoutCommandCompletor(engine)}));
-		jLineHandler.setFormatter(new ChatLogFormatter(JansiStyleHandler.ID));
+		//jLineHandler.setFormatter(new ChatLogFormatter(JansiStyleHandler.ID)); TODO: Console styling
 		logger.addHandler(jLineHandler);
 
 		Handler fileHandler = new RotatingFileHandler(new File("logs"), engine.getLogFile(), engine.debugMode());
-		fileHandler.setFormatter(new ChatLogFormatter());
+		//fileHandler.setFormatter(new ChatLogFormatter());
 		logger.addHandler(fileHandler);
 
 		System.setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));
@@ -97,7 +94,7 @@ public final class ConsoleManager {
 
 	private class CommandTask implements Runnable, CommandCallback {
 		private final String command;
-		private final ChatArguments arguments;
+		private final String[] arguments;
 
 		public CommandTask() {
 			command = null;
@@ -108,16 +105,16 @@ public final class ConsoleManager {
 			int spaceIndex = commandLine.indexOf(' ');
 			if (spaceIndex != -1) {
 				command = commandLine.substring(0, spaceIndex);
-				arguments = new ChatArguments(commandLine.substring(spaceIndex + 1));
+				arguments = commandLine.substring(spaceIndex + 1).split(" ");
 			} else {
 				command = commandLine;
-				arguments = new ChatArguments();
+				arguments = new String[0];
 			}
 		}
 
 		@Override
 		public void run() {
-			engine.getCommandSource().sendCommand(command, arguments);
+			engine.getCommandSource().processCommand(command, arguments);
 		}
 
 		@Override

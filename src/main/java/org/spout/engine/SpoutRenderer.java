@@ -26,11 +26,11 @@
  */
 package org.spout.engine;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.awt.Canvas;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
@@ -45,8 +45,6 @@ import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.Util;
 
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.component.world.SkydomeComponent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.gui.FullScreen;
@@ -58,7 +56,6 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
-import org.spout.api.model.Model;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
@@ -307,15 +304,21 @@ public class SpoutRenderer {
 		//GUI -> Update debug info
 		if (showDebugInfos) {
 			Point position = client.getPlayer().getScene().getPosition();
-			debugScreen.spoutUpdate(0, new ChatArguments("Spout client! Logged as ", ChatStyle.RED, client.getPlayer().getDisplayName(), ChatStyle.RESET, " in world: ", ChatStyle.RED, client.getWorld().getName()));
-			debugScreen.spoutUpdate(1, new ChatArguments(ChatStyle.BLUE, "x: ", position.getX(), "y: ", position.getY(), "z: ", position.getZ()));
-			debugScreen.spoutUpdate(2, new ChatArguments(ChatStyle.BLUE, "fps: ", client.getScheduler().getFps(), " (", client.getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal", ")"));
-			debugScreen.spoutUpdate(3, new ChatArguments(ChatStyle.BLUE, "Chunks Drawn: ", ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")"));
-			debugScreen.spoutUpdate(4, new ChatArguments(ChatStyle.BLUE, "Occluded Chunks: ", (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")"));
-			debugScreen.spoutUpdate(5, new ChatArguments(ChatStyle.BLUE, "Cull Chunks: ", (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100), "% (" + worldRenderer.getCulledChunks() + ")"));
-			debugScreen.spoutUpdate(6, new ChatArguments(ChatStyle.BLUE, "Entities: ", entityRenderer.getRenderedEntities()));
-			debugScreen.spoutUpdate(7, new ChatArguments(ChatStyle.BLUE, "Buffer: ", worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch));
-			debugScreen.spoutUpdate(8, new ChatArguments(ChatStyle.BLUE, "Time: ", worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0));
+			debugScreen.spoutUpdate(0, "Spout client! Logged as " + client.getPlayer().getDisplayName() + " in world: " + client.getWorld().getName());
+			debugScreen.spoutUpdate(1, "x: " + position.getX() + "y: " + position.getY() + "z: " + position.getZ());
+			debugScreen.spoutUpdate(2, "FPS: " + client.getScheduler().getFps() + " (" + (client.getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal") + ")");
+			debugScreen.spoutUpdate(3, "Chunks Drawn: " + ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")");
+			debugScreen.spoutUpdate(4, "Occluded Chunks: " + (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")");
+			debugScreen.spoutUpdate(5, "Cull Chunks: " + (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getCulledChunks() + ")");
+			debugScreen.spoutUpdate(6, "Entities: " + entityRenderer.getRenderedEntities());
+			debugScreen.spoutUpdate(7, "Buffer: " + worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch);
+			debugScreen.spoutUpdate(8, "Time: " + worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0);
+		}
+		
+		for (Screen screen : screenStack.getVisibleScreens()) {
+			for (Widget widget : screen.getWidgets()) {
+				((SpoutWidget) widget).render();
+			}
 		}
 
 		guiTime = System.nanoTime() - start;

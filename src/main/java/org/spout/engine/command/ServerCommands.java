@@ -26,25 +26,23 @@
  */
 package org.spout.engine.command;
 
-import java.util.Arrays;
 import java.util.Collection;
 
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.command.CommandContext;
+import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
-import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.command.annotated.Permissible;
 import org.spout.api.entity.Player;
 import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.util.access.AccessManager;
 import org.spout.api.util.access.BanType;
+
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
 
-public class ServerCommands extends CommonCommands{
+public class ServerCommands extends CommonCommands {
 	public ServerCommands(SpoutEngine engine) {
 		super(engine);
 	}
@@ -55,34 +53,34 @@ public class ServerCommands extends CommonCommands{
 	}
 
 	@Command(aliases = "whitelist", desc = "Add, remove, list, or toggle players on the whitelist.", usage = "<add|remove|list|on|off> [player] [reason]", min = 1, max = 3)
-	@CommandPermissions("spout.command.whitelist")
-	public void whitelist(CommandContext args, CommandSource source) {
+	@Permissible("spout.command.whitelist")
+	public void whitelist(CommandSource source, CommandArguments args) throws CommandException {
 		String arg1 = args.getString(0);
 		AccessManager accessManager = getEngine().getAccessManager();
 		if (args.length() == 1) {
 			if (arg1.equalsIgnoreCase("list")) {
 				Collection<String> c = accessManager.getWhitelistedPlayers();
 				String[] whitelisted = c.toArray(new String[c.size()]);
-				ChatArguments message = new ChatArguments(ChatStyle.BRIGHT_GREEN, "Whitelisted (", whitelisted.length, "): ");
+				StringBuilder message = new StringBuilder("Whitelisted (" + whitelisted.length + "): ");
 				for (int i = 0; i < whitelisted.length; i++) {
-					message.append(ChatStyle.BLUE, whitelisted[i]);
+					message.append(whitelisted[i]);
 					if (i != whitelisted.length - 1) {
-						message.append(ChatStyle.RESET, ", ");
+						message.append(", ");
 					}
 				}
-				source.sendMessage(message);
+				source.sendMessage(message.toString());
 			}
 
 			if (arg1.equalsIgnoreCase("on")) {
 				SpoutConfiguration.WHITELIST_ENABLED.setValue(true);
 				accessManager.setWhitelistEnabled(true);
-				source.sendMessage(ChatStyle.BRIGHT_GREEN, "Toggled whitelist on.");
+				source.sendMessage("Toggled whitelist on.");
 			}
 
 			if (arg1.equalsIgnoreCase("off")) {
 				SpoutConfiguration.WHITELIST_ENABLED.setValue(false);
 				accessManager.setWhitelistEnabled(false);
-				source.sendMessage(ChatStyle.BRIGHT_GREEN, "Toggled whitelist off.");
+				source.sendMessage("Toggled whitelist off.");
 			}
 		}
 
@@ -90,12 +88,12 @@ public class ServerCommands extends CommonCommands{
 			String arg2 = args.getString(1);
 			if (arg1.equalsIgnoreCase("add")) {
 				accessManager.whitelist(arg2);
-				source.sendMessage(ChatStyle.BRIGHT_GREEN, "Added player '", arg2, "' to the whitelist.");
+				source.sendMessage("Added player '" + arg2 + "' to the whitelist.");
 			}
 
 			if (arg1.equalsIgnoreCase("remove")) {
 				accessManager.unwhitelist(arg2);
-				source.sendMessage(ChatStyle.BRIGHT_GREEN, "Removed player '", arg2, "' from the whitelist.");
+				source.sendMessage("Removed player '" + arg2 + "' from the whitelist.");
 			}
 		}
 
@@ -107,8 +105,8 @@ public class ServerCommands extends CommonCommands{
 	}
 
 	@Command(aliases = "banlist", usage = "[ips]", desc = "Shows banned players or ips.", min = 0, max = 1)
-	@CommandPermissions("spout.command.banlist")
-	public void banList(CommandContext args, CommandSource source) {
+	@Permissible("spout.command.banlist")
+	public void banList(CommandSource source, CommandArguments args) throws CommandException {
 		BanType type;
 		if (args.length() > 0 && args.getString(0).equalsIgnoreCase("ips")) {
 			type = BanType.IP;
@@ -119,39 +117,39 @@ public class ServerCommands extends CommonCommands{
 		AccessManager accessManager = getEngine().getAccessManager();
 		Collection<String> c = accessManager.getBanned(type);
 		String[] banned = c.toArray(new String[c.size()]);
-		ChatArguments message = new ChatArguments(ChatStyle.BRIGHT_GREEN, "Banned ", type == BanType.IP ? "IPs " : "", "(", banned.length, "): ");
+		StringBuilder message = new StringBuilder("Banned " + (type == BanType.IP ? "IPs " : "" + "(" + banned.length + "): "));
 		for (int i = 0; i < banned.length; i++) {
-			message.append(ChatStyle.BLUE, banned[i]);
+			message.append(banned[i]);
 			if (i != banned.length - 1) {
-				message.append(ChatStyle.RESET, ", ");
+				message.append(", ");
 			}
 		}
-		source.sendMessage(message);
+		source.sendMessage(message.toString());
 	}
 
 	@Command(aliases = "ban", usage = "<player> [reason]", desc = "Ban a player", min = 1, max = -1)
-	@CommandPermissions("spout.command.ban")
-	public void ban(CommandContext args, CommandSource source) {
+	@Permissible("spout.command.ban")
+	public void ban(CommandSource source, CommandArguments args) throws CommandException {
 		String player = args.getString(0);
 		if (args.length() < 2) {
 			getEngine().getAccessManager().ban(BanType.PLAYER, player);
 		} else {
 			getEngine().getAccessManager().ban(BanType.PLAYER, player, true, args.getJoinedString(1));
 		}
-		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Banned player '", player, "' from the server.");
+		source.sendMessage("Banned player '" + player + "' from the server.");
 	}
 
 	@Command(aliases = "unban", usage = "<player>", desc = "Unban a player", min = 1, max = 1)
-	@CommandPermissions("spout.command.unban")
-	public void unban(CommandContext args, CommandSource source) {
+	@Permissible("spout.command.unban")
+	public void unban(CommandSource source, CommandArguments args) throws CommandException {
 		String player = args.getString(0);
 		getEngine().getAccessManager().unban(BanType.PLAYER, player);
-		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Unbanned player '", player, "' from the server.");
+		source.sendMessage("Unbanned player '" + player + "' from the server.");
 	}
 
 	@Command(aliases = "ban-ip", usage = "<address> [reason]", desc = "Ban an IP address", min = 1, max = -1)
-	@CommandPermissions("spout.command.banip")
-	public void banIp(CommandContext args, CommandSource source) {
+	@Permissible("spout.command.banip")
+	public void banIp(CommandSource source, CommandArguments args) throws CommandException {
 		if (source instanceof Player) {
 			getEngine().getLogger().info(((Player) source).getAddress().getHostAddress());
 			getEngine().getLogger().info("Args: " + args.length());
@@ -163,26 +161,26 @@ public class ServerCommands extends CommonCommands{
 		} else {
 			getEngine().getAccessManager().ban(BanType.IP, address, true, args.getJoinedString(1));
 		}
-		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Banned IP address '", address, "' from the server.");
+		source.sendMessage("Banned IP address '" + address + "' from the server.");
 	}
 
 	@Command(aliases = "unban-ip", usage = "<address>", desc = "Unban an IP address", min = 1, max = 1)
-	@CommandPermissions("spout.command.unbanip")
-	public void unbanIp(CommandContext args, CommandSource source) {
+	@Permissible("spout.command.unbanip")
+	public void unbanIp(CommandSource source, CommandArguments args) throws CommandException {
 		String address = args.getString(0);
 		getEngine().getAccessManager().unban(BanType.IP, address);
-		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Unbanned IP address '", address, "' from the server");
+		source.sendMessage("Unbanned IP address '" + address + "' from the server");
 	}
 
 	@Command(aliases = "kick", usage = "<player> [message]", desc = "Kick a player", min = 1, max = -1)
-	@CommandPermissions("spout.command.kick")
-	public void kick(CommandContext args, CommandSource source) throws CommandException {
+	@Permissible("spout.command.kick")
+	public void kick(CommandSource source, CommandArguments args) throws CommandException {
 		String playerName = args.getString(0);
-		ChatArguments message;
+		String message;
 		if (args.length() >= 2) {
 			message = args.getJoinedString(1);
 		} else {
-			message = new ChatArguments("You have been kicked from the server.");
+			message = "You have been kicked from the server.";
 		}
 
 		Player player = getEngine().getPlayer(playerName, true);
@@ -192,73 +190,68 @@ public class ServerCommands extends CommonCommands{
 
 		if (player.isOnline()) {
 			player.kick(message);
-			ChatArguments retMsg = new ChatArguments(ChatStyle.BRIGHT_GREEN, "Kicked player '", player.getName(), "'");
-			if (!message.getPlainString().isEmpty()) {
+			StringBuilder retMsg = new StringBuilder("Kicked player '" + player.getName() + "'");
+			if (!message.isEmpty()) {
 				retMsg.append(" for reason '").append(message).append("'");
 			}
-			source.sendMessage(retMsg);
+			source.sendMessage(retMsg.toString());
 		}
 	}
 
 	@Command(aliases = {"players", "who", "list"}, desc = "List all online players")
-	@CommandPermissions("spout.command.players")
-	public void list(CommandContext args, CommandSource source) {
+	@Permissible("spout.command.players")
+	public void list(CommandSource source, CommandArguments args) throws CommandException {
 		Player[] players = getEngine().getOnlinePlayers();
-		ChatArguments onlineMsg = new ChatArguments(Arrays.asList("Online (", (players.length <= 0 ? ChatStyle.RED : ChatStyle.BRIGHT_GREEN), players.length, ChatStyle.RESET, "): "));
+		StringBuilder onlineMsg = new StringBuilder("Online (" + players.length + "): ");
 		for (int i = 0; i < players.length; i++) {
 			if (!players[i].isOnline()) {
 				continue;
 			}
-			onlineMsg.append(ChatStyle.BLUE).append(players[i].getName()).append(ChatStyle.RESET);
+			onlineMsg.append(players[i].getName());
 			if (i < players.length - 1) {
 				onlineMsg.append(", ");
 			}
 		}
-		source.sendMessage(onlineMsg);
+		source.sendMessage(onlineMsg.toString());
 	}
 
 	@Command(aliases = "disconnect", desc = "Disconnect the client from the server", usage = "[message]", min = 0, max = -1)
-	public void disconnectClient(CommandContext args, CommandSource source) {
-		ChatArguments message;
+	public void disconnectClient(CommandSource source, CommandArguments args) throws CommandException {
+		String message;
 		if (args.length() == 0) {
-			message = new ChatArguments("Ciao!");
+			message = "Ciao!";
 		} else {
 			message = args.getJoinedString(0);
 		}
 
 		if (source instanceof Player) {
-			((Player) source).getSession().disconnect(false, new Object[]{message});
+			((Player) source).getSession().disconnect(false, message);
 		}
 	}
 
 	@Command(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!", min = 1, max = -1)
-	public void serverSay(CommandContext args, CommandSource source) throws CommandException {
-		ChatArguments message = args.getJoinedString(0);
-		if (!message.getPlainString().isEmpty()) {
-			if (!source.hasPermission("spout.chat.send")) {
-				throw new CommandException("You do not have permission to send chat messages");
-			}
-
-			ChatArguments template;
-			String name;
-			if (source instanceof Player) {
-				Player player = (Player) source;
-				PlayerChatEvent event = getEngine().getEventManager().callEvent(new PlayerChatEvent(player, message));
-				if (event.isCancelled()) {
-					return;
-				}
-				name = player.getDisplayName();
-				template = event.getFormat().getArguments();
-				message = event.getMessage();
-			} else {
-				name = source.getName();
-				template = new ChatArguments("<", PlayerChatEvent.NAME, "> ", PlayerChatEvent.MESSAGE);
-			}
-
-			template.setPlaceHolder(PlayerChatEvent.NAME, new ChatArguments(name));
-			template.setPlaceHolder(PlayerChatEvent.MESSAGE, message);
-
-			source.getActiveChannel().broadcastToReceivers(source, template);
+	public void serverSay(CommandSource source, CommandArguments args) throws CommandException {
+		String message = args.getJoinedString(0);
+		if (message.isEmpty()) {
+			return;
 		}
+
+		if (!source.hasPermission("spout.chat.send")) {
+			throw new CommandException("You do not have permission to send chat messages");
+		}
+
+		String name;
+		if (source instanceof Player) {
+			Player player = (Player) source;
+			PlayerChatEvent event = getEngine().getEventManager().callEvent(new PlayerChatEvent(player, message));
+			if (event.isCancelled()) {
+				return;
+			}
+			name = player.getDisplayName();
+			message = event.getMessage();
+		} else {
+			name = source.getName();
+		}
+		getEngine().broadcastMessage("<" + name + "> " + message);
 	}
 }

@@ -26,8 +26,6 @@
  */
 package org.spout.engine.protocol.builtin.codec;
 
-import java.util.List;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.MessageCodec;
@@ -43,14 +41,14 @@ public class CommandCodec extends MessageCodec<CommandMessage> {
 	public ChannelBuffer encode(CommandMessage message) {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		buffer.writeInt(message.getCommand());
-		ChannelBufferUtils.writeCommandArguments(buffer, message.getArguments());
+		ChannelBufferUtils.writeStringArray(buffer, message.getArguments());
 		return buffer;
 	}
 
 	@Override
 	public CommandMessage decode(ChannelBuffer buffer) {
 		final int command = buffer.readInt();
-		final List<Object> arguments = ChannelBufferUtils.readCommandArguments(buffer);
-		return new CommandMessage(command, arguments);
+		final String[] args = ChannelBufferUtils.readStringArray(buffer);
+		return new CommandMessage(command, args);
 	}
 }

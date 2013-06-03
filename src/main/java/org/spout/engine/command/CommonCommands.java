@@ -33,13 +33,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandBatch;
-import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
-import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.command.annotated.Permissible;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
@@ -50,6 +48,7 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.Plugin;
+
 import org.spout.engine.SpoutEngine;
 
 public class CommonCommands {
@@ -64,19 +63,19 @@ public class CommonCommands {
 	}
 
 	@Command(aliases = {"bat", "batch"}, usage = "batch <file>", desc = "Executes a Spout batch file.", min = 1, max = 1)
-	public void batch(CommandContext args, CommandSource source) throws CommandException {
+	public void batch(CommandSource source, CommandArguments args) throws CommandException {
 		String fileName = args.getString(0);
 		if (!(source.hasPermission("spout.command.batch." + fileName))) {
 			throw new CommandException("You do not have permission to execute " + fileName);
 		}
 		CommandBatch bat = engine.getFileSystem().getResource("batch://Spout/batches/" + fileName);
 		bat.execute(source);
-		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Executed " + fileName + ".");
+		source.sendMessage("Executed " + fileName + ".");
 	}
 
 	@Command(aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)
-	@CommandPermissions("spout.command.stop")
-	public void stop(CommandContext args, CommandSource source) {
+	@Permissible("spout.command.stop")
+	public void stop(CommandSource source, CommandArguments args) {
 		String message = "Engine halting";
 		switch (engine.getPlatform()) {
 			case CLIENT:
@@ -90,14 +89,14 @@ public class CommonCommands {
 				break;
 		}
 		if (args.length() > 0) {
-			message = args.getJoinedString(0).getPlainString();
+			message = args.getJoinedString(0);
 		}
 		engine.stop(message);
 	}
 
 	@Command(aliases = "stackdump", desc = "Writes the stack trace of all active threads to the logs", max = -1)
-	@CommandPermissions("spout.command.dumpstack")
-	public void dumpstack(CommandContext args, CommandSource source) {
+	@Permissible("spout.command.dumpstack")
+	public void dumpstack(CommandSource source, CommandArguments args) {
 		Map<Thread, StackTraceElement[]> dump = Thread.getAllStackTraces();
 		Iterator<Entry<Thread, StackTraceElement[]>> i = dump.entrySet().iterator();
 		engine.getLogger().info("[--------------Thread Stack Dump--------------]");
@@ -113,10 +112,10 @@ public class CommonCommands {
 	}
 
 	@Command(aliases = "reload", usage = "[plugin]", desc = "Reload engine and/or plugins", max = 1)
-	@CommandPermissions("spout.command.reload")
-	public void reload(CommandContext args, CommandSource source) throws CommandException {
+	@Permissible("spout.command.reload")
+	public void reload(CommandSource source, CommandArguments args) throws CommandException {
 		if (args.length() == 0) {
-			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Reloading engine...");
+			source.sendMessage("Reloading engine...");
 
 			for (Plugin plugin : getEngine().getPluginManager().getPlugins()) {
 				if (plugin.getDescription().allowsReload()) {
@@ -124,7 +123,7 @@ public class CommonCommands {
 				}
 			}
 
-			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Reloaded.");
+			source.sendMessage("Reloaded.");
 		} else {
 			String pluginName = args.getString(0);
 			if (getEngine().getPluginManager().getPlugin(pluginName) == null) {
@@ -136,15 +135,15 @@ public class CommonCommands {
 				throw new CommandException("The plugin '" + pluginName + "' does not allow reloads.");
 			}
 			plugin.onReload();
-			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Reloaded '", pluginName, "'.");
+			source.sendMessage("Reloaded '" + pluginName + "'.");
 		}
 	}
 
 	@Command(aliases = {"plugins", "pl"}, desc = "List all plugins on the engine")
-	@CommandPermissions("spout.command.plugins")
-	public void plugins(CommandContext args, CommandSource source) {
+	@Permissible("spout.command.plugins")
+	public void plugins(CommandSource source, CommandArguments args) {
 		List<Plugin> plugins = getEngine().getPluginManager().getPlugins();
-		ChatArguments pluginListString = new ChatArguments();
+		StringBuilder pluginListString = new StringBuilder();
 		pluginListString.append(Arrays.<Object>asList("Plugins (", plugins.size() - 1, "): "));
 
 		for (int i = 0; i < plugins.size(); i++) {
@@ -153,19 +152,19 @@ public class CommonCommands {
 				continue;
 			}
 
-			pluginListString.append(plugin.isEnabled() ? ChatStyle.BRIGHT_GREEN : ChatStyle.RED)
-					.append(plugin.getName());
+			/*pluginListString.append(plugin.isEnabled() ? ChatStyle.BRIGHT_GREEN : ChatStyle.RED)
+					.append(plugin.getName());*/
 
-			if (i != plugins.size() - 1) {
+			/*if (i != plugins.size() - 1) {
 				pluginListString.append(ChatStyle.RESET).append(", ");
-			}
+			}*/
 		}
-		source.sendMessage(pluginListString);
+		source.sendMessage(pluginListString.toString());
 	}
 
 	@Command(aliases = {"setspawn", "ss"}, desc = "Sets the spawnpoint for a world", min = 0, max = 4)
-	@CommandPermissions("spout.command.setspawn")
-	public void setspawn(CommandContext args, CommandSource source) throws CommandException {
+	@Permissible("spout.command.setspawn")
+	public void setspawn(CommandSource source, CommandArguments args) throws CommandException {
 		//Not a player? Make sure the console is specifying world, x, y, z
 		if (!(source instanceof Player)) {
 			if (args.length() != 4) {
@@ -186,13 +185,13 @@ public class CommonCommands {
 		//Finally set the spawn point
 		point.getWorld().setSpawnPoint(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
 		//Notify the source
-		source.sendMessage(new ChatArguments("Set the spawnpoint of world: ", ChatStyle.PURPLE, point.getWorld().getName(), ChatStyle.WHITE, " to x: ",
-				ChatStyle.BRIGHT_GREEN, point.getBlockX(), ChatStyle.WHITE, ", y: ", ChatStyle.BRIGHT_GREEN, point.getBlockY(), ChatStyle.WHITE, ", z: ", ChatStyle.BRIGHT_GREEN, point.getBlockZ()));
+		source.sendMessage("Set the spawnpoint of world: " + point.getWorld().getName() + " to x: "
+				+ point.getBlockX() + ", y: " + point.getBlockY() + ", z: " + point.getBlockZ());
 	}
 
 	@Command(aliases = {"whatisspawn", "wis"}, desc = "Tells you the spawnpoint of a world", min = 0, max = 1)
-	@CommandPermissions("spout.command.tellspawn")
-	public void tellspawn(CommandContext args, CommandSource source) throws CommandException {
+	@Permissible("spout.command.tellspawn")
+	public void tellspawn(CommandSource source, CommandArguments args) throws CommandException {
 		if (!(source instanceof Player)) {
 			if (args.length() != 1) {
 				throw new CommandException("Must specify a world to find out the spawnpoint from the console!");
@@ -208,44 +207,44 @@ public class CommonCommands {
 			}
 			point = world.getSpawnPoint().getPosition();
 		}
-		source.sendMessage(new ChatArguments("The spawnpoint of world: ", ChatStyle.PURPLE, point.getWorld().getName(), ChatStyle.WHITE, " is x: ",
-				ChatStyle.BRIGHT_GREEN, point.getBlockX(), ChatStyle.WHITE, ", y: ", ChatStyle.BRIGHT_GREEN, point.getBlockY(), ChatStyle.WHITE, ", z: ", ChatStyle.BRIGHT_GREEN, point.getBlockZ()));
+		source.sendMessage("The spawnpoint of world: " + point.getWorld().getName() + " is x: "
+				 + point.getBlockX() + ", y: " + point.getBlockY() + ", z: " + point.getBlockZ());
 	}
 
 	@Command(aliases = {"worldinfo"}, desc = "Provides info about known worlds", usage = "[world]", min = 0, max = 1)
-	@CommandPermissions("spout.command.worldinfo")
-	public void worldInfo(CommandContext args, CommandSource source) throws CommandException {
+	@Permissible("spout.command.worldinfo")
+	public void worldInfo(CommandSource source, CommandArguments args) throws CommandException {
 		if (args.length() == 0) {
 			Collection<World> worlds = engine.getWorlds();
-			ChatArguments output = new ChatArguments("Worlds (", worlds.size(), "): ");
+			StringBuilder output = new StringBuilder("Worlds (" + worlds.size() + "): ");
 			for (Iterator<World> i = worlds.iterator(); i.hasNext(); ) {
 				output.append(i.next().getName());
 				if (i.hasNext()) {
 					output.append(", ");
 				}
 			}
-			source.sendMessage(output);
+			source.sendMessage(output.toString());
 		} else {
 			World world = engine.getWorld(args.getString(0));
 			if (world == null) {
 				throw new CommandException("Unknown world: " + world);
 			}
-			source.sendMessage("World: ", world.getName());
+			source.sendMessage("World: " + world.getName());
 			source.sendMessage("==========================");
-			source.sendMessage("Age: ", world.getAge());
-			source.sendMessage("UUID: ", world.getUID());
-			source.sendMessage("Seed: ", world.getSeed());
+			source.sendMessage("Age: " + world.getAge());
+			source.sendMessage("UUID: " + world.getUID());
+			source.sendMessage("Seed: " + world.getSeed());
 		}
 	}
 
 	@Command(aliases = {"regioninfo"}, desc = "Provides info about regions", usage = "[world]", min = 1, max = 1)
-	@CommandPermissions("spout.command.regioninfo")
-	public void chunkInfo(CommandContext args, CommandSource source) throws CommandException {
+	@Permissible("spout.command.regioninfo")
+	public void chunkInfo(CommandSource source, CommandArguments args) throws CommandException {
 		World world = engine.getWorld(args.getString(0));
 		if (world == null) {
 			throw new CommandException("Unknown world: " + world);
 		}
-		source.sendMessage("World: ", world.getName());
+		source.sendMessage("World: " + world.getName());
 		source.sendMessage("==========================");
 		int chunks = 0;
 		int regions = 0;
@@ -253,13 +252,13 @@ public class CommonCommands {
 			regions++;
 			chunks += r.getNumLoadedChunks();
 		}
-		source.sendMessage("Regions:", regions);
-		source.sendMessage("chunks: ", chunks);
+		source.sendMessage("Regions:" + regions);
+		source.sendMessage("chunks: " + chunks);
 	}
 
-	@Command(aliases = {"tp", "teleport"}, usage = "[player] [player|x] [y] [z] [-w <world>]", flags = "w:", desc = "Teleport to a location", min = 1, max = 4)
-	@CommandPermissions("spout.command.tp")
-	public void tp(CommandContext args, CommandSource source) throws CommandException {
+	@Command(aliases = {"tp", "teleport"}, usage = "[player] [player|x] [y] [z] [-w <world>]", desc = "Teleport to a location", min = 1, max = 4)
+	@Permissible("spout.command.tp")
+	public void tp(CommandSource source, CommandArguments args) throws CommandException {
 		Player player;
 		Player target = null;
 		Point point;
@@ -281,18 +280,6 @@ public class CommonCommands {
 
 			if (args.length() > 2) {
 				World world = player.getWorld();
-
-				if (args.hasFlag('w')) {
-					if (!source.hasPermission("spout.command.tp.world-flag")) {
-						throw new CommandException("You are not allowed to use the world flag.");
-					}
-
-					world = engine.getWorld(args.getFlagString('w'));
-
-					if (world == null) {
-						throw new CommandException("Please supply an existing world.");
-					}
-				}
 
 				float x = player.getScene().getPosition().getX();
 				if (args.isInteger(1)) {
@@ -336,11 +323,11 @@ public class CommonCommands {
 		player.teleport(point);
 
 		if (target != null) {
-			player.sendMessage(ChatStyle.RESET, ChatStyle.BLUE, "You teleported to ", ChatStyle.WHITE, target.getName() + ".", ChatStyle.RESET);
-			target.sendMessage(ChatStyle.RESET, ChatStyle.WHITE, player.getName(), ChatStyle.BLUE, " teleported to you.", ChatStyle.RESET);
+			player.sendMessage("You teleported to " + target.getName() + ".");
+			target.sendMessage(player.getName() + " teleported to you.");
 			return;
 		}
-		player.sendMessage(ChatStyle.RESET, ChatStyle.BLUE, "You were teleported to ", ChatStyle.BRIGHT_GREEN, point.getWorld().getName(), ChatStyle.BLUE, ", X: ", ChatStyle.WHITE, point.getX(),
-				ChatStyle.BLUE, ", Y: ", ChatStyle.WHITE, point.getY(), ChatStyle.BLUE, ", Z: ", ChatStyle.WHITE, point.getZ(), ChatStyle.BLUE, ".", ChatStyle.RESET);
+		player.sendMessage("You were teleported to " + point.getWorld().getName() + ", X: " + point.getX()
+				+ ", Y: " + point.getY() + ", Z: " + point.getZ() + ".");
 	}
 }

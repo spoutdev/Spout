@@ -37,15 +37,13 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.spout.api.Client;
-import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
-import org.spout.api.command.CommandContext;
+import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
-import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.component.entity.AnimationComponent;
 import org.spout.api.component.entity.InteractComponent;
 import org.spout.api.component.widget.RenderPartComponent;
@@ -57,6 +55,8 @@ import org.spout.api.component.widget.button.CheckBoxComponent;
 import org.spout.api.component.widget.button.RadioComponent;
 import org.spout.api.component.widget.list.ComboBoxComponent;
 import org.spout.api.component.widget.list.ItemListComponent;
+import org.spout.api.command.annotated.Permissible;
+import org.spout.api.command.annotated.Platform;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
@@ -101,7 +101,7 @@ public class TestCommands {
 
 	@Command(aliases = "sound", usage = "<load|play|pause|stop|rewind|dispose|pitch|gain|loop> <path|id> [value]",
 			desc = "Test command for sound management.", min = 2, max = 3)
-	public void sound(CommandContext args, CommandSource source) throws CommandException {
+	public void sound(CommandSource source, CommandArguments args) throws CommandException {
 		if (!(engine instanceof Client)) {
 			throw new CommandException("Sounds can only be managed on the client.");
 		}
@@ -137,12 +137,12 @@ public class TestCommands {
 			source.sendMessage("Source dispoed.");
 		} else if (action.equalsIgnoreCase("pitch")) {
 			SoundSource soundSource = getSoundSource(args.getInteger(1));
-			float pitch = args.getFloat(2);
+			float pitch = (float) args.getDouble(2);
 			soundSource.setPitch(pitch);
 			source.sendMessage("Set pitch to " + pitch);
 		} else if (action.equalsIgnoreCase("gain")) {
 			SoundSource soundSource = getSoundSource(args.getInteger(1));
-			float gain = args.getFloat(2);
+			float gain = (float) args.getDouble(2);
 			soundSource.setGain(gain);
 			source.sendMessage("Set gain to " + gain);
 		} else if (action.equalsIgnoreCase("loop")) {
@@ -156,11 +156,8 @@ public class TestCommands {
 
 	@Command(aliases = "widget", usage = "<button|checkbox|radio|combo|list|label|slider|spinner|textfield|rect>",
 			desc = "Renders a widget on your screen.", min = 1, max = 1)
-	public void widget(CommandContext args, CommandSource source) throws CommandException {
-		if (!(engine instanceof Client)) {
-			throw new CommandException("This command is only available on the client.");
-		}
-
+	@Platform(org.spout.api.Platform.CLIENT)
+	public void widget(CommandSource source, CommandArguments args) throws CommandException {
 		Client client = (Client) engine;
 		Screen screen = new Screen();
 		Widget widget = client.getScreenStack().createWidget();
@@ -191,10 +188,8 @@ public class TestCommands {
 	}
 
 	@Command(aliases = "break", desc = "Debug command to break a block")
-	public void debugBreak(CommandContext args, CommandSource source) {
-		if (!(engine instanceof Client)) {
-			return;
-		}
+	@Platform(org.spout.api.Platform.CLIENT)
+	public void debugBreak(CommandSource source, CommandArguments args) throws CommandException {
 		Client client = (Client) engine;
 		Player player = client.getPlayer();
 		Block block = player.get(InteractComponent.class).getTargetBlock();
@@ -202,30 +197,30 @@ public class TestCommands {
 		if (block == null || block.getMaterial().equals(BlockMaterial.AIR)) {
 			source.sendMessage("No blocks in range.");
 		} else {
-			source.sendMessage("Block to break: ", block.toString());
+			source.sendMessage("Block to break: " + block.toString());
 			block.setMaterial(BlockMaterial.AIR);
 		}
 	}
 
 	@Command(aliases = {"dbg"}, desc = "Debug Output")
-	public void debugOutput(CommandContext args, CommandSource source) {
+	public void debugOutput(CommandSource source, CommandArguments args) {
 		World world = engine.getDefaultWorld();
-		source.sendMessage("World Entity count: ", world.getAll().size());
+		source.sendMessage("World Entity count: " + world.getAll().size());
 	}
 
 	@Command(aliases = "dumpthreads", desc = "Dumps a listing of all thread stacks to the console")
-	public void dumpThreads(CommandContext args, CommandSource source) {
+	public void dumpThreads(CommandSource source, CommandArguments args) throws CommandException {
 		AsyncExecutorUtils.dumpAllStacks();
 	}
 
 	@Command(aliases = "testmsg", desc = "Test extracting chat styles from a message and printing them")
-	public void testMsg(CommandContext args, CommandSource source) {
+	public void testMsg(CommandSource source, CommandArguments args) throws CommandException {
 		source.sendMessage(args.getJoinedString(0));
 	}
 
 	@Command(aliases = "plugins-tofile", usage = "[filename]", desc = "Creates a file containing all loaded plugins and their version", min = 0, max = 1)
-	@CommandPermissions("spout.command.pluginstofile")
-	public void getPluginDetails(CommandContext args, CommandSource source) throws CommandException {
+	@Permissible("spout.command.pluginstofile")
+	public void getPluginDetails(CommandSource source, CommandArguments args) throws CommandException {
 
 		// File and filename
 		String filename = "";
@@ -319,10 +314,10 @@ public class TestCommands {
 	}
 
 	@Command(aliases = {"move"}, desc = "Move a entity with his Id", min = 4, max = 4)
-	public void moveEntity(CommandContext args, CommandSource source) throws CommandException {
+	public void moveEntity(CommandSource source, CommandArguments args) throws CommandException {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
-			if (engine.getPlatform() == Platform.CLIENT) {
+			if (engine.getPlatform() == org.spout.api.Platform.CLIENT) {
 				player = ((SpoutClient) engine).getPlayer();
 			} else {
 				player = (SpoutPlayer) source;
@@ -332,9 +327,9 @@ public class TestCommands {
 		}
 
 		int id = args.getInteger(0);
-		float x = args.getFloat(1);
-		float y = args.getFloat(2);
-		float z = args.getFloat(3);
+		float x = (float) args.getDouble(1);
+		float y = (float) args.getDouble(2);
+		float z = (float) args.getDouble(3);
 
 		Entity e = player.getWorld().getEntity(id);
 
@@ -348,10 +343,10 @@ public class TestCommands {
 	}
 
 	@Command(aliases = {"rotate"}, desc = "Rotate a entity with his Id", min = 4, max = 4)
-	public void rotateEntity(CommandContext args, CommandSource source) throws CommandException {
+	public void rotateEntity(CommandSource source, CommandArguments args) throws CommandException {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
-			if (engine.getPlatform() == Platform.CLIENT) {
+			if (engine.getPlatform() == org.spout.api.Platform.CLIENT) {
 				player = ((SpoutClient) engine).getPlayer();
 			} else {
 				player = (SpoutPlayer) source;
@@ -361,9 +356,9 @@ public class TestCommands {
 		}
 
 		int id = args.getInteger(0);
-		float pitch = args.getFloat(1);
-		float yaw = args.getFloat(2);
-		float roll = args.getFloat(3);
+		float pitch = (float) args.getDouble(1);
+		float yaw = (float) args.getDouble(2);
+		float roll = (float) args.getDouble(3);
 
 		Entity e = player.getWorld().getEntity(id);
 
@@ -376,10 +371,10 @@ public class TestCommands {
 	}
 
 	@Command(aliases = {"scale"}, desc = "Scale a entity with his Id", min = 4, max = 4)
-	public void scaleEntity(CommandContext args, CommandSource source) throws CommandException {
+	public void scaleEntity(CommandSource source, CommandArguments args) throws CommandException {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
-			if (engine.getPlatform() == Platform.CLIENT) {
+			if (engine.getPlatform() == org.spout.api.Platform.CLIENT) {
 				player = ((SpoutClient) engine).getPlayer();
 			} else {
 				player = (SpoutPlayer) source;
@@ -389,9 +384,9 @@ public class TestCommands {
 		}
 
 		int id = args.getInteger(0);
-		float x = args.getFloat(1);
-		float y = args.getFloat(2);
-		float z = args.getFloat(3);
+		float x = (float) args.getDouble(1);
+		float y = (float) args.getDouble(2);
+		float z = (float) args.getDouble(3);
 
 		Entity e = player.getWorld().getEntity(id);
 
@@ -407,10 +402,10 @@ public class TestCommands {
 	}
 
 	@Command(aliases = {"animstart"}, desc = "Launch a animation his Id", min = 2, max = 3)
-	public void playAnimation(CommandContext args, CommandSource source) throws CommandException {
+	public void playAnimation(CommandSource source, CommandArguments args) throws CommandException {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
-			if (engine.getPlatform() == Platform.CLIENT) {
+			if (engine.getPlatform() == org.spout.api.Platform.CLIENT) {
 				player = ((SpoutClient) engine).getPlayer();
 			} else {
 				player = (SpoutPlayer) source;
@@ -456,16 +451,16 @@ public class TestCommands {
 
 		AnimationComponent ac = e.get(AnimationComponent.class);
 
-		ac.playAnimation(model, animation, args.length() > 2 ? args.getString(2).equalsIgnoreCase("on") : false);
+		ac.playAnimation(model, animation, args.length() > 2 && args.getString(2).equalsIgnoreCase("on"));
 
 		source.sendMessage("Entity " + id + " play " + animation.getName());
 	}
 
 	@Command(aliases = {"animstop"}, desc = "Stop all animation on a entity", min = 1, max = 1)
-	public void stopAnimation(CommandContext args, CommandSource source) throws CommandException {
+	public void stopAnimation(CommandSource source, CommandArguments args) throws CommandException {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
-			if (engine.getPlatform() == Platform.CLIENT) {
+			if (engine.getPlatform() == org.spout.api.Platform.CLIENT) {
 				player = ((SpoutClient) engine).getPlayer();
 			} else {
 				player = (SpoutPlayer) source;
@@ -496,7 +491,7 @@ public class TestCommands {
 	}
 
 	@Command(aliases = {"profpop"}, desc = "Prints the populator profiler results to console", min = 0, max = 0)
-	public void profilePopulator(CommandContext args, CommandSource source) {
+	public void profilePopulator(CommandSource source, CommandArguments args) throws CommandException {
 		Spout.getLogger().info("");
 		Spout.getLogger().info("Populator profiler results");
 		long totalPopulator = 0;
@@ -523,7 +518,7 @@ public class TestCommands {
 	 * Replaces chars which are not allowed in filenames on windows with "-".
 	 */
 	private String replaceInvalidCharsWin(String s) {
-		if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0) {
+		if (System.getProperty("os.name").toLowerCase().contains("win")) {
 			return s.replaceAll("[\\/:*?\"<>|]", "-");
 		} else {
 			return s;

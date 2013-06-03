@@ -161,6 +161,12 @@ public class SpoutSoundManager implements SoundManager {
 		clearSounds();
 	}
 
+	@Override
+	public void destroy() {
+		clear();
+		AL.destroy();
+	}
+
 	/**
 	 * Checks for any pending OpenAL errors.
 	 */
