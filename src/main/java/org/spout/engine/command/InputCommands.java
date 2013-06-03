@@ -90,23 +90,12 @@ public class InputCommands {
 	}
 
 	public static void setupInputCommands(Engine engine) {
-		CommandManager cm = engine.getCommandManager();
 		for (PlayerInputState.Flags flag : PlayerInputState.Flags.values()) {
 			engine.getCommandManager().getCommand(flag.name())
 					.setArgumentBounds(1, 1)
 					.setHelp("Adds the " + flag.name() + " flag to the calling player's input state")
 					.setExecutor(new InputFlagHandler(flag));
 		}
-		cm.getCommand("dx")
-				.setHelp("Adds the x distance traveled to the calling player's input state.")
-				.setExecutor(new InputMouseYawHandler())
-				.addFilter(new PlayerFilter())
-				.setArgumentBounds(1, 1);
-		cm.getCommand("dy")
-				.setHelp("Adds the y distance traveled to the calling player's input state.")
-				.setExecutor(new InputMousePitchHandler())
-				.addFilter(new PlayerFilter())
-				.setArgumentBounds(1, 1);
 	}
 
 	public static class InputFlagHandler implements Executor {
@@ -127,34 +116,6 @@ public class InputCommands {
 			} else {
 				player.processInput(player.input().withRemovedFlag(flag));
 			}
-		}
-	}
-
-	public static class InputMousePitchHandler implements Executor {
-		@Override
-		public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
-			int d;
-			try {
-				d = args.getInteger(0);
-			} catch (NumberFormatException numberFormatException) {
-				throw new IllegalArgumentException("Cannot add a non-number to mouse distances.");
-			}
-			Player player = (Player) source;
-			player.processInput(player.input().withAddedPitch(PlayerInputState.MOUSE_SENSITIVITY * d));
-		}
-	}
-
-	public static class InputMouseYawHandler implements Executor {
-		@Override
-		public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
-			int d;
-			try {
-				d = args.getInteger(0);
-			} catch (NumberFormatException numberFormatException) {
-				throw new IllegalArgumentException("Cannot add a non-number to mouse distances.");
-			}
-			Player player = (Player) source;
-			player.processInput(player.input().withAddedYaw(PlayerInputState.MOUSE_SENSITIVITY * -d));
 		}
 	}
 }

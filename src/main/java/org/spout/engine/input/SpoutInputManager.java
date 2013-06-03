@@ -36,6 +36,7 @@ import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.entity.Player;
+import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.gui.FocusReason;
@@ -252,13 +253,14 @@ public class SpoutInputManager implements InputManager {
 
 		// Mouse moved on x-axis
 		if (!redirected) {
+			boolean invert = SpoutInputConfiguration.INVERT_MOUSE.getBoolean();
 			if (dx != 0) {
-				player.processCommand("dx", Integer.toString(dx));
+				player.processInput(player.input().withAddedYaw(PlayerInputState.MOUSE_SENSITIVITY * dx * (invert ? 1 : -1)));
 			}
 
 			// Mouse moved on y-axis
 			if (dy != 0) {
-				player.processCommand("dy", Integer.toString(dy));
+				player.processInput(player.input().withAddedPitch(PlayerInputState.MOUSE_SENSITIVITY * dy * (invert ? -1 : 1)));
 			}
 		}
 	}

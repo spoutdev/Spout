@@ -42,6 +42,7 @@ public class SpoutInputConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder RIGHT = new ConfigurationHolder("KEY_D", "right");
 	public static final ConfigurationHolder UP = new ConfigurationHolder("KEY_SPACE", "up");
 	public static final ConfigurationHolder DOWN = new ConfigurationHolder("KEY_LSHIFT", "down");
+	public static final ConfigurationHolder INVERT_MOUSE = new ConfigurationHolder(false, "invert-mouse");
 
 	public SpoutInputConfiguration() {
 		super(new YamlConfiguration(new File(CommonFileSystem.CONFIG_DIRECTORY, "controls.yml")));
