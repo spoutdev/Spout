@@ -69,7 +69,7 @@ public class ChatLogFormatter extends SimpleFormatter  {
 		if (record instanceof FormattedLogRecord) {
 			args.setPlaceHolder(MESSAGE, ((FormattedLogRecord) record).getFormattedMessage());
 		} else {
-			args.setPlaceHolder(MESSAGE, new ChatArguments(super.formatMessage(record)));
+			args.setPlaceHolder(MESSAGE, new ChatArguments(super.formatMessage(record) + '\n'));
 		}
 		
 		if (record.getThrown() != null) {
