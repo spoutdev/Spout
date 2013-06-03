@@ -148,7 +148,6 @@ public class RotatingFileHandler extends Handler {
 			if (writer == null) {
 				return;
 			}
-			appendDateFormat(writer);
 			String message;
 			Formatter formatter = getFormatter();
 			if (formatter != null) {
@@ -156,7 +155,8 @@ public class RotatingFileHandler extends Handler {
 			} else {
 				message = record.getMessage();
 			}
-			for (String line :message.split("\n")) {
+			for (String line : message.split("\n")) {
+				appendDateFormat(writer);
 				writer.write(line);
 				writer.write('\n');
 			}
