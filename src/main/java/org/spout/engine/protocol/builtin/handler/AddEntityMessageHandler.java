@@ -27,6 +27,7 @@
 package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.Client;
+import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.protocol.MessageHandler;

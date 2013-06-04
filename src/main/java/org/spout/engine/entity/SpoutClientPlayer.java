@@ -30,6 +30,7 @@ import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
+import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.Message;
 import org.spout.engine.gui.SpoutScreenStack;
@@ -42,6 +43,8 @@ public class SpoutClientPlayer extends SpoutPlayer {
 
 	public SpoutClientPlayer(Engine engine, String name, Transform transform, int viewDistance) {
 		super(engine, name, transform, viewDistance);
+
+		add(CameraComponent.class);
 	}
 
 	@Override
