@@ -33,6 +33,9 @@ import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundSource;
 import org.spout.api.audio.SoundState;
+import org.spout.api.event.audio.SoundBindEvent;
+import org.spout.api.event.audio.SoundDisposeEvent;
+import org.spout.api.event.audio.SoundStateChangeEvent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
@@ -58,29 +61,39 @@ public class SpoutSoundSource extends SoundSource {
 
 	@Override
 	public void bind() {
+		SoundBindEvent event = Spout.getEventManager().callEvent(new SoundBindEvent(this, sound));
+		sound = event.getSound();
 		setInteger(AL_BUFFER, sound.getId());
+	}
+
+	private boolean callStateEvent(SoundState state) {
+		return Spout.getEventManager().callEvent(new SoundStateChangeEvent(this, state)).isCancelled();
 	}
 
 	@Override
 	protected void doPlay() {
+		if (callStateEvent(SoundState.PLAYING)) return;
 		assertNotDisposed();
 		alSourcePlay(id);
 	}
 
 	@Override
 	public void pause() {
+		if (callStateEvent(SoundState.PAUSED)) return;
 		assertNotDisposed();
 		alSourcePause(id);
 	}
 
 	@Override
 	public void stop() {
+		if (callStateEvent(SoundState.STOPPED)) return;
 		assertNotDisposed();
 		alSourceStop(id);
 	}
 
 	@Override
 	public void rewind() {
+		if (callStateEvent(SoundState.STOPPED)) return;
 		assertNotDisposed();
 		alSourceRewind(id);
 	}
@@ -92,6 +105,7 @@ public class SpoutSoundSource extends SoundSource {
 
 	@Override
 	public void dispose() {
+		if (Spout.getEventManager().callEvent(new SoundDisposeEvent(this)).isCancelled()) return;
 		assertNotDisposed();
 		alDeleteSources(id);
 		disposed = true;
