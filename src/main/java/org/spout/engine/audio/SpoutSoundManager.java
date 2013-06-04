@@ -50,6 +50,7 @@ public class SpoutSoundManager implements SoundManager {
 	private final Set<SoundSource> sources = new HashSet<SoundSource>();
 	private final Set<Sound> sounds = new HashSet<Sound>();
 	private final SoundListener listener = new SpoutSoundListener();
+	private float gain = 1, musicGain = 1;
 
 	@Override
 	public void init() {
@@ -69,12 +70,19 @@ public class SpoutSoundManager implements SoundManager {
 	}
 
 	@Override
-	public SoundSource createSource(Sound sound) {
+	public SoundSource createSource(Sound sound, boolean music) {
 		SoundSource source = new SpoutSoundSource(alGenSources());
 		source.init();
 		source.setSound(sound);
+		source.setMusic(music);
+		source.setGain(music ? musicGain : gain);
 		sources.add(source);
 		return source;
+	}
+
+	@Override
+	public SoundSource createSource(Sound sound) {
+		return createSource(sound, false);
 	}
 
 	@Override
@@ -109,6 +117,42 @@ public class SpoutSoundManager implements SoundManager {
 	@Override
 	public boolean isSource(int id) {
 		return alIsSource(id);
+	}
+
+	@Override
+	public float getGain() {
+		return gain;
+	}
+
+	@Override
+	public void setGain(float gain) {
+		this.gain = gain;
+		for (SoundSource source : sources) {
+			if (!source.isMusic()) {
+				source.setGain(gain);
+			}
+		}
+	}
+
+	@Override
+	public float getMusicGain() {
+		return musicGain;
+	}
+
+	@Override
+	public void setMusicGain(float musicGain) {
+		this.musicGain = musicGain;
+		for (SoundSource source : sources) {
+			if (source.isMusic()) {
+				source.setGain(musicGain);
+			}
+		}
+	}
+
+	@Override
+	public void level() {
+		setGain(gain);
+		setMusicGain(musicGain);
 	}
 
 	@Override

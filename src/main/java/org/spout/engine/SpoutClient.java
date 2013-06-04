@@ -67,6 +67,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.render.RenderMode;
 import org.spout.api.resource.FileSystem;
 
+import org.spout.engine.audio.AudioConfiguration;
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.RendererCommands;
@@ -125,8 +126,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 		this.ccoverride = args.ccoverride;
 
 		inputManager = new SpoutInputManager();
+
+		// initialize sound system
 		soundManager = new SpoutSoundManager();
 		soundManager.init();
+
+		// configure sound system
+		AudioConfiguration audioConfig = new AudioConfiguration();
+		audioConfig.load();
+		soundManager.setGain(AudioConfiguration.SOUND_VOLUME.getFloat());
+		soundManager.setMusicGain(AudioConfiguration.MUSIC_VOLUME.getFloat());
 	}
 
 	@Override
