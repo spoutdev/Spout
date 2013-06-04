@@ -57,6 +57,7 @@ import org.spout.api.datatable.SerializableMap;
 import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.math.Vector2;
 import org.spout.api.plugin.PluginStore;
@@ -84,7 +85,6 @@ import org.spout.engine.world.SpoutClientWorld;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
-	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<SpoutClientPlayer>();
 	private final AtomicReference<PortBinding> potentialBinding = new AtomicReference<PortBinding>();
 	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
 	private final AtomicReference<SpoutClientWorld> world = new AtomicReference<SpoutClientWorld>();
@@ -166,13 +166,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public SpoutPlayer getPlayer() {
-		return player.get();
+		//TODO This is bad, rethink this
+		return (SpoutClientPlayer) world.get().getPlayers().get(0);
 	}
 
 	@Override
 	public CommandSource getCommandSource() {
 		if (session.get() != null) {
-			return player.get();
+			return getPlayer();
 		} else {
 			return super.getCommandSource();
 		}
@@ -254,7 +255,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public SpoutClientWorld getWorld(String name, boolean exact) {
-		SpoutClientWorld world = world.get();
+		SpoutClientWorld world = this.world.get();
 		if (world == null) {
 			return null;
 		}
@@ -282,10 +283,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return Collections.<World>singletonList(world.get());
 	}
 
-	/*@Override
+	@Override
 	public SpoutClientWorld getDefaultWorld() {
-		return activeWorld.get();
-	}*/
+		return world.get();
+	}
 
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
 		SpoutClientWorld world = new SpoutClientWorld(name, this, uuid, getEngineItemMap(), getEngineItemMap());
@@ -334,9 +335,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void setSession(SpoutClientSession session) {
+		//TODO Re-write Client sessions, this is bad...
 		this.session.set(session);
 		getSessionRegistry().add(session);
-		final SpoutClientPlayer p = player.get();
+		final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 		p.connect(session, p.getScene().getTransform());
 		session.setPlayer(p);
 		players.putIfAbsent(p.getName(), p);
