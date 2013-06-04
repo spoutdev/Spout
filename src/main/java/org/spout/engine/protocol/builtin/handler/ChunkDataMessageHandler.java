@@ -41,7 +41,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 	@Override
 	public void handleClient(Session session, ChunkDataMessage message) {
 		if(!session.hasPlayer()) {
-			return;
+			throw new IllegalStateException("Message sent when session has no player");
 		}
 
 		ClientWorld world = (ClientWorld) session.getEngine().getDefaultWorld();

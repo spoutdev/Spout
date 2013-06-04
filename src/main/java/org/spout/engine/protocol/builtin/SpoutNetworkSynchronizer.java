@@ -78,15 +78,6 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 		session.send(false, new BlockUpdateMessage(chunk.getBlock(x, y, z)));
 	}
 
-	private EntityProtocol getEntityProtocol(Entity entity) {
-		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
-		if (protocol == null) {
-			entity.getNetwork().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
-			protocol = SpoutEntityProtocol.INSTANCE;
-		}
-		return protocol;
-	}
-
 	@Override
 	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
 		super.syncEntity(e, liveTransform, spawn, destroy, update);
@@ -105,5 +96,14 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 		for (Message message : messages) {
 			this.session.send(false, message);
 		}
+	}
+
+	private EntityProtocol getEntityProtocol(Entity entity) {
+		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
+		if (protocol == null) {
+			entity.getNetwork().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
+			protocol = SpoutEntityProtocol.INSTANCE;
+		}
+		return protocol;
 	}
 }

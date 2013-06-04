@@ -39,11 +39,10 @@ public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatabl
 	@Override
 	public void handleClient(Session session, EntityDatatableMessage message) {
 		if(!session.hasPlayer()) {
-			return;
+			throw new IllegalStateException("Message sent when session has no player");
 		}
 
 		Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
-		// TODO: Give datatable access to packet
 		try {
 			entity.getDatatable().deserialize(message.getCompressedData(), true);
 		} catch (IOException e) {

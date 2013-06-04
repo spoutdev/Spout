@@ -40,7 +40,7 @@ public class BlockUpdateMessageHandler extends MessageHandler<BlockUpdateMessage
 	@Override
 	public void handleClient(Session session, BlockUpdateMessage message) {
 		if(!session.hasPlayer()) {
-			return;
+			throw new IllegalStateException("Message sent when session has no player");
 		}
 
 		Player player = session.getPlayer();

@@ -87,8 +87,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<SpoutClientPlayer>();
 	private final AtomicReference<PortBinding> potentialBinding = new AtomicReference<PortBinding>();
 	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
-	//TODO Client needs to have the SpoutClientWorld dummy and recieve the world from the server
-	private final AtomicReference<SpoutWorld> world = new AtomicReference<SpoutWorld>();
+	private final AtomicReference<SpoutClientWorld> world = new AtomicReference<SpoutClientWorld>();
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 	private final FileSystem filesystem = new ClientFileSystem();
 	// Handle stopping
@@ -152,27 +151,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		// Register commands
 		AnnotatedCommandExecutorFactory.create(new InputCommands(this));
 		AnnotatedCommandExecutorFactory.create(new RendererCommands(this));
-
-		while (super.getDefaultWorld() == null) {
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			// TODO : Wait until the world is fully loaded
-		}
-		final SpoutWorld w = (SpoutWorld) getDefaultWorld();
-		this.world.set(w);
-		String lockString = "Initial player spawn";
-		getScheduler().getSnapshotLock().coreReadLock(lockString);
-		try {
-			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", w.getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * ChunkSnapshot.CHUNK_SIZE);
-			p.add(CameraComponent.class);
-			player.set(p);
-			w.spawnEntity(p);
-		} finally {
-			getScheduler().getSnapshotLock().coreReadUnlock(lockString);
-		}
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.renderer = getScheduler().startRenderThread(new Vector2(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f), ccoverride, null);
@@ -274,9 +252,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.stop(stopMessage);
 	}
 
-	/*@Override //Because there is a conflict when the spout engine tries to load the world
+	@Override
 	public SpoutClientWorld getWorld(String name, boolean exact) {
-		SpoutClientWorld world = activeWorld.get();
+		SpoutClientWorld world = world.get();
 		if (world == null) {
 			return null;
 		}
@@ -287,7 +265,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		} else {
 			return null;
 		}
-	}*/
+	}
 
 	@Override
 	public SpoutWorld getWorld(UUID uid) {
@@ -310,8 +288,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}*/
 
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
-		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap(), getEngineItemMap());
+		SpoutClientWorld world = new SpoutClientWorld(name, this, uuid, getEngineItemMap(), getEngineItemMap());
 
+		//Load in datatable
 		SerializableMap map = world.getDatatable();
 		try {
 			map.deserialize(data);
@@ -324,7 +303,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 			if (!scheduler.removeAsyncManager(oldWorld)) {
 				throw new IllegalStateException("Unable to remove old world from scheduler");
 			}
-			oldWorld.unload(false);
 		}
 		if (!scheduler.addAsyncManager(world)) {
 			this.world.compareAndSet(world, null);

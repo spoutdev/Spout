@@ -26,35 +26,38 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
-import org.spout.api.component.Component;
+import org.spout.api.Client;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.reposition.RepositionManager;
+
+import org.spout.engine.SpoutConfiguration;
+import org.spout.engine.entity.SpoutClientPlayer;
+import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 
 public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
-	@SuppressWarnings("unchecked")
 	@Override
 	public void handleClient(Session session, AddEntityMessage message) {
-		if(!session.hasPlayer()) {
-			return;
-		}
-		System.out.println("Ading entity with id " + message.getEntityId());
-
-		Player player = session.getPlayer();
-		RepositionManager rmInverse = player.getNetworkSynchronizer().getRepositionManager().getInverse();
-		Entity newEntity;
+		RepositionManager rmInverse = session.getNetworkSynchronizer().getRepositionManager().getInverse();
+		Entity entity;
+		//Spawning a player
 		if (message.getEntityId() == session.getDataMap().get(SpoutProtocol.PLAYER_ENTITY_ID)) {
-			newEntity = player;
+			//The client has no client player
+			if (((Client) session.getEngine()).getPlayer() == null) {
+				//TODO How do we get the name of the player? Tie it to session?
+				entity = new SpoutClientPlayer(session.getEngine(), "Spouty", message.getTransform(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
+			} else {
+				entity = session.getPlayer();
+			}
 		} else {
-			newEntity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()), (Class<? extends Component>)null);
+			entity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()));
 		}
-
-		newEntity.getScene().setTransform(rmInverse.convert(message.getTransform()));
-		//newEntity.setId(message.getEntityId()); // TODO: Allow providing an entity ID to use
-		session.getEngine().getDefaultWorld().spawnEntity(newEntity);
+		((SpoutEntity) entity).setId(message.getEntityId());
+		entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
+		session.getEngine().getDefaultWorld().spawnEntity(entity);
 	}
 }

@@ -42,16 +42,11 @@ import org.spout.api.util.SpoutToStringStyle;
 public class AddEntityMessage extends SpoutMessage {
 	private final int entityId;
 	private final UUID worldUid;
-
 	private final Vector3 pos, scale;
 	private final Quaternion rotation;
 
-	public AddEntityMessage(int entityId, Transform transform, RepositionManager rm) {
-		this.entityId = entityId;
-		this.worldUid = transform.getPosition().getWorld().getUID();
-		this.pos = rm.convert(transform.getPosition());
-		this.rotation = transform.getRotation();
-		this.scale = transform.getScale();
+	public AddEntityMessage(int entityId, UUID worldUid, Transform transform, RepositionManager rm) {
+		this(entityId, worldUid, transform.getPosition(), transform.getRotation(), transform.getScale(), rm);
 	}
 
 	public AddEntityMessage(int entityId, UUID worldUid, Vector3 pos, Quaternion rotation, Vector3 scale, RepositionManager rm) {
