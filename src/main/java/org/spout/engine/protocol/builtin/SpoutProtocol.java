@@ -103,15 +103,7 @@ public class SpoutProtocol extends Protocol {
 	@Override
 	public void initializeSession(final Session session) {
 		session.setNetworkSynchronizer(new SpoutNetworkSynchronizer(session));
-
-		session.send(false, new StringMapMessage(StringMap.REGISTRATION_MAP, StringMapEvent.Action.SET, StringMap.get(StringMap.REGISTRATION_MAP).getItems()));
-        /*StringMap.get(StringMap.REGISTRATION_MAP).registerListener(new EventableListener<StringMapEvent>() {
-            @Override
-            public void onEvent(StringMapEvent event) {
-                session.send(false, new StringMapMessage(event.getAssociatedObject().getId(), StringMapEvent.Action.ADD, event.getModifiedElements()));
-            }
-        });*/ // Not correct - TODO Fix
-
+		//TODO Ensure this is right, very important
 		for (StringMap map : StringMap.getAll()) {
 			session.send(false, new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
 		}

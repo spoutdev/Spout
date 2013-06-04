@@ -42,6 +42,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import org.spout.api.Client;
 import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
