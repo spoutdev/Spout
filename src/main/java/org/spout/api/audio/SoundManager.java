@@ -43,6 +43,15 @@ public interface SoundManager {
 	 * Creates a new {@link SoundSource} with the specified name.
 	 *
 	 * @param sound a Sound object for the new SoundSource
+	 * @param music true if music
+	 * @return the created SoundSource
+	 */
+	public SoundSource createSource(Sound sound, boolean music);
+
+	/**
+	 * Creates a new {@link SoundSource} with the specified name.
+	 *
+	 * @param sound a Sound object for the new SoundSource
 	 * @return the created SoundSource
 	 */
 	public SoundSource createSource(Sound sound);
@@ -81,6 +90,39 @@ public interface SoundManager {
 	 * @return true if has source
 	 */
 	public boolean isSource(int id);
+
+	/**
+	 * Returns the overall gain for sounds.
+	 *
+	 * @return overall gain
+	 */
+	public float getGain();
+
+	/**
+	 * Sets the overall gain for sounds.
+	 *
+	 * @param gain to set
+	 */
+	public void setGain(float gain);
+
+	/**
+	 * Returns the overall gain for music.
+	 *
+	 * @return gain
+	 */
+	public float getMusicGain();
+
+	/**
+	 * Sets the overall gain for music.
+	 *
+	 * @param musicGain gain
+	 */
+	public void setMusicGain(float musicGain);
+
+	/**
+	 * Levels off the current sounds and music to set gain levels.
+	 */
+	public void level();
 
 	/**
 	 * Returns a set of all loaded sounds.

@@ -41,14 +41,38 @@ import org.spout.api.util.Named;
 public abstract class SoundSource {
 	protected final int id;
 	protected Sound sound;
+	protected boolean music;
 	protected World world;
 
 	protected SoundSource(int id) {
 		this.id = id;
 	}
 
+	/**
+	 * Returns the unique identifier for this source.
+	 *
+	 * @return source
+	 */
 	public int getId() {
 		return id;
+	}
+
+	/**
+	 * Returns true if this source is categorized as a music source.
+	 *
+	 * @return true if music
+	 */
+	public boolean isMusic() {
+		return music;
+	}
+
+	/**
+	 * Sets if this source is categorized as a music source.
+	 *
+	 * @param music true if music
+	 */
+	public void setMusic(boolean music) {
+		this.music = music;
 	}
 
 	/**
