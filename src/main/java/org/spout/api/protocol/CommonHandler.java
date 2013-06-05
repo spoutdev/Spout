@@ -79,7 +79,9 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 
 		// ctx.getPipeline().addBefore("2", "messagePrinter", new MessagePrintingHandler());
 
-		if (!upstream) {
+		if (upstream) {
+            engine.getLogger().info("Upstream channel connected: " + c + ".");
+		} else {
 			try {
 				engine.getChannelGroup().add(c);
 				Session session = engine.newSession(c);
@@ -90,8 +92,6 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 				ex.printStackTrace();
 				throw new RuntimeException("Exception thrown when connecting", ex);
 			}
-		} else {
-			engine.getLogger().info("Upstream channel connected: " + c + ".");
 		}
 	}
 

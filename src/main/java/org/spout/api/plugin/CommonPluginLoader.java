@@ -52,6 +52,7 @@ import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.UnknownDependencyException;
 import org.spout.api.exception.UnknownSoftDependencyException;
 import org.spout.api.plugin.security.CommonSecurityManager;
+import org.spout.api.protocol.Protocol;
 
 public class CommonPluginLoader implements PluginLoader {
 	public static final String YAML_SPOUT = "properties.yml";
@@ -164,6 +165,12 @@ public class CommonPluginLoader implements PluginLoader {
 				result = constructor.newInstance();
 	
 				result.initialize(this, engine, desc, dataFolder, paramFile, loader);
+				
+				for (String protocolString : desc.getProtocols()) {
+					Class<? extends Protocol> protocol = Class.forName(protocolString, true, loader).asSubclass(Protocol.class);
+					Constructor<? extends Protocol> pConstructor = protocol.getConstructor();
+					Protocol.registerProtocol(pConstructor.newInstance());
+				}
 	
 				if (!locked) {
 					manager.unlock(key);

@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 import org.spout.api.Engine;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.lang.PluginDictionary;
+import org.spout.api.protocol.Protocol;
 import org.spout.api.util.Named;
 
 public interface Plugin extends Named {
@@ -51,11 +52,6 @@ public interface Plugin extends Named {
 	 * Called when the server is reloaded
 	 */
 	public void onReload();
-
-	/**
-	 * Called when the plugin is initially loaded
-	 */
-	public void onLoad();
 
 	/**
 	 * Returns true if the plugins is enabled

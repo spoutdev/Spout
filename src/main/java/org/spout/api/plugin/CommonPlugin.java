@@ -43,6 +43,7 @@ import org.spout.api.UnsafeMethod;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.lang.JavaPluginDictionary;
 import org.spout.api.lang.PluginDictionary;
+import org.spout.api.protocol.Protocol;
 
 public abstract class CommonPlugin implements Plugin {
 	private Engine engine;
@@ -81,11 +82,6 @@ public abstract class CommonPlugin implements Plugin {
 	@Override
 	@UnsafeMethod
 	public void onReload() {
-	}
-
-	@Override
-	@UnsafeMethod
-	public void onLoad() {
 	}
 
 	@Override

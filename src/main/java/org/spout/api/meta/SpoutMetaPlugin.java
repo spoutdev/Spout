@@ -39,6 +39,7 @@ import org.spout.api.lang.PluginDictionary;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginDescriptionFile;
 import org.spout.api.plugin.PluginLoader;
+import org.spout.api.protocol.Protocol;
 
 public final class SpoutMetaPlugin implements Plugin {
 	private PluginDescriptionFile pdf;
@@ -66,10 +67,6 @@ public final class SpoutMetaPlugin implements Plugin {
 
 	@Override
 	public void onReload() {
-	}
-
-	@Override
-	public void onLoad() {
 	}
 
 	@Override
