@@ -135,7 +135,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	protected void postPluginLoad(SpoutConfiguration config) {
+	protected void setupBindings(SpoutConfiguration config) {
 		PortBindings portBindings = new PortBindings(this, config);
 		try {
 			portBindings.load(config);

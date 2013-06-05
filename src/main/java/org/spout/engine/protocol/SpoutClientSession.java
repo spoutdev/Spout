@@ -34,6 +34,7 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.engine.SpoutClient;
+import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.world.SpoutWorld;
 
@@ -96,5 +97,19 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> {
 
 	public PortBinding getActiveAddress() {
 		return new PortBindingImpl(getProtocol(), channel.getRemoteAddress());
+	}
+
+	@Override
+	public SpoutClientPlayer getPlayer() {
+		return (SpoutClientPlayer) super.getPlayer();
+	}
+
+	@Override
+	public void setPlayer(SpoutPlayer player) {
+		if (!(player instanceof SpoutClientPlayer)) {
+			// Force player to be a SpoutClientPlayer
+			throw new IllegalArgumentException("Player in SpoutClientSession MUST be a SpoutClientPlayer");
+		}
+		super.setPlayer(player);
 	}
 }
