@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.*;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -65,11 +65,11 @@ public class SpoutInputManager implements InputManager {
 		bind(new Binding("right", Keyboard.valueOf(SpoutInputConfiguration.RIGHT.getString().toUpperCase())).setAsync(true));
 		bind(new Binding("jump", Keyboard.valueOf(SpoutInputConfiguration.UP.getString().toUpperCase())).setAsync(true));
 		bind(new Binding("crouch", Keyboard.valueOf(SpoutInputConfiguration.DOWN.getString().toUpperCase())).setAsync(true));
-		bind(new Binding("select_down", org.spout.api.input.Mouse.MOUSE_SCROLLDOWN).setAsync(true));
-		bind(new Binding("select_up", org.spout.api.input.Mouse.MOUSE_SCROLLUP).setAsync(true));
-		bind(new Binding("left_click", org.spout.api.input.Mouse.MOUSE_BUTTON0).setAsync(true));
-		bind(new Binding("interact", org.spout.api.input.Mouse.MOUSE_BUTTON1).setAsync(true));
-		bind(new Binding("fire_2", org.spout.api.input.Mouse.MOUSE_BUTTON2).setAsync(true));
+		bind(new Binding("select_down", Mouse.SCROLL_DOWN).setAsync(true));
+		bind(new Binding("select_up", Mouse.SCROLL_UP).setAsync(true));
+		bind(new Binding("left_click", Mouse.BUTTON_LEFT).setAsync(true));
+		bind(new Binding("interact", Mouse.BUTTON_RIGHT).setAsync(true));
+		bind(new Binding("fire_2", Mouse.BUTTON_MIDDLE).setAsync(true));
 	}
 
 	@Override
@@ -112,10 +112,10 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	@Override
-	public Set<Binding> getMouseBindingsFor(Mouse mouse) {
+	public Set<Binding> getMouseBindingsFor(int mouse) {
 		Set<Binding> bound = new HashSet<Binding>();
 		for (Binding binding : bindings) {
-			for (Mouse button : binding.getMouseBindings()) {
+			for (int button : binding.getMouseBindings()) {
 				if (button == mouse) {
 					bound.add(binding);
 					break;
@@ -159,8 +159,8 @@ public class SpoutInputManager implements InputManager {
 				x = org.lwjgl.input.Mouse.getEventX();
 				y = org.lwjgl.input.Mouse.getEventY();
 
-				Mouse button = Mouse.get(org.lwjgl.input.Mouse.getEventButton());
-				if (button != null) {
+				int button = org.lwjgl.input.Mouse.getEventButton();
+				if (button != -1) { // -1 if no button clicked
 					onMouseClicked(player, button, org.lwjgl.input.Mouse.getEventButtonState(), x, y);
 					continue;
 				}
@@ -168,9 +168,9 @@ public class SpoutInputManager implements InputManager {
 				// Handle scrolls
 				int scroll = org.lwjgl.input.Mouse.getEventDWheel();
 				if (scroll < 0) {
-					onMouseClicked(player, Mouse.MOUSE_SCROLLUP, true, x, y);
+					onMouseClicked(player, Mouse.SCROLL_UP, true, x, y);
 				} else if (scroll > 0) {
-					onMouseClicked(player, Mouse.MOUSE_SCROLLDOWN, true, x, y);
+					onMouseClicked(player, Mouse.SCROLL_DOWN, true, x, y);
 				}
 
 				onMouseMove(player, org.lwjgl.input.Mouse.getEventDX(), org.lwjgl.input.Mouse.getEventDY(), org.lwjgl.input.Mouse.getEventX(), org.lwjgl.input.Mouse.getEventY());
@@ -211,7 +211,7 @@ public class SpoutInputManager implements InputManager {
 		executeBindings(getKeyBindingsFor(key), player, pressed);
 	}
 
-	private void onMouseClicked(Player player, Mouse button, boolean pressed, int x, int y) {
+	private void onMouseClicked(Player player, int button, boolean pressed, int x, int y) {
 		PlayerClickEvent event = Spout.getEventManager().callEvent(new PlayerClickEvent(player, button, pressed, new IntVector2(x, y)));
 		if (event.isCancelled()) {
 			return;
