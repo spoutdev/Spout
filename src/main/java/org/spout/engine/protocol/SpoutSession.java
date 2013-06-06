@@ -398,5 +398,9 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		}
 	}
 
+	public Channel getChannel() {
+		return channel;
+	}
+
 	public abstract boolean disconnect(boolean kick, boolean stop, String reason);
 }

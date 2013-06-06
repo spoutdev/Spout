@@ -28,6 +28,7 @@ package org.spout.engine;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.lang.reflect.Constructor;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetSocketAddress;
@@ -48,7 +49,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import org.spout.api.Engine;
@@ -119,11 +119,9 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.MemoryReclamationThread;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
-import org.spout.engine.world.WorldSavingThread;
-
-import static org.spout.api.lang.Translation.broadcast;
 import static org.spout.api.lang.Translation.log;
 import static org.spout.api.lang.Translation.tr;
+import org.spout.api.plugin.CommonPlugin;
 
 public abstract class SpoutEngine implements AsyncManager, Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
@@ -182,6 +180,13 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			new TicklockMonitor().start();
 			new DeadlockMonitor().start();
 		}
+        
+		// Must register protocol on init or client session can't happen
+		Protocol.registerProtocol(new SpoutProtocol());
+		if (Protocol.getProtocol("Spout") == null) {
+			throw new IllegalStateException("SpoutProtocol was not successfully registered!");
+		}
+		loadPluginsAndProtocol();
 	}
 
 	@Override
@@ -229,8 +234,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			AnnotatedCommandExecutorFactory.create(new AnnotatedCommandExecutorTest.ChildExecutor(), cmdManager.getCommand("root"));
 		}
 
-		Protocol.registerProtocol(new SpoutProtocol());
-
 		//Setup the Material Registry
 		engineItemMap = MaterialRegistry.setupRegistry();
 		//Setup the Biome Registry
@@ -239,8 +242,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		engineLightingMap = LightingRegistry.setupRegistry();
 
 		// Start loading plugins
-		loadPlugins();
-		postPluginLoad(config);
+		setupBindings(config);
 		enablePlugins();
 
 		if (checkWorlds) {
@@ -269,27 +271,16 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	/**
-	 * This method is called after {@link #loadPlugins()} but before {@link #enablePlugins()}
+	 * This method is called before {@link #enablePlugins()}
 	 */
-	protected void postPluginLoad(SpoutConfiguration config) {
+	protected void setupBindings(SpoutConfiguration config) {
 	}
 
-	public void loadPlugins() {
+	private void loadPluginsAndProtocol() {
 		pluginManager.registerPluginLoader(CommonPluginLoader.class);
 		pluginManager.clearPlugins();
 
 		List<Plugin> plugins = pluginManager.loadPlugins(CommonFileSystem.PLUGINS_DIRECTORY);
-
-		for (Plugin plugin : plugins) {
-			try {
-				//Technically unsafe.  This should call the security manager
-				plugin.onLoad();
-			} catch (Exception ex) {
-				//TODO: fix
-				//log("Error loading %0: %1", Level.SEVERE, plugin.getDescription().getName(), ex.getMessage(), ex);
-				ex.printStackTrace();
-			}
-		}
 	}
 
 	public SpoutApplication getArguments() {
