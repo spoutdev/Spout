@@ -121,7 +121,6 @@ import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
-import static org.spout.api.lang.Translation.broadcast;
 import static org.spout.api.lang.Translation.log;
 import static org.spout.api.lang.Translation.tr;
 

@@ -52,7 +52,7 @@ import org.spout.api.math.IntVector2;
 import org.spout.engine.component.entity.SpoutSceneComponent;
 
 public class SpoutInputManager implements InputManager {
-	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
+	private static final int FOCUS_KEY = Keyboard.KEY_TAB;
 	private final Set<Binding> bindings = new HashSet<Binding>();
 	private final Set<InputExecutor> inputExecutors = new HashSet<InputExecutor>();
 	
@@ -98,10 +98,10 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	@Override
-	public Set<Binding> getKeyBindingsFor(Keyboard key) {
+	public Set<Binding> getKeyBindingsFor(int key) {
 		Set<Binding> bound = new HashSet<Binding>();
 		for (Binding binding : bindings) {
-			for (Keyboard k : binding.getKeyBindings()) {
+			for (int k : binding.getKeyBindings()) {
 				if (k == key) {
 					bound.add(binding);
 					break;
@@ -143,10 +143,7 @@ public class SpoutInputManager implements InputManager {
 	public void pollInput(Player player) {
 		if (org.lwjgl.input.Keyboard.isCreated()) {
 			while (org.lwjgl.input.Keyboard.next()) {
-				Keyboard key = Keyboard.get(org.lwjgl.input.Keyboard.getEventKey());
-				if (key != null) {
-					onKeyPressed(player, key, org.lwjgl.input.Keyboard.getEventKeyState(), org.lwjgl.input.Keyboard.getEventCharacter());
-				}
+				onKeyPressed(player, org.lwjgl.input.Keyboard.getEventKey(), org.lwjgl.input.Keyboard.getEventKeyState(), org.lwjgl.input.Keyboard.getEventCharacter());
 			}
 		}
 
@@ -178,7 +175,7 @@ public class SpoutInputManager implements InputManager {
 		}
 	}
 	
-	private void onKeyPressed(Player player, Keyboard key, boolean pressed, char ch) {
+	private void onKeyPressed(Player player, int key, boolean pressed, char ch) {
 		final PlayerKeyEvent event = Spout.getEventManager().callEvent(new PlayerKeyEvent(player, key, pressed, ch));
 		if (event.isCancelled()) {
 			return;
@@ -192,7 +189,7 @@ public class SpoutInputManager implements InputManager {
 		Screen in = getInputScreen();
 		if (key == FOCUS_KEY && pressed) {
 			if (in != null) {
-				if (org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_LSHIFT.getId()) || org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_RSHIFT.getId())) {
+				if (org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 					in.previousFocus(FocusReason.KEYBOARD_TAB);
 				} else {
 					in.nextFocus(FocusReason.KEYBOARD_TAB);

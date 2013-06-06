@@ -36,7 +36,6 @@ import java.util.logging.Logger;
 import jline.Completor;
 import org.spout.api.Engine;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.logging.LoggerOutputStream;
 import org.spout.logging.file.RotatingFileHandler;
 import org.spout.logging.jline.CommandCallback;
