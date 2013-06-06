@@ -50,7 +50,7 @@ public class SpoutEntityProtocol implements EntityProtocol {
 
 	@Override
 	public List<Message> getSpawnMessages(Entity entity, RepositionManager rm) {
-		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getUID(), entity.getScene().getTransform(), rm));
+		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getWorld().getUID(), entity.getScene().getTransform(), rm));
 	}
 
 	@Override
