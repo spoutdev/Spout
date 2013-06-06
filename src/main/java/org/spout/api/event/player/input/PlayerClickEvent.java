@@ -29,23 +29,22 @@ package org.spout.api.event.player.input;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
-import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
 
 public class PlayerClickEvent extends PlayerInputEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
-	private final Mouse button;
+	private final int button;
 	private final boolean pressed;
 	private final IntVector2 pos;
 
-	public PlayerClickEvent(Player p, Mouse button, boolean pressed, IntVector2 pos) {
+	public PlayerClickEvent(Player p, int button, boolean pressed, IntVector2 pos) {
 		super(p);
 		this.button = button;
 		this.pressed = pressed;
 		this.pos = pos;
 	}
 
-	public Mouse getButton() {
+	public int getButton() {
 		return button;
 	}
 

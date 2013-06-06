@@ -26,34 +26,15 @@
  */
 package org.spout.api.input;
 
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+public final class Mouse {
+	public static final int BUTTON_LEFT = 0;
+	public static final int BUTTON_RIGHT = 1;
+	public static final int BUTTON_MIDDLE = 2;
 
-public enum Mouse {
-	MOUSE_BUTTON0(0),
-	MOUSE_BUTTON1(1),
-	MOUSE_BUTTON2(2),
-	MOUSE_SCROLLUP(0x0A),
-	MOUSE_SCROLLDOWN(0x0B);
+	// dummy ids
+	public static final int SCROLL_UP = Integer.MAX_VALUE;
+	public static final int SCROLL_DOWN = SCROLL_UP - 1;
 
-	private static final TIntObjectMap<Mouse> idMap = new TIntObjectHashMap<Mouse>(Mouse.values().length);
-	private final int id;
-
-	static {
-		for (Mouse button : Mouse.values()) {
-			idMap.put(button.id, button);
-		}
-	}
-
-	public static Mouse get(int id) {
-		return idMap.get(id);
-	}
-
-	private Mouse(int id) {
-		this.id = id;
-	}
-
-	public int getId() {
-		return id;
+	private Mouse() {
 	}
 }
