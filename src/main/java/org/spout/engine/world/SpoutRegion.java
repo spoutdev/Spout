@@ -231,11 +231,11 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 		}
 
-		generator = new RegionGenerator(this, 4);
-
 		if (Spout.getPlatform() == Platform.CLIENT) {
+			this.generator = null;
 			this.chunkStore = null;
 		} else {
+			this.generator = new RegionGenerator(this, 4);
 			this.chunkStore = world.getRegionFile(getX(), getY(), getZ());
 		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), null, this, world.getAge());
