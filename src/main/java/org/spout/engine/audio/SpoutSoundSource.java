@@ -30,7 +30,6 @@ import java.nio.FloatBuffer;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundSource;
 import org.spout.api.audio.SoundState;
 import org.spout.api.event.audio.SoundBindEvent;
