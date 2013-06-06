@@ -30,6 +30,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.util.Collection;
@@ -37,13 +38,16 @@ import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
@@ -56,11 +60,13 @@ import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
+import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.math.Vector2;
 import org.spout.api.plugin.PluginStore;
+import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
@@ -78,14 +84,13 @@ import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.listener.SpoutClientListener;
-import org.spout.engine.listener.channel.SpoutClientConnectListener;
+import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
-	private final AtomicReference<PortBinding> potentialBinding = new AtomicReference<PortBinding>();
 	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
 	private final AtomicReference<SpoutClientWorld> world = new AtomicReference<SpoutClientWorld>();
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
@@ -144,6 +149,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void start(boolean checkWorlds) {
+		if (!connnect()) {
+			return;
+		}
 		super.start(checkWorlds);
 
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
@@ -162,12 +170,53 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		filesystem.postStartup();
+		SpoutClientSession get = session.get();
+		get.send(true, true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().getRemoteAddress()));
+	}
+
+	private boolean connnect() {
+		// Connect to server to establish session
+		Protocol protocol = null;
+		if (getArguments().protocol != null) {
+			protocol = Protocol.getProtocol(getArguments().protocol);
+		}
+		if (protocol == null) {
+			protocol = Protocol.getProtocol("Spout");
+		}
+		String address;
+		if (getArguments().server == null) {
+			address = "localhost";
+		} else {
+			address = getArguments().server;
+		}
+		int port = getArguments().port != -1 ? getArguments().port : protocol.getDefaultPort();
+		PortBindingImpl binding = new PortBindingImpl(protocol, new InetSocketAddress(address, port));
+		ChannelFuture connect = bootstrap.connect(binding.getAddress());
+		try {
+			connect.await(10, TimeUnit.SECONDS);
+		} catch (InterruptedException ex) {
+			getLogger().log(Level.SEVERE, "Connection took too long! Cancelling connect and stopping engine!");
+			stop();// TODO make sure that this is fine here
+			return false;
+		}
+		getLogger().log(Level.INFO, "Connected to " + address + ":" + port + " with protocol " + protocol.getName());
+
+		Channel channel = connect.getChannel();
+		if (connect.isSuccess()) {
+			CommonHandler handler = channel.getPipeline().get(CommonHandler.class);
+			SpoutClientSession session = new SpoutClientSession(this, channel, protocol);
+			handler.setSession(session);
+			setSession(session);
+		} else {
+			getLogger().log(Level.SEVERE, "Could not connect to " + binding, connect.getCause());
+			return false;
+		}
+		return true;
 	}
 
 	@Override
-	public SpoutPlayer getPlayer() {
-		//TODO This is bad, rethink this
-		return (SpoutClientPlayer) world.get().getPlayers().get(0);
+	public SpoutClientPlayer getPlayer() {
+        return session.get().getPlayer();
 	}
 
 	@Override
@@ -318,13 +367,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public SpoutClientSession newSession(Channel channel) {
-		Protocol protocol = potentialBinding.getAndSet(null).getProtocol();
-		return new SpoutClientSession(this, channel, protocol);
-	}
-
-	public void connect(final PortBinding binding) {
-		potentialBinding.set(binding);
-		getBootstrap().connect(binding.getAddress()).addListener(new SpoutClientConnectListener(this, binding));
+		// TODO this really needs to be removed and moved to server only
+		throw new UnsupportedOperationException("Can't add new session on client!");
+		//return new SpoutClientSession(this, channel, protocol);
 	}
 
 	public void disconnected() {

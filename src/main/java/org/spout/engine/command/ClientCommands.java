@@ -26,20 +26,15 @@
  */
 package org.spout.engine.command;
 
-import java.net.InetSocketAddress;
-
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
-import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.input.Binding;
 import org.spout.api.input.Keyboard;
-import org.spout.api.protocol.Protocol;
 
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.protocol.PortBindingImpl;
 
 public class ClientCommands extends CommonCommands {
 	public ClientCommands(SpoutEngine engine) {
@@ -49,25 +44,6 @@ public class ClientCommands extends CommonCommands {
 	@Override
 	public SpoutClient getEngine() {
 		return (SpoutClient) super.getEngine();
-	}
-
-	@Command(aliases = {"connect", "conn"}, desc = "Connect to a server", usage = "<protocol> <address> [port]", min = 2, max = 3)
-	public void connectClient(CommandSource source, CommandArguments args) throws CommandException {
-		Protocol protocol = Protocol.getProtocol(args.getString(0));
-		if (protocol == null) {
-			throw new CommandException("Unknown protocol: " + args.getString(0));
-		}
-		String address = args.getString(1);
-		int port = args.length() > 2 ? args.getInteger(2) : protocol.getDefaultPort();
-		getEngine().connect(new PortBindingImpl(protocol, new InetSocketAddress(address, port)));
-		source.sendMessage("Connected to " + address + ":" + port + " with protocol " + protocol.getName());
-	}
-
-	@Command(aliases = "disconnect", desc = "Disconnect the client from the server", usage = "[message]", min = 0, max = -1)
-	public void executeClient(CommandSource source, CommandArguments args) {
-		if (source instanceof Player) {
-			((Player) source).getSession().dispose();
-		}
 	}
 
 	@Command(aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key", min = 2)
