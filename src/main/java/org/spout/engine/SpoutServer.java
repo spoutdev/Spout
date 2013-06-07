@@ -26,6 +26,8 @@
  */
 package org.spout.engine;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 import java.io.IOException;
@@ -39,9 +41,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 
 import org.apache.commons.lang3.Validate;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -59,11 +63,18 @@ import org.teleal.cling.transport.spi.InitializationException;
 import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.command.CommandSource;
+import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Listener;
 import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
+import org.spout.api.event.world.WorldLoadEvent;
+import org.spout.api.event.world.WorldUnloadEvent;
 import org.spout.api.exception.ConfigurationException;
+import org.spout.api.generator.EmptyWorldGenerator;
+import org.spout.api.generator.WorldGenerator;
+import org.spout.api.generator.biome.BiomeRegistry;
+import org.spout.api.geo.World;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
@@ -86,6 +97,16 @@ import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
 import static org.spout.api.lang.Translation.log;
+import org.spout.api.lighting.LightingRegistry;
+import org.spout.api.material.MaterialRegistry;
+import org.spout.api.util.StringMap;
+import org.spout.engine.component.entity.SpoutSceneComponent;
+import org.spout.engine.filesystem.versioned.PlayerFiles;
+import org.spout.engine.filesystem.versioned.WorldFiles;
+import org.spout.engine.protocol.SpoutSession;
+import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
+import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
+import org.spout.engine.world.SpoutServerWorld;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	/**
@@ -108,8 +129,13 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * The {@link AccessManager} for the Server.
 	 */
 	private final SpoutAccessManager accessManager = new SpoutAccessManager();
+	private final SnapshotableLinkedHashMap<String, SpoutServerWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutServerWorld>(snapshotManager);
+	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
 	private final Object jmdnsSync = new Object();
 	private JmDNS jmdns = null;
+	private StringMap engineItemMap = null;
+	private StringMap engineBiomeMap = null;
+	private StringMap engineLightingMap = null;
 
 	public SpoutServer() {
 		this.filesystem = new CommonFileSystem();
@@ -126,7 +152,28 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	public void start(boolean checkWorlds, Listener listener) {
+		//Setup the Material Registry
+		engineItemMap = MaterialRegistry.setupRegistry();
+		//Setup the Biome Registry
+		engineBiomeMap = BiomeRegistry.setupRegistry();
+		//Setup the Lighting Registry
+		engineLightingMap = LightingRegistry.setupRegistry();
 		super.start(checkWorlds);
+		if (checkWorlds) {
+			//At least one plugin should have registered atleast one world
+			if (loadedWorlds.getLive().isEmpty()) {
+				throw new IllegalStateException("There are no loaded worlds! You must install a plugin that creates a world (Did you forget Vanilla?)");
+			}
+
+			//Pick the default world from the configuration
+			World world = this.getWorld(SpoutConfiguration.DEFAULT_WORLD.getString());
+			if (world != null) {
+				this.setDefaultWorld(world);
+			}
+
+			//If we don't have a default world set, just grab one.
+			getDefaultWorld();
+		}
 		getEventManager().registerEvents(listener, this);
 		getEventManager().callEvent(new EngineStartEvent());
 		filesystem.postStartup();
@@ -455,5 +502,244 @@ public class SpoutServer extends SpoutEngine implements Server {
 			}
 			getLogger().info("<<< Bonjour service shutdown completed.");
 		}
+	}
+	
+	@Override
+	public void startTickRun(int stage, long delta) {
+		switch (stage) {
+			case 0:
+				engineItemMap.save();
+				engineBiomeMap.save();
+				break;
+		}
+	}
+
+	/**
+	 * Gets the item map used across all worlds on the engine
+	 * @return engine map
+	 */
+	public StringMap getEngineItemMap() {
+		return engineItemMap;
+	}
+
+	/**
+	 * Gets the lighting map used across all worlds on the engine
+	 * @return engine map
+	 */
+	public StringMap getEngineLightingMap() {
+		return engineLightingMap;
+	}
+
+	/**
+	 * Gets the biome map used accorss all worlds on the engine
+	 * @return biome map
+	 */
+	public StringMap getBiomeMap() {
+		return engineBiomeMap;
+	}
+
+	@Override
+	public Collection<World> matchWorld(String name) {
+		return StringUtil.matchName(getWorlds(), name);
+	}
+
+	@Override
+	public Collection<File> matchWorldFolder(String worldName) {
+		return StringUtil.matchFile(getWorldFolders(), worldName);
+	}
+
+	@Override
+	public SpoutServerWorld getWorld(String name) {
+		return getWorld(name, true);
+	}
+
+	@Override
+	public SpoutServerWorld getWorld(String name, boolean exact) {
+		if (exact) {
+			SpoutServerWorld world = loadedWorlds.get().get(name);
+			if (world != null) {
+				return world;
+			}
+			return loadedWorlds.getLive().get(name);
+		} else {
+			return StringUtil.getShortest(StringUtil.matchName(loadedWorlds.getValues(), name));
+		}
+	}
+	@Override
+	public SpoutServerWorld getWorld(UUID uid) {
+		for (SpoutServerWorld world : loadedWorlds.getValues()) {
+			if (world.getUID().equals(uid)) {
+				return world;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Collection<World> getWorlds() {
+		Collection<World> w = new ArrayList<World>();
+		for (SpoutServerWorld world : loadedWorlds.getValues()) {
+			w.add(world);
+		}
+		return w;
+	}
+
+	@Override
+	public World loadWorld(String name, WorldGenerator generator) {
+		if (loadedWorlds.get().containsKey((name))) {
+			return loadedWorlds.get().get(name);
+		}
+		if (loadedWorlds.getLive().containsKey(name)) {
+			return loadedWorlds.getLive().get(name);
+		}
+
+		// TODO - should include generator (and non-zero seed)
+		if (generator == null) {
+			generator = defaultGenerator;
+		}
+
+		SpoutServerWorld world = WorldFiles.loadWorld(this, generator, name);
+
+		World oldWorld = loadedWorlds.putIfAbsent(name, world);
+
+		if (oldWorld != null) {
+			return oldWorld;
+		}
+
+		if (!scheduler.addAsyncManager(world)) {
+			throw new IllegalStateException("Unable to add world to the scheduler");
+		}
+		getEventManager().callDelayedEvent(new WorldLoadEvent(world));
+		return world;
+	}
+
+	@Override
+	public void save(boolean worlds, boolean players) {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public List<File> getWorldFolders() {
+		File[] folders = this.getWorldFolder().listFiles((FilenameFilter) DirectoryFileFilter.INSTANCE);
+		if (folders == null || folders.length == 0) {
+			return new ArrayList<File>();
+		}
+		List<File> worlds = new ArrayList<File>(folders.length);
+		// Are they really world folders?
+		for (File world : folders) {
+			if (new File(world, "world.dat").exists()) {
+				worlds.add(world);
+			}
+		}
+		return worlds;
+	}
+
+	@Override
+	public File getWorldFolder() {
+		return CommonFileSystem.WORLDS_DIRECTORY;
+	}
+
+	@Override
+	public WorldGenerator getDefaultGenerator() {
+		return defaultGenerator;
+	}
+
+	@Override
+	public World getDefaultWorld() {
+		final Map<String, SpoutServerWorld> loadedWorlds = this.loadedWorlds.get();
+
+		final World defaultWorld = this.defaultWorld.get();
+		if (defaultWorld != null && loadedWorlds.containsKey(defaultWorld.getName())) {
+			return defaultWorld;
+		}
+
+		if (loadedWorlds.isEmpty()) {
+			return null;
+		}
+
+		World first = loadedWorlds.values().iterator().next();
+		return first;
+	}
+	
+	@Override
+	public boolean unloadWorld(String name, boolean save) {
+		return unloadWorld(loadedWorlds.getLive().get(name), save);
+	}
+
+	@Override
+	public boolean unloadWorld(World world, boolean save) {
+		if (world == null) {
+			return false;
+		}
+
+		boolean success = loadedWorlds.remove(world.getName(), (SpoutServerWorld) world);
+		if (success) {
+			if (save) {
+				SpoutWorld w = (SpoutWorld) world;
+				if (!scheduler.removeAsyncManager(w)) {
+					throw new IllegalStateException("Unable to remove world from scheduler when halting was attempted");
+				}
+				getEventManager().callDelayedEvent(new WorldUnloadEvent(world));
+				w.unload(save);
+			}
+			//Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading
+			//      Also, should blank out as much internal world data as possible, in case plugins retain references to unloaded worlds
+		}
+		return success;
+	}
+	
+	@Override
+	public Entity getEntity(UUID uid) {
+		for (World w : loadedWorlds.get().values()) {
+			Entity e = w.getEntity(uid);
+			if (e != null) {
+				return e;
+			}
+		}
+		return null;
+	}
+	
+	// Players should use weak map?
+	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
+		SpoutPlayer player = PlayerFiles.loadPlayerData(playerName);
+		boolean created = false;
+		if (player == null) {
+			getLogger().info("First login for " + playerName + ", creating new player data");
+			player = new SpoutPlayer(this, playerName, null, viewDistance);
+			created = true;
+		}
+		SpoutPlayer oldPlayer = players.put(playerName, player);
+
+		if (reclamation != null) {
+			reclamation.addPlayer();
+		}
+
+		if (oldPlayer != null && oldPlayer.getSession() != null) {
+			oldPlayer.kick("Login occured from another client");
+		}
+
+		final SpoutSceneComponent scene = (SpoutSceneComponent) player.getScene();
+		
+		//Test for valid old position
+		created |= scene.getTransformLive().getPosition().getWorld() == null;
+		
+		//Connect the player and set their transform to the default world's spawn.
+		player.connect(session, created ? ((SpoutServerWorld) getDefaultWorld()).getSpawnPoint() : scene.getTransformLive());
+
+		//Spawn the player in the world
+		World world = scene.getTransformLive().getPosition().getWorld();
+		world.spawnEntity(player);
+		((SpoutServerWorld) world).addPlayer(player);
+
+		//Set the player to the session
+		session.setPlayer(player);
+
+		//Initialize the session
+		session.getProtocol().initializeSession(session);
+		return player;
+	}
+
+	protected Collection<SpoutServerWorld> getLiveWorlds() {
+		return loadedWorlds.getLive().values();
 	}
 }

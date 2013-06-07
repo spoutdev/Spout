@@ -45,6 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.spout.api.Platform;
+import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.datatable.ManagedHashMap;
@@ -236,7 +237,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			this.chunkStore = null;
 		} else {
 			this.generator = new RegionGenerator(this, 4);
-			this.chunkStore = world.getRegionFile(getX(), getY(), getZ());
+			this.chunkStore = ((SpoutServerWorld) world).getRegionFile(getX(), getY(), getZ());
 		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), null, this, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
@@ -1054,7 +1055,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 					0;
 
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			SpoutWorld world = this.getWorld();
+			SpoutClientWorld world = (SpoutClientWorld) this.getWorld();
 
 			boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
 			boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
@@ -1740,6 +1741,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 * @return true if exists, false if doesn't exist
 	 */
 	public static boolean regionFileExists(World world, int x, int y, int z) {
+		if (Spout.getPlatform() != Platform.CLIENT) {
+			return false;
+		}
 		File worldDirectory = world.getDirectory();
 		File regionDirectory = new File(worldDirectory, "region");
 		File regionFile = new File(regionDirectory, "reg" + x + "_" + y + "_" + z + ".spr");

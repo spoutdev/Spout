@@ -32,10 +32,11 @@ import java.util.logging.Level;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.geo.ClientWorld;
+import org.spout.api.geo.World;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
+import org.spout.engine.world.SpoutClientWorld;
 
 public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 	@Override
@@ -44,7 +45,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			throw new IllegalStateException("Message sent when session has no player");
 		}
 
-		ClientWorld world = (ClientWorld) session.getEngine().getDefaultWorld();
+		World world = session.getEngine().getDefaultWorld();
 		Class<? extends BiomeManager> managerClass;
 		try {
 			Class<?> testClass = Class.forName(message.getBiomeManagerClass());
@@ -71,6 +72,6 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			throw new RuntimeException(e);
 		}
 		manager.deserialize(message.getBiomeData());
-		world.addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData(), manager);
+		((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData(), manager);
 	}
 }

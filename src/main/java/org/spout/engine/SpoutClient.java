@@ -56,14 +56,12 @@ import org.spout.api.Platform;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
-import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.datatable.SerializableMap;
+import org.spout.api.entity.Entity;
 import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
-import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.math.Vector2;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonHandler;
@@ -79,7 +77,6 @@ import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.RendererCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
-import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.input.SpoutInputManager;
@@ -309,27 +306,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 			return null;
 		}
 
-		if ((exact && world.getName().equals(name))
-				|| world.getName().startsWith(name)) {
+		if ((exact && world.getName().equals(name)) || world.getName().startsWith(name)) {
 			return world;
 		} else {
 			return null;
 		}
-	}
-
-	@Override
-	public SpoutWorld getWorld(UUID uid) {
-		SpoutWorld world = this.world.get();
-		if (world != null && world.getUID().equals(uid)) {
-			return world;
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public Collection<World> getWorlds() {
-		return Collections.<World>singletonList(world.get());
 	}
 
 	@Override
@@ -338,7 +319,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
-		SpoutClientWorld world = new SpoutClientWorld(name, this, uuid, getEngineItemMap(), getEngineItemMap());
+		SpoutClientWorld world = new SpoutClientWorld(name, this, uuid);
 
 		//Load in datatable
 		SerializableMap map = world.getDatatable();
@@ -395,8 +376,18 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public World getWorld() {
+	public Entity getEntity(UUID uid) {
+		return world.get().getEntity(uid);
+	}
+
+	@Override
+	public SpoutClientWorld getWorld() {
 		return world.get();
+	}
+	
+	@Override
+	public Collection<World> getWorlds() {
+		return Collections.singleton((World) world.get());
 	}
 
 	private void unpackLwjgl(String path) {
@@ -453,4 +444,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public SpoutRenderer getRenderer() {
 		return renderer;
 	}
+
+	@Override
+	public void startTickRun(int stage, long delta) {
+		// TODO should this be removed?
+	}
+	
+	
 }

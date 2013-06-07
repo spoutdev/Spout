@@ -131,9 +131,8 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	private final EventManager eventManager = new SimpleEventManager();
 	private final RecipeManager recipeManager = new SimpleRecipeManager();
 	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
-	private final SnapshotManager snapshotManager = new SnapshotManager();
+	protected final SnapshotManager snapshotManager = new SnapshotManager();
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> players = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
-	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
@@ -141,17 +140,13 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
 	private final SpoutConfiguration config = new SpoutConfiguration();
 	private final SpoutInputConfiguration inputConfig = new SpoutInputConfiguration();
-	private final SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
-	private final SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
+	protected final SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
 	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<SocketAddress, Protocol>();
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 	protected final CommandManager cmdManager = new CommandManager();
 	private String logFile;
-	private StringMap engineItemMap = null;
-	private StringMap engineBiomeMap = null;
-	private StringMap engineLightingMap = null;
 	private SpoutApplication arguments;
-	private MemoryReclamationThread reclamation = null;
+	protected MemoryReclamationThread reclamation = null;
 	private DefaultPermissions defaultPerms;
 
 	public SpoutEngine() {
@@ -234,32 +229,9 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			AnnotatedCommandExecutorFactory.create(new AnnotatedCommandExecutorTest.ChildExecutor(), cmdManager.getCommand("root"));
 		}
 
-		//Setup the Material Registry
-		engineItemMap = MaterialRegistry.setupRegistry();
-		//Setup the Biome Registry
-		engineBiomeMap = BiomeRegistry.setupRegistry();
-		//Setup the Lighting Registry
-		engineLightingMap = LightingRegistry.setupRegistry();
-
 		// Start loading plugins
 		setupBindings(config);
 		enablePlugins();
-
-		if (checkWorlds) {
-			//At least one plugin should have registered atleast one world
-			if (loadedWorlds.getLive().isEmpty()) {
-				throw new IllegalStateException("There are no loaded worlds! You must install a plugin that creates a world (Did you forget Vanilla?)");
-			}
-
-			//Pick the default world from the configuration
-			World world = this.getWorld(SpoutConfiguration.DEFAULT_WORLD.getString());
-			if (world != null) {
-				this.setDefaultWorld(world);
-			}
-
-			//If we don't have a default world set, just grab one.
-			getDefaultWorld();
-		}
 
 		if (SpoutConfiguration.RECLAIM_MEMORY.getBoolean()) {
 			reclamation = new MemoryReclamationThread();
@@ -348,87 +320,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	@Override
-	public Collection<World> matchWorld(String name) {
-		return StringUtil.matchName(getWorlds(), name);
-	}
-
-	@Override
-	public Collection<File> matchWorldFolder(String worldName) {
-		return StringUtil.matchFile(getWorldFolders(), worldName);
-	}
-
-	@Override
-	public SpoutWorld getWorld(String name) {
-		return getWorld(name, true);
-	}
-
-	@Override
-	public SpoutWorld getWorld(String name, boolean exact) {
-		if (exact) {
-			SpoutWorld world = loadedWorlds.get().get(name);
-			if (world != null) {
-				return world;
-			}
-			return loadedWorlds.getLive().get(name);
-		} else {
-			return StringUtil.getShortest(StringUtil.matchName(loadedWorlds.getValues(), name));
-		}
-	}
-
-	@Override
-	public SpoutWorld getWorld(UUID uid) {
-		for (SpoutWorld world : loadedWorlds.getValues()) {
-			if (world.getUID().equals(uid)) {
-				return world;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public Collection<World> getWorlds() {
-		Collection<World> w = new ArrayList<World>();
-		for (SpoutWorld world : loadedWorlds.getValues()) {
-			w.add(world);
-		}
-		return w;
-	}
-
-	@Override
-	public World loadWorld(String name, WorldGenerator generator) {
-		if (loadedWorlds.get().containsKey((name))) {
-			return loadedWorlds.get().get(name);
-		}
-		if (loadedWorlds.getLive().containsKey(name)) {
-			return loadedWorlds.getLive().get(name);
-		}
-
-		// TODO - should include generator (and non-zero seed)
-		if (generator == null) {
-			generator = defaultGenerator;
-		}
-
-		SpoutWorld world = WorldFiles.loadWorld(this, generator, name);
-
-		World oldWorld = loadedWorlds.putIfAbsent(name, world);
-
-		if (oldWorld != null) {
-			return oldWorld;
-		}
-
-		if (!scheduler.addAsyncManager(world)) {
-			throw new IllegalStateException("Unable to add world to the scheduler");
-		}
-		getEventManager().callDelayedEvent(new WorldLoadEvent(world));
-		return world;
-	}
-
-	@Override
-	public void save(boolean worlds, boolean players) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public boolean stop() {
 		return stop(tr("Spout shutting down", getCommandSource())); // TODO distribute the message differently
 	}
@@ -462,27 +353,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	@Override
-	public List<File> getWorldFolders() {
-		File[] folders = this.getWorldFolder().listFiles((FilenameFilter) DirectoryFileFilter.INSTANCE);
-		if (folders == null || folders.length == 0) {
-			return new ArrayList<File>();
-		}
-		List<File> worlds = new ArrayList<File>(folders.length);
-		// Are they really world folders?
-		for (File world : folders) {
-			if (new File(world, "world.dat").exists()) {
-				worlds.add(world);
-			}
-		}
-		return worlds;
-	}
-
-	@Override
-	public File getWorldFolder() {
-		return CommonFileSystem.WORLDS_DIRECTORY;
-	}
-
-	@Override
 	public EventManager getEventManager() {
 		return eventManager;
 	}
@@ -505,11 +375,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	@Override
 	public TaskManager getParallelTaskManager() {
 		return parallelTaskManager;
-	}
-
-	@Override
-	public WorldGenerator getDefaultGenerator() {
-		return defaultGenerator;
 	}
 
 	@Override
@@ -575,16 +440,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	@Override
-	public void startTickRun(int stage, long delta) {
-		switch (stage) {
-			case 0:
-				engineItemMap.save();
-				engineBiomeMap.save();
-				break;
-		}
-	}
-
-	@Override
 	public int getMaxStage() {
 		return 0;
 	}
@@ -600,68 +455,13 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	@Override
-	public World getDefaultWorld() {
-		final Map<String, SpoutWorld> loadedWorlds = this.loadedWorlds.get();
-
-		final World defaultWorld = this.defaultWorld.get();
-		if (defaultWorld != null && loadedWorlds.containsKey(defaultWorld.getName())) {
-			return defaultWorld;
-		}
-
-		if (loadedWorlds.isEmpty()) {
-			return null;
-		}
-
-		World first = loadedWorlds.values().iterator().next();
-		return first;
-	}
-
-	@Override
 	public String getLogFile() {
 		return logFile;
-	}
-
-	@Override
-	public boolean unloadWorld(String name, boolean save) {
-		return unloadWorld(loadedWorlds.getLive().get(name), save);
-	}
-
-	@Override
-	public boolean unloadWorld(World world, boolean save) {
-		if (world == null) {
-			return false;
-		}
-
-		boolean success = loadedWorlds.remove(world.getName(), (SpoutWorld) world);
-		if (success) {
-			if (save) {
-				SpoutWorld w = (SpoutWorld) world;
-				if (!scheduler.removeAsyncManager(w)) {
-					throw new IllegalStateException("Unable to remove world from scheduler when halting was attempted");
-				}
-				getEventManager().callDelayedEvent(new WorldUnloadEvent(world));
-				w.unload(save);
-			}
-			//Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading
-			//      Also, should blank out as much internal world data as possible, in case plugins retain references to unloaded worlds
-		}
-		return success;
 	}
 
 	public EntityManager getExpectedEntityManager(Point point) {
 		Region region = point.getWorld().getRegionFromBlock(point);
 		return ((SpoutRegion) region).getEntityManager();
-	}
-
-	@Override
-	public Entity getEntity(UUID uid) {
-		for (World w : loadedWorlds.get().values()) {
-			Entity e = w.getEntity(uid);
-			if (e != null) {
-				return e;
-			}
-		}
-		return null;
 	}
 
 	@Override
@@ -694,46 +494,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		return StringUtil.matchName(Arrays.<Player>asList(players.getValues().toArray(new Player[players.getValues().size()])), name);
 	}
 
-	// Players should use weak map?
-	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
-		SpoutPlayer player = PlayerFiles.loadPlayerData(playerName);
-		boolean created = false;
-		if (player == null) {
-			getLogger().info("First login for " + playerName + ", creating new player data");
-			player = new SpoutPlayer(this, playerName, null, viewDistance);
-			created = true;
-		}
-		SpoutPlayer oldPlayer = players.put(playerName, player);
-
-		if (reclamation != null) {
-			reclamation.addPlayer();
-		}
-
-		if (oldPlayer != null && oldPlayer.getSession() != null) {
-			oldPlayer.kick("Login occured from another client");
-		}
-
-		final SpoutSceneComponent scene = (SpoutSceneComponent) player.getScene();
-		
-		//Test for valid old position
-		created |= scene.getTransformLive().getPosition().getWorld() == null;
-		
-		//Connect the player and set their transform to the default world's spawn.
-		player.connect(session, created ? getDefaultWorld().getSpawnPoint() : scene.getTransformLive());
-
-		//Spawn the player in the world
-		World world = scene.getTransformLive().getPosition().getWorld();
-		world.spawnEntity(player);
-		((SpoutWorld) world).addPlayer(player);
-
-		//Set the player to the session
-		session.setPlayer(player);
-
-		//Initialize the session
-		session.getProtocol().initializeSession(session);
-		return player;
-	}
-
 	public boolean removePlayer(SpoutPlayer player) {
 		boolean remove = players.remove(player.getName(), player);
 		if (remove) {
@@ -745,37 +505,9 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		return false;
 	}
 
-	protected Collection<SpoutWorld> getLiveWorlds() {
-		return loadedWorlds.getLive().values();
-	}
-
 	@Override
 	public CommandSource getCommandSource() {
 		return consoleManager.getCommandSource();
-	}
-
-	/**
-	 * Gets the item map used across all worlds on the engine
-	 * @return engine map
-	 */
-	public StringMap getEngineItemMap() {
-		return engineItemMap;
-	}
-
-	/**
-	 * Gets the lighting map used across all worlds on the engine
-	 * @return engine map
-	 */
-	public StringMap getEngineLightingMap() {
-		return engineLightingMap;
-	}
-
-	/**
-	 * Gets the biome map used accorss all worlds on the engine
-	 * @return biome map
-	 */
-	public StringMap getBiomeMap() {
-		return engineBiomeMap;
 	}
 
 	public boolean isSetupComplete() {

@@ -32,12 +32,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.spout.api.Client;
+import org.spout.api.Server;
+import org.spout.api.Spout;
 
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandBatch;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.Permissible;
+import org.spout.api.command.annotated.Platform;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
@@ -164,6 +168,7 @@ public class CommonCommands {
 
 	@Command(aliases = {"setspawn", "ss"}, desc = "Sets the spawnpoint for a world", min = 0, max = 4)
 	@Permissible("spout.command.setspawn")
+	@Platform(org.spout.api.Platform.SERVER)
 	public void setspawn(CommandSource source, CommandArguments args) throws CommandException {
 		//Not a player? Make sure the console is specifying world, x, y, z
 		if (!(source instanceof Player)) {
@@ -177,10 +182,11 @@ public class CommonCommands {
 			point = ((Player) source).getScene().getPosition();
 			//Either Source is the console or the player specified world, x, y, z so set those values
 		} else {
-			if (engine.getWorld(args.getString(0)) == null) {
+			World world = args.getWorld(0, true);
+			if (world == null) {
 				throw new CommandException("World: " + args.getString(0) + " is not loaded/existant!");
 			}
-			point = new Point(engine.getWorld(args.getString(0)), args.getInteger(1), args.getInteger(2), args.getInteger(3));
+			point = new Point(world, args.getInteger(1), args.getInteger(2), args.getInteger(3));
 		}
 		//Finally set the spawn point
 		point.getWorld().setSpawnPoint(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
@@ -191,6 +197,7 @@ public class CommonCommands {
 
 	@Command(aliases = {"whatisspawn", "wis"}, desc = "Tells you the spawnpoint of a world", min = 0, max = 1)
 	@Permissible("spout.command.tellspawn")
+	@Platform(org.spout.api.Platform.SERVER)
 	public void tellspawn(CommandSource source, CommandArguments args) throws CommandException {
 		if (!(source instanceof Player)) {
 			if (args.length() != 1) {
@@ -201,7 +208,7 @@ public class CommonCommands {
 		if (args.length() != 1) {
 			point = ((Player) source).getScene().getPosition();
 		} else {
-			final World world = engine.getWorld(args.getString(0));
+			final World world = args.getWorld(0, true);
 			if (world == null) {
 				throw new CommandException("World: " + args.getString(0) + " is not loaded/existant!");
 			}
@@ -214,33 +221,49 @@ public class CommonCommands {
 	@Command(aliases = {"worldinfo"}, desc = "Provides info about known worlds", usage = "[world]", min = 0, max = 1)
 	@Permissible("spout.command.worldinfo")
 	public void worldInfo(CommandSource source, CommandArguments args) throws CommandException {
-		if (args.length() == 0) {
-			Collection<World> worlds = engine.getWorlds();
-			StringBuilder output = new StringBuilder("Worlds (" + worlds.size() + "): ");
-			for (Iterator<World> i = worlds.iterator(); i.hasNext(); ) {
-				output.append(i.next().getName());
-				if (i.hasNext()) {
-					output.append(", ");
+		switch (Spout.getPlatform()) {
+			case SERVER:
+				if (args.length() == 0) {
+					Collection<World> worlds = ((Server) engine).getWorlds();
+					StringBuilder output = new StringBuilder("Worlds (" + worlds.size() + "): ");
+					for (Iterator<World> i = worlds.iterator(); i.hasNext(); ) {
+						output.append(i.next().getName());
+						if (i.hasNext()) {
+							output.append(", ");
+						}
+					}
+					source.sendMessage(output.toString());
+				} else {
+					World world = ((Server) engine).getWorld(args.getString(0));
+					if (world == null) {
+						throw new CommandException("Unknown world: " + world);
+					}
+					source.sendMessage("World: " + world.getName());
+					source.sendMessage("==========================");
+					source.sendMessage("Age: " + world.getAge());
+					source.sendMessage("UUID: " + world.getUID());
+					source.sendMessage("Seed: " + world.getSeed());
 				}
-			}
-			source.sendMessage(output.toString());
-		} else {
-			World world = engine.getWorld(args.getString(0));
-			if (world == null) {
-				throw new CommandException("Unknown world: " + world);
-			}
-			source.sendMessage("World: " + world.getName());
-			source.sendMessage("==========================");
-			source.sendMessage("Age: " + world.getAge());
-			source.sendMessage("UUID: " + world.getUID());
-			source.sendMessage("Seed: " + world.getSeed());
+				break;
+			case CLIENT:
+				World world = ((Client) engine).getWorld();
+				if (world == null) {
+					throw new CommandException("Unknown world: " + world);
+				}
+				source.sendMessage("World: " + world.getName());
+				source.sendMessage("==========================");
+				source.sendMessage("Age: " + world.getAge());
+				source.sendMessage("UUID: " + world.getUID());
+				source.sendMessage("Seed: " + world.getSeed());
+				break;
 		}
+
 	}
 
 	@Command(aliases = {"regioninfo"}, desc = "Provides info about regions", usage = "[world]", min = 1, max = 1)
 	@Permissible("spout.command.regioninfo")
 	public void chunkInfo(CommandSource source, CommandArguments args) throws CommandException {
-		World world = engine.getWorld(args.getString(0));
+		World world = engine.getWorld(args.getString(0), true);
 		if (world == null) {
 			throw new CommandException("Unknown world: " + world);
 		}
