@@ -31,6 +31,8 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import org.spout.api.Platform;
+import org.spout.api.Server;
 
 import org.spout.api.Spout;
 import org.spout.api.io.store.simple.BinaryFileStore;
@@ -65,8 +67,10 @@ public class LightingRegistry {
 		if (setup) {
 			throw new IllegalStateException("Can not setup material registry twice!");
 		}
-
-		File serverItemMap = new File(new File(Spout.getEngine().getWorldFolder(), "worlds"), "lighting.dat");
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Cannot setup LightingRegistry in Client mode!");
+		}
+		File serverItemMap = new File(new File(((Server) Spout.getEngine()).getWorldFolder(), "worlds"), "lighting.dat");
 		store.setFile(serverItemMap);
 		if (serverItemMap.exists()) {
 			store.load();
