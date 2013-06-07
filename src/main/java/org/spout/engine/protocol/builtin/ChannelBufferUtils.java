@@ -30,6 +30,9 @@ import java.nio.charset.Charset;
 import java.util.UUID;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.spout.api.Client;
+import org.spout.api.Platform;
+import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
@@ -105,7 +108,15 @@ public class ChannelBufferUtils {
 
 	public static Point readPoint(ChannelBuffer buffer) {
 		UUID uuid = readUUID(buffer);
-		World world = Spout.getEngine().getWorld(uuid);
+		World world = null;
+		if (Spout.getPlatform() == Platform.SERVER) {
+			world = ((Server) Spout.getEngine()).getWorld(uuid);
+		} else {
+			World world1 = ((Client) Spout.getEngine()).getWorld();
+			if (world1.getUID().equals(uuid)) {
+				world = world1;
+			}
+		}
 		if (world == null) {
 			throw new IllegalArgumentException("Unknown world with UUID " + uuid);
 		}

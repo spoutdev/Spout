@@ -37,15 +37,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.spout.api.Client;
 import org.spout.api.Platform;
-import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentOwner;
 import org.spout.api.component.Component;
@@ -60,9 +57,6 @@ import org.spout.api.event.Cause;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.event.server.RetrieveDataEvent;
-import org.spout.api.event.world.EntityEnterWorldEvent;
-import org.spout.api.event.world.EntityExitWorldEvent;
-import org.spout.api.event.world.WorldSaveEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeGenerator;
@@ -70,17 +64,14 @@ import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
-import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringMap;
@@ -88,7 +79,6 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.IntPairHashed;
 import org.spout.api.util.hashing.NibblePairHashed;
-import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.list.concurrent.UnprotectedCopyOnUpdateArray;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.map.WeakValueHashMap;
@@ -99,7 +89,6 @@ import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
-import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
@@ -107,12 +96,12 @@ import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 
-public class SpoutWorld extends BaseComponentOwner implements AsyncManager, World {
-	private SnapshotManager snapshotManager = new SnapshotManager();
+public abstract class SpoutWorld extends BaseComponentOwner implements AsyncManager, World {
+	protected SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * The server of this world.
 	 */
-	private final SpoutEngine engine;
+	protected final SpoutEngine engine;
 	/**
 	 * The name of this world.
 	 */
@@ -121,14 +110,6 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	 * The world's UUID.
 	 */
 	private final UUID uid;
-	/**
-	 * String item map, used to convert local id's to the server id
-	 */
-	private final StringMap itemMap;
-	/**
-	 * String lighting map, used to covert local id's to the server id
-	 */
-	private final StringMap lightingMap;
 	/**
 	 * Lighting managers
 	 */
@@ -142,10 +123,6 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	 */
 	private final long seed;
 	/**
-	 * The spawn position.
-	 */
-	private final Transform spawnLocation = new Transform();
-	/**
 	 * The current world age.
 	 */
 	private SnapshotableLong age;
@@ -153,10 +130,6 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	 * The generator responsible for generating chunks in this world.
 	 */
 	private final WorldGenerator generator;
-	/**
-	 * A set of all players currently connected to this world
-	 */
-	private final List<Player> players = new ConcurrentList<Player>();
 	/**
 	 * A map of the loaded columns
 	 */
@@ -166,11 +139,7 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	/**
 	 * A map of column height map files
 	 */
-	private final TSyncIntPairObjectHashMap<BAAWrapper> heightMapBAAs;
-	/**
-	 * The directory where the world data is stored
-	 */
-	private final File worldDirectory;
+	protected final TSyncIntPairObjectHashMap<BAAWrapper> heightMapBAAs;
 	/**
 	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
 	 */
@@ -188,14 +157,6 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	 * The execution thread for this world
 	 */
 	private Thread executionThread;
-	/**
-	 * Indicates if the snapshot queue for the renderer should be populated
-	 */
-	private final AtomicBoolean renderQueueEnabled = new AtomicBoolean(false);
-	/**
-	 * RegionFile manager for the world
-	 */
-	private final RegionFileManager regionFileManager;
 	/*
 	 * A WeakReference to this world
 	 */
@@ -205,7 +166,7 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<Long, SetQueue<SpoutColumn>>();
 
 	// TODO set up number of stages ?
-	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, StringMap lightingMap) {
+	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid) {
 		this.engine = engine;
 		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
 			name = Long.toHexString(System.currentTimeMillis());
@@ -213,25 +174,13 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 		}
 		this.name = name;
 		this.uid = uid;
-		this.itemMap = itemMap;
-		this.lightingMap = lightingMap;
 		this.seed = seed;
 
 		this.generator = generator;
 		regions = new RegionSource(this, snapshotManager);
 
-		if (engine instanceof Server) {
-			worldDirectory = new File(engine.getWorldFolder(), name);
-			worldDirectory.mkdirs();
-
-			regionFileManager = new RegionFileManager(worldDirectory);
-		} else {
-			worldDirectory = null;
-			regionFileManager = null;
-		}
-
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
-
+		
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 		
 		for (int i = 0; i < columnLockMap.length; i++) {
@@ -244,7 +193,6 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 
 		this.age = new SnapshotableLong(snapshotManager, age);
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);
-		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<SpoutWorld>(this);
 
 		getEngine().getScheduler().addAsyncManager(this);
@@ -488,14 +436,6 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, exclusive);
 	}
 
-	public StringMap getItemMap() {
-		return itemMap;
-	}
-
-	public StringMap getLightingMap() {
-		return lightingMap;
-	}
-
 	@Override
 	public int hashCode() {
 		return hashcode;
@@ -664,7 +604,6 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	public void startTickRun(int stage, long delta) {
 		switch (stage) {
 			case 0: {
-				age.set(age.get() + delta);
 				parallelTaskManager.heartbeat(delta);
 				taskManager.heartbeat(delta);
 				for (Component component : values()) {
@@ -728,16 +667,6 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	}
 
 	@Override
-	public Transform getSpawnPoint() {
-		return spawnLocation.copy();
-	}
-
-	@Override
-	public void setSpawnPoint(Transform transform) {
-		spawnLocation.set(transform);
-	}
-
-	@Override
 	public void finalizeRun() {
 		synchronized (columnSet) {
 			for (SpoutColumn c : columnSet) {
@@ -776,19 +705,16 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 		return null;
 	}
 
-	public void addPlayer(Player player) {
-		players.add(player);
-		engine.getEventManager().callDelayedEvent(new EntityEnterWorldEvent(this, player));
-	}
-
-	public void removePlayer(Player player) {
-		players.remove(player);
-		engine.getEventManager().callDelayedEvent(new EntityExitWorldEvent(this, player));
-	}
-
 	@Override
-	public List<Player> getPlayers() {
-		return Collections.unmodifiableList(players);
+	public Entity getEntity(UUID uid) {
+		for (Region region : regions) {
+			for (Entity e : region.getAll()) {
+				if (e.getUID().equals(uid)) {
+					return e;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -1076,24 +1002,13 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 		return columns.values(new SpoutColumn[0]);
 	}
 
-	private BAAWrapper getColumnHeightMapBAA(int x, int z) {
+	protected BAAWrapper getColumnHeightMapBAA(int x, int z) {
 		int cx = x >> Region.CHUNKS.BITS;
 		int cz = z >> Region.CHUNKS.BITS;
 
 		BAAWrapper baa = null;
 
 		baa = heightMapBAAs.get(cx, cz);
-
-		if (baa == null) {
-			File columnDirectory = new File(worldDirectory, "col");
-			columnDirectory.mkdirs();
-			File file = new File(columnDirectory, "col" + cx + "_" + cz + ".sco");
-			baa = new BAAWrapper(file, 1024, 256, RegionFileManager.TIMEOUT);
-			BAAWrapper oldBAA = heightMapBAAs.putIfAbsent(cx, cz, baa);
-			if (oldBAA != null) {
-				baa = oldBAA;
-			}
-		}
 
 		return baa;
 	}
@@ -1117,55 +1032,12 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	}
 
 	@Override
-	public Entity getEntity(UUID uid) {
-		for (Region region : regions) {
-			for (Entity e : region.getAll()) {
-				if (e.getUID().equals(uid)) {
-					return e;
-				}
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public String toString() {
-		return toString(this.getName(), this.getUID(), this.getAge());
+		return toString(this.getName(), this.getUID());
 	}
 
-	private static String toString(String name, UUID uid, long age) {
-		return "SpoutWorld{ " + name + " UUID: " + uid + " Age: " + age + "}";
-	}
-
-	@Override
-	public File getDirectory() {
-		return worldDirectory;
-	}
-
-	@Override
-	public void unload(boolean save) {
-		for (Component component : values()) {
-			component.onDetached();
-		}
-		if (save) {
-			save();
-		}
-		Collection<Region> regions = this.regions.getRegions();
-		final int total = Math.max(1, regions.size());
-		int progress = 0;
-		for (Region r : regions) {
-			r.unload(save);
-			progress++;
-			if (save && progress % 4 == 0) {
-				getEngine().getLogger().info("Saving world [" + getName() + "], " + (int) (progress * 100F / total) + "% Complete");
-			}
-		}
-	}
-
-	@Override
-	public void save() {
-		WorldFiles.saveWorld(this);
-		getEngine().getEventManager().callDelayedEvent(new WorldSaveEvent(this));
+	private static String toString(String name, UUID uid) {
+		return "SpoutWorld{ " + name + " UUID: " + uid + "}";
 	}
 
 	@Override
@@ -1181,14 +1053,6 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	@Override
 	public boolean hasChunkAtBlock(int x, int y, int z) {
 		return this.getChunkFromBlock(x, y, z, LoadOption.NO_LOAD) != null;
-	}
-
-	@Override
-	public void saveChunk(int x, int y, int z) {
-		SpoutRegion r = this.getRegionFromChunk(x, y, z, LoadOption.NO_LOAD);
-		if (r != null) {
-			r.saveChunk(x, y, z);
-		}
 	}
 
 	@Override
@@ -1428,20 +1292,7 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 		}
 	}
 
-	public void enableRenderQueue() {
-		this.renderQueueEnabled.set(true);
-	}
-
-	public void disableRenderQueue() {
-		this.renderQueueEnabled.set(false);
-	}
-
-	public boolean isRenderQueueEnabled() {
-		return renderQueueEnabled.get();
-	}
-
 	// Worlds don't do any of these
-
 	@Override
 	public void runPhysics(int sequence) {
 	}
@@ -1459,29 +1310,8 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	public void runDynamicUpdates(long time, int sequence) {
 	}
 
-	public WeakReference<SpoutWorld> getWeakReference() {
+	public WeakReference<? extends SpoutWorld> getWeakReference() {
 		return selfReference;
-	}
-
-	public RegionFileManager getRegionFileManager() {
-		if (regionFileManager == null) {
-			throw new IllegalStateException("Client does not have file manager");
-		}
-		return regionFileManager;
-	}
-
-	public BAAWrapper getRegionFile(int rx, int ry, int rz) {
-		if (regionFileManager == null) {
-			throw new IllegalStateException("Client does not have file manager");
-		}
-		return regionFileManager.getBAAWrapper(rx, ry, rz);
-	}
-
-	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
-		if (regionFileManager == null) {
-			throw new IllegalStateException("Client does not have file manager");
-		}
-		return regionFileManager.getChunkOutputStream(c);
 	}
 
 	@Override

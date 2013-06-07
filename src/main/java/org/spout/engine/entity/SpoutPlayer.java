@@ -70,6 +70,7 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.protocol.SpoutSession;
+import org.spout.engine.world.SpoutServerWorld;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
@@ -150,7 +151,9 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@DelayedWrite
 	public boolean disconnect(boolean async) {
-		((SpoutWorld) getWorld()).removePlayer(this);
+		if (Spout.getPlatform() == Platform.SERVER) {
+			((SpoutServerWorld) getWorld()).removePlayer(this);
+		}	
 		onlineLive.set(false);
 		//save player data on disconnect, probably should do this periodically as well...
 		PlayerFiles.savePlayerData(this, async);
