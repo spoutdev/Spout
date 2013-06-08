@@ -45,6 +45,7 @@ import org.spout.api.util.StringMapEvent;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 import org.spout.engine.protocol.builtin.message.StringMapMessage;
+import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 /**
  * The protocol used in SpoutClient
@@ -107,5 +108,6 @@ public class SpoutProtocol extends Protocol {
 		for (StringMap map : StringMap.getAll()) {
 			session.send(false, new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
 		}
+		session.send(false, new WorldChangeMessage(session.getPlayer().getWorld(), session.getPlayer().getWorld().getDatatable()));
 	}
 }

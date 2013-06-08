@@ -96,7 +96,7 @@ import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 
-public abstract class SpoutWorld extends BaseComponentOwner implements AsyncManager, World {
+public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	protected SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * The server of this world.
@@ -134,7 +134,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	 * A map of the loaded columns
 	 */
 	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
-	private final Set<SpoutColumn> columnSet = new LinkedHashSet<SpoutColumn>();
+	protected final Set<SpoutColumn> columnSet = new LinkedHashSet<SpoutColumn>();
 	private final ReentrantLock[] columnLockMap = new ReentrantLock[16];
 	/**
 	 * A map of column height map files
@@ -144,7 +144,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
 	 */
 	protected final SpoutParallelTaskManager parallelTaskManager;
-	private final SpoutTaskManager taskManager;
 	/**
 	 * The sky light level the sky emits
 	 */
@@ -153,10 +152,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	 * Hashcode cache
 	 */
 	private final int hashcode;
-	/**
-	 * The execution thread for this world
-	 */
-	private Thread executionThread;
 	/*
 	 * A WeakReference to this world
 	 */
@@ -192,10 +187,8 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 		lightingManagers = new UnprotectedCopyOnUpdateArray<LightingManager<?>>(LightingManager.class, true);
 
 		this.age = new SnapshotableLong(snapshotManager, age);
-		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);
 		selfReference = new WeakReference<SpoutWorld>(this);
 
-		getEngine().getScheduler().addAsyncManager(this);
 	}
 
 	@Override
@@ -481,12 +474,21 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 
 	@Override
 	public BlockMaterial getTopmostBlock(int x, int z) {
-		return getTopmostBlock(x, z, LoadOption.LOAD_GEN);
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			return getTopmostBlock(x, z, LoadOption.NO_LOAD);
+		} else {
+			return getTopmostBlock(x, z, LoadOption.LOAD_GEN);
+		}
 	}
 
 	@Override
 	public Entity createEntity(Point point, Class<? extends Component>... classes) {
-		SpoutEntity entity = new SpoutEntity(getEngine(), point);
+		SpoutEntity entity;
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			entity = new SpoutEntity(getEngine(), point, false);
+		} else {
+			entity = new SpoutEntity(getEngine(), point);
+		}
 		for (Class<? extends Component> clazz : classes) {
 			entity.add(clazz);
 		}
@@ -495,7 +497,12 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 
 	@Override
 	public Entity createEntity(Point point, EntityPrefab prefab) {
-		SpoutEntity entity = new SpoutEntity(getEngine(), point);
+		SpoutEntity entity;
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			entity = new SpoutEntity(getEngine(), point, false);
+		} else {
+			entity = new SpoutEntity(getEngine(), point);
+		}
 		for (Class<? extends Component> clazz : prefab.getComponents()) {
 			entity.add(clazz);
 		}
@@ -582,47 +589,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	}
 
 	@Override
-	public void copySnapshotRun() {
-		synchronized (regionColumnDirtyQueueMap) {
-			// This performs copy snapshot and also clears the column dirty queues
-			Set<Long> keys = regionColumnDirtyQueueMap.keySet();
-			for (Long key : keys) {
-				SetQueue<SpoutColumn> queue = regionColumnDirtyQueueMap.safeGet(key);
-				if (queue != null) {
-					SpoutColumn col;
-					while ((col = queue.poll()) != null) {
-						col.copySnapshot();
-					}
-				}
-			}
-			regionColumnDirtyQueueMap.flushKeys();
-		}
-		snapshotManager.copyAllSnapshots();
-	}
-
-	@Override
-	public void startTickRun(int stage, long delta) {
-		switch (stage) {
-			case 0: {
-				parallelTaskManager.heartbeat(delta);
-				taskManager.heartbeat(delta);
-				for (Component component : values()) {
-					component.tick(delta);
-				}
-				break;
-			}
-			default: {
-				throw new IllegalStateException("Number of states exceeded limit for SpoutWorld");
-			}
-		}
-	}
-
-	@Override
-	public int getMaxStage() {
-		return 0;
-	}
-
-	@Override
 	public boolean containsBlock(int x, int y, int z) {
 		return true;
 	}
@@ -664,20 +630,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 
 	public void queueBlockPhysics(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial) {
 		this.getRegionFromBlock(x, y, z).queueBlockPhysics(x, y, z, range, oldMaterial);
-	}
-
-	@Override
-	public void finalizeRun() {
-		synchronized (columnSet) {
-			for (SpoutColumn c : columnSet) {
-				c.onFinalize();
-			}
-		}
-	}
-
-	@Override
-	public void preSnapshotRun() {
-
 	}
 
 	@Override
@@ -1077,11 +1029,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 		return parallelTaskManager;
 	}
 
-	@Override
-	public TaskManager getTaskManager() {
-		return taskManager;
-	}
-
 	private SpoutChunk[][][] getChunks(int x, int y, int z, CuboidBlockMaterialBuffer buffer) {
 		Vector3 size = buffer.getSize();
 
@@ -1292,24 +1239,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 		}
 	}
 
-	// Worlds don't do any of these
-	@Override
-	public void runPhysics(int sequence) {
-	}
-
-	@Override
-	public void runLighting(int sequence) {
-	}
-
-	@Override
-	public long getFirstDynamicUpdateTime() {
-		return SpoutScheduler.END_OF_THE_WORLD;
-	}
-
-	@Override
-	public void runDynamicUpdates(long time, int sequence) {
-	}
-
 	public WeakReference<? extends SpoutWorld> getWeakReference() {
 		return selfReference;
 	}
@@ -1321,21 +1250,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 
 	protected LightingManager<?>[] getLightingManagers() {
 		return this.lightingManagers.toArray();
-	}
-
-	@Override
-	public int getSequence() {
-		return 0;
-	}
-
-	@Override
-	public Thread getExecutionThread() {
-		return executionThread;
-	}
-
-	@Override
-	public void setExecutionThread(Thread t) {
-		this.executionThread = t;
 	}
 
 	@Override

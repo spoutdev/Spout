@@ -45,7 +45,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.StringMap;
+import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
 import org.spout.engine.SpoutClient;
@@ -109,16 +109,6 @@ public class SpoutClientWorld extends SpoutWorld {
 	@Override
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, boolean exclusive) {
 		throw new UnsupportedOperationException("Client is not allowed to queue dynamic update");
-	}
-
-	@Override
-	public void copySnapshotRun() {
-		throw new UnsupportedOperationException("Client is not allowed to invoke a snapshot");
-	}
-
-	@Override
-	public void startTickRun(int stage, long delta) {
-		throw new UnsupportedOperationException("Client is not allowed to execute a world tick");
 	}
 
 	@Override
@@ -192,21 +182,6 @@ public class SpoutClientWorld extends SpoutWorld {
 	}
 
 	@Override
-	public void runPhysics(int sequence) {
-		throw new UnsupportedOperationException("Client is not allowed to run physics");
-	}
-
-	@Override
-	public void runLighting(int sequence) {
-		throw new UnsupportedOperationException("Client is not allowed to run lighting");
-	}
-
-	@Override
-	public void runDynamicUpdates(long time, int sequence) {
-		throw new UnsupportedOperationException("Client is not allowed to run dynamic updates");
-	}
-
-	@Override
 	public void queueChunksForGeneration(List<Vector3> chunks) {
 		throw new UnsupportedOperationException("Client is not allowed to queue chunks for generation");
 	}
@@ -252,5 +227,10 @@ public class SpoutClientWorld extends SpoutWorld {
 	@Override
 	public File getDirectory() {
 		throw new UnsupportedOperationException("Client cannot save worlds, therefore it does not have a world directory");
+	}
+
+	@Override
+	public TaskManager getTaskManager() {
+		throw new UnsupportedOperationException("Client does not run world tasks");
 	}
 }

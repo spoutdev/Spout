@@ -68,6 +68,7 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.SpoutServer;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutServerWorld;
@@ -153,10 +154,10 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	public boolean disconnect(boolean async) {
 		if (Spout.getPlatform() == Platform.SERVER) {
 			((SpoutServerWorld) getWorld()).removePlayer(this);
+			//save player data on disconnect, probably should do this periodically as well...
+			PlayerFiles.savePlayerData(this, async);
 		}	
 		onlineLive.set(false);
-		//save player data on disconnect, probably should do this periodically as well...
-		PlayerFiles.savePlayerData(this, async);
 		return true;
 	}
 
@@ -379,7 +380,9 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		}
 		if (isRemoved()) {
 			getNetworkSynchronizer().onRemoved();
-			((SpoutEngine) getEngine()).removePlayer(this);
+			if (getEngine().getPlatform() == Platform.SERVER) {
+				((SpoutServer) getEngine()).removePlayer(this);
+			}
 			sessionLive.set(null);
 		}
 	}

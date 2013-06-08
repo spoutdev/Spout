@@ -45,6 +45,7 @@ import org.spout.api.util.SpoutToStringStyle;
 
 public class AddEntityMessage extends SpoutMessage {
 	private final int entityId;
+	// TODO is this needed?
 	private final UUID worldUid;
 	private final Vector3 pos, scale;
 	private final Quaternion rotation;
