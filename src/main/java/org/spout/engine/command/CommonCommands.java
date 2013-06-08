@@ -290,13 +290,13 @@ public class CommonCommands {
 				throw new CommandException("You must be a player to teleport yourself!");
 			}
 
-			player = engine.getPlayer(args.getString(0), true);
+			player = args.getPlayer(0, true);
 			if (player == null || !player.isOnline()) {
 				throw new CommandException(args.getString(0) + " is not online.");
 			}
 			point = player.getScene().getPosition();
 		} else {
-			player = engine.getPlayer(args.getString(0), true);
+			player = args.getPlayer(0, true);
 			if (player == null || !player.isOnline()) {
 				throw new CommandException(args.getString(0) + " is not online.");
 			}
@@ -333,7 +333,7 @@ public class CommonCommands {
 
 				point = new Point(world, x, y, z);
 			} else {
-				target = engine.getPlayer(args.getString(1), true);
+				target = args.getPlayer(1, true);
 
 				if (target == null || !target.isOnline()) {
 					throw new CommandException(args.getString(1) + " is not online.");

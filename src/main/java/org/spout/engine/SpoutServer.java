@@ -52,7 +52,9 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.controlpoint.ControlPoint;
@@ -99,11 +101,14 @@ import org.spout.engine.world.WorldSavingThread;
 import static org.spout.api.lang.Translation.log;
 import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.material.MaterialRegistry;
+import org.spout.api.protocol.SessionRegistry;
+import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.protocol.SpoutSession;
+import org.spout.engine.protocol.SpoutSessionRegistry;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutServerWorld;
@@ -125,10 +130,13 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * The UPnP service
 	 */
 	private UpnpService upnpService;
+	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
+	protected final ChannelGroup group = new DefaultChannelGroup();
 	/**
 	 * The {@link AccessManager} for the Server.
 	 */
 	private final SpoutAccessManager accessManager = new SpoutAccessManager();
+	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> players = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 	private final SnapshotableLinkedHashMap<String, SpoutServerWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutServerWorld>(snapshotManager);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
 	private final Object jmdnsSync = new Object();
@@ -158,6 +166,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		engineBiomeMap = BiomeRegistry.setupRegistry();
 		//Setup the Lighting Registry
 		engineLightingMap = LightingRegistry.setupRegistry();
+		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
 		super.start(checkWorlds);
 		if (checkWorlds) {
 			//At least one plugin should have registered atleast one world
@@ -302,8 +311,46 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
+	public ChannelGroup getChannelGroup() {
+		return group;
+	}
+
+	@Override
+	public SessionRegistry getSessionRegistry() {
+		return sessions;
+	}
+
+	private class SessionTask implements Runnable {
+		final SpoutSessionRegistry registry;
+
+		SessionTask(SpoutSessionRegistry registry) {
+			this.registry = registry;
+		}
+
+		@Override
+		public void run() {
+			registry.pulse();
+		}
+	}
+
+	@Override
 	public int getMaxPlayers() {
 		return SpoutConfiguration.MAXIMUM_PLAYERS.getInt();
+	}
+
+	public Collection<SpoutPlayer> rawGetAllOnlinePlayers() {
+		return players.get().values();
+	}
+
+	public boolean removePlayer(SpoutPlayer player) {
+		boolean remove = players.remove(player.getName(), player);
+		if (remove) {
+			if (reclamation != null) {
+				reclamation.removePlayer();
+			}
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -454,7 +501,25 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public Collection<Player> matchPlayer(String name) {
 		return StringUtil.matchName(Arrays.<Player>asList(getOnlinePlayers()), name);
 	}
+	
+	@Override
+	public List<String> getAllPlayers() {
+		ArrayList<String> names = new ArrayList<String>();
+		for (Player player : players.getValues()) {
+			names.add(player.getName());
+		}
+		return Collections.unmodifiableList(names);
+	}
 
+	@Override
+	public void copySnapshotRun() {
+		super.copySnapshotRun();
+		for (Player player : players.get().values()) {
+			((SpoutPlayer) player).copySnapshot();
+		}
+	}
+
+	
 	@Override
 	public AccessManager getAccessManager() {
 		return accessManager;
@@ -675,7 +740,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		boolean success = loadedWorlds.remove(world.getName(), (SpoutServerWorld) world);
 		if (success) {
 			if (save) {
-				SpoutWorld w = (SpoutWorld) world;
+				SpoutServerWorld w = (SpoutServerWorld) world;
 				if (!scheduler.removeAsyncManager(w)) {
 					throw new IllegalStateException("Unable to remove world from scheduler when halting was attempted");
 				}

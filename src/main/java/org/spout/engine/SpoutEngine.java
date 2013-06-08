@@ -129,11 +129,8 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	private final RecipeManager recipeManager = new SimpleRecipeManager();
 	private final ServiceManager serviceManager = new ServiceManager();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
-	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> players = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
-	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
-	protected final ChannelGroup group = new DefaultChannelGroup();
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
 	private final SpoutConfiguration config = new SpoutConfiguration();
 	private final SpoutInputConfiguration inputConfig = new SpoutInputConfiguration();
@@ -198,8 +195,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		if (debugMode()) {
 			log("Debug Mode has been toggled on!  This mode is intended for developers only", Level.WARNING);
 		}
-
-		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
 
 		// Register commands
 		Object exe;
@@ -270,10 +265,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		for (Plugin plugin : pluginManager.getPlugins()) {
 			pluginManager.enablePlugin(plugin);
 		}
-	}
-
-	public Collection<SpoutPlayer> rawGetAllOnlinePlayers() {
-		return players.get().values();
 	}
 
 	@Override
@@ -365,16 +356,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	@Override
-	public ChannelGroup getChannelGroup() {
-		return group;
-	}
-
-	@Override
-	public SessionRegistry getSessionRegistry() {
-		return sessions;
-	}
-
-	@Override
 	public SpoutScheduler getScheduler() {
 		return scheduler;
 	}
@@ -441,9 +422,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	@Override
 	public void copySnapshotRun() {
 		snapshotManager.copyAllSnapshots();
-		for (Player player : players.get().values()) {
-			((SpoutPlayer) player).copySnapshot();
-		}
 	}
 
 	@Override
@@ -462,25 +440,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	@Override
-<<<<<<< HEAD
-	public World getDefaultWorld() {
-		final Map<String, SpoutWorld> loadedWorlds = this.loadedWorlds.get();
-
-		final World defaultWorld = this.defaultWorld.get();
-		if (defaultWorld != null && loadedWorlds.containsKey(defaultWorld.getName())) {
-			return defaultWorld;
-		}
-
-		if (loadedWorlds.isEmpty()) {
-			return null;
-		}
-
-		return loadedWorlds.values().iterator().next();
-	}
-
-	@Override
-=======
->>>>>>> Separate SpoutWorld into SpoutWorld and SpoutServerWorld
 	public String getLogFile() {
 		return logFile;
 	}
@@ -488,47 +447,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	public EntityManager getExpectedEntityManager(Point point) {
 		Region region = point.getWorld().getRegionFromBlock(point);
 		return ((SpoutRegion) region).getEntityManager();
-	}
-
-	@Override
-	public List<String> getAllPlayers() {
-		ArrayList<String> names = new ArrayList<String>();
-		for (Player player : players.getValues()) {
-			names.add(player.getName());
-		}
-		return Collections.unmodifiableList(names);
-	}
-
-	@Override
-	public Player getPlayer(String name, boolean exact) {
-		name = name.toLowerCase();
-		if (exact) {
-			for (Player player : players.getValues()) {
-				if (player.getName().equalsIgnoreCase(name)) {
-					return player;
-				}
-			}
-			return null;
-		} else {
-			return StringUtil.getShortest(StringUtil.matchName(players.getValues(), name));
-		}
-	}
-
-	@Override
-	public Collection<Player> matchPlayer(String name) {
-		//TODO Can someone redo this or make it better?
-		return StringUtil.matchName(Arrays.<Player>asList(players.getValues().toArray(new Player[players.getValues().size()])), name);
-	}
-
-	public boolean removePlayer(SpoutPlayer player) {
-		boolean remove = players.remove(player.getName(), player);
-		if (remove) {
-			if (reclamation != null) {
-				reclamation.removePlayer();
-			}
-			return true;
-		}
-		return false;
 	}
 
 	@Override
@@ -562,19 +480,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	@Override
 	public DefaultPermissions getDefaultPermissions() {
 		return defaultPerms;
-	}
-
-	private class SessionTask implements Runnable {
-		final SpoutSessionRegistry registry;
-
-		SessionTask(SpoutSessionRegistry registry) {
-			this.registry = registry;
-		}
-
-		@Override
-		public void run() {
-			registry.pulse();
-		}
 	}
 
 	private Thread executionThread;
