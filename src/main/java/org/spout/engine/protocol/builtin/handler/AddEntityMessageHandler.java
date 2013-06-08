@@ -31,9 +31,9 @@ import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.reposition.RepositionManager;
 
-import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
+import org.spout.engine.world.SpoutWorld;
 
 public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 	@Override
@@ -46,8 +46,7 @@ public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 		} else {
 			entity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()));
 		}
-		((SpoutEntity) entity).setId(message.getEntityId());
 		entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
-		session.getEngine().getDefaultWorld().spawnEntity(entity);
+		((SpoutWorld) session.getEngine().getDefaultWorld()).spawnEntity(entity, message.getEntityId());
 	}
 }

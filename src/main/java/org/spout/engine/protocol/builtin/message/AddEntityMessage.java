@@ -31,7 +31,11 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.spout.api.Client;
+import org.spout.api.Platform;
+import org.spout.api.Server;
 import org.spout.api.Spout;
+import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
@@ -41,6 +45,7 @@ import org.spout.api.util.SpoutToStringStyle;
 
 public class AddEntityMessage extends SpoutMessage {
 	private final int entityId;
+	// TODO is this needed?
 	private final UUID worldUid;
 	private final Vector3 pos, scale;
 	private final Quaternion rotation;
@@ -78,7 +83,16 @@ public class AddEntityMessage extends SpoutMessage {
 	}
 
 	public Transform getTransform() {
-		return new Transform(new Point(pos, Spout.getEngine().getWorld(worldUid)), rotation, scale);
+		World world = null;
+		if (Spout.getPlatform() == Platform.SERVER) {
+			world = ((Server) Spout.getEngine()).getWorld(worldUid);
+		} else {
+			World world1 = ((Client) Spout.getEngine()).getWorld();
+			if (world1.getUID().equals(worldUid)) {
+				world = world1;
+			}
+		}
+		return new Transform(new Point(pos, world), rotation, scale);
 	}
 
 	@Override
