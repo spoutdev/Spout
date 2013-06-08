@@ -166,33 +166,6 @@ public interface Engine extends Named {
 	public List<String> getAllPlayers();
 
 	/**
-	 * Gets the {@link Player} by the given username. <br/>
-	 * <br/>
-	 * If searching for the exact name, this method will iterate and check for
-	 * exact matches. <br/>
-	 * <br/>
-	 * Otherwise, this method will iterate over over all players and find the closest match
-	 * to the given name, by comparing the length of other player names that
-	 * start with the given parameter. <br/>
-	 * <br/>
-	 * This method is case-insensitive.
-	 * @param name to look up
-	 * @param exact Whether to use exact lookup
-	 * @return Player if found, else null
-	 */
-	public Player getPlayer(String name, boolean exact);
-
-	/**
-	 * Matches the given username to all players that contain it in their name.
-	 * <p/>
-	 * If no matches are found, an empty collection will be returned. The return
-	 * will always be non-null.
-	 * @param name to match
-	 * @return Collection of all possible matches
-	 */
-	public Collection<Player> matchPlayer(String name);
-
-	/**
 	 * Searches for an actively loaded world that exactly matches the given
 	 * name. <br/>
 	 * <br/>
@@ -257,19 +230,6 @@ public interface Engine extends Named {
 	 * @return current platform type
 	 */
 	public Platform getPlatform();
-
-	/**
-	 * Gets the network channel group.
-	 * @return The {@link ChannelGroup}.
-	 */
-	public ChannelGroup getChannelGroup();
-
-	/**
-	 * Gets the session registry.
-	 * @return The {@link SessionRegistry}.
-	 */
-	public SessionRegistry getSessionRegistry();
-
 
 	/**
 	 * Gets the scheduler

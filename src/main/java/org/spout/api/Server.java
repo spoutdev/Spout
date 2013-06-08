@@ -31,10 +31,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import org.jboss.netty.channel.group.ChannelGroup;
+
 import org.spout.api.entity.Player;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.protocol.PortBinding;
+import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.util.access.AccessManager;
 import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.api.util.thread.annotation.SnapshotRead;
@@ -43,13 +46,6 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
  * Represents the server-specific implementation of Minecraft.
  */
 public interface Server extends Engine {
-	/**
-	 * Returns all player names that have ever played on this Game, whether they are online or not.
-	 *
-	 * @return all the player names
-	 */
-	public List<String> getAllPlayers();
-
 	/**
 	 * Gets all players currently online
 	 *
@@ -63,6 +59,18 @@ public interface Server extends Engine {
 	 * @return max players
 	 */
 	public int getMaxPlayers();
+
+	/**
+	 * Gets the network channel group.
+	 * @return The {@link ChannelGroup}.
+	 */
+	public ChannelGroup getChannelGroup();
+
+	/**
+	 * Gets the session registry.
+	 * @return The {@link SessionRegistry}.
+	 */
+	public SessionRegistry getSessionRegistry();
 
 	/**
 	 * Broadcasts the given message to all players
@@ -212,13 +220,13 @@ public interface Server extends Engine {
 	 * The implementation is identical to iterating over {@link #getWorlds()}
 	 * and checking for a world that matches {@link World#getName()}. <br/>
 	 * <br/>
-	 * <p/>
+	 *
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
 	 * @param name of the world to search for
 	 * @return {@link World} if found, else null
 	 */
 	@LiveRead
-        @SnapshotRead
+	@SnapshotRead
 	public World getWorld(String name);
 		
 	/**
@@ -232,14 +240,14 @@ public interface Server extends Engine {
 	 * to the given name, by comparing the length of other player names that
 	 * start with the given parameter. <br/>
 	 * <br/>
-	 * <p/>
+	 *
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
 	 * @param name of the world to search for
 	 * @param exact Whether to use exact lookup
 	 * @return world if found, else null
 	 */
 	@LiveRead
-        @SnapshotRead
+	@SnapshotRead
 	public World getWorld(String name, boolean exact);
 
 	/**
@@ -249,13 +257,13 @@ public interface Server extends Engine {
 	 * The implementation is identical to iterating over {@link #getWorlds()}
 	 * and checking for a world that matches {@link World#getName()} <br/>
 	 * <br/>
-	 * <p/>
+	 *
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
 	 * @param name of the world to search for, or part of it
 	 * @return a collection of worlds that matched the name
 	 */
 	@LiveRead
-        @SnapshotRead
+	@SnapshotRead
 	public Collection<World> matchWorld(String name);
 
 	/**
@@ -264,23 +272,23 @@ public interface Server extends Engine {
 	 * The implementation is identical to iterating over {@link #getWorlds()}
 	 * and checking for a world that matches {@link World#getUID()}. <br/>
 	 * <br/>
-	 * <p/>
+	 *
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
 	 * @param uid of the world to search for
 	 * @return {@link World} if found, else null
 	 */
 	@LiveRead
-        @SnapshotRead
+	@SnapshotRead
 	public World getWorld(UUID uid);
 
 	/**
 	 * Gets a List of all currently loaded worlds
-	 * <p/>
+	 * <br/>
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
 	 * @return {@link Collection} of actively loaded worlds
 	 */
 	@LiveRead
-        @SnapshotRead
+	@SnapshotRead
 	public Collection<World> getWorlds();
 
 	/**
