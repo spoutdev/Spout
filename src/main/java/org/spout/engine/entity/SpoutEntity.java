@@ -104,6 +104,10 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
 	}
 
+	public SpoutEntity(Engine engine, Point point, boolean load) {
+		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE),  -1, null, false, (byte[])null, (Class<? extends Component>[]) null);
+	}
+
 	protected SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
 		this(engine, transform, viewDistance, uid, load, (byte[])null, components);
 		this.getDatatable().putAll(dataMap);
@@ -156,8 +160,14 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		//Ensures there are no null/wrong snapshot values for the first tick
 		snapshotManager.copyAllSnapshots();
 		
-		if (transform != null && load) {
-			setupInitialChunk(transform, LoadOption.LOAD_GEN);
+		if (transform != null) {
+			if (load) {
+				setupInitialChunk(transform, LoadOption.LOAD_GEN);
+			} else {
+				// At least try to set it up if it's there
+				// TODO this masks a problem; if this doesn't happen, entityManager NPEs
+				setupInitialChunk(transform, LoadOption.NO_LOAD);
+			}
 		}
 	}
 
@@ -412,6 +422,10 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	 */
 	public void setupInitialChunk(Transform transform, LoadOption loadopt) {
 		SpoutRegion region = (SpoutRegion) scene.getTransformLive().getPosition().getChunk(loadopt).getRegion();
+		if (region == null) {
+			// It's possible we're in client mode and we have no region
+			return;
+		}
 		entityManager.set(region.getEntityManager());
 
 		snapshotManager.copyAllSnapshots();

@@ -49,6 +49,7 @@ import org.spout.api.util.access.BanType;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
+import org.spout.engine.world.SpoutServerWorld;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutServerListener implements Listener {
@@ -137,8 +138,8 @@ public class SpoutServerListener implements Listener {
 		if (!(event.getEntity() instanceof  Player)) {
 			return;
 		}
-		((SpoutWorld) event.getPrevious()).removePlayer((Player) event.getEntity());
-		((SpoutWorld) event.getTarget()).addPlayer((Player) event.getEntity());
+		((SpoutServerWorld) event.getPrevious()).removePlayer((Player) event.getEntity());
+		((SpoutServerWorld) event.getTarget()).addPlayer((Player) event.getEntity());
 	}
 	
 	@EventHandler(order = Order.EARLIEST)

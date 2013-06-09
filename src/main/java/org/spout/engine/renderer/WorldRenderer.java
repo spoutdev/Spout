@@ -49,7 +49,7 @@ import org.spout.api.util.map.TInt21TripleObjectHashMap;
 
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.mesh.ChunkMesh;
-import org.spout.engine.world.SpoutWorld;
+import org.spout.engine.world.SpoutClientWorld;
 
 public class WorldRenderer {
 	public static final long TIME_LIMIT = 2;
@@ -61,12 +61,12 @@ public class WorldRenderer {
 	 */
 	private final TInt21TripleObjectHashMap<Map<RenderMaterial, ChunkMeshBatchAggregator>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial, ChunkMeshBatchAggregator>>();
 	private final TreeMap<RenderMaterial, List<ChunkMeshBatchAggregator>> chunkRenderers = new TreeMap<RenderMaterial, List<ChunkMeshBatchAggregator>>();
-	private SpoutWorld currentWorld = null;
+	private SpoutClientWorld currentWorld = null;
 	//Benchmark
 	public int addedBatch, updatedBatch;
 
 	public void update(long limit) {
-		final SpoutWorld world = (SpoutWorld) ((Client) Spout.getEngine()).getPlayer().getWorld();
+		final SpoutClientWorld world = (SpoutClientWorld) ((Client) Spout.getEngine()).getWorld();
 
 		if (currentWorld != world) {
 			if (currentWorld != null) {

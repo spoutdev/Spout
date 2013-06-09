@@ -33,8 +33,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,14 +58,13 @@ import org.spout.api.Platform;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
-import org.spout.api.component.entity.CameraComponent;
+import org.spout.api.component.DatatableComponent;
 import org.spout.api.datatable.SerializableMap;
+import org.spout.api.entity.Entity;
 import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
-import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.math.Vector2;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonHandler;
@@ -79,7 +80,6 @@ import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.RendererCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
-import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.input.SpoutInputManager;
@@ -95,6 +95,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final AtomicReference<SpoutClientWorld> world = new AtomicReference<SpoutClientWorld>();
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 	private final FileSystem filesystem = new ClientFileSystem();
+	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<SpoutClientPlayer>();
 	// Handle stopping
 	private volatile boolean rendering = true;
 	private boolean ccoverride = false;
@@ -152,6 +153,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (!connnect()) {
 			return;
 		}
+		// Send handshake message first
+		SpoutClientSession get = session.get();
+		get.send(true, true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().getRemoteAddress()));
+
+		// Completely blank world
+		worldChanged("NullWorld", UUID.randomUUID(), new DatatableComponent().serialize());
 		super.start(checkWorlds);
 
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
@@ -170,8 +177,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		filesystem.postStartup();
-		SpoutClientSession get = session.get();
-		get.send(true, true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().getRemoteAddress()));
 	}
 
 	private boolean connnect() {
@@ -206,7 +211,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 			CommonHandler handler = channel.getPipeline().get(CommonHandler.class);
 			SpoutClientSession session = new SpoutClientSession(this, channel, protocol);
 			handler.setSession(session);
-			setSession(session);
+
+			// TODO this is really unclean
+			this.session.set(session);
+			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
+			p.connect(session, p.getScene().getTransform());
+			session.setPlayer(p);
+			player.set(p);
 		} else {
 			getLogger().log(Level.SEVERE, "Could not connect to " + binding, connect.getCause());
 			return false;
@@ -215,8 +226,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
+	public List<String> getAllPlayers() {
+		return Arrays.asList(player.get().getName());
+	}
+
+	@Override
 	public SpoutClientPlayer getPlayer() {
-        return session.get().getPlayer();
+		return session.get().getPlayer();
 	}
 
 	@Override
@@ -309,27 +325,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 			return null;
 		}
 
-		if ((exact && world.getName().equals(name))
-				|| world.getName().startsWith(name)) {
+		if ((exact && world.getName().equals(name)) || world.getName().startsWith(name)) {
 			return world;
 		} else {
 			return null;
 		}
-	}
-
-	@Override
-	public SpoutWorld getWorld(UUID uid) {
-		SpoutWorld world = this.world.get();
-		if (world != null && world.getUID().equals(uid)) {
-			return world;
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public Collection<World> getWorlds() {
-		return Collections.<World>singletonList(world.get());
 	}
 
 	@Override
@@ -338,8 +338,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
-		SpoutClientWorld world = new SpoutClientWorld(name, this, uuid, getEngineItemMap(), getEngineItemMap());
-
+		System.out.println("WORLD CHANGED!");
+		SpoutClientWorld world = new SpoutClientWorld(name, this, uuid);
 		//Load in datatable
 		SerializableMap map = world.getDatatable();
 		try {
@@ -349,15 +349,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		SpoutWorld oldWorld = this.world.getAndSet(world);
-		if (oldWorld != null) {
-			if (!scheduler.removeAsyncManager(oldWorld)) {
-				throw new IllegalStateException("Unable to remove old world from scheduler");
-			}
-		}
-		if (!scheduler.addAsyncManager(world)) {
-			this.world.compareAndSet(world, null);
-			throw new IllegalStateException("Unable to add new world to the scheduler");
-		}
 		return world;
 	}
 
@@ -373,20 +364,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void disconnected() {
-		Session sess = this.session.getAndSet(null);
-		if (sess != null) {
-			getSessionRegistry().remove(sess);
-		}
-	}
-
-	public void setSession(SpoutClientSession session) {
-		//TODO Re-write Client sessions, this is bad...
-		this.session.set(session);
-		getSessionRegistry().add(session);
-		final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
-		p.connect(session, p.getScene().getTransform());
-		session.setPlayer(p);
-		players.putIfAbsent(p.getName(), p);
+		getLogger().log(Level.SEVERE, "ENGINE DISCONNECTING!");
+		new RuntimeException().printStackTrace();
+		this.session.set(null);
+		stop("Disconnected for some unknown reason!");
 	}
 
 	@Override
@@ -395,8 +376,18 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public World getWorld() {
+	public Entity getEntity(UUID uid) {
+		return world.get().getEntity(uid);
+	}
+
+	@Override
+	public SpoutClientWorld getWorld() {
 		return world.get();
+	}
+	
+	@Override
+	public Collection<World> getWorlds() {
+		return Collections.singleton((World) world.get());
 	}
 
 	private void unpackLwjgl(String path) {
@@ -453,4 +444,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public SpoutRenderer getRenderer() {
 		return renderer;
 	}
+
+	@Override
+	public void startTickRun(int stage, long delta) {
+		// TODO should this be removed?
+	}
+	
+	
 }

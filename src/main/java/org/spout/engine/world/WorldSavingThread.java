@@ -49,7 +49,7 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 public class WorldSavingThread extends Thread{
 	private static final WorldSavingThread instance = new WorldSavingThread();
 	private final AtomicBoolean queueRunning = new AtomicBoolean(true);
-	private final LinkedBlockingQueue<Callable<SpoutWorld>> queue = new LinkedBlockingQueue<Callable<SpoutWorld>>();
+	private final LinkedBlockingQueue<Callable<SpoutServerWorld>> queue = new LinkedBlockingQueue<Callable<SpoutServerWorld>>();
 	public WorldSavingThread() {
 		super("World Saving Thread");
 	}
@@ -102,7 +102,7 @@ public class WorldSavingThread extends Thread{
 	@Override
 	public void run() {
 		while (!Thread.interrupted()) {
-			Callable<SpoutWorld> task;
+			Callable<SpoutServerWorld> task;
 			try {
 				task = queue.take();
 				task.call();
@@ -119,7 +119,7 @@ public class WorldSavingThread extends Thread{
 		int toSave = queue.size();
 		int saved = 0;
 		int lastTenth = 0;
-		Callable<SpoutWorld> task;
+		Callable<SpoutServerWorld> task;
 		while ((task = queue.poll()) != null) {
 			try {
 				task.call();
@@ -132,7 +132,7 @@ public class WorldSavingThread extends Thread{
 				Spout.getLogger().info("Saved " + tenth + "0% of queued chunks");
 			}
 		}
-		Collection<World> worlds = Spout.getEngine().getWorlds();
+		Collection<? extends World> worlds = Spout.getEngine().getWorlds();
 		for (World w : worlds) {
 			SpoutColumn[] columns = ((SpoutWorld) w).getColumns();
 			for (SpoutColumn c : columns) {
@@ -140,10 +140,10 @@ public class WorldSavingThread extends Thread{
 			}
 		}
 		for (World w : worlds) {
-			((SpoutWorld) w).getRegionFileManager().stopTimeoutThread();
+			((SpoutServerWorld) w).getRegionFileManager().stopTimeoutThread();
 		}
 		for (World w : worlds) {
-			((SpoutWorld) w).getRegionFileManager().closeAll();
+			((SpoutServerWorld) w).getRegionFileManager().closeAll();
 		}
 		
 		if (!queueRunning.compareAndSet(true, false)) {
@@ -156,7 +156,7 @@ public class WorldSavingThread extends Thread{
 		
 	}
 
-	private static class ChunkSaveTask implements Callable<SpoutWorld> {
+	private static class ChunkSaveTask implements Callable<SpoutServerWorld> {
 		final SpoutChunkSnapshot snapshot;
 		final List<DynamicBlockUpdate> blockUpdates;
 		final SpoutChunk chunk;
@@ -167,12 +167,12 @@ public class WorldSavingThread extends Thread{
 		}
 
 		@Override
-		public SpoutWorld call() {
-			SpoutWorld world = chunk.getWorld();
+		public SpoutServerWorld call() {
+			SpoutServerWorld world = (SpoutServerWorld) chunk.getWorld();
 			OutputStream out = world.getChunkOutputStream(snapshot);
 			if (out != null) {
 				try {
-					ChunkFiles.saveChunk(chunk.getWorld(), snapshot, blockUpdates, out);
+					ChunkFiles.saveChunk((SpoutServerWorld) chunk.getWorld(), snapshot, blockUpdates, out);
 				} finally {
 					try {
 						out.close();

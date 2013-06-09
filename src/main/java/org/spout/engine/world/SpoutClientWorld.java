@@ -26,50 +26,59 @@
  */
 package org.spout.engine.world;
 
+import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.spout.api.component.Component;
+import org.spout.api.entity.Player;
 
 import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.geo.ClientWorld;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.StringMap;
+import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
 import org.spout.engine.SpoutClient;
 
-/**
- * A dummy world used for the client
- */
-public class SpoutClientWorld extends SpoutWorld implements ClientWorld {
-	public SpoutClientWorld(String name, SpoutClient client, UUID uid, StringMap itemMap, StringMap lightingMap) {
-		super(name, client, 0, 0, null, uid, itemMap, lightingMap);
+public class SpoutClientWorld extends SpoutWorld {
+	/**
+	 * Indicates if the snapshot queue for the renderer should be populated
+	 */
+	private final AtomicBoolean renderQueueEnabled = new AtomicBoolean(false);
+	public SpoutClientWorld(String name, SpoutClient client, UUID uid) {
+		super(name, client, 0, 0, null, uid);
 	}
 
-	@Override
 	public void addChunk(ChunkSnapshot c) {
 		addChunk(c.getX(), c.getY(), c.getZ(), c.getBlockIds(), c.getBlockData(), c.getBiomeManager());
 	}
 
-	@Override
 	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, BiomeManager biomes) {
 		getRegionFromBlock(x, y, z, LoadOption.NO_LOAD).addChunk(x, y, z, blockIds, blockData, biomes);
 	}
 
 	@Override
 	public void unload(boolean save) {
-		throw new UnsupportedOperationException("Client is not allowed to unload worlds");
-	}
-
-	@Override
-	public void save() {
-		throw new UnsupportedOperationException("Client is not allowed to save worlds");
+		for (Component component : values()) {
+			component.onDetached();
+		}
+		if (save) {
+			throw new IllegalArgumentException("Client is not allowed to save");
+		}
+		Collection<Region> regions = getRegions();
+		for (Region r : regions) {
+			r.unload(save);
+		}
 	}
 
 	@Override
@@ -100,16 +109,6 @@ public class SpoutClientWorld extends SpoutWorld implements ClientWorld {
 	@Override
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, boolean exclusive) {
 		throw new UnsupportedOperationException("Client is not allowed to queue dynamic update");
-	}
-
-	@Override
-	public void copySnapshotRun() {
-		throw new UnsupportedOperationException("Client is not allowed to invoke a snapshot");
-	}
-
-	@Override
-	public void startTickRun(int stage, long delta) {
-		throw new UnsupportedOperationException("Client is not allowed to execute a world tick");
 	}
 
 	@Override
@@ -183,21 +182,6 @@ public class SpoutClientWorld extends SpoutWorld implements ClientWorld {
 	}
 
 	@Override
-	public void runPhysics(int sequence) {
-		throw new UnsupportedOperationException("Client is not allowed to run physics");
-	}
-
-	@Override
-	public void runLighting(int sequence) {
-		throw new UnsupportedOperationException("Client is not allowed to run lighting");
-	}
-
-	@Override
-	public void runDynamicUpdates(long time, int sequence) {
-		throw new UnsupportedOperationException("Client is not allowed to run dynamic updates");
-	}
-
-	@Override
 	public void queueChunksForGeneration(List<Vector3> chunks) {
 		throw new UnsupportedOperationException("Client is not allowed to queue chunks for generation");
 	}
@@ -205,5 +189,48 @@ public class SpoutClientWorld extends SpoutWorld implements ClientWorld {
 	@Override
 	public void queueChunkForGeneration(Vector3 chunk) {
 		throw new UnsupportedOperationException("Client is not allowed to queue chunks for generation");
+	}
+	
+	
+	public void enableRenderQueue() {
+		this.renderQueueEnabled.set(true);
+	}
+
+	public void disableRenderQueue() {
+		this.renderQueueEnabled.set(false);
+	}
+
+	public boolean isRenderQueueEnabled() {
+		return renderQueueEnabled.get();
+	}
+
+	@Override
+	public Transform getSpawnPoint() {
+		throw new UnsupportedOperationException("Worlds do not have spawnpoints in client mode");
+	}
+
+	@Override
+	public void setSpawnPoint(Transform transform) {
+		throw new UnsupportedOperationException("Worlds do not have spawnpoints in client mode");
+	}
+
+	@Override
+	public List<Player> getPlayers() {
+		throw new UnsupportedOperationException("Client worlds do not hold players");
+	}
+
+	@Override
+	public void save() {
+		throw new UnsupportedOperationException("Client cannot save worlds");
+	}
+
+	@Override
+	public File getDirectory() {
+		throw new UnsupportedOperationException("Client cannot save worlds, therefore it does not have a world directory");
+	}
+
+	@Override
+	public TaskManager getTaskManager() {
+		throw new UnsupportedOperationException("Client does not run world tasks");
 	}
 }
