@@ -186,9 +186,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		return SpoutEngine.class.getPackage().getImplementationVersion();
 	}
 
-	public abstract void start();
-
-	public void start(boolean checkWorlds) {
+	public void start() {
 		log("Spout is starting in %0-only mode.", getPlatform().name().toLowerCase());
 		log("Current version is %0 (Implementing SpoutAPI %1).", getVersion(), getAPIVersion());
 		log("This software is currently in alpha status so components may");
@@ -198,6 +196,8 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		if (debugMode()) {
 			log("Debug Mode has been toggled on!  This mode is intended for developers only", Level.WARNING);
 		}
+
+		scheduler.scheduleSyncRepeatingTask(this, getSessionTask(), 50, 50, TaskPriority.CRITICAL);
 
 		// Register commands
 		Object exe;
@@ -236,6 +236,8 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		scheduler.startMainThread();
 		setupComplete.set(true);
 	}
+
+	protected abstract Runnable getSessionTask();
 
 	/**
 	 * This method is called before {@link #enablePlugins()}

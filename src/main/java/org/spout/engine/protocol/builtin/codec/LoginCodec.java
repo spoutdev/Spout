@@ -41,7 +41,7 @@ public class LoginCodec extends MessageCodec<LoginMessage> {
 	public ChannelBuffer encode(LoginMessage message) {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		ChannelBufferUtils.writeString(buffer, message.getPlayerName());
-		buffer.writeInt(message.getProtocolVersion());
+		buffer.writeInt(message.getExtraInt());
 		return buffer;
 	}
 
