@@ -36,6 +36,7 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.spout.api.Engine;
+import org.spout.api.Server;
 
 /**
  * A {@link SimpleChannelUpstreamHandler} which processes incoming network events.
@@ -80,12 +81,15 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 		// ctx.getPipeline().addBefore("2", "messagePrinter", new MessagePrintingHandler());
 
 		if (upstream) {
-            engine.getLogger().info("Upstream channel connected: " + c + ".");
+			// Client
+			engine.getLogger().info("Upstream channel connected: " + c + ".");
 		} else {
+			// Server
 			try {
-				engine.getChannelGroup().add(c);
+				Server server = (Server) engine;
+				server.getChannelGroup().add(c);
 				Session session = engine.newSession(c);
-				engine.getSessionRegistry().add(session);
+				server.getSessionRegistry().add(session);
 				setSession(session);
 				ctx.setAttachment(session);
 			} catch (Exception ex) {
@@ -99,11 +103,15 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
 		try {
 			Channel c = e.getChannel();
-			engine.getChannelGroup().remove(c);
-
 			Session session = this.session.get();
+
+			if (!upstream) {
+				Server server = (Server) engine;
+				server.getChannelGroup().remove(c);
+				server.getSessionRegistry().remove(session);
+			}
+
 			if (session.isPrimary(c)) {
-				engine.getSessionRegistry().remove(session);
 				session.dispose();
 			}
 		} catch (Exception ex) {
@@ -122,14 +130,17 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
 		Channel c = e.getChannel();
 		if (c.isOpen()) {
-			engine.getChannelGroup().remove(c);
-
 			Session session = this.session.get();
-			if (session != null) {
-				engine.getSessionRegistry().remove(session);
-				session.dispose();
+
+			if (!upstream) {
+				Server server = (Server) engine;
+				server.getChannelGroup().remove(c);
+				server.getSessionRegistry().remove(session);
 			}
 
+			if (session.isPrimary(c)) {
+				session.dispose();
+			}
 			engine.getLogger().log(Level.WARNING, "Exception caught, closing channel: " + c + "...", e.getCause());
 			c.close();
 		}

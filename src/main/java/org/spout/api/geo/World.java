@@ -46,7 +46,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.model.Model;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.Named;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
@@ -68,7 +67,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 
 	/**
 	 * Gets the age of the world in ms. This count cannot be modified, and
-	 * increments on every tick
+	 * increments on every tick.
 	 * @return the world's age in ms
 	 */
 	@SnapshotRead
@@ -217,21 +216,10 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, LoadOption option, Class<? extends Component>... classes);
 
 	/**
-	 * Gets the world's spawn point
-	 * @return the spawn point
-	 */
-	public Transform getSpawnPoint();
-
-	/**
-	 * Sets the world's spawn point
-	 * @param transform the Transform of the spawn point
-	 */
-	public void setSpawnPoint(Transform transform);
-
-	/**
 	 * Gets the world's seed. This value is immutable and set at world creation
 	 * @return the seed
 	 */
+	// TODO move this to server-only, uneeded
 	@Threadsafe
 	public long getSeed();
 
@@ -278,17 +266,6 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	public Entity getEntity(int id);
 
 	/**
-	 * Gets a set of all players on active on this world
-	 * @return all players on this world
-	 */
-	public List<Player> getPlayers();
-
-	/**
-	 * Gets the directory where world data is stored
-	 */
-	public File getDirectory();
-
-	/**
 	 * Gets the task manager responsible for parallel region tasks.<br>
 	 * <br>
 	 * All tasks are submitted to all loaded regions at the start of the next tick.<br>
@@ -306,6 +283,8 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 
 	/**
 	 * Gets the TaskManager associated with this world
+	 * 
+	 * @return task manager
 	 */
 	public abstract TaskManager getTaskManager();
 
@@ -499,6 +478,33 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	public boolean addLightingManager(LightingManager<?> manager);
 
 	/**
+	 * Gets the {@link DatatableComponent} which is always attached to each world.
+	 * <p/>
+	 * This is merely a convenience method.
+	 * @return datatable component
+	 */
+	public DatatableComponent getDatatable();
+	
+	// Techinically server-only
+		/**
+	 * Gets the world's spawn point
+	 * @return the spawn point
+	 */
+	public Transform getSpawnPoint();
+
+	/**
+	 * Sets the world's spawn point
+	 * @param transform the Transform of the spawn point
+	 */
+	public void setSpawnPoint(Transform transform);
+
+	/**
+	 * Gets a set of all players on active on this world
+	 * @return all players on this world
+	 */
+	public List<Player> getPlayers();
+
+	/**
 	 * Saves all world data to world data file.
 	 * <p>
 	 * Note: World data does not include chunks, regions, or other data.
@@ -506,12 +512,6 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * </p>
 	 */
 	public void save();
-
-	/**
-	 * Gets the {@link DatatableComponent} which is always attached to each world.
-	 * <p/>
-	 * This is merely a convenience method.
-	 * @return datatable component
-	 */
-	public DatatableComponent getDatatable();
+	
+	public File getDirectory();
 }
