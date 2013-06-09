@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -874,9 +875,15 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	
 	
 	protected SpoutColumn getColumn(int x, int z, LoadOption loadopt, boolean sync) {
-		
 		long key = IntPairHashed.key(x, z);
 		SpoutColumn column = columns.get(key);
+		if (column == null && Spout.getPlatform() == Platform.CLIENT) {
+			int[][] heights = new int[16][16];
+			for (int[] row : heights) {
+				Arrays.fill(row, (byte) 0);
+			}
+			return setColumn(x, z, new SpoutColumn(heights, this, x, z));
+		}
 		if (column != null || !loadopt.loadIfNeeded()) {
 			return column;
 		}

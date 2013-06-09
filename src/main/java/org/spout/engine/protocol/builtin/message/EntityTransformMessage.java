@@ -50,6 +50,7 @@ public class EntityTransformMessage extends SpoutMessage {
 	private final Quaternion rotation;
 	private final Vector3 scale;
 
+	// Don't use this for tests; transform's position is stored as a Point which is NOT a Vector3 by equals
 	public EntityTransformMessage(int entityId, Transform transform, RepositionManager rm) {
 		this.entityId = entityId;
 		this.worldUid = transform.getPosition().getWorld().getUID();

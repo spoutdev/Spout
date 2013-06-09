@@ -60,11 +60,11 @@ public class SpoutClientWorld extends SpoutWorld {
 	}
 
 	public void addChunk(ChunkSnapshot c) {
-		addChunk(c.getX(), c.getY(), c.getZ(), c.getBlockIds(), c.getBlockData(), c.getBiomeManager());
+		addChunk(c.getX(), c.getY(), c.getZ(), c.getBlockIds(), c.getBlockData());
 	}
 
-	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, BiomeManager biomes) {
-		getRegionFromBlock(x, y, z, LoadOption.NO_LOAD).addChunk(x, y, z, blockIds, blockData, biomes);
+	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData) {
+		getRegionFromBlock(x, y, z, LoadOption.LOAD_GEN).addChunk(x >> Region.CHUNKS.BITS, y >> Region.CHUNKS.BITS, z >> Region.CHUNKS.BITS, blockIds, blockData);
 	}
 
 	@Override
@@ -144,11 +144,6 @@ public class SpoutClientWorld extends SpoutWorld {
 	@Override
 	public SpoutColumn loadColumn(int x, int z) {
 		throw new UnsupportedOperationException("Client is not allowed to load columns");
-	}
-
-	@Override
-	public SpoutColumn setColumn(int x, int z, SpoutColumn col) {
-		throw new UnsupportedOperationException("Client is not allowed to set a column");
 	}
 
 	@Override

@@ -46,6 +46,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 		}
 
 		World world = session.getEngine().getDefaultWorld();
+		/*
 		Class<? extends BiomeManager> managerClass;
 		try {
 			Class<?> testClass = Class.forName(message.getBiomeManagerClass());
@@ -55,10 +56,10 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			managerClass = testClass.asSubclass(BiomeManager.class);
 		} catch (ClassNotFoundException e) {
 			throw new IllegalArgumentException("Unknown biome manager class: " + message.getBiomeManagerClass());
-		}
+		}*/
 		if (Spout.debugMode()) {
 			Spout.getLogger().log(Level.INFO, "Recieved Chunk Data: {0}", message.toString());
-		}
+		}/*
 		BiomeManager manager;
 		try {
 			manager = managerClass.getConstructor(int.class, int.class, int.class).newInstance(message.getX(), message.getY(), message.getZ());
@@ -71,7 +72,8 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
-		manager.deserialize(message.getBiomeData());
-		((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData(), manager);
+		manager.deserialize(message.getBiomeData());*/
+		//((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData(), manager);
+		((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData());
 	}
 }
