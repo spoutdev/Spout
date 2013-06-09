@@ -46,8 +46,8 @@ public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 
 	@Override
 	public void handleClient(Session session, LoginMessage message) {
-		session.getDataMap().put(SpoutProtocol.PLAYER_ENTITY_ID, message.getProtocolVersion());
+		session.getDataMap().put(SpoutProtocol.PLAYER_ENTITY_ID, message.getExtraInt());
 		session.setState(Session.State.GAME);
-		session.getEngine().getEventManager().callEvent(new ClientPlayerConnectedEvent(session, message.getProtocolVersion()));
+		session.getEngine().getEventManager().callEvent(new ClientPlayerConnectedEvent(session, message.getExtraInt()));
 	}
 }

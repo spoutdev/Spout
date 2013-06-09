@@ -279,7 +279,7 @@ public class CommonCommands {
 		source.sendMessage("chunks: " + chunks);
 	}
 
-	@Command(aliases = {"tp", "teleport"}, usage = "[player] [player|x] [y] [z] [-w <world>]", desc = "Teleport to a location", min = 1, max = 4)
+	@Command(aliases = {"tp", "teleport"}, usage = "[player] [player|x] [y] [z] [world]", desc = "Teleport to a location", min = 1, max = 5)
 	@Permissible("spout.command.tp")
 	public void tp(CommandSource source, CommandArguments args) throws CommandException {
 		Player player;
@@ -302,7 +302,16 @@ public class CommonCommands {
 			}
 
 			if (args.length() > 2) {
-				World world = player.getWorld();
+				World world = null;
+				if (args.length() > 4) {
+					world = args.getWorld(4);
+					if (world == null) {
+						source.sendMessage("Invalid world! Using player's world.");
+					}
+				}
+				if (world == null) {
+					world = player.getWorld();
+				}
 
 				float x = player.getScene().getPosition().getX();
 				if (args.isInteger(1)) {

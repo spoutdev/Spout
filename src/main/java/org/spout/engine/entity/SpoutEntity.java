@@ -35,8 +35,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+import org.spout.api.Client;
 
 import org.spout.api.Engine;
+import org.spout.api.Platform;
+import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.entity.EntityComponent;
@@ -73,14 +76,14 @@ import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
 public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshotable {
-	public static final int NOTSPAWNEDID = -1;
+	public static final int NOTSPAWNEDID = Integer.MIN_VALUE;
 	private static final Iterator<IntVector3> INITIAL_TICK = new ArrayList<IntVector3>().iterator();
 	private static final Iterator<IntVector3> OBSERVING = new ArrayList<IntVector3>().iterator();
 	private static final Iterator<IntVector3> NOT_OBSERVING = new ArrayList<IntVector3>().iterator();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	//Snapshotable fields
 	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<EntityManager>(snapshotManager, null);
-	private final SnapshotableReference<Iterator<IntVector3>> observer;
+	private final SnapshotableReference<Iterator<IntVector3>> observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, INITIAL_TICK);;
 	private boolean observeChunksFailed = false;
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
 	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
@@ -117,7 +120,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		id.set(NOTSPAWNEDID);
 		this.engine = engine;
 		
-		observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, INITIAL_TICK);
 		observer.set(NOT_OBSERVING);
 		scene = (SpoutSceneComponent) add(SceneComponent.class);
 
@@ -371,7 +373,12 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	@Override
 	public World getWorld() {
-		return entityManager.get().getRegion().getWorld();
+		// TODO this shouldn't be needed
+		if (Spout.getPlatform() == Platform.SERVER) {
+			return entityManager.get().getRegion().getWorld();
+		} else {
+			return ((Client) Spout.getEngine()).getWorld();
+		}
 	}
 
 	@Override
