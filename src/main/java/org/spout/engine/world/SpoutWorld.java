@@ -514,7 +514,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	 */
 	@Override
 	public void spawnEntity(Entity e) {
-		spawnEntity(e, -1);
+		spawnEntity(e, e.getId());
 	}
 
 	/**
@@ -530,7 +530,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 			throw new IllegalStateException("Cannot spawn an entity that has a null region!");
 		}
 		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
-			if (entityID > -1) {
+			if (entityID != SpoutEntity.NOTSPAWNEDID) {
 				if (getEngine().getPlatform() == Platform.CLIENT) {
 					((SpoutEntity) e).setId(entityID);
 				} else {
