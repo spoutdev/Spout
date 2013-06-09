@@ -141,6 +141,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
 	private final Object jmdnsSync = new Object();
 	private JmDNS jmdns = null;
+	private final SessionTask sesionTask = new SessionTask();
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
 	private StringMap engineLightingMap = null;
@@ -151,23 +152,18 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public void start() {
-		start(true);
+		start(debugMode() ? false : true, new SpoutServerListener(this));
 	}
 
-	@Override
-	public void start(boolean checkWorlds) {
-		start(checkWorlds, new SpoutServerListener(this));
-	}
-
-	public void start(boolean checkWorlds, Listener listener) {
+	protected void start(boolean checkWorlds, Listener listener) {
 		//Setup the Material Registry
 		engineItemMap = MaterialRegistry.setupRegistry();
 		//Setup the Biome Registry
 		engineBiomeMap = BiomeRegistry.setupRegistry();
 		//Setup the Lighting Registry
 		engineLightingMap = LightingRegistry.setupRegistry();
-		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
-		super.start(checkWorlds);
+		
+		super.start();
 		if (checkWorlds) {
 			//At least one plugin should have registered atleast one world
 			if (loadedWorlds.getLive().isEmpty()) {
@@ -320,17 +316,16 @@ public class SpoutServer extends SpoutEngine implements Server {
 		return sessions;
 	}
 
+	@Override
+	protected Runnable getSessionTask() {
+		return sesionTask;
+	}
+	
 	private class SessionTask implements Runnable {
-		final SpoutSessionRegistry registry;
-
-		SessionTask(SpoutSessionRegistry registry) {
-			this.registry = registry;
-		}
-
 		@Override
 		public void run() {
-			registry.pulse();
-		}
+			sessions.pulse();
+		}		
 	}
 
 	@Override

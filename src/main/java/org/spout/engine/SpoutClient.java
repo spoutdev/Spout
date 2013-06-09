@@ -95,6 +95,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 	private final FileSystem filesystem = new ClientFileSystem();
 	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<SpoutClientPlayer>();
+	private final SessionTask sessionTask = new SessionTask();
 	// Handle stopping
 	private volatile boolean rendering = true;
 	private boolean ccoverride = false;
@@ -144,11 +145,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void start() {
-		start(true);
-	}
-
-	@Override
-	public void start(boolean checkWorlds) {
 		if (!connnect()) {
 			return;
 		}
@@ -158,7 +154,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		// Completely blank world
 		worldChanged("NullWorld", UUID.randomUUID(), new DatatableComponent().serialize());
-		super.start(checkWorlds);
+		super.start();
 
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
 
@@ -222,6 +218,18 @@ public class SpoutClient extends SpoutEngine implements Client {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	protected Runnable getSessionTask() {
+		return sessionTask;
+	}
+	
+	private class SessionTask implements Runnable {
+		@Override
+		public void run() {
+			session.get().pulse();
+		}		
 	}
 
 	@Override
@@ -444,5 +452,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		// TODO should this be removed?
 	}
 	
-	
+	public Session getSession() {
+		return session.get();
+	}
+
 }

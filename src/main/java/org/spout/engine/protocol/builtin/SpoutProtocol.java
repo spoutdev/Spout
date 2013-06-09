@@ -108,6 +108,5 @@ public class SpoutProtocol extends Protocol {
 		for (StringMap map : StringMap.getAll()) {
 			session.send(false, new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
 		}
-		session.send(false, new WorldChangeMessage(session.getPlayer().getWorld(), session.getPlayer().getWorld().getDatatable()));
 	}
 }
