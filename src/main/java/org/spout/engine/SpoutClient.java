@@ -214,6 +214,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			p.connect(session, p.getScene().getTransform());
 			session.setPlayer(p);
 			player.set(p);
+			session.getProtocol().initializeSession(session);
 		} else {
 			getLogger().log(Level.SEVERE, "Could not connect to " + binding, connect.getCause());
 			return false;
