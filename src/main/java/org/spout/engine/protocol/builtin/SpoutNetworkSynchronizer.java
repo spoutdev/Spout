@@ -54,6 +54,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 
 	@Override
 	public Collection<Chunk> sendChunk(Chunk c) {
+		System.out.println("SENDING CHUNKDATA");
 		session.send(false, new ChunkDataMessage(c.getSnapshot()));
 		return null; //TODO Why does this return null?
 	}

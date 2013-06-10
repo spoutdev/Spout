@@ -67,7 +67,7 @@ public class ChannelBufferUtils {
 	public static UUID readUUID(ChannelBuffer buffer) {
 		final long lsb = buffer.readLong();
 		final long msb = buffer.readLong();
-		return new UUID(lsb, msb);
+		return new UUID(msb, lsb);
 	}
 
 	public static void writeUUID(ChannelBuffer buffer, UUID uuid) {

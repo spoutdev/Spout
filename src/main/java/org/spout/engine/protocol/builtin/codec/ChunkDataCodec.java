@@ -56,7 +56,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			buffer.writeInt(message.getY());
 			buffer.writeInt(message.getZ());
 		} else {
-			int size = 18;
+			int size = 19;
 			int dataSize = Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.HALF_VOLUME + Chunk.BLOCKS.HALF_VOLUME;
 			if (message.getBiomeData() != null) {
 				dataSize += Chunk.BLOCKS.AREA;
@@ -73,7 +73,8 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				uncompressedData[index++] = (byte) s;
 				uncompressedData[index++] = (byte) (s >> 8);
 			}
-			if (message.getBiomeData() != null) {
+			boolean hasBiomes = message.getBiomeData() != null && message.getBiomeData() != null;
+			if (hasBiomes) {
 				System.arraycopy(message.getBiomeData(), 0, uncompressedData, index, message.getBiomeData().length);
 				index += message.getBiomeData().length;
 			}
@@ -96,8 +97,8 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			buffer.writeInt(message.getX());
 			buffer.writeInt(message.getY());
 			buffer.writeInt(message.getZ());
-			buffer.writeByte(message.getBiomeData() != null ? 1 : 0); // hasBiomes
-			if (message.getBiomeManagerClass() != null) {
+			buffer.writeByte(hasBiomes ? 1 : 0); // hasBiomes
+			if (hasBiomes) {
 				ChannelBufferUtils.writeString(buffer, message.getBiomeManagerClass());
 			}
 			buffer.writeInt(compressedSize);
@@ -115,13 +116,12 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 		if (unload) {
 			return new ChunkDataMessage(x, y, z);
 		} else {
-			int uncompressedSize = Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.HALF_VOLUME + Chunk.BLOCKS.HALF_VOLUME;
 			final boolean hasBiomes = buffer.readByte() == 1;
+			final String biomeManagerClass = hasBiomes ? ChannelBufferUtils.readString(buffer) : null;
+			int uncompressedSize = Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.HALF_VOLUME + Chunk.BLOCKS.HALF_VOLUME;
 			if (hasBiomes) {
 				uncompressedSize += Chunk.BLOCKS.AREA;
 			}
-			final String biomeManagerClass = hasBiomes ? null : ChannelBufferUtils.readString(buffer);
-
 			final byte[] uncompressedData = new byte[uncompressedSize];
 			final byte[] compressedData = new byte[buffer.readInt()];
 			buffer.readBytes(compressedData);
