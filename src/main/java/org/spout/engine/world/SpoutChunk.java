@@ -833,7 +833,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				setIsInViewDistance(true);
 			}
 			if (wasEmpty) {
-				getRegion().getRegionGenerator().touchChunkNeighbors(this);
+				RegionGenerator generator = getRegion().getRegionGenerator();
+				if (generator != null) {
+					generator.touchChunkNeighbors(this);
+				}
 			}
 		}
 		SaveState.resetPostSaving(saveState);

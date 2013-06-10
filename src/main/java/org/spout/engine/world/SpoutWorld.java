@@ -863,7 +863,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	}
 	
 	/**
-	 * Gets the column corresponding to the given Block coordinates
+	 * Gets the column corresponding to the given Column coordinates
 	 * @param x the x coordinate
 	 * @param z the z coordinate
 	 * @param loadopt load option
@@ -903,7 +903,12 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 			throw new IllegalStateException("Unable to generate region for new column and load option " + loadopt);
 		}
 		
-		r.getRegionGenerator().generateColumn(x, z, sync, true);
+		RegionGenerator generator = r.getRegionGenerator();
+		if (generator != null) {
+			generator.generateColumn(x, z, sync, true);
+		} else {
+			setIfNotGenerated(x, z, new int[SpoutColumn.BLOCKS.SIZE][SpoutColumn.BLOCKS.SIZE]); 
+		}
 
 		column = getColumn(x, z, LoadOption.LOAD_ONLY);
 		
