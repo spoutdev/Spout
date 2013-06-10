@@ -30,6 +30,7 @@ import java.net.InetSocketAddress;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.component.entity.NetworkComponent;
@@ -104,9 +105,11 @@ public class SpoutProtocol extends Protocol {
 	@Override
 	public void initializeSession(final Session session) {
 		session.setNetworkSynchronizer(new SpoutNetworkSynchronizer(session));
-		//TODO Ensure this is right, very important
-		for (StringMap map : StringMap.getAll()) {
-			session.send(false, new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
+		if (Spout.getPlatform() == Platform.SERVER) {
+			//TODO Ensure this is right, very important
+			for (StringMap map : StringMap.getAll()) {
+				session.send(false, new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
+			}
 		}
 	}
 }
