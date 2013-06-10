@@ -54,8 +54,8 @@ public class EntityInteractEvent<T> extends EntityEvent implements Cancellable {
 	}
 
 	/**
-	 * Gets the {@link Point} where interaction occurred.
-	 * @return point where interaction occurred
+	 * Gets the {@link Point} where interaction occurred on target entity or bock.
+	 * @return point where interaction occurred  on target entity or bock
 	 */
 	public Point getPoint() {
 		return point;
