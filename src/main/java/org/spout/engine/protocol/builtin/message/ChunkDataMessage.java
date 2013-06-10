@@ -35,8 +35,10 @@ import org.spout.api.util.SpoutToStringStyle;
 
 public class ChunkDataMessage extends SpoutMessage {
 	private final boolean unload;
+	// Block x, y, z
 	private final int x, y, z;
 	private final short[] blockIds, blockData;
+	// TODO remove biome info; client doesn't use it
 	private final byte[] biomeData;
 	private final String biomeManagerClass;
 

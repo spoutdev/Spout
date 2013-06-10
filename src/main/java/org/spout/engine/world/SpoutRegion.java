@@ -1741,7 +1741,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 * @return true if exists, false if doesn't exist
 	 */
 	public static boolean regionFileExists(World world, int x, int y, int z) {
-		if (Spout.getPlatform() != Platform.CLIENT) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
 			return false;
 		}
 		File worldDirectory = world.getDirectory();
@@ -1899,13 +1899,15 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return region.getChunk(x, y, z, loadopt);
 	}
 
-	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, BiomeManager biomes) {
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
-		SpoutChunk chunk = chunks[x >> Region.CHUNKS.BITS][y >> Region.CHUNKS.BITS][z >> Region.CHUNKS.BITS].get();
+	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData) {
+		x &= CHUNKS.MASK;
+		y &= CHUNKS.MASK;
+		z &= CHUNKS.MASK;
+		SpoutChunk chunk = chunks[x][y][z].get();
 		if (chunk != null) {
 			chunk.unload(false);
+			// TODO is this right?
+			chunks[x][y][z].set(null);
 		}
 		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, new ManagedHashMap(), true);
 		setChunk(newChunk, x, y, z, null, true);
