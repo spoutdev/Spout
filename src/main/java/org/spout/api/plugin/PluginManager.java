@@ -58,6 +58,11 @@ public interface PluginManager {
 	public abstract Plugin loadPlugin(File file) throws InvalidPluginException, InvalidDescriptionFileException, UnknownDependencyException;
 
 	/**
+	 * Installs / Updates the plugins in the 'updates' directory
+	 */
+	public abstract void installUpdates();
+
+	/**
 	 * Loads all plugins in a directory
 	 * @param file
 	 * @return array of plugins loaded

@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,6 +49,7 @@ import org.spout.api.Engine;
 import org.spout.api.event.HandlerList;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
+import org.spout.api.exception.SpoutRuntimeException;
 import org.spout.api.exception.UnknownDependencyException;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.security.CommonSecurityManager;
@@ -60,7 +62,6 @@ public class CommonPluginManager implements PluginManager {
 	private final Map<Pattern, PluginLoader> loaders = new HashMap<Pattern, PluginLoader>();
 	private final Map<String, Plugin> names = new HashMap<String, Plugin>();
 	private final List<Plugin> plugins = new ArrayList<Plugin>();
-	private File updateDir;
 
 	public CommonPluginManager(final Engine engine, final CommonSecurityManager manager, final double key) {
 		this.engine = engine;
@@ -101,21 +102,59 @@ public class CommonPluginManager implements PluginManager {
 		return loadPlugin(paramFile, false);
 	}
 
-	public synchronized Plugin loadPlugin(File paramFile, boolean ignoreSoftDependencies) throws InvalidPluginException, InvalidDescriptionFileException, UnknownDependencyException {
-		boolean locked = manager.lock(key);
-		File update = null;
+	@Override
+	public void installUpdates() {
+		File[] updates = engine.getUpdateFolder().listFiles();
+		if (updates == null) return;
+		for (File file : updates) {
+			if (!file.getName().endsWith(".jar")) continue;
+			try {
+				// grab the metadata for the plugin in the update folder
+				PluginDescriptionFile pdf = CommonPluginLoader.getDescription(file);
+				String name = pdf.getName();
+				// look for an existing plugin
+				File pluginDir = engine.getPluginFolder();
+				File[] plugins = pluginDir.listFiles();
+				if (plugins == null) throw new IllegalStateException("Error listing plugins.");
 
-		if (updateDir != null && updateDir.isDirectory()) {
-			update = new File(updateDir, paramFile.getName());
-			if (update.exists() && update.isFile()) {
-				try {
-					FileUtils.copyFile(update, paramFile);
-				} catch (IOException e) {
-					safelyLog(Level.SEVERE, new StringBuilder().append("Error copying file '").append(update.getPath()).append("' to its new destination at '").append(paramFile.getPath()).append("': ").append(e.getMessage()).toString(), e);
+				// see if the plugin has an existing installation
+				File target = null;
+				for (File pfile : plugins) {
+					if (!pfile.getName().endsWith(".jar")) continue;
+					PluginDescriptionFile ppdf = CommonPluginLoader.getDescription(pfile);
+					String pname = ppdf.getName();
+					if (name.equals(pname)) {
+						target = pfile;
+						break;
+					}
 				}
-				update.delete();
+
+				// no existing installation, install to new file
+				if (target == null) {
+					target = new File(pluginDir, file.getName());
+					int i = 1;
+					while (target.exists()) {
+						target = new File(pluginDir, file.getName().replace(".jar", "") + " (" + i + ").jar");
+						i++;
+					}
+				}
+
+				// copy file to target and mark update file for deletion
+				FileUtils.copyFile(file, target);
+				if (!file.delete()) file.deleteOnExit();
+
+			} catch (IOException e) {
+				throw new SpoutRuntimeException("Error installing update.", e);
+			} catch (InvalidPluginException e) {
+				throw new SpoutRuntimeException(e);
+			} catch (InvalidDescriptionFileException e) {
+				throw new SpoutRuntimeException(e);
 			}
 		}
+	}
+
+	public synchronized Plugin loadPlugin(File paramFile, boolean ignoreSoftDependencies) throws InvalidPluginException, InvalidDescriptionFileException, UnknownDependencyException {
+		boolean locked = manager.lock(key);
 
 		Set<Pattern> patterns = loaders.keySet();
 		Plugin result = null;
@@ -149,10 +188,6 @@ public class CommonPluginManager implements PluginManager {
 	public synchronized List<Plugin> loadPlugins(File paramFile) {
 		if (!paramFile.isDirectory()) {
 			throw new IllegalArgumentException("File parameter was not a Directory!");
-		}
-
-		if (engine.getUpdateFolder() != null) {
-			updateDir = engine.getUpdateFolder();
 		}
 
 		loadMetaPlugin();

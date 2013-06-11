@@ -44,6 +44,7 @@ import org.apache.commons.collections.map.CaseInsensitiveMap;
 
 import org.spout.api.Engine;
 import org.spout.api.Platform;
+import org.spout.api.Spout;
 import org.spout.api.UnsafeMethod;
 import org.spout.api.event.server.plugin.PluginDisableEvent;
 import org.spout.api.event.server.plugin.PluginEnableEvent;
@@ -230,7 +231,7 @@ public class CommonPluginLoader implements PluginLoader {
 	 * @throws InvalidPluginException
 	 * @throws InvalidDescriptionFileException
 	 */
-	protected synchronized PluginDescriptionFile getDescription(File file) throws InvalidPluginException, InvalidDescriptionFileException {
+	protected static synchronized PluginDescriptionFile getDescription(File file) throws InvalidPluginException, InvalidDescriptionFileException {
 		if (!file.exists()) {
 			throw new InvalidPluginException(file.getName() + " does not exist!");
 		}
@@ -261,14 +262,14 @@ public class CommonPluginLoader implements PluginLoader {
 				try {
 					in.close();
 				} catch (IOException e) {
-					engine.getLogger().log(Level.WARNING, "Problem closing input stream", e);
+					Spout.getLogger().log(Level.WARNING, "Problem closing input stream", e);
 				}
 			}
 			if (jar != null) {
 				try {
 					jar.close();
 				} catch (IOException e) {
-					engine.getLogger().log(Level.WARNING, "Problem closing jar input stream", e);
+					Spout.getLogger().log(Level.WARNING, "Problem closing jar input stream", e);
 				}
 			}
 		}
