@@ -26,6 +26,10 @@
  */
 package org.spout.engine.filesystem;
 
+import java.net.URI;
+
+import org.spout.api.command.CommandSource;
+
 import org.spout.engine.filesystem.resource.loader.AnimationLoader;
 import org.spout.engine.filesystem.resource.loader.BlockMeshLoader;
 import org.spout.engine.filesystem.resource.loader.CubeMeshLoader;
@@ -42,7 +46,6 @@ import org.spout.engine.filesystem.resource.loader.TextureLoader;
 public class ClientFileSystem extends CommonFileSystem {
 	@Override
 	public void init() {
-		System.out.println("Registering loaders...");
 		registerLoader(new AnimationLoader());
 		registerLoader(new BlockMeshLoader());
 		registerLoader(new CubeMeshLoader());
@@ -56,5 +59,11 @@ public class ClientFileSystem extends CommonFileSystem {
 		registerLoader(new SoundLoader());
 		registerLoader(new TextureLoader());
 		super.init();
+	}
+
+	@Override
+	public void requestPluginInstall(String name, URI uri) {
+		// TODO: Implement with an user interface
+		throw new UnsupportedOperationException();
 	}
 }

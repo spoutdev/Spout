@@ -30,6 +30,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -89,6 +91,15 @@ public class TestCommands {
 
 	public TestCommands(SpoutEngine engine) {
 		this.engine = engine;
+	}
+
+	@Command(aliases = "reqinstall", usage = "<plugin> <uri>", desc = "Requests a plugin install.", min = 2, max = 2)
+	public void requestInstall(CommandSource source, CommandArguments args) throws CommandException {
+		try {
+			Spout.getFileSystem().requestPluginInstall(args.getString(0), new URI(args.getString(1)));
+		} catch (URISyntaxException e) {
+			throw new CommandException(e);
+		}
 	}
 
 	private SoundSource getSoundSource(int id) throws CommandException {

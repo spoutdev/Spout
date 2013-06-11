@@ -278,9 +278,9 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	public void loadPlugins() {
 		pluginManager.registerPluginLoader(CommonPluginLoader.class);
 		pluginManager.clearPlugins();
+		pluginManager.installUpdates();
 
 		List<Plugin> plugins = pluginManager.loadPlugins(CommonFileSystem.PLUGINS_DIRECTORY);
-
 		for (Plugin plugin : plugins) {
 			try {
 				//Technically unsafe.  This should call the security manager

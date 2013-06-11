@@ -73,7 +73,7 @@ import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
 
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.filesystem.CommonFileSystem;
+import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.listener.SpoutServerListener;
 import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.PortBindings;
@@ -109,7 +109,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private JmDNS jmdns = null;
 
 	public SpoutServer() {
-		this.filesystem = new CommonFileSystem();
+		this.filesystem = new ServerFileSystem();
 	}
 
 	@Override
