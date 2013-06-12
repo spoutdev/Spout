@@ -28,12 +28,12 @@ package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.Session;
+import org.spout.api.protocol.ClientSession;
 import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
 
 public class RemoveEntityMessageHandler extends MessageHandler<RemoveEntityMessage> {
 	@Override
-	public void handleClient(Session session, RemoveEntityMessage message) {
+	public void handleClient(ClientSession session, RemoveEntityMessage message) {
 		if(!session.hasPlayer()) {
 			return;
 		}

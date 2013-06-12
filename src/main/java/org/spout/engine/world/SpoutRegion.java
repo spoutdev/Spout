@@ -79,6 +79,7 @@ import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
@@ -970,7 +971,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			if (chunk != null) {
 				chunk.compressIfRequired();
 				boolean doUnload;
-				if (doUnload = chunk.isReapable(worldAge)) {
+				if (doUnload = chunk.isReapable()) {
 					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
 						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
 						if (event.isCancelled()) {
@@ -991,7 +992,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	private void syncChunkToPlayer(SpoutChunk chunk, Player player) {
 		if (player.isOnline()) {
-			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
+			ServerNetworkSynchronizer synchronizer = (ServerNetworkSynchronizer) player.getNetworkSynchronizer();
 			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
 				for (int i = 0; true; i++) {
 					Vector3 block = chunk.getDirtyBlock(i);
@@ -1085,7 +1086,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 		SpoutChunk spoutChunk;
 
 		List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
-
+		
+		System.out.println("PRESNAPSHOT DIRTYCHUNKQUEUEPOLL");
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 
 			if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
@@ -1103,8 +1105,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 
 			if (spoutChunk.isDirty()) {
-				for (Player entity : spoutChunk.getObservingPlayers()) {
-					syncChunkToPlayer(spoutChunk, entity);
+				if (Spout.getPlatform() == Platform.SERVER) {
+					for (Player entity : spoutChunk.getObservingPlayers()) {
+						syncChunkToPlayer(spoutChunk, entity);
+					}
 				}
 				processChunkUpdatedEvent(spoutChunk);
 

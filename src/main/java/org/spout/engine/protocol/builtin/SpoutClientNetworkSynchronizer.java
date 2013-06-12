@@ -24,29 +24,31 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.protocol.builtin.handler;
+package org.spout.engine.protocol.builtin;
+
 
 import org.spout.api.entity.Entity;
-import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.ClientSession;
-import org.spout.api.protocol.reposition.RepositionManager;
+import org.spout.api.protocol.ClientNetworkSynchronizer;
+import org.spout.api.protocol.EntityProtocol;
+import org.spout.api.protocol.Session;
 
-import org.spout.engine.protocol.builtin.SpoutProtocol;
-import org.spout.engine.protocol.builtin.message.AddEntityMessage;
-import org.spout.engine.world.SpoutWorld;
+public class SpoutClientNetworkSynchronizer extends ClientNetworkSynchronizer {
+	public SpoutClientNetworkSynchronizer(Session session) {
+		super(session);
+	}
 
-public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 	@Override
-	public void handleClient(ClientSession session, AddEntityMessage message) {
-		RepositionManager rmInverse = session.getNetworkSynchronizer().getRepositionManager().getInverse();
-		Entity entity;
-		//Spawning a player
-		if (message.getEntityId() == session.getDataMap().get(SpoutProtocol.PLAYER_ENTITY_ID)) {
-			entity = session.getPlayer();
-		} else {
-			entity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()));
+	public EntityProtocol getEntityProtocol() {
+		return SpoutEntityProtocol.INSTANCE;
+	}
+
+	// TODO what is this for?
+	public EntityProtocol getEntityProtocol(Entity entity) {
+		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
+		if (protocol == null) {
+			entity.getNetwork().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
+			protocol = SpoutEntityProtocol.INSTANCE;
 		}
-		entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
-		((SpoutWorld) session.getEngine().getDefaultWorld()).spawnEntity(entity, message.getEntityId());
+		return protocol;
 	}
 }

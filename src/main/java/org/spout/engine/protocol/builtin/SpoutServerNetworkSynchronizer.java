@@ -40,15 +40,15 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
-import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
-public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
-	public SpoutNetworkSynchronizer(Session session) {
+public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
+	public SpoutServerNetworkSynchronizer(Session session) {
 		super(session, 3);
 	}
 
@@ -80,6 +80,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	@Override
+	// TODO move to ServerNetworkSynchronizer?
 	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
 		super.syncEntity(e, liveTransform, spawn, destroy, update);
 		EntityProtocol protocol = getEntityProtocol(e);
@@ -97,6 +98,11 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 		for (Message message : messages) {
 			this.session.send(false, message);
 		}
+	}
+
+	@Override
+	public EntityProtocol getEntityProtocol() {
+		return SpoutEntityProtocol.INSTANCE;
 	}
 
 	private EntityProtocol getEntityProtocol(Entity entity) {

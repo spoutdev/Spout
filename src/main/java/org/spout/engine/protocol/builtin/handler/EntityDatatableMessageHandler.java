@@ -32,12 +32,12 @@ import java.util.logging.Level;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.Session;
+import org.spout.api.protocol.ClientSession;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 
 public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatableMessage> {
 	@Override
-	public void handleClient(Session session, EntityDatatableMessage message) {
+	public void handleClient(ClientSession session, EntityDatatableMessage message) {
 		if(!session.hasPlayer()) {
 			throw new IllegalStateException("Message sent when session has no player");
 		}

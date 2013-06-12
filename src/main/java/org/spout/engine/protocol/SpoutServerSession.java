@@ -37,6 +37,8 @@ import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
+import org.spout.api.protocol.ServerSession;
 
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
@@ -44,7 +46,7 @@ import org.spout.engine.entity.SpoutPlayer;
 /**
  * SpoutSession for servers
  */
-public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
+public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> implements ServerSession {
 	public SpoutServerSession(T engine, Channel channel, Protocol bootstrapProtocol) {
 		super(engine, channel, bootstrapProtocol);
 	}
@@ -65,7 +67,8 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 			return getPlayer().getDisplayName() + " has left the game";
 		}
 	}
-
+	
+	// TODO why is this not is SpoutSession
 	@Override
 	public boolean disconnect(String reason) {
 		return disconnect(true, reason);
@@ -130,4 +133,16 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 			}
 		}
 	}
+
+	@Override
+	public void setNetworkSynchronizer(ServerNetworkSynchronizer synchronizer) {
+		super.setNetworkSynchronizer(synchronizer);
+	}
+
+	@Override
+	public ServerNetworkSynchronizer getNetworkSynchronizer() {
+		return (ServerNetworkSynchronizer) super.getNetworkSynchronizer();
+	}
+	
+	
 }
