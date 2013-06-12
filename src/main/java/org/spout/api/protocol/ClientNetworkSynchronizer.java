@@ -26,46 +26,8 @@
  */
 package org.spout.api.protocol;
 
-public abstract class MessageHandler<T extends Message> {
-	
-	/**
-	 * Handles a message. If the message is a one way method, then this method can be overriden.
-	 *
-	 * Otherwise, it will call handleServer or handleClient as required.
-	 *
-	 * @param upstream true, if the connection is to a server
-	 * @param session the network session
-	 * @param message the message that was received
-	 */
-	public void handle(boolean upstream, Session session, T message) {
-		if (upstream) {
-			handleClient((ClientSession) session, message);
-		} else {
-			handleServer((ServerSession) session, message);
-		}
-	}
-	
-	/**
-	 * Handles a message.
-	 *
-	 * If handle is not overriden, then this method is called when a packet is
-	 * received from the client by the server.
-	 *
-	 * @param session the network session
-	 * @param message the message that was received
-	 */
-	public void handleServer(ServerSession session, T message) {
-	}
-
-	/**
-	 * Handles a message.
-	 *
-	 * If handle is not overriden, then this method is called when a packet is
-	 * received from the server by the client.
-	 *
-	 * @param session the network session
-	 * @param message the message that was received
-	 */
-	public void handleClient(ClientSession session, T message) {
+public abstract class ClientNetworkSynchronizer extends NetworkSynchronizer {
+	public ClientNetworkSynchronizer(Session session) {
+		super(session);
 	}
 }

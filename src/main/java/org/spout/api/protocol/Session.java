@@ -38,8 +38,8 @@ import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Player;
 
 /**
- * Represents a connection to the server.<br/>
- * Controls the state, protocol and channels of a connection to the server.
+ * Represents a connection to another engine.<br/>
+ * Controls the state, protocol and channels of a connection to another engine.
  */
 public interface Session {
 	/**
@@ -172,20 +172,11 @@ public interface Session {
 	public boolean isPrimary(Channel c);
 
 	/**
-	 * Sets the NetworkSynchronizer associated with this player.<br>
-	 * <br>
-	 * This can only be called once per player login.
-	 *
-	 * @param synchronizer the synchronizer
-	 */
-	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer);
-
-	/**
-	 * Gets the NetworkSynchronizer associated with this player.<br>
+	 * Gets the ServerNetworkSynchronizer associated with this player.<br>
 	 *
 	 * @return the synchronizer
 	 */
-	public NetworkSynchronizer getNetworkSynchronizer();
+	public <T extends NetworkSynchronizer> T getNetworkSynchronizer();
 
 	public enum State {
 		/**

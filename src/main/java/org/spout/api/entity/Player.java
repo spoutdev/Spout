@@ -34,6 +34,7 @@ import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
@@ -61,7 +62,7 @@ public interface Player extends CommandSource, Entity {
 	public void setDisplayName(String name);
 
 	/**
-	 * Gets the NetworkSynchronizer associated with this player.<br>
+	 * Gets the ServerNetworkSynchronizer associated with this player.<br>
 	 * @return the synchronizer
 	 */
 	public NetworkSynchronizer getNetworkSynchronizer();
