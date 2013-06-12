@@ -215,7 +215,7 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 		this.seed = seed;
 
 		this.generator = generator;
-		regions = new RegionSource(this, snapshotManager);
+		regions = new RegionSource(this);
 
 		worldDirectory = new File(engine.getWorldFolder(), name);
 		worldDirectory.mkdirs();

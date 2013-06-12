@@ -61,7 +61,7 @@ public class RegionSource implements Iterable<Region> {
 	 */
 	private final SpoutWorld world;
 
-	public RegionSource(SpoutWorld world, SnapshotManager snapshotManager) {
+	public RegionSource(SpoutWorld world) {
 		this.world = world;
 		loadedRegions = new TripleIntObjectReferenceArrayMap<Region>(REGION_MAP_BITS);
 	}
@@ -88,9 +88,6 @@ public class RegionSource implements Iterable<Region> {
 						if (success) {
 							if (!world.getEngine().getScheduler().removeAsyncManager(r)) {
 								throw new IllegalStateException("Failed to de-register the region from the scheduler");
-							}
-							if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-								r.stopMeshGeneratorThread();
 							}
 							TaskManager tm = Spout.getEngine().getParallelTaskManager();
 							SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
@@ -160,10 +157,6 @@ public class RegionSource implements Iterable<Region> {
 		}
 		
 		((SpoutScheduler)Spout.getScheduler()).addAsyncManager(region);
-		
-		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			region.startMeshGeneratorThread();
-		}
 
 		int threshold = warnThreshold.get();
 		if (regionsLoaded.getAndIncrement() > threshold) {
