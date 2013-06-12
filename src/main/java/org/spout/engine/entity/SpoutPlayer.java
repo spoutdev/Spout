@@ -177,6 +177,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			setupInitialChunk(newTransform, LoadOption.LOAD_GEN);
 		}
 		sessionLive.set(session);
+		session.setPlayer(this);
 		copySnapshot();
 		return true;
 	}
@@ -193,7 +194,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (msg == null) {
 			return;
 		}
-		session.send(false, msg);
+		session.send(msg);
 	}
 
 	@Override
@@ -391,6 +392,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 				((ServerNetworkSynchronizer) getNetworkSynchronizer()).onRemoved();
 				((SpoutServer) getEngine()).removePlayer(this);
 			}
+			// TODO stop client?
 			sessionLive.set(null);
 		}
 	}

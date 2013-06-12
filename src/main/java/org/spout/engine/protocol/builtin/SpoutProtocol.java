@@ -108,7 +108,7 @@ public class SpoutProtocol extends Protocol {
 		session.setNetworkSynchronizer(new SpoutServerNetworkSynchronizer(session));
 		//TODO Ensure this is right, very important
 		for (StringMap map : StringMap.getAll()) {
-			session.send(false, new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
+			session.send(new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
 		}
 	}
 

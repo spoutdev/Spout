@@ -74,13 +74,17 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	protected final Channel channel;
 	/**
+	 * A queue of incoming and unprocessed messages
+	 */
+	private final Queue<Message> messageQueue = new ArrayDeque<Message>();
+	/**
 	 * A queue of incoming and unprocessed messages from a client
 	 */
-	private final Queue<Message> fromDownMessageQueue = new ArrayDeque<Message>();
+	//private final Queue<Message> fromDownMessageQueue = new ArrayDeque<Message>();
 	/**
 	 * A queue of incoming and unprocessed messages from a server
 	 */
-	private final Queue<Message> fromUpMessageQueue = new ArrayDeque<Message>();
+	//private final Queue<Message> fromUpMessageQueue = new ArrayDeque<Message>();
 	/**
 	 * A queue of outgoing messages that will be sent after the client finishes identification
 	 */
@@ -210,7 +214,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 		if (state == State.GAME) {
 			while ((message = sendQueue.poll()) != null) {
-				send(false, true, message);
+				send(message);
 			}
 		}
 		
@@ -225,21 +229,17 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			}
 
 		}
-
-		while ((message = fromDownMessageQueue.poll()) != null) {
-			handleMessage(false, message);
-		}
-		while ((message = fromUpMessageQueue.poll()) != null) {
-			handleMessage(true, message);
+		while ((message = messageQueue.poll()) != null) {
+			handleMessage(message);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void handleMessage(boolean upstream, Message message) {
+	private void handleMessage(Message message) {
 		MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
 		if (handler != null) {
 			try {
-				handler.handle(upstream, this, message);
+				handler.handle(this, message);
 			} catch (Exception e) {
 				exceptionHandler.get().uncaughtException(message, handler, e);
 			}
@@ -247,12 +247,12 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	}
 
 	@Override
-	public void send(boolean upstream, Message message) {
-		send(upstream, false, message);
+	public void send(Message message) {
+		send(message);
 	}
 
 	@Override
-	public void send(boolean upstream, boolean force, Message message) {
+	public void send(boolean force, Message message) {
 		if (message == null) {
 			return;
 		}
@@ -276,14 +276,14 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	}
 
 	@Override
-	public void sendAll(boolean upstream, Message... messages) {
-		sendAll(upstream, false, messages);
+	public void sendAll(Message... messages) {
+		sendAll(false, messages);
 	}
 
 	@Override
-	public void sendAll(boolean upstream, boolean force, Message... messages) {
+	public void sendAll(boolean force, Message... messages) {
 		for (Message msg : messages) {
-			send(upstream, force, msg);
+			send(force, msg);
 		}
 	}
 
@@ -311,16 +311,21 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 * @param message The message.
 	 */
 	@Override
-	public void messageReceived(boolean upstream, Message message) {
+	public void messageReceived(Message message) {
 		if (message.isAsync()) {
-			handleMessage(upstream, message);
-		}
-		else if (upstream) {
-			fromUpMessageQueue.add(message);
+			handleMessage(message);
 		} else {
-			fromDownMessageQueue.add(message);
+			messageQueue.add(message);
 		}
 	}
+
+	@Override
+	public void messageReceivedOnAuxChannel(Channel auxChannel, Message message) {
+		// By default, just use the normal messageReceived
+		messageReceived(message);
+	}
+	
+	
 
 	@Override
 	public String getSessionId() {
