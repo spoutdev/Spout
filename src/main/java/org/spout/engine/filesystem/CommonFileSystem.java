@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 
@@ -71,11 +72,11 @@ public abstract class CommonFileSystem implements FileSystem {
 	public static final File DATA_DIRECTORY = new File("data");
 	public static final File WORLDS_DIRECTORY = new File("worlds");
 
-	protected final Set<ResourceLoader> loaders = new HashSet<ResourceLoader>();
-	protected final Map<URI, Object> loadedResources = new HashMap<URI, Object>();
-	protected final List<ResourcePathResolver> pathResolvers = new ArrayList<ResourcePathResolver>();
-	protected final Map<String, URI> requestedInstallations = new HashMap<String, URI>();
-	protected boolean initialized;
+	private final Set<ResourceLoader> loaders = new HashSet<ResourceLoader>();
+	private final Map<URI, Object> loadedResources = new HashMap<URI, Object>();
+	private final List<ResourcePathResolver> pathResolvers = new ArrayList<ResourcePathResolver>();
+	private final Map<String, URI> requestedInstallations = new HashMap<String, URI>();
+	private boolean initialized;
 
 	private void createDirs() {
 		if (!PLUGINS_DIRECTORY.exists()) PLUGINS_DIRECTORY.mkdirs();
@@ -338,23 +339,29 @@ public abstract class CommonFileSystem implements FileSystem {
 		pathResolvers.remove(pathResolver);
 	}
 
-	protected void allowInstallation(final CommandSource source, final String plugin) {
+	private void allowInstallation(final CommandSource source, final String plugin) {
 		Spout.getScheduler().scheduleAsyncTask(Spout.getEngine(), new Runnable() {
 			@Override
 			public void run() {
 				synchronized (requestedInstallations) {
+
+					JarFile jar = null;
+					InputStream in = null;
+
 					try {
-						// copy opened stream to file in update dir
+						// obtain plugin stream
 						URI uri = requestedInstallations.get(plugin);
-						BufferedInputStream in = new BufferedInputStream(uri.toURL().openStream());
+						in = new BufferedInputStream(uri.toURL().openStream());
 						String path = uri.toString();
 						File file = new File(UPDATES_DIRECTORY, path.substring(path.lastIndexOf("/") + 1));
+
+						// copy to updates
 						source.sendMessage("Downloading " + plugin + " to the updates folder...");
 						FileUtils.copyInputStreamToFile(in, file);
 						source.sendMessage("Done.");
 
 						// check the validity of plugin
-						JarFile jar = new JarFile(file);
+						jar = new JarFile(file);
 						if (jar.getJarEntry("properties.yml") == null && jar.getJarEntry("plugin.yml") == null) {
 							source.sendMessage("The downloaded file has no valid plugin description file, marking file to be deleted.");
 							if (!file.delete()) file.deleteOnExit();
@@ -362,11 +369,24 @@ public abstract class CommonFileSystem implements FileSystem {
 						}
 
 						source.sendMessage(plugin + " has been successfully downloaded to the updates folder, it will be installed on next run.");
-						in.close();
 					} catch (MalformedURLException e) {
 						throw new SpoutRuntimeException("The plugin's URL is invalid", e);
 					} catch (IOException e) {
 						throw new SpoutRuntimeException("Error downloading the plugin", e);
+					} finally {
+						// close the jar
+						try {
+							if (jar != null) jar.close();
+						} catch (IOException e) {
+							Spout.getLogger().log(Level.WARNING, "Error closing JAR file", e);
+						}
+
+						// close the input stream
+						try {
+							if (in != null) in.close();
+						} catch (IOException e) {
+							Spout.getLogger().log(Level.WARNING, "Error closing plugin stream", e);
+						}
 					}
 					requestedInstallations.remove(plugin);
 				}
@@ -374,7 +394,7 @@ public abstract class CommonFileSystem implements FileSystem {
 		});
 	}
 
-	protected void denyInstallation(CommandSource source, String plugin) {
+	private void denyInstallation(CommandSource source, String plugin) {
 		source.sendMessage("Installation of " + plugin + " cancelled.");
 		requestedInstallations.remove(plugin);
 	}
