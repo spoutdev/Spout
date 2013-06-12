@@ -93,7 +93,7 @@ public class JLineHandler extends Handler {
 	public void publish(LogRecord record) {
 		try {
 			synchronized (writer) {
-				reader.printString(ConsoleOperations.RESET_LINE + "\033[K");
+				reader.printString(String.valueOf(ConsoleOperations.RESET_LINE));
 				reader.flushConsole();
 				appendDateFormat(writer);
 				String message;
