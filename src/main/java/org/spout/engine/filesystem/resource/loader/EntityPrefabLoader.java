@@ -39,7 +39,7 @@ import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.component.Component;
 import org.spout.api.component.entity.EntityComponent;
-import org.spout.api.plugin.CommonClassLoader;
+import org.spout.api.plugin.PluginClassLoader;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
 
@@ -79,7 +79,7 @@ public class EntityPrefabLoader extends ResourceLoader {
 			Class<?> componentClass;
 			try {
 				try {
-					componentClass = CommonClassLoader.findPluginClass(path);
+					componentClass = PluginClassLoader.findPluginClass(path);
 				} catch (ClassNotFoundException e) {
 					componentClass = Class.forName(path);
 				}

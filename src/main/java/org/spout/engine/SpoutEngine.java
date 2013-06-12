@@ -76,13 +76,10 @@ import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
-import org.spout.api.plugin.CommonPluginLoader;
-import org.spout.api.plugin.CommonPluginManager;
-import org.spout.api.plugin.CommonServiceManager;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
-import org.spout.api.plugin.ServiceManager;
-import org.spout.api.plugin.security.CommonSecurityManager;
+import org.spout.api.plugin.security.PluginSecurityManager;
+import org.spout.api.plugin.services.ServiceManager;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.scheduler.TaskManager;
@@ -91,16 +88,16 @@ import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
 
 import org.spout.engine.command.AnnotatedCommandExecutorTest;
-import org.spout.engine.console.ConsoleManager;
 import org.spout.engine.command.ClientCommands;
 import org.spout.engine.command.CommonCommands;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.ServerCommands;
 import org.spout.engine.command.TestCommands;
+import org.spout.engine.component.entity.SpoutSceneComponent;
+import org.spout.engine.console.ConsoleManager;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.filesystem.versioned.WorldFiles;
@@ -121,18 +118,17 @@ import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
-import static org.spout.api.lang.Translation.broadcast;
 import static org.spout.api.lang.Translation.log;
 import static org.spout.api.lang.Translation.tr;
 
 public abstract class SpoutEngine implements AsyncManager, Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
-	private final CommonSecurityManager securityManager = new CommonSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
-	private final CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
+	private final PluginSecurityManager securityManager = new PluginSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
+	private final PluginManager pluginManager = new PluginManager(this, securityManager, 0.0);
 	private final ConsoleManager consoleManager;
 	private final EventManager eventManager = new SimpleEventManager();
 	private final RecipeManager recipeManager = new SimpleRecipeManager();
-	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
+	private final ServiceManager serviceManager = new ServiceManager();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> players = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
@@ -276,7 +272,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	public void loadPlugins() {
-		pluginManager.registerPluginLoader(CommonPluginLoader.class);
 		pluginManager.clearPlugins();
 		pluginManager.installUpdates();
 
@@ -452,9 +447,9 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	/**
 	 * Used to allow subclasses submit final tasks before stopping the scheduler
-	 * @param message
-	 * @param stopScheduler
-	 * @return
+	 * @param message to send
+	 * @param stopScheduler true if should stop scheduler
+	 * @return true if successfully stopped
 	 */
 	protected boolean stop(final String message, boolean stopScheduler) {
 		final SpoutEngine engine = this;
@@ -647,8 +642,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			return null;
 		}
 
-		World first = loadedWorlds.values().iterator().next();
-		return first;
+		return loadedWorlds.values().iterator().next();
 	}
 
 	@Override

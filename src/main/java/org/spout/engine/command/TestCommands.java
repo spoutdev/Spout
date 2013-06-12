@@ -76,7 +76,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
-import org.spout.api.plugin.CommonPluginManager;
+import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.Plugin;
 
 import org.spout.engine.SpoutClient;
@@ -194,7 +194,7 @@ public class TestCommands {
 		} else {
 			throw new CommandException("Component not found.");
 		}
-		screen.attachWidget(((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin(), widget);
+		screen.attachWidget(((PluginManager) Spout.getPluginManager()).getMetaPlugin(), widget);
 		client.getScreenStack().openScreen(screen);
 	}
 
