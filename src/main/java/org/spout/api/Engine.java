@@ -35,15 +35,10 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.group.ChannelGroup;
-
-import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.CommandManager;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
 import org.spout.api.event.EventManager;
-import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.permissions.DefaultPermissions;
@@ -52,7 +47,6 @@ import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.resource.FileSystem;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.TaskManager;

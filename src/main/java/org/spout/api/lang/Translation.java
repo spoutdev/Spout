@@ -111,6 +111,7 @@ public class Translation {
 		pldict.broadcast(source, receivers, foundClass, args);
 	}
 	
+	//This is horrible code
 	private static Plugin getPluginForStacktrace() {
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 		boolean canSeePlugin = false;
