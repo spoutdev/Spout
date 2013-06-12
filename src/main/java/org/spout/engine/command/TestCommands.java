@@ -569,7 +569,7 @@ public class TestCommands {
 				break;
 			case SERVER:
 				for (Player player : ((Server) engine).getOnlinePlayers()) {
-					player.getSession().send(false, new CommandMessage(Spout.getCommandManager().getCommand("say"), "Network Works"));
+					player.getSession().send(new CommandMessage(Spout.getCommandManager().getCommand("say"), "Network Works"));
 				}
 				break;
 		}

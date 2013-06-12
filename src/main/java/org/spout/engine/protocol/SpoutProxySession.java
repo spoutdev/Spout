@@ -51,7 +51,7 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 	 */
 	private final AtomicReference<ConnectionInfo> channelInfo = new AtomicReference<ConnectionInfo>();
 	/**
-	 * The aux channel for proxy connections
+	 * The aux channel for proxy connections. This sends messages upstream.
 	 */
 	private final AtomicReference<Channel> auxChannel = new AtomicReference<Channel>();
 	/**
@@ -71,61 +71,73 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 		super(engine, channel, bootstrapProtocol);
 	}
 
+	/**
+	 * For proxy, the main channel is downstream and the auxChannel is upstream.
+	 * @param force
+	 * @param message 
+	 */
 	@Override
-	public void send(boolean upstream, boolean force, Message message) {
-		if (message == null) {
+	public void send(boolean force, Message message) {
+		if (message instanceof ConnectionInfoMessage) {
+			updateConnectionInfo(false, (ConnectionInfoMessage) message);
+		}
+		super.send(force, message);
+	}
+	
+	public void sendUpstream(Message message) {
+		if (message instanceof ConnectionInfoMessage) {
+			updateConnectionInfo(true, (ConnectionInfoMessage) message);
+		}
+		Channel auxChannel = this.auxChannel.get();
+		if (auxChannel == null) {
+			Spout.getLogger().warning("Attempt made to send data to an unconnected channel");
 			return;
 		}
-
-		try {
-			if (message instanceof ConnectionInfoMessage) {
-				updateConnectionInfo(upstream, !upstream, (ConnectionInfoMessage) message);
-			}
-			if (upstream) {
-				Channel auxChannel = this.auxChannel.get();
-				if (auxChannel == null) {
-					Spout.getLogger().warning("Attempt made to send data to an unconnected channel");
-					return;
-				}
-				auxChannel.write(message);
-			} else {
-				super.send(upstream, force, message);
-			}
-		} catch (Exception e) {
-			disconnect(false, "Socket Error!");
-		}
+		auxChannel.write(message);
 	}
 
 	@Override
-	public void messageReceived(boolean upstream, Message message) {
+	public void messageReceived(Message message) {
 		if (message instanceof ConnectionInfoMessage) {
-			updateConnectionInfo(upstream, upstream, (ConnectionInfoMessage) message);
+			updateConnectionInfo(false, (ConnectionInfoMessage) message);
 		}
-		if (upstream) {
-			if (message instanceof ProxyStartMessage) {
-				passthrough.compareAndSet(false, true);
-			} else if (message instanceof RedirectMessage) {
-				RedirectMessage redirect = (RedirectMessage) message;
-				if (redirect.isRedirect()) {
-					closeAuxChannel(true, "Redirect received");
-					auxChannelInfo.set(null);
-					ConnectionInfo info = channelInfo.get();
-					if (info != null) {
-						passthrough.set(false);
-						getEngine().connect(redirect.getHostname(), redirect.getPort(), info.getIdentifier(), this);
-						return;
-					}
+		if (passthrough.get()) {
+			if (message instanceof TransformableMessage) {
+				message = ((TransformableMessage) message).transform(true, connects.get(), channelInfo.get(), auxChannelInfo.get());
+			}
+			sendUpstream(message);
+			return;
+		}
+		super.messageReceived(message);
+	}
+
+	@Override
+	public void messageReceivedOnAuxChannel(Channel auxChannel, Message message) {
+		if (message instanceof ConnectionInfoMessage) {
+			updateConnectionInfo(true, (ConnectionInfoMessage) message);
+		}
+		if (message instanceof ProxyStartMessage) {
+			passthrough.compareAndSet(false, true);
+		} else if (message instanceof RedirectMessage) {
+			RedirectMessage redirect = (RedirectMessage) message;
+			if (redirect.isRedirect()) {
+				closeAuxChannel(true, "Redirect received");
+				auxChannelInfo.set(null);
+				ConnectionInfo info = channelInfo.get();
+				if (info != null) {
+					passthrough.set(false);
+					getEngine().connect(redirect.getHostname(), redirect.getPort(), info.getIdentifier(), this);
+					return;
 				}
 			}
 		}
 		if (passthrough.get()) {
 			if (message instanceof TransformableMessage) {
-				message = ((TransformableMessage) message).transform(upstream, connects.get(), channelInfo.get(), auxChannelInfo.get());
+				message = ((TransformableMessage) message).transform(false, connects.get(), channelInfo.get(), auxChannelInfo.get());
 			}
-			send(!upstream, true, message);
+			send(message);
 			return;
 		}
-		super.messageReceived(upstream, message);
 	}
 
 	@Override
@@ -174,12 +186,12 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 		}
 	}
 
-	private void updateConnectionInfo(boolean auxChannel, boolean upstream, ConnectionInfoMessage info) {
+	private void updateConnectionInfo(boolean auxChannel, ConnectionInfoMessage info) {
 		AtomicReference<ConnectionInfo> ref = auxChannel ? auxChannelInfo : channelInfo;
 		boolean success = false;
 		while (!success) {
 			ConnectionInfo oldInfo = ref.get();
-			ConnectionInfo newInfo = info.getConnectionInfo(upstream, oldInfo);
+			ConnectionInfo newInfo = info.getConnectionInfo(oldInfo);
 			success = ref.compareAndSet(oldInfo, newInfo);
 		}
 	}

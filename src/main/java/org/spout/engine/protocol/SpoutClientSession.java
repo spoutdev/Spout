@@ -56,14 +56,6 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 	}
 
 	@Override
-	public void send(boolean upstream, boolean force, Message message) {
-		if (!upstream) {
-			getEngine().getLogger().warning("Attempt made to send packet to client");
-		}
-		super.send(upstream, force, message);
-	}
-
-	@Override
 	public void dispose() {
 		activeWorld.set(null);
 		SpoutPlayer player;

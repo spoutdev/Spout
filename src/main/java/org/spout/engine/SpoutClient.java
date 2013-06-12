@@ -125,7 +125,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
 		bootstrap.setFactory(factory);
 
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
+		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
 		bootstrap.setPipelineFactory(pipelineFactory);
 		super.init(args);
 
@@ -151,7 +151,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 		// Send handshake message first
 		SpoutClientSession get = session.get();
-		get.send(true, true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().getRemoteAddress()));
+		get.send(true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().getRemoteAddress()));
 
 		// Completely blank world
 		worldChanged("NullWorld", UUID.randomUUID(), new DatatableComponent().serialize());
@@ -214,7 +214,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 			this.session.set(session);
 			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 			p.connect(session, p.getScene().getTransform());
-			session.setPlayer(p);
 			player.set(p);
 		} else {
 			getLogger().log(Level.SEVERE, "Could not connect to " + binding, connect.getCause());

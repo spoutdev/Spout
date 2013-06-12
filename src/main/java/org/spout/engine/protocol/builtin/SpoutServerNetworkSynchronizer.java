@@ -55,28 +55,28 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 	@Override
 	public Collection<Chunk> sendChunk(Chunk c) {
 		System.out.println("SENDING CHUNKDATA");
-		session.send(false, new ChunkDataMessage(c.getSnapshot()));
+		session.send(new ChunkDataMessage(c.getSnapshot()));
 		return null; //TODO Why does this return null?
 	}
 
 	@Override
 	protected void freeChunk(Point p) {
-		session.send(false, new ChunkDataMessage(p.getBlockX(), p.getBlockY(), p.getBlockZ()));
+		session.send(new ChunkDataMessage(p.getBlockX(), p.getBlockY(), p.getBlockZ()));
 	}
 
 	@Override
 	protected void sendPosition(Point p, Quaternion rot) {
-		session.send(false, new EntityTransformMessage(player.getId(), new Transform(p, rot, Vector3.ONE), getRepositionManager()));
+		session.send(new EntityTransformMessage(player.getId(), new Transform(p, rot, Vector3.ONE), getRepositionManager()));
 	}
 
 	@Override
 	protected void worldChanged(World world) {
-		session.send(false, new WorldChangeMessage(world, world.getDatatable()));
+		session.send(new WorldChangeMessage(world, world.getDatatable()));
 	}
 
 	@Override
 	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
-		session.send(false, new BlockUpdateMessage(chunk.getBlock(x, y, z)));
+		session.send(new BlockUpdateMessage(chunk.getBlock(x, y, z)));
 	}
 
 	@Override
@@ -96,13 +96,8 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 			messages.addAll(protocol.getUpdateMessages(e, liveTransform, getRepositionManager(), false));
 		}
 		for (Message message : messages) {
-			this.session.send(false, message);
+			this.session.send(message);
 		}
-	}
-
-	@Override
-	public EntityProtocol getEntityProtocol() {
-		return SpoutEntityProtocol.INSTANCE;
 	}
 
 	private EntityProtocol getEntityProtocol(Entity entity) {

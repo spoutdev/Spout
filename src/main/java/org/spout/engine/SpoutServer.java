@@ -230,7 +230,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		bootstrap.setOption("tcpNoDelay", true);
 		bootstrap.setOption("keepAlive", true);
 
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, false);
+		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
 		bootstrap.setPipelineFactory(pipelineFactory);
 
 		accessManager.load();
@@ -795,9 +795,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 		World world = scene.getTransformLive().getPosition().getWorld();
 		world.spawnEntity(player);
 		((SpoutServerWorld) world).addPlayer(player);
-
-		//Set the player to the session
-		session.setPlayer(player);
 
 		//Initialize the session
 		session.getProtocol().initializeServerSession(session);
