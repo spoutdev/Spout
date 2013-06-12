@@ -46,7 +46,6 @@ import org.spout.api.util.StringMapEvent;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 import org.spout.engine.protocol.builtin.message.StringMapMessage;
-import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 /**
  * The protocol used in SpoutClient

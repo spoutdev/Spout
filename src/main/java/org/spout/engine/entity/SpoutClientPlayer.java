@@ -28,11 +28,8 @@ package org.spout.engine.entity;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
-import org.spout.api.command.Command;
-import org.spout.api.command.CommandArguments;
 import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.protocol.Message;
 import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.protocol.SpoutSession;
 

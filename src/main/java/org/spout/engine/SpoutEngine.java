@@ -27,53 +27,32 @@
 package org.spout.engine;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.lang.reflect.Constructor;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
-
 import org.spout.api.Engine;
+import org.spout.api.Spout;
 import org.spout.api.command.CommandManager;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
-import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
-import org.spout.api.event.world.WorldLoadEvent;
-import org.spout.api.event.world.WorldUnloadEvent;
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.exception.SpoutRuntimeException;
-import org.spout.api.generator.EmptyWorldGenerator;
-import org.spout.api.generator.WorldGenerator;
-import org.spout.api.generator.biome.BiomeRegistry;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.inventory.recipe.SimpleRecipeManager;
-import org.spout.api.lighting.LightingRegistry;
-import org.spout.api.material.MaterialRegistry;
 import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.CommonPluginLoader;
@@ -84,12 +63,8 @@ import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
 import org.spout.api.plugin.security.CommonSecurityManager;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
-import org.spout.api.util.StringMap;
-import org.spout.api.util.StringUtil;
-
 import org.spout.engine.command.AnnotatedCommandExecutorTest;
 import org.spout.engine.console.ConsoleManager;
 import org.spout.engine.command.ClientCommands;
@@ -100,13 +75,8 @@ import org.spout.engine.command.ServerCommands;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.CommonFileSystem;
-import org.spout.engine.filesystem.versioned.PlayerFiles;
-import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.input.SpoutInputConfiguration;
-import org.spout.engine.protocol.SpoutSession;
-import org.spout.engine.protocol.SpoutSessionRegistry;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
@@ -118,10 +88,6 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.MemoryReclamationThread;
 import org.spout.engine.world.SpoutRegion;
-import org.spout.engine.world.SpoutWorld;
-import static org.spout.api.lang.Translation.log;
-import static org.spout.api.lang.Translation.tr;
-import org.spout.api.plugin.CommonPlugin;
 
 public abstract class SpoutEngine implements AsyncManager, Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
@@ -157,7 +123,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			config.load();
 			inputConfig.load();
 		} catch (ConfigurationException e) {
-			log("Error loading config: %0", Level.SEVERE, e.getMessage(), e);
+			Spout.severe("Error loading config: " + e.getMessage(), e);
 		}
 
 		consoleManager.setupConsole();
@@ -187,14 +153,14 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	public void start() {
-		log("Spout is starting in %0-only mode.", getPlatform().name().toLowerCase());
-		log("Current version is %0 (Implementing SpoutAPI %1).", getVersion(), getAPIVersion());
-		log("This software is currently in alpha status so components may");
-		log("have bugs or not work at all. Please report any issues to");
-		log("http://issues.spout.org");
+		Spout.info("Spout is starting in {0}-only mode.", getPlatform().name().toLowerCase());
+		Spout.info("Current version is {0} (Implementing SpoutAPI {1}).", getVersion(), getAPIVersion());
+		Spout.info("This software is currently in alpha status so components may");
+		Spout.info("have bugs or not work at all. Please report any issues to");
+		Spout.info("http://issues.spout.org");
 
 		if (debugMode()) {
-			log("Debug Mode has been toggled on!  This mode is intended for developers only", Level.WARNING);
+			Spout.warn("Debug Mode has been toggled on!  This mode is intended for developers only");
 		}
 
 		scheduler.scheduleSyncRepeatingTask(this, getSessionTask(), 50, 50, TaskPriority.CRITICAL);
@@ -249,7 +215,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		pluginManager.registerPluginLoader(CommonPluginLoader.class);
 		pluginManager.clearPlugins();
 
-		List<Plugin> plugins = pluginManager.loadPlugins(CommonFileSystem.PLUGINS_DIRECTORY);
+		pluginManager.loadPlugins(CommonFileSystem.PLUGINS_DIRECTORY);
 	}
 
 	public SpoutApplication getArguments() {
@@ -314,7 +280,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	@Override
 	public boolean stop() {
-		return stop(tr("Spout shutting down", getCommandSource())); // TODO distribute the message differently
+		return stop("Spout shutting down");
 	}
 
 	private final AtomicBoolean stopping = new AtomicBoolean();

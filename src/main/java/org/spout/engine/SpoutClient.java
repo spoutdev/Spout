@@ -172,6 +172,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			getEventManager().callEvent(new EngineStartEvent());
 		}
 
+		inputManager.onClientStart();
 		filesystem.postStartup();
 	}
 
