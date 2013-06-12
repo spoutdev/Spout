@@ -36,7 +36,9 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.spout.api.Engine;
+import org.spout.api.Platform;
 import org.spout.api.Server;
+import org.spout.api.Spout;
 
 /**
  * A {@link SimpleChannelUpstreamHandler} which processes incoming network events.
@@ -56,7 +58,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	/**
 	 * Indicates if it is an upstream channel pipeline
 	 */
-	private final boolean upstream;
+	private final boolean onClient;
 
 	private final CommonDecoder decoder;
 	private final CommonEncoder encoder;
@@ -67,9 +69,13 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	 * @param engine The engine.
 	 * @param upstream If the connections are going to the server
 	 */
-	public CommonHandler(Engine engine, CommonEncoder encoder, CommonDecoder decoder, boolean upstream) {
+	public CommonHandler(Engine engine, CommonEncoder encoder, CommonDecoder decoder) {
 		this.engine = engine;
-		this.upstream = upstream;
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			this.onClient = true;
+		} else {
+			this.onClient = false;
+		}
 		this.encoder = encoder;
 		this.decoder = decoder;
 	}
@@ -80,7 +86,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 
 		// ctx.getPipeline().addBefore("2", "messagePrinter", new MessagePrintingHandler());
 
-		if (upstream) {
+		if (onClient) {
 			// Client
 			engine.getLogger().info("Upstream channel connected: " + c + ".");
 		} else {
@@ -105,7 +111,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 			Channel c = e.getChannel();
 			Session session = this.session.get();
 
-			if (!upstream) {
+			if (!onClient) {
 				Server server = (Server) engine;
 				server.getChannelGroup().remove(c);
 				server.getSessionRegistry().remove(session);
@@ -123,7 +129,11 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
 		Session session = this.session.get();
-		session.messageReceived(upstream, (Message) e.getMessage());
+		if (session.isPrimary(ctx.getChannel())) {
+			session.messageReceived((Message) e.getMessage());
+		} else {
+			session.messageReceivedOnAuxChannel(ctx.getChannel(), (Message) e.getMessage());
+		}
 	}
 
 	@Override
@@ -132,7 +142,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 		if (c.isOpen()) {
 			Session session = this.session.get();
 
-			if (!upstream) {
+			if (!onClient) {
 				Server server = (Server) engine;
 				server.getChannelGroup().remove(c);
 				server.getSessionRegistry().remove(session);

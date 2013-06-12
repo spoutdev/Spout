@@ -43,10 +43,10 @@ import org.spout.api.Spout;
 public class CommonEncoder extends PostprocessEncoder {
 	private volatile Protocol protocol = null;
 
-	private final boolean upstream;
+	private final boolean onClient;
 
-	public CommonEncoder(boolean upstream) {
-		this.upstream = upstream;
+	public CommonEncoder(boolean onClient) {
+		this.onClient = onClient;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -54,7 +54,7 @@ public class CommonEncoder extends PostprocessEncoder {
 	protected Object encode(ChannelHandlerContext ctx, Channel c, Object msg) throws Exception {
 		if (msg instanceof Message) {
 			if (protocol == null) {
-				if (Spout.getEngine() instanceof Client) {
+				if (onClient) {
 					protocol = ((Client) Spout.getEngine()).getAddress().getProtocol();
 				} else {
 					protocol = Spout.getEngine().getProtocol(c.getLocalAddress());
@@ -70,7 +70,7 @@ public class CommonEncoder extends PostprocessEncoder {
 				throw new IOException("Unknown message type: " + clazz + ".");
 			}
 
-			ChannelBuffer messageBuf = codec.encode(upstream, message);
+			ChannelBuffer messageBuf = codec.encode(onClient, message);
 			ChannelBuffer headerBuf = protocol.writeHeader(codec, messageBuf);
 			return ChannelBuffers.wrappedBuffer(headerBuf, messageBuf);
 		}

@@ -60,8 +60,8 @@ public abstract class MessageCodec<T extends Message> {
 		this.dynamic = dynamic;
 	}
 
-	public ChannelBuffer encode(boolean upstream, T message) throws IOException {
-		return upstream ? encodeToServer(message) : encodeToClient(message);
+	public final ChannelBuffer encode(boolean onClient, T message) throws IOException {
+		return onClient ? encodeToServer(message) : encodeToClient(message);
 	}
 
 	public ChannelBuffer encode(T message) throws IOException {
@@ -76,8 +76,8 @@ public abstract class MessageCodec<T extends Message> {
 		return encode(message);
 	}
 
-	public T decode(boolean upstream, ChannelBuffer buffer) throws IOException {
-		return upstream ? decodeFromServer(buffer) : decodeFromClient(buffer);
+	public final T decode(boolean onClient, ChannelBuffer buffer) throws IOException {
+		return onClient ? decodeFromServer(buffer) : decodeFromClient(buffer);
 	}
 
 	public T decode(ChannelBuffer buffer) throws IOException {

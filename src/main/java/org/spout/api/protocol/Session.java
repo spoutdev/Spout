@@ -45,10 +45,17 @@ public interface Session {
 	/**
 	 * Passes a message to a session for processing.
 	 *
-	 * @param upstream true if the message was received from a server
 	 * @param message message to be processed
 	 */
-	public <T extends Message> void messageReceived(boolean upstream, T message);
+	public <T extends Message> void messageReceived(T message);
+
+	/**
+	 * Passes a message to a session for processing.
+	 *
+	 * @param auxChannel the channel that the message was received on
+	 * @param message message to be processed
+	 */
+	public <T extends Message> void messageReceivedOnAuxChannel(Channel auxChannel, T message);
 
 	/**
 	 * Disposes of this session by destroying the associated player, if there is
@@ -80,34 +87,30 @@ public interface Session {
 	/**
 	 * Sends a message to the client.
 	 *
-	 * @param upstream true if the message should be sent to the server
 	 * @param message The message.
 	 */
-	public void send(boolean upstream, Message message);
+	public void send(Message message);
 
 	/**
 	 * Sends a message to the client.
 	 *
-	 * @param upstream true if the message should be sent to the server
 	 * @param force if this message is used in the identification stages of communication
 	 * @param message The message.
 	 */
-	public void send(boolean upstream, boolean force, Message message);
+	public void send(boolean force, Message message);
 
 	/**
 	 * Sends any amount of messages to the client
-	 * @param upstream true if the messages should be sent to the server
 	 * @param messages the messages to send to the client
 	 */
-	public void sendAll(boolean upstream, Message... messages);
+	public void sendAll(Message... messages);
 
 	/**
 	 * Sends any amount of messages to the client.
-	 * @param upstream true if the messages should be sent to the server
 	 * @param force if the messages are used in the identification stages of communication
 	 * @param messages the messages to send to the client
 	 */
-	public void sendAll(boolean upstream, boolean force, Message... messages);
+	public void sendAll(boolean force, Message... messages);
 	/**
 	 * Disconnects the player as a kick. This is equivalent to calling disconnect(reason, true)
 	 * @param reason The reason for disconnection

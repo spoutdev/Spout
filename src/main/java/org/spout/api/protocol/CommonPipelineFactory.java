@@ -30,7 +30,6 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.spout.api.Engine;
-import org.spout.api.Platform;
 import org.spout.api.protocol.dynamicid.DynamicMessageDecoder;
 import org.spout.api.protocol.dynamicid.DynamicMessageEncoder;
 
@@ -46,34 +45,33 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 	/**
 	 * Indicates if the channel is an upstream channel
 	 */
-	private final boolean upstream;
+	private final boolean onClient;
 
 	/**
-	 * Creates a new Minecraft pipeline factory.
+	 * Creates a new Common pipeline factory.
 	 *
 	 * @param engine The engine
-	 * @param upstream true for connection to the server
 	 */
-	public CommonPipelineFactory(Engine engine, boolean upstream) {
-		Platform p = engine.getPlatform();
-		if (upstream) {
-			if (p != Platform.CLIENT && p != Platform.PROXY) {
-				throw new IllegalArgumentException("Only Clients and Proxies can establish upstream connections");
-			}
-		} else {
-			if (p != Platform.SERVER && p != Platform.PROXY) {
-				throw new IllegalArgumentException("Only Servers can establish downstream connections");
-			}
+	public CommonPipelineFactory(Engine engine) {
+		switch (engine.getPlatform()) {
+			case CLIENT:
+				this.onClient = true;
+				break;
+			case PROXY:
+			case SERVER:
+				this.onClient = false;
+				break;
+			default:
+				throw new IllegalStateException("Unknown platorm!");
 		}
 		this.engine = engine;
-		this.upstream = upstream;
 	}
 
 	@Override
 	public ChannelPipeline getPipeline() throws Exception {
-		CommonEncoder encoder = new CommonEncoder(upstream);
-		CommonDecoder decoder = new CommonDecoder(upstream);
-		CommonHandler handler = new CommonHandler(engine, encoder, decoder, upstream);
+		CommonEncoder encoder = new CommonEncoder(onClient);
+		CommonDecoder decoder = new CommonDecoder(onClient);
+		CommonHandler handler = new CommonHandler(engine, encoder, decoder);
 		DynamicMessageDecoder dynamicDecoder = new DynamicMessageDecoder();
 		DynamicMessageEncoder dynamicEncoder = new DynamicMessageEncoder();
 		return Channels.pipeline(decoder, encoder, dynamicDecoder, dynamicEncoder, handler);
