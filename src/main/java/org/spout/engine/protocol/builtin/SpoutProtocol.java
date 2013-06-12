@@ -37,9 +37,11 @@ import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
+import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringMapEvent;
@@ -102,13 +104,16 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	@Override
-	public void initializeSession(final Session session) {
-		session.setNetworkSynchronizer(new SpoutNetworkSynchronizer(session));
-		if (Spout.getPlatform() == Platform.SERVER) {
-			//TODO Ensure this is right, very important
-			for (StringMap map : StringMap.getAll()) {
-				session.send(false, new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
-			}
+	public void initializeServerSession(final ServerSession session) {
+		session.setNetworkSynchronizer(new SpoutServerNetworkSynchronizer(session));
+		//TODO Ensure this is right, very important
+		for (StringMap map : StringMap.getAll()) {
+			session.send(false, new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
 		}
+	}
+
+	@Override
+	public void initializeClientSession(final ClientSession session) {
+		session.setNetworkSynchronizer(new SpoutClientNetworkSynchronizer((Session) session));
 	}
 }

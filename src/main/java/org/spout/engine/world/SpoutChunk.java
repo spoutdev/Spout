@@ -1486,10 +1486,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public boolean isReapable() {
-		return isReapable(getWorld().getAge());
+		if (Spout.getPlatform() == Platform.SERVER) {
+			return isReapable(getWorld().getAge());
+		} else {
+			return false;
+		}
 	}
 
-	public boolean isReapable(long worldAge) {
+	private boolean isReapable(long worldAge) {
 		if (lastUnloadCheck.get() + SpoutConfiguration.CHUNK_REAP_DELAY.getLong() >= worldAge) {
 			return false;
 		}

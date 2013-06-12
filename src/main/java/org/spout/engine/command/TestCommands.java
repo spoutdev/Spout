@@ -46,6 +46,7 @@ import org.spout.api.audio.SoundSource;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.Filter;
 import org.spout.api.component.entity.AnimationComponent;
 import org.spout.api.component.entity.InteractComponent;
 import org.spout.api.component.widget.RenderPartComponent;
@@ -59,6 +60,7 @@ import org.spout.api.component.widget.list.ComboBoxComponent;
 import org.spout.api.component.widget.list.ItemListComponent;
 import org.spout.api.command.annotated.Permissible;
 import org.spout.api.command.annotated.Platform;
+import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
@@ -80,6 +82,7 @@ import org.spout.api.model.animation.Skeleton;
 import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
 
 import org.spout.engine.SpoutClient;
@@ -533,7 +536,7 @@ public class TestCommands {
 			int count = 0;
 			outer:
 			for (Player player : ((Server) engine).getOnlinePlayers()) {
-				NetworkSynchronizer network = player.getNetworkSynchronizer();
+				ServerNetworkSynchronizer network = (ServerNetworkSynchronizer) player.getNetworkSynchronizer();
 				Set<Chunk> chunks = network.getActiveChunks();
 				for (Chunk c : chunks) {
 					count++;
@@ -570,6 +573,13 @@ public class TestCommands {
 				}
 				break;
 		}
+	}
+
+	@Command(aliases = "respawn", usage = "", desc = "Forces the client to respawn", max = 0)
+	@Platform(org.spout.api.Platform.SERVER)
+	@Filter(PlayerFilter.class)
+	public void respawn(CommandSource source, CommandArguments args) throws CommandException {
+		((ServerNetworkSynchronizer) ((Player) source).getNetworkSynchronizer()).setRespawned();
 	}
 
 	/**

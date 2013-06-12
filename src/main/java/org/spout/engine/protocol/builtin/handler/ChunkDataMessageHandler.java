@@ -34,13 +34,13 @@ import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.World;
 import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.Session;
+import org.spout.api.protocol.ClientSession;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 import org.spout.engine.world.SpoutClientWorld;
 
 public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 	@Override
-	public void handleClient(Session session, ChunkDataMessage message) {
+	public void handleClient(ClientSession session, ChunkDataMessage message) {
 		if(!session.hasPlayer()) {
 			throw new IllegalStateException("Message sent when session has no player");
 		}
