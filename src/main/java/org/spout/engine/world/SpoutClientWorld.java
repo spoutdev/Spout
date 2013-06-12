@@ -35,7 +35,6 @@ import org.spout.api.component.Component;
 import org.spout.api.entity.Player;
 
 import org.spout.api.event.Cause;
-import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;

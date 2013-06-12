@@ -52,7 +52,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
-import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
@@ -1884,9 +1883,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			}
 		}
 
-		SpoutWorld world = this.getWorld();
-
-		int oldheight = column.getSurfaceHeight(x, z);
 		int wy = y + this.getBlockY();
 		column.notifyBlockChange(x, wy, z);
 		

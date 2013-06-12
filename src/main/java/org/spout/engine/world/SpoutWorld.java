@@ -26,7 +26,6 @@
  */
 package org.spout.engine.world;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
@@ -75,7 +74,6 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TaskManager;
-import org.spout.api.util.StringMap;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.IntPairHashed;
@@ -91,9 +89,6 @@ import org.spout.api.util.thread.annotation.Threadsafe;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
-import org.spout.engine.scheduler.SpoutScheduler;
-import org.spout.engine.scheduler.SpoutTaskManager;
-import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 

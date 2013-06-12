@@ -35,6 +35,7 @@ import org.spout.api.command.annotated.Permissible;
 import org.spout.api.entity.Player;
 import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.exception.CommandException;
+import org.spout.api.geo.World;
 import org.spout.api.util.access.AccessManager;
 import org.spout.api.util.access.BanType;
 
@@ -50,6 +51,15 @@ public class ServerCommands extends CommonCommands {
 	@Override
 	public SpoutServer getEngine() {
 		return (SpoutServer) super.getEngine();
+	}
+
+	@Command(aliases = "worlds", desc = "Lists the worlds currently loaded", min = 0, max = 0)
+	@Permissible("spout.command.worlds")
+	public void worlds(CommandSource source, CommandArguments args) throws CommandException {
+		source.sendMessage("Worlds:");
+		for (World w : getEngine().getWorlds()) {
+			source.sendMessage("    world: " + w.getName());
+		}
 	}
 
 	@Command(aliases = "whitelist", desc = "Add, remove, list, or toggle players on the whitelist.", usage = "<add|remove|list|on|off> [player] [reason]", min = 1, max = 3)

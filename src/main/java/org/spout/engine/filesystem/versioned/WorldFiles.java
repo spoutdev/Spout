@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Random;
 import java.util.UUID;
-import java.util.logging.Level;
 import org.spout.api.Platform;
 
 import org.spout.api.Spout;
@@ -50,7 +49,6 @@ import org.spout.api.util.sanitation.SafeCast;
 
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.CommonFileSystem;
-import org.spout.engine.world.SpoutWorld;
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
@@ -61,7 +59,6 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
-import static org.spout.api.lang.Translation.log;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.world.SpoutServerWorld;
 
@@ -104,19 +101,19 @@ public class WorldFiles {
 				try {
 					ns.close();
 				} catch (IOException e) {
-					log("Cannot close world file");
+					Spout.info("Cannot close world file");
 				}
 			}
-			log("Loading world [%0]", name);
+			Spout.info("Loading world [{0}]", name);
 			world = loadWorldImpl(name, map, generator, itemMap, lightingMap);
 		} catch (FileNotFoundException ioe) {
-			log("Generating new world named [%0]", name);
+			Spout.info("Generating new world named [{0}]", name);
 
 			world = new SpoutServerWorld(name, engine, new Random().nextLong(), 0L, generator, UUID.randomUUID(), itemMap, lightingMap);
 			world.save();
 
 		} catch (IOException ioe) {
-			log("Error reading file for world " + name);
+			Spout.severe("Error reading file for world " + name, ioe);
 		}
 		return world;
 	}
@@ -126,11 +123,11 @@ public class WorldFiles {
 		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
 
 		if (version > WORLD_VERSION) {
-			Spout.getLogger().log(Level.SEVERE, "World version " + version + " exceeds maximum allowed value of " + WORLD_VERSION);
+			Spout.severe("World version " + version + " exceeds maximum allowed value of " + WORLD_VERSION);
 			return null;
 		} else if (version < WORLD_VERSION) {
 			// TODO - Add conversion code here
-			Spout.getLogger().log(Level.SEVERE, "Outdated World version " + version);
+			Spout.severe("Outdated World version " + version);
 			return null;
 		}
 		
@@ -141,7 +138,7 @@ public class WorldFiles {
 		UUID uuid = UUIDTag.getValue(map.get("uuid"));
 		
 		if (!generatorName.equals(generator.getName())) {
-			Spout.getLogger().severe("World was saved last with the generator: " + generatorName + " but is being loaded with: " + generator.getName() + " THIS MAY CAUSE WORLD CORRUPTION!");
+			Spout.severe("World was saved last with the generator: " + generatorName + " but is being loaded with: " + generator.getName() + " THIS MAY CAUSE WORLD CORRUPTION!");
 		}
 		
 		SpoutServerWorld world = new SpoutServerWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, uuid, itemMap, lightingMap);
@@ -155,7 +152,7 @@ public class WorldFiles {
 		try {
 			dataMap.deserialize(extraData);
 		} catch (IOException e) {
-			Spout.getLogger().severe("Could not deserialize datatable for world: " + name);
+			Spout.severe("Could not deserialize datatable for world: " + name, e);
 		}
 		
 		return world;
@@ -181,7 +178,7 @@ public class WorldFiles {
 			ns = new NBTOutputStream(is, false);
 			ns.writeTag(new CompoundTag("world_" + world.getName(), map));
 		} catch (IOException ioe) {
-			log("Error writing file for world " + world.getName());
+			Spout.severe("Error writing file for world " + world.getName());
 		} finally {
 			if (ns != null) {
 				try {

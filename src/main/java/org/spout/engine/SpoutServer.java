@@ -64,6 +64,7 @@ import org.teleal.cling.transport.spi.InitializationException;
 
 import org.spout.api.Platform;
 import org.spout.api.Server;
+import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -74,9 +75,12 @@ import org.spout.api.event.world.WorldLoadEvent;
 import org.spout.api.event.world.WorldUnloadEvent;
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.generator.EmptyWorldGenerator;
+import org.spout.api.generator.FlatWorldGenerator;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeRegistry;
 import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
@@ -98,11 +102,11 @@ import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
-import static org.spout.api.lang.Translation.log;
 import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.material.MaterialRegistry;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
 import org.spout.api.protocol.SessionRegistry;
-import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
@@ -110,7 +114,6 @@ import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.protocol.SpoutSessionRegistry;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
-import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutServerWorld;
 
 public class SpoutServer extends SpoutEngine implements Server {
@@ -152,7 +155,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public void start() {
-		start(debugMode() ? false : true, new SpoutServerListener(this));
+		start(true, new SpoutServerListener(this));
 	}
 
 	protected void start(boolean checkWorlds, Listener listener) {
@@ -162,28 +165,30 @@ public class SpoutServer extends SpoutEngine implements Server {
 		engineBiomeMap = BiomeRegistry.setupRegistry();
 		//Setup the Lighting Registry
 		engineLightingMap = LightingRegistry.setupRegistry();
-		
+
 		super.start();
 		if (checkWorlds) {
-			//At least one plugin should have registered atleast one world
-			if (loadedWorlds.getLive().isEmpty()) {
-				throw new IllegalStateException("There are no loaded worlds! You must install a plugin that creates a world (Did you forget Vanilla?)");
-			}
-
-			//Pick the default world from the configuration
-			World world = this.getWorld(SpoutConfiguration.DEFAULT_WORLD.getString());
-			if (world != null) {
+			if (SpoutConfiguration.CREATE_FALLBACK_WORLD.getBoolean() && loadedWorlds.getLive().isEmpty()) {
+				Spout.info("No worlds detected. Creating fallback world.");
+				World world = loadWorld("fallback_world", new FlatWorldGenerator());
+				world.setSpawnPoint(new Transform(new Point(world, 0, 5, 0), Quaternion.IDENTITY, Vector3.ONE));
 				this.setDefaultWorld(world);
-			}
+			} else {
+				//Pick the default world from the configuration
+				World world = this.getWorld(SpoutConfiguration.DEFAULT_WORLD.getString());
+				if (world != null) {
+					this.setDefaultWorld(world);
+				}
 
-			//If we don't have a default world set, just grab one.
-			getDefaultWorld();
+				//If we don't have a default world set, just grab one.
+				getDefaultWorld();
+			}
 		}
 		getEventManager().registerEvents(listener, this);
 		getEventManager().callEvent(new EngineStartEvent());
 		filesystem.postStartup();
 		WorldSavingThread.startThread();
-		log("Done Loading, ready for players.");
+		Spout.info("Done Loading, ready for players.");
 	}
 
 	@Override
@@ -194,7 +199,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			portBindings.bindAll();
 			portBindings.save();
 		} catch (ConfigurationException e) {
-			log("Error loading port bindings: %0", Level.SEVERE, e);
+			Spout.severe("Error loading port bindings: ", e);
 		}
 
 		//UPnP
@@ -210,7 +215,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		setupBonjour();
 
 		if (boundProtocols.size() == 0) {
-			log("No port bindings registered! Clients will not be able to connect to the server.", Level.WARNING);
+			Spout.warn("No port bindings registered! Clients will not be able to connect to the server.");
 		}
 	}
 
@@ -298,11 +303,11 @@ public class SpoutServer extends SpoutEngine implements Server {
 		try {
 			getChannelGroup().add(bootstrap.bind(binding.getAddress()));
 		} catch (org.jboss.netty.channel.ChannelException ex) {
-			log("Failed to bind to address %0. Is there already another server running on this address?", Level.SEVERE, binding.getAddress(), ex);
+			Spout.severe("Failed to bind to address " + binding.getAddress() + ". Is there already another server running on this address?", ex);
 			return false;
 		}
 
-		log("Binding to address: %0...", binding.getAddress());
+		Spout.info("Binding to address: {0}...", binding.getAddress());
 		return true;
 	}
 
@@ -386,7 +391,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			try {
 				upnpService = new UpnpServiceImpl();
 			} catch (InitializationException e) {
-				log("Could not enable UPnP Service: %0", Level.SEVERE, e.getMessage());
+				Spout.severe("Could not enable UPnP Service", e.getMessage());
 			}
 		}
 
@@ -398,7 +403,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			return new PortMapping(port, InetAddress.getLocalHost().getHostAddress(), protocol, description);
 		} catch (UnknownHostException e) {
 			Error error = new Error("Error while trying to retrieve the localhost while creating a PortMapping object.", e);
-			getLogger().severe(e.getMessage());
+			Spout.severe(e.getMessage(), e);
 			throw error;
 		}
 	}

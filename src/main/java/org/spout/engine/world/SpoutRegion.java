@@ -45,7 +45,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.spout.api.Platform;
-import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.datatable.ManagedHashMap;
@@ -57,7 +56,6 @@ import org.spout.api.event.chunk.ChunkPopulateEvent;
 import org.spout.api.event.chunk.ChunkUnloadEvent;
 import org.spout.api.event.chunk.ChunkUpdatedEvent;
 import org.spout.api.generator.biome.Biome;
-import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.AreaChunkAccess;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -270,6 +268,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return getChunk(x, y, z, LoadOption.LOAD_GEN);
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
@@ -803,10 +802,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 					// a - acceleration
 
 					final Vector3 movement = prevVelocity.multiply(dt).add(acceleration.multiply(dt * dt).divide(2));
-					final Point position = scene.getTransformLive().getPosition();
+					//final Point position = scene.getTransformLive().getPosition();
 					Point newPosition = scene.getTransformLive().getPosition().add(movement);
 					final BoundingBox volume = scene.getVolume();
-					final BoundingBox oldVolume = volume.clone().offset(position);
+					//final BoundingBox oldVolume = volume.clone().offset(position);
 					BoundingBox worldVolume = volume.clone().offset(newPosition);
 					final int bx = newPosition.getBlockX();
 					final int by = newPosition.getBlockY();

@@ -39,6 +39,7 @@ import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
@@ -48,6 +49,8 @@ import org.spout.api.input.InputManager;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
+import org.spout.api.math.QuaternionMath;
+import org.spout.api.math.Vector3;
 
 import org.spout.engine.component.entity.SpoutSceneComponent;
 
@@ -321,5 +324,42 @@ public class SpoutInputManager implements InputManager {
 	@Override
 	public void setRedirected(boolean redirect) {
 		redirected = redirect;
+	}
+
+	public void onClientStart() {
+		if (inputExecutors.size() == 0) {
+			Spout.warn("No input executor found, using fallback input");
+			addInputExecutor(new FallbackInputExecutor());
+		}
+	}
+
+	private static class FallbackInputExecutor implements InputExecutor{
+		@Override
+		public void execute(float dt, Transform playerTransform) {
+
+			final Client client = (Client) Spout.getEngine();
+			final PlayerInputState state = client.getPlayer().input();
+			final float speed = 50;
+			final Vector3 motion;
+			//TODO This needs to be an enum, this is hideous (shame on RoyAwesome)
+			if (state.getForward()) {
+				motion = playerTransform.forwardVector().multiply(speed * -dt);
+			} else if (state.getBackward()) {
+				motion = playerTransform.forwardVector().multiply(speed * dt);
+			} else if (state.getLeft()) {
+				motion = playerTransform.rightVector().multiply(speed * -dt); //TODO getLeftVector
+			} else if (state.getRight()) {
+				motion = playerTransform.rightVector().multiply(speed * dt);
+			} else if (state.getJump()) {
+				motion = playerTransform.upVector().multiply(speed * dt);
+			} else if (state.getCrouch()) {
+				motion = playerTransform.upVector().multiply(speed * -dt);
+			} else {
+				return;
+			}
+
+			playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(state.pitch(), state.yaw(), playerTransform.getRotation().getRoll()));
+			client.getPlayer().getScene().setTransform(playerTransform);
+		}
 	}
 }
