@@ -35,6 +35,7 @@ import org.spout.api.event.player.PlayerConnectEvent;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 
 import org.spout.engine.SpoutProxy;
+import org.spout.engine.protocol.SpoutServerSession;
 import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutProxyListener implements Listener {
@@ -49,7 +50,7 @@ public class SpoutProxyListener implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		proxy.addPlayer(event.getPlayerName(), (SpoutSession<?>) event.getSession(), event.getViewDistance());
+		proxy.addPlayer(event.getPlayerName(), (SpoutServerSession<?>) event.getSession(), event.getViewDistance());
 		//Create the player
 		proxy.connect(event.getPlayerName(), event.getSession());
 	}

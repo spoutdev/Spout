@@ -207,6 +207,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			CommonHandler handler = channel.getPipeline().get(CommonHandler.class);
 			SpoutClientSession session = new SpoutClientSession(this, channel, protocol);
 			handler.setSession(session);
+			session.getProtocol().initializeClientSession(session);
 
 			// TODO this is really unclean
 			this.session.set(session);
@@ -214,7 +215,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 			p.connect(session, p.getScene().getTransform());
 			session.setPlayer(p);
 			player.set(p);
-			session.getProtocol().initializeSession(session);
 		} else {
 			getLogger().log(Level.SEVERE, "Could not connect to " + binding, connect.getCause());
 			return false;

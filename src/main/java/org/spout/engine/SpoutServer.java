@@ -760,7 +760,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 	
 	// Players should use weak map?
-	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
+	public Player addPlayer(String playerName, SpoutServerSession<?> session, int viewDistance) {
 		SpoutPlayer player = PlayerFiles.loadPlayerData(playerName);
 		boolean created = false;
 		if (player == null) {
@@ -795,7 +795,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		session.setPlayer(player);
 
 		//Initialize the session
-		session.getProtocol().initializeSession(session);
+		session.getProtocol().initializeServerSession(session);
 		return player;
 	}
 

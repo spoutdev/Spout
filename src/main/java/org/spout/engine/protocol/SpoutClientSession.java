@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
 import org.spout.api.geo.World;
+import org.spout.api.protocol.ClientNetworkSynchronizer;
+import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
@@ -41,7 +43,7 @@ import org.spout.engine.world.SpoutWorld;
 /**
  * Handle client-specific session tasks
  */
-public class SpoutClientSession extends SpoutSession<SpoutClient> {
+public class SpoutClientSession extends SpoutSession<SpoutClient> implements ClientSession {
 	private final AtomicReference<SpoutWorld> activeWorld = new AtomicReference<SpoutWorld>();
 	/**
 	 * Creates a new session.
@@ -112,4 +114,16 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> {
 		}
 		super.setPlayer(player);
 	}
+
+	@Override
+	public void setNetworkSynchronizer(ClientNetworkSynchronizer synchronizer) {
+		super.setNetworkSynchronizer(synchronizer);
+	}
+
+	@Override
+	public ClientNetworkSynchronizer getNetworkSynchronizer() {
+		return (ClientNetworkSynchronizer) super.getNetworkSynchronizer();
+	}
+	
+	
 }

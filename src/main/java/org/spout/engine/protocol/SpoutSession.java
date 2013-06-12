@@ -34,13 +34,17 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import org.jboss.netty.channel.Channel;
+import org.spout.api.Server;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
+import org.spout.api.protocol.ClientNullNetworkSynchronizer;
+import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.NetworkSynchronizer;
-import org.spout.api.protocol.NullNetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.ServerNullNetworkSynchronizer;
+import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
@@ -107,12 +111,12 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	/**
 	 * A network synchronizer that doesn't do anything, used until a real synchronizer is set.
 	 */
-	private final NetworkSynchronizer nullSynchronizer = new NullNetworkSynchronizer(this);
+	private final NetworkSynchronizer nullSynchronizer;
 
 	/**
 	 * The NetworkSynchronizer being used for this session
 	 */
-	private final AtomicReference<NetworkSynchronizer> synchronizer = new AtomicReference<NetworkSynchronizer>(nullSynchronizer);
+	private final AtomicReference<NetworkSynchronizer> synchronizer;
 
 	private final ManagedHashMap dataMap;
 	
@@ -138,6 +142,12 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		isConnected = true;
 		this.dataMap = new ManagedHashMap();
 		this.exceptionHandler = new AtomicReference<UncaughtExceptionHandler>(new DefaultUncaughtExceptionHandler(this));
+		if (engine instanceof Server) {
+			nullSynchronizer = new ServerNullNetworkSynchronizer((ServerSession)this);
+		} else {
+			nullSynchronizer = new ClientNullNetworkSynchronizer((ClientSession) this);
+		}
+		synchronizer = new AtomicReference<NetworkSynchronizer>(nullSynchronizer);
 	}
 
 	/**
@@ -345,8 +355,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		return dataMap;
 	}
 
-	@Override
-	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer) {
+	protected void setNetworkSynchronizer(NetworkSynchronizer synchronizer) {
 		if (synchronizer == null && player == null) {
 			this.synchronizer.set(nullSynchronizer);
 		} else if (!this.synchronizer.compareAndSet(nullSynchronizer, synchronizer)) {
