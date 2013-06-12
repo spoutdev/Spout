@@ -26,30 +26,12 @@
  */
 package org.spout.api.protocol;
 
-import org.spout.api.inventory.Inventory;
-import org.spout.api.inventory.ItemStack;
-
 /**
- * An implementation of NetworkSynchronizer that doesn't do anything
- * used for when a NetworkSynchronizer has not been set
+ * An implementation of ServerNetworkSynchronizer that doesn't do anything
+ * used for when a ServerNetworkSynchronizer has not been set
  */
-public class NullNetworkSynchronizer extends NetworkSynchronizer {
-	public NullNetworkSynchronizer(Session session) {
+public class ServerNullNetworkSynchronizer extends ServerNetworkSynchronizer {
+	public ServerNullNetworkSynchronizer(Session session) {
 		super(session, 0);
 	}
-
-	public void onSlotSet(Inventory inventory, int slot, ItemStack item) {
-	}
-
-	public void updateAll(Inventory inventory, ItemStack[] slots) {
-	}
-
-	@Override
-	public void finalizeTick() {
-	}
-
-	@Override
-	public void preSnapshot() {
-	}
-
 }

@@ -24,60 +24,27 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.player;
-
-import org.spout.api.event.Event;
-import org.spout.api.event.HandlerList;
-import org.spout.api.protocol.ServerSession;
+package org.spout.api.protocol;
 
 /**
- * Called when a player connects to the server.
+ * Represents a connection to server.<br/>
+ * Controls the state, protocol and channels of a connection to a server.
  */
-public class PlayerConnectEvent extends Event {
-	private static HandlerList handlers = new HandlerList();
-	private final ServerSession session;
-	private final String playerName;
-	private final int viewDistance;
-
-	public PlayerConnectEvent(ServerSession session, String playerName) {
-		this(session, playerName, -1);
-	}
-
-	public PlayerConnectEvent(ServerSession session, String playerName, int viewDistance) {
-		this.session = session;
-		this.playerName = playerName;
-		this.viewDistance = viewDistance;
-	}
+public interface ClientSession extends Session {
 
 	/**
-	 * The player's session
-	 * @return the session
+	 * Sets the ServerNetworkSynchronizer associated with this player.<br>
+	 * <br>
+	 * This can only be called once per player login.
+	 *
+	 * @param synchronizer the synchronizer
 	 */
-	public ServerSession getSession() {
-		return session;
-	}
+	public void setNetworkSynchronizer(ClientNetworkSynchronizer synchronizer);
 
 	/**
-	 * @return the name of the player
+	 * Gets the ServerNetworkSynchronizer associated with this player.<br>
+	 *
+	 * @return the synchronizer
 	 */
-	public String getPlayerName() {
-		return playerName;
-	}
-
-	/**
-	 * How many {@link Chunk}s the player can see into the distance.
-	 * @return how far the player can view.
-	 */
-	public int getViewDistance() {
-		return viewDistance;
-	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+	public ClientNetworkSynchronizer getNetworkSynchronizer();
 }
