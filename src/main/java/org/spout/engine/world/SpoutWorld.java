@@ -168,7 +168,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 		this.seed = seed;
 
 		this.generator = generator;
-		regions = new RegionSource(this, snapshotManager);
+		regions = new RegionSource(this);
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
 		
