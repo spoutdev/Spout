@@ -24,9 +24,10 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.plugin;
+package org.spout.api.plugin.services;
 
-import org.spout.api.plugin.ServiceManager.ServicePriority;
+import org.spout.api.plugin.Plugin;
+import org.spout.api.plugin.services.ServiceManager.ServicePriority;
 
 /**
  * Constructs a service provider from an abstract class or interface.<br/>
@@ -73,7 +74,7 @@ public class ServiceProvider<T> implements Comparable<ServiceProvider<?>> {
 
 	/**
 	 * Set the priority for the service provider
-	 * @param priority
+	 * @param priority of service
 	 */
 	public ServiceProvider<T> setPriority(ServicePriority priority) {
 		this.priority = priority;

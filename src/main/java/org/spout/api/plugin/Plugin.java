@@ -27,116 +27,133 @@
 package org.spout.api.plugin;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Logger;
 
 import org.spout.api.Engine;
-import org.spout.api.generator.WorldGenerator;
+import org.spout.api.lang.JavaPluginDictionary;
 import org.spout.api.lang.PluginDictionary;
 import org.spout.api.util.Named;
 
-public interface Plugin extends Named {
+public abstract class Plugin implements Named {
+	protected Engine engine;
+	protected PluginDescriptionFile description;
+	protected PluginClassLoader classLoader;
+	protected PluginLoader pluginLoader;
+	protected File dataFolder;
+	protected File file;
+	protected boolean enabled;
+	protected Logger logger;
+	protected PluginDictionary dictionary;
+
+	public final void initialize(PluginLoader pluginLoader, Engine engine,
+								 PluginDescriptionFile description, File dataFolder,
+								 File file, PluginClassLoader classLoader) {
+
+		this.pluginLoader = pluginLoader;
+		this.engine = engine;
+		this.dataFolder = dataFolder;
+		this.description = description;
+		this.file = file;
+		this.classLoader = classLoader;
+		this.logger = new PluginLogger(this);
+		if (file != null) this.dictionary = new JavaPluginDictionary(this);
+	}
+
 	/**
 	 * Called when the plugin is enabled
 	 */
-	public void onEnable();
+	public void onEnable() {
+	}
 
 	/**
 	 * Called when the plugins is disabled
 	 */
-	public void onDisable();
+	public void onDisable() {
+	}
 
 	/**
 	 * Called when the server is reloaded
 	 */
-	public void onReload();
+	public void onReload() {
+	}
 
 	/**
 	 * Called when the plugin is initially loaded
 	 */
-	public void onLoad();
-
-	/**
-	 * Returns true if the plugins is enabled
-	 * @return enabled
-	 */
-	public boolean isEnabled();
-
-	/**
-	 * Changes the enabled state of the plugin This should only be called by the
-	 * plugin's loader
-	 * @param enabled
-	 */
-	public void setEnabled(boolean enabled);
-
-	/**
-	 * Returns the plugin's loader
-	 * @return loader
-	 */
-	public PluginLoader getPluginLoader();
-
-	/**
-	 * Returns the plugin's logger
-	 * @return logger
-	 */
-	public Logger getLogger();
-
-	/**
-	 * Returns the plugin's description
-	 * @return description
-	 */
-	public PluginDescriptionFile getDescription();
+	public void onLoad() {
+	}
 
 	/**
 	 * Returns the engine object
 	 * @return engine
 	 */
-	public Engine getEngine();
+	public final Engine getEngine() {
+		return engine;
+	}
 
 	/**
-	 * Gets the suitable generator for the world and generator name.
-	 * @param world name to generate
-	 * @param generator name
-	 * @return world generator
+	 * Returns the plugin's description
+	 * @return description
 	 */
-	public WorldGenerator getWorldGenerator(String world, String generator);
+	public final PluginDescriptionFile getDescription() {
+		return description;
+	}
+
+	public final ClassLoader getClassLoader() {
+		return classLoader;
+	}
+
+	/**
+	 * Returns the plugin's loader
+	 * @return loader
+	 */
+	public final PluginLoader getPluginLoader() {
+		return pluginLoader;
+	}
 
 	/**
 	 * Returns the plugin's data folder
-	 * @return
+	 * @return folder that contains the plugin's data
 	 */
-	public File getDataFolder();
+	public final File getDataFolder() {
+		return dataFolder;
+	}
 
 	/**
 	 * Returns a File that is the plugin's jar file.
-	 * @return
+	 * @return jar file
 	 */
-	public File getFile();
+	public final File getFile() {
+		return file;
+	}
 
 	/**
-	 * Returns a resource from the plugin's archive
-	 * @param path The path of the resource to get
-	 * @return The resource's input stream, or null if none could be found or the implementation does not support this method
+	 * Returns true if the plugins is enabled
+	 * @return enabled
 	 */
-	public InputStream getResource(String path);
+	public final boolean isEnabled() {
+		return enabled;
+	}
 
 	/**
-	 * Extracts a resource returned by {@link #getResource(String)} to the given path
-	 * @param path The path to get the resource at
-	 * @param destination The destination file
-	 * @throws IOException When the resource could not be found or the copying failed
+	 * Returns the plugin's logger
+	 * @return logger
 	 */
-	public void extractResource(String path, File destination) throws IOException;
+	public final Logger getLogger() {
+		return logger;
+	}
 
 	/**
-	 * Allows plugins to load external libraries into the JVM
-	 * @param file that is the library
-	 */
-	public void loadLibrary(File file);
-
-	/**
+	 * Returns the dictionary associated with this plugin.
+	 *
 	 * @return the plugins dictionary
 	 */
-	public PluginDictionary getDictionary();
+	public final PluginDictionary getDictionary() {
+		return dictionary;
+	}
+
+	@Override
+	public final String getName() {
+		return getDescription().getName();
+	}
 }

@@ -36,17 +36,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class CommonClassLoader extends URLClassLoader {
+public class PluginClassLoader extends URLClassLoader {
 	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
-	private final CommonPluginLoader loader;
-	private CommonPlugin plugin;
+	private final PluginLoader loader;
+	private Plugin plugin;
 	private final Map<String, String> componentRemapping;
 	private final List<String> depends;
 	private final List<String> softDepends;
-	private static HashMap<String, CommonPlugin> pluginsForClassNames = new HashMap<String, CommonPlugin>(500);
-	private static Set<CommonClassLoader> loaders = new HashSet<CommonClassLoader>();
+	private static HashMap<String, Plugin> pluginsForClassNames = new HashMap<String, Plugin>(500);
+	private static Set<PluginClassLoader> loaders = new HashSet<PluginClassLoader>();
 
-	public CommonClassLoader(final CommonPluginLoader loader, final ClassLoader parent, PluginDescriptionFile desc) {
+	public PluginClassLoader(final PluginLoader loader, final ClassLoader parent, PluginDescriptionFile desc) {
 		super(new URL[0], parent);
 		this.loader = loader;
 		loaders.add(this);
@@ -60,12 +60,12 @@ public class CommonClassLoader extends URLClassLoader {
 		super.addURL(url);
 	}
 
-	protected void setPlugin(CommonPlugin plugin) {
+	protected void setPlugin(Plugin plugin) {
 		this.plugin = plugin;
 		pluginsForClassNames.put(plugin.getClass().getName(), plugin);
 	}
 
-	protected CommonPlugin getPlugin() {
+	protected Plugin getPlugin() {
 		return plugin;
 	}
 
@@ -122,12 +122,12 @@ public class CommonClassLoader extends URLClassLoader {
 		return Collections.unmodifiableCollection(classes.values());
 	}
 
-	public static CommonPlugin getPlugin(String className) {
+	public static Plugin getPlugin(String className) {
 		return pluginsForClassNames.get(className);
 	}
 
 	public static Class<?> findPluginClass(final String name) throws ClassNotFoundException {
-		for (CommonClassLoader loader : loaders) {
+		for (PluginClassLoader loader : loaders) {
 			if (loader.componentRemapping.containsKey(name)) {
 				//Research all plugins, allows plugins to replace old component with one in different plugin
 				Class<?> clazz = findPluginClass(loader.componentRemapping.get(name));
