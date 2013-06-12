@@ -61,6 +61,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Locale;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.util.access.BanType;
 import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.thread.annotation.DelayedWrite;
@@ -360,13 +361,20 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public void teleport(Point loc) {
 		getScene().setPosition(loc);
-		getNetworkSynchronizer().setPositionDirty();
+		setPositionDirty();
 	}
 
 	@Override
 	public void teleport(Transform transform) {
 		getScene().setTransform(transform);
-		getNetworkSynchronizer().setPositionDirty();
+		setPositionDirty();
+	}
+	
+	private void setPositionDirty() {
+		// TODO something for client?
+		if (Spout.getPlatform() == Platform.SERVER) {
+			((ServerNetworkSynchronizer) getNetworkSynchronizer()).setPositionDirty();
+		}
 	}
 
 	@Override
@@ -379,8 +387,8 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			this.getNetworkSynchronizer().finalizeTick();
 		}
 		if (isRemoved()) {
-			getNetworkSynchronizer().onRemoved();
 			if (getEngine().getPlatform() == Platform.SERVER) {
+				((ServerNetworkSynchronizer) getNetworkSynchronizer()).onRemoved();
 				((SpoutServer) getEngine()).removePlayer(this);
 			}
 			sessionLive.set(null);
