@@ -66,7 +66,6 @@ import org.spout.api.event.engine.EngineStopEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.math.Vector2;
-import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
@@ -251,11 +250,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		} else {
 			return super.getCommandSource();
 		}
-	}
-
-	@Override
-	public PluginStore getPluginStore() {
-		return null;
 	}
 
 	@Override

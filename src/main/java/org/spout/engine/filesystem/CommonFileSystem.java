@@ -30,6 +30,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -39,8 +40,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarFile;
+
+import org.apache.commons.io.FileUtils;
 
 import org.spout.api.Spout;
+import org.spout.api.command.Command;
+import org.spout.api.command.CommandArguments;
+import org.spout.api.command.CommandSource;
+import org.spout.api.command.Executor;
+import org.spout.api.exception.CommandException;
+import org.spout.api.exception.SpoutRuntimeException;
 import org.spout.api.resource.ResourceNotFoundException;
 import org.spout.api.resource.ResourcePathResolver;
 import org.spout.api.resource.FileSystem;
@@ -52,7 +62,7 @@ import org.spout.engine.filesystem.path.JarFilePathResolver;
 import org.spout.engine.filesystem.path.ZipFilePathResolver;
 import org.spout.engine.filesystem.resource.loader.CommandBatchLoader;
 
-public class CommonFileSystem implements FileSystem {
+public abstract class CommonFileSystem implements FileSystem {
 	public static final File PLUGINS_DIRECTORY = new File("plugins");
 	public static final File RESOURCES_DIRECTORY = new File("resources");
 	public static final File CACHE_DIRECTORY = new File("cache");
@@ -61,10 +71,11 @@ public class CommonFileSystem implements FileSystem {
 	public static final File DATA_DIRECTORY = new File("data");
 	public static final File WORLDS_DIRECTORY = new File("worlds");
 
-	private final Set<ResourceLoader> loaders = new HashSet<ResourceLoader>();
-	private final Map<URI, Object> loadedResources = new HashMap<URI, Object>();
-	private final List<ResourcePathResolver> pathResolvers = new ArrayList<ResourcePathResolver>();
-	private boolean initialized;
+	protected final Set<ResourceLoader> loaders = new HashSet<ResourceLoader>();
+	protected final Map<URI, Object> loadedResources = new HashMap<URI, Object>();
+	protected final List<ResourcePathResolver> pathResolvers = new ArrayList<ResourcePathResolver>();
+	protected final Map<String, URI> requestedInstallations = new HashMap<String, URI>();
+	protected boolean initialized;
 
 	private void createDirs() {
 		if (!PLUGINS_DIRECTORY.exists()) PLUGINS_DIRECTORY.mkdirs();
@@ -84,6 +95,33 @@ public class CommonFileSystem implements FileSystem {
 		pathResolvers.add(new FilePathResolver(CACHE_DIRECTORY.getPath()));
 		pathResolvers.add(new ZipFilePathResolver(RESOURCES_DIRECTORY.getPath()));
 		pathResolvers.add(new JarFilePathResolver());
+
+		// setup install command
+		Spout.getCommandManager().getCommand("install")
+				.setPermission(INSTALLATION_PERMISSION)
+				.setArgumentBounds(2, 2)
+				.setHelp("Replies to an installation request.")
+				.setUsage("<allow|deny> <plugin>")
+				.setExecutor(new Executor() {
+					@Override
+					public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
+						String plugin = args.getString(1);
+						if (!requestedInstallations.containsKey(plugin))
+							throw new CommandException("There is no install pending for that plugin.");
+
+						String arg = args.getString(0);
+						if (arg.equalsIgnoreCase("allow")) {
+							allowInstallation(source, plugin);
+							return;
+						} else if (arg.equalsIgnoreCase("deny")) {
+							denyInstallation(source, plugin);
+							return;
+						}
+
+						throw new CommandException("Unknown argument: " + arg);
+					}
+				});
+
 		initialized = true;
 	}
 
@@ -298,5 +336,58 @@ public class CommonFileSystem implements FileSystem {
 	@Override
 	public void removePathResolver(ResourcePathResolver pathResolver) {
 		pathResolvers.remove(pathResolver);
+	}
+
+	protected void allowInstallation(final CommandSource source, final String plugin) {
+		Spout.getScheduler().scheduleAsyncTask(Spout.getEngine(), new Runnable() {
+			@Override
+			public void run() {
+				synchronized (requestedInstallations) {
+					try {
+						// copy opened stream to file in update dir
+						URI uri = requestedInstallations.get(plugin);
+						BufferedInputStream in = new BufferedInputStream(uri.toURL().openStream());
+						String path = uri.toString();
+						File file = new File(UPDATES_DIRECTORY, path.substring(path.lastIndexOf("/") + 1));
+						source.sendMessage("Downloading " + plugin + " to the updates folder...");
+						FileUtils.copyInputStreamToFile(in, file);
+						source.sendMessage("Done.");
+
+						// check the validity of plugin
+						JarFile jar = new JarFile(file);
+						if (jar.getJarEntry("properties.yml") == null && jar.getJarEntry("plugin.yml") == null) {
+							source.sendMessage("The downloaded file has no valid plugin description file, marking file to be deleted.");
+							if (!file.delete()) file.deleteOnExit();
+							return;
+						}
+
+						source.sendMessage(plugin + " has been successfully downloaded to the updates folder, it will be installed on next run.");
+						in.close();
+					} catch (MalformedURLException e) {
+						throw new SpoutRuntimeException("The plugin's URL is invalid", e);
+					} catch (IOException e) {
+						throw new SpoutRuntimeException("Error downloading the plugin", e);
+					}
+					requestedInstallations.remove(plugin);
+				}
+			}
+		});
+	}
+
+	protected void denyInstallation(CommandSource source, String plugin) {
+		source.sendMessage("Installation of " + plugin + " cancelled.");
+		requestedInstallations.remove(plugin);
+	}
+
+	@Override
+	public void requestPluginInstall(String name, URI uri) {
+		// TODO: Restrict to Spout Hub only?
+		if (name == null)
+			throw new IllegalArgumentException("Plugin name cannot be null");
+		if (uri == null)
+			throw new IllegalArgumentException("URI cannot be null");
+		if (!uri.toString().endsWith(".jar"))
+			throw new IllegalArgumentException("URI must point to a direct JAR file.");
+		requestedInstallations.put(name, uri);
 	}
 }
