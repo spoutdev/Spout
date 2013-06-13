@@ -35,6 +35,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.jboss.netty.channel.Channel;
+
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.CommandManager;
 import org.spout.api.entity.Entity;
@@ -44,7 +45,7 @@ import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.PluginManager;
-import org.spout.api.plugin.ServiceManager;
+import org.spout.api.plugin.services.ServiceManager;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.resource.FileSystem;

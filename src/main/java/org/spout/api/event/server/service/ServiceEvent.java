@@ -28,7 +28,7 @@ package org.spout.api.event.server.service;
 
 import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
-import org.spout.api.plugin.ServiceProvider;
+import org.spout.api.plugin.services.ServiceProvider;
 
 /**
  * Represents an event that deals with {@link ServiceProvider}s

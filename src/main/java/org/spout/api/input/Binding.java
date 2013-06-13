@@ -34,21 +34,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Binding {
 	private final String cmd;
 	private final Keyboard[] keys;
-	private final Mouse[] mouse;
+	private final int[] buttons;
 	private final AtomicBoolean async = new AtomicBoolean(false);
 
-	public Binding(String cmd, Keyboard[] keys, Mouse[] mouse) {
+	public Binding(String cmd, Keyboard[] keys, int[] buttons) {
 		this.cmd = cmd;
 		this.keys = keys;
-		this.mouse = mouse;
+		this.buttons = buttons;
 	}
 
 	public Binding(String cmd, Keyboard... keys) {
-		this(cmd, keys, new Mouse[0]);
+		this(cmd, keys, new int[0]);
 	}
 
-	public Binding(String cmd, Mouse... mouse) {
-		this(cmd, new Keyboard[0], mouse);
+	public Binding(String cmd, int... buttons) {
+		this(cmd, new Keyboard[0], buttons);
 	}
 
 	/**
@@ -79,8 +79,8 @@ public class Binding {
 	 *
 	 * @return mouse bindings
 	 */
-	public Mouse[] getMouseBindings() {
-		return mouse;
+	public int[] getMouseBindings() {
+		return buttons;
 	}
 
 	/**
