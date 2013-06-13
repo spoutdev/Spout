@@ -65,6 +65,8 @@ import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Vector2;
 import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.CommonPipelineFactory;
@@ -94,7 +96,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final AtomicReference<SpoutClientWorld> world = new AtomicReference<SpoutClientWorld>();
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 	private final FileSystem filesystem = new ClientFileSystem();
-	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<SpoutClientPlayer>();
 	private final SessionTask sessionTask = new SessionTask();
 	// Handle stopping
 	private volatile boolean rendering = true;
@@ -145,15 +146,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void start() {
+		// Completely blank world to allow the player to start in
+		worldChanged("NullWorld", UUID.randomUUID(), new DatatableComponent().serialize());
 		if (!connnect()) {
 			return;
 		}
 		// Send handshake message first
 		SpoutClientSession get = session.get();
+		getPlayer().getName();
 		get.send(true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().getRemoteAddress()));
 
-		// Completely blank world
-		worldChanged("NullWorld", UUID.randomUUID(), new DatatableComponent().serialize());
 		super.start();
 
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
@@ -200,20 +202,22 @@ public class SpoutClient extends SpoutEngine implements Client {
 			stop();// TODO make sure that this is fine here
 			return false;
 		}
-		getLogger().log(Level.INFO, "Connected to " + address + ":" + port + " with protocol " + protocol.getName());
 
 		Channel channel = connect.getChannel();
 		if (connect.isSuccess()) {
+			getLogger().log(Level.INFO, "Connected to " + address + ":" + port + " with protocol " + protocol.getName());
 			CommonHandler handler = channel.getPipeline().get(CommonHandler.class);
 			SpoutClientSession session = new SpoutClientSession(this, channel, protocol);
 			handler.setSession(session);
 			session.getProtocol().initializeClientSession(session);
 
 			// TODO this is really unclean
+			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", new Transform().setPosition(new Point(getWorld(), 0, 0, 0)), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
+			if (!p.connect(session, p.getScene().getTransform())) {
+				getLogger().log(Level.SEVERE, "Error in calling player connect");
+				return false;
+			}
 			this.session.set(session);
-			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
-			p.connect(session, p.getScene().getTransform());
-			player.set(p);
 		} else {
 			getLogger().log(Level.SEVERE, "Could not connect to " + binding, connect.getCause());
 			return false;
@@ -235,7 +239,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public List<String> getAllPlayers() {
-		return Arrays.asList(player.get().getName());
+		return Arrays.asList(getPlayer().getName());
 	}
 
 	@Override

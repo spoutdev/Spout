@@ -36,7 +36,6 @@ import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
 
 import org.spout.engine.component.entity.SpoutSceneComponent;

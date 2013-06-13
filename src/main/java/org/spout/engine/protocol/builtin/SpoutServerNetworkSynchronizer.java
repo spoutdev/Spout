@@ -28,6 +28,7 @@ package org.spout.engine.protocol.builtin;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.spout.api.entity.Entity;
@@ -53,10 +54,9 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 	}
 
 	@Override
-	public Collection<Chunk> sendChunk(Chunk c) {
-		System.out.println("SENDING CHUNKDATA");
+	public Collection<Chunk> doSendChunk(Chunk c) {
 		session.send(new ChunkDataMessage(c.getSnapshot()));
-		return null; //TODO Why does this return null?
+		return Collections.singleton(c);
 	}
 
 	@Override

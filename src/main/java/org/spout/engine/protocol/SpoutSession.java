@@ -248,7 +248,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	@Override
 	public void send(Message message) {
-		send(message);
+		send(false, message);
 	}
 
 	@Override
