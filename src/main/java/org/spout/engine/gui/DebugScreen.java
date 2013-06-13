@@ -36,7 +36,7 @@ import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.component.widget.LabelComponent;
 import org.spout.api.meta.SpoutMetaPlugin;
-import org.spout.api.plugin.CommonPluginManager;
+import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.render.SpoutRenderMaterials;
 
@@ -93,7 +93,7 @@ public class DebugScreen extends Screen implements DebugHud {
 	private final Map<Plugin, Widget> messages = new HashMap<Plugin, Widget>();
 
 	public DebugScreen() {
-		plugin = ((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin();
+		plugin = Spout.getPluginManager().getMetaPlugin();
 		init();
 	}
 

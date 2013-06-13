@@ -31,6 +31,7 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,13 +56,10 @@ import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.inventory.recipe.SimpleRecipeManager;
 import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
-import org.spout.api.plugin.CommonPluginLoader;
-import org.spout.api.plugin.CommonPluginManager;
-import org.spout.api.plugin.CommonServiceManager;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
-import org.spout.api.plugin.ServiceManager;
-import org.spout.api.plugin.security.CommonSecurityManager;
+import org.spout.api.plugin.security.PluginSecurityManager;
+import org.spout.api.plugin.services.ServiceManager;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
@@ -91,12 +89,12 @@ import org.spout.engine.world.SpoutRegion;
 
 public abstract class SpoutEngine implements AsyncManager, Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
-	private final CommonSecurityManager securityManager = new CommonSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
-	private final CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
+	private final PluginSecurityManager securityManager = new PluginSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
+	private final PluginManager pluginManager = new PluginManager(this, securityManager, 0.0);
 	private final ConsoleManager consoleManager;
 	private final EventManager eventManager = new SimpleEventManager();
 	private final RecipeManager recipeManager = new SimpleRecipeManager();
-	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
+	private final ServiceManager serviceManager = new ServiceManager();
 	protected final SnapshotManager snapshotManager = new SnapshotManager();
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
@@ -212,10 +210,21 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	private void loadPluginsAndProtocol() {
-		pluginManager.registerPluginLoader(CommonPluginLoader.class);
 		pluginManager.clearPlugins();
+		pluginManager.installUpdates();
 
+		List<Plugin> plugins = pluginManager.loadPlugins(CommonFileSystem.PLUGINS_DIRECTORY);
 		pluginManager.loadPlugins(CommonFileSystem.PLUGINS_DIRECTORY);
+		for (Plugin plugin : plugins) {
+			try {
+				//Technically unsafe.  This should call the security manager
+				plugin.onLoad();
+			} catch (Exception ex) {
+				//TODO: fix
+				//log("Error loading %0: %1", Level.SEVERE, plugin.getDescription().getName(), ex.getMessage(), ex);
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	public SpoutApplication getArguments() {

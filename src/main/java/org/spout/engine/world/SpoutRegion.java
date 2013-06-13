@@ -1087,7 +1087,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 		List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
 		
-		System.out.println("PRESNAPSHOT DIRTYCHUNKQUEUEPOLL");
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 
 			if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
@@ -1141,8 +1140,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 				}
 			}
 		}
-
-		entityManager.syncEntities();
+		if (Spout.getPlatform() == Platform.SERVER) {
+			entityManager.syncEntities();
+		}
 	}
 
 

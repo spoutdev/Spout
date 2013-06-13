@@ -41,7 +41,7 @@ import org.spout.api.gui.render.RenderPart;
 import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.Rectangle;
 import org.spout.api.meta.SpoutMetaPlugin;
-import org.spout.api.plugin.CommonPluginManager;
+import org.spout.api.plugin.PluginManager;
 import org.spout.api.render.Font;
 import org.spout.api.render.SpoutRenderMaterials;
 
@@ -58,7 +58,7 @@ public class DevConsole extends Screen {
 	private float scroll = 0;
 
 	public DevConsole(Font font) {
-		this.plugin = ((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin();
+		this.plugin = Spout.getPluginManager().getMetaPlugin();
 		this.font = font;
 		init();
 	}

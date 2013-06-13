@@ -37,11 +37,6 @@ public class SpoutClientNetworkSynchronizer extends ClientNetworkSynchronizer {
 		super(session);
 	}
 
-	@Override
-	public EntityProtocol getEntityProtocol() {
-		return SpoutEntityProtocol.INSTANCE;
-	}
-
 	// TODO what is this for?
 	public EntityProtocol getEntityProtocol(Entity entity) {
 		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);

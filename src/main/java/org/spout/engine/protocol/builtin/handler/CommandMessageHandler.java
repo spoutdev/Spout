@@ -36,7 +36,7 @@ import org.spout.engine.protocol.builtin.message.CommandMessage;
 
 public class CommandMessageHandler extends MessageHandler<CommandMessage> {
 	@Override
-	public void handle(boolean upstream, Session session, CommandMessage message) {
+	public void handle(Session session, CommandMessage message) {
 		if(!session.hasPlayer()) {
 			return;
 		}
