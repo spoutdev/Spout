@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.plugin;
+package org.spout.api.plugin.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,29 +38,18 @@ import java.util.NoSuchElementException;
 import org.spout.api.Spout;
 import org.spout.api.event.server.service.ServiceRegisterEvent;
 import org.spout.api.event.server.service.ServiceUnregisterEvent;
+import org.spout.api.plugin.Plugin;
 
 /**
- * A common service manager.
+ * Manages services and service providers. Services are an interface specifying
+ * a list of methods that a provider must implement. Providers are
+ * implementations of these services. A provider can be queried from the
+ * services manager in order to use a service (if one is available). If multiple
+ * plugins register a service, then the service with the highest priority takes
+ * precedence.
  */
-public class CommonServiceManager implements ServiceManager {
-	/**
-	 * Map of providers.
-	 */
+public class ServiceManager {
 	private final Map<Class<?>, List<ServiceProvider<?>>> providers = new HashMap<Class<?>, List<ServiceProvider<?>>>();
-	/**
-	 * The service manager instance
-	 */
-	private static ServiceManager serviceManager;
-
-	public static ServiceManager getInstance() {
-		if (serviceManager == null) {
-			serviceManager = new CommonServiceManager();
-		}
-		return serviceManager;
-	}
-
-	private CommonServiceManager() {
-	}
 
 	/**
 	 * Register a provider of a service.
@@ -70,7 +59,6 @@ public class CommonServiceManager implements ServiceManager {
 	 * @param plugin plugin with the provider
 	 * @param priority priority of the provider
 	 */
-	@Override
 	public <T> void register(Class<T> service, T provider, Plugin plugin, ServicePriority priority) {
 
 		synchronized (providers) {
@@ -92,9 +80,8 @@ public class CommonServiceManager implements ServiceManager {
 
 	/**
 	 * Unregister all the providers registered by a particular plugin.
-	 * @param plugin
+	 * @param plugin to unregister for
 	 */
-	@Override
 	public void unregisterAll(Plugin plugin) {
 		synchronized (providers) {
 			Iterator<Map.Entry<Class<?>, List<ServiceProvider<?>>>> it = providers.entrySet().iterator();
@@ -122,17 +109,16 @@ public class CommonServiceManager implements ServiceManager {
 						it.remove();
 					}
 				}
-			} catch (NoSuchElementException e) {
+			} catch (NoSuchElementException ignored) {
 			}
 		}
 	}
 
 	/**
 	 * Unregister a particular provider for a particular service.
-	 * @param service
-	 * @param provider
+	 * @param service to unregister
+	 * @param provider of service
 	 */
-	@Override
 	public void unregister(Class<?> service, Object provider) {
 		synchronized (providers) {
 			Iterator<Map.Entry<Class<?>, List<ServiceProvider<?>>>> it = providers.entrySet().iterator();
@@ -166,16 +152,15 @@ public class CommonServiceManager implements ServiceManager {
 						it.remove();
 					}
 				}
-			} catch (NoSuchElementException e) {
+			} catch (NoSuchElementException ignored) {
 			}
 		}
 	}
 
 	/**
 	 * Unregister a particular provider.
-	 * @param provider
+	 * @param provider to unregister
 	 */
-	@Override
 	public void unregister(Object provider) {
 		synchronized (providers) {
 			Iterator<Map.Entry<Class<?>, List<ServiceProvider<?>>>> it = providers.entrySet().iterator();
@@ -203,7 +188,7 @@ public class CommonServiceManager implements ServiceManager {
 						it.remove();
 					}
 				}
-			} catch (NoSuchElementException e) {
+			} catch (NoSuchElementException ignored) {
 			}
 		}
 	}
@@ -211,11 +196,10 @@ public class CommonServiceManager implements ServiceManager {
 	/**
 	 * Queries for a provider. This may return if no provider has been
 	 * registered for a service. The highest priority provider is returned.
-	 * @param <T>
-	 * @param service
+	 * @param <T> type of service
+	 * @param service to load
 	 * @return provider or null
 	 */
-	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T load(Class<T> service) {
 		synchronized (providers) {
@@ -233,11 +217,10 @@ public class CommonServiceManager implements ServiceManager {
 	/**
 	 * Queries for a provider registration. This may return if no provider has
 	 * been registered for a service.
-	 * @param <T>
-	 * @param service
+	 * @param <T> type of service
+	 * @param service to get provider of
 	 * @return provider registration or null
 	 */
-	@Override
 	@SuppressWarnings("unchecked")
 	public <T> ServiceProvider<T> getRegistration(Class<T> service) {
 		synchronized (providers) {
@@ -254,10 +237,9 @@ public class CommonServiceManager implements ServiceManager {
 
 	/**
 	 * Get registrations of providers for a plugin.
-	 * @param plugin
+	 * @param plugin to get registrations for
 	 * @return provider registration or null
 	 */
-	@Override
 	public List<ServiceProvider<?>> getRegistrations(Plugin plugin) {
 		synchronized (providers) {
 			List<ServiceProvider<?>> ret = new ArrayList<ServiceProvider<?>>();
@@ -277,11 +259,10 @@ public class CommonServiceManager implements ServiceManager {
 	/**
 	 * Get registrations of providers for a service. The returned list is
 	 * unmodifiable.
-	 * @param <T>
-	 * @param service
+	 * @param <T> type of service
+	 * @param service to get registrations for
 	 * @return list of registrations
 	 */
-	@Override
 	@SuppressWarnings("unchecked")
 	public <T> Collection<ServiceProvider<T>> getRegistrations(Class<T> service) {
 		synchronized (providers) {
@@ -306,7 +287,6 @@ public class CommonServiceManager implements ServiceManager {
 	 * providers for it.
 	 * @return list of known services
 	 */
-	@Override
 	public Collection<Class<?>> getKnownServices() {
 		return Collections.unmodifiableSet(providers.keySet());
 	}
@@ -319,8 +299,19 @@ public class CommonServiceManager implements ServiceManager {
 	 * @param service service to check
 	 * @return whether there has been a registered provider
 	 */
-	@Override
 	public <T> boolean isProvidedFor(Class<T> service) {
 		return getRegistration(service) != null;
+	}
+
+	/**
+	 * Represents various priorities of a provider. The highest priority takes
+	 * precedence when getting a service priority.
+	 */
+	public enum ServicePriority {
+		Lowest,
+		Low,
+		Normal,
+		High,
+		Highest
 	}
 }

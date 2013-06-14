@@ -32,7 +32,6 @@ import org.spout.api.geo.World;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.input.InputManager;
 import org.spout.api.math.Vector2;
-import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.render.RenderMode;
 
@@ -53,12 +52,6 @@ public interface Client extends Engine {
 	 * @return world
 	 */
 	public World getWorld();
-
-	/**
-	 * Gets client specific information for plugins.
-	 * @return plugin store
-	 */
-	public PluginStore getPluginStore();
 
 	/**
 	 * Gets the current {@link RenderMode} that the client is running in.

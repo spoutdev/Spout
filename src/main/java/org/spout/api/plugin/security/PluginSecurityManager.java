@@ -24,24 +24,34 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.plugin;
+package org.spout.api.plugin.security;
 
-public interface PluginStore {
-	public void downloadAddon(int databaseId, DownloadEventDelegate delegate);
+public class PluginSecurityManager extends SecurityManager implements Secure {
+	private final double key;
+	private boolean locked = false;
 
-	public void downloadAddon(String name, DownloadEventDelegate delegate);
+	public PluginSecurityManager(final double key) {
+		this.key = key;
+	}
 
-	public boolean hasUpdate(Plugin addon);
+	@Override
+	public boolean lock(double key) {
+		boolean old = locked;
+		if (key == this.key) {
+			locked = true;
+		}
+		return old;
+	}
 
-	public boolean hasInternetAccess(Plugin addon);
+	@Override
+	public void unlock(double key) {
+		if (key == this.key) {
+			locked = false;
+		}
+	}
 
-	public long getQuota(Plugin addon);
-
-	public boolean isEnabled(Plugin addon);
-
-	public abstract class DownloadEventDelegate {
-		public abstract void onDownloadFinished(Plugin addon);
-
-		public abstract void onDownloadFailure(Exception e, int databaseId, String name);
+	@Override
+	public boolean isLocked() {
+		return locked;
 	}
 }

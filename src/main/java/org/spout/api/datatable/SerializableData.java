@@ -38,7 +38,7 @@ import java.util.logging.Level;
 
 import org.apache.commons.io.IOUtils;
 import org.spout.api.Spout;
-import org.spout.api.plugin.CommonClassLoader;
+import org.spout.api.plugin.PluginClassLoader;
 
 public class SerializableData extends AbstractData {
 
@@ -153,7 +153,7 @@ public class SerializableData extends AbstractData {
 			try {
 				return super.resolveClass(desc);
 			} catch (ClassNotFoundException e) {
-				return CommonClassLoader.findPluginClass(desc.getName());
+				return PluginClassLoader.findPluginClass(desc.getName());
 			}
 		}
 

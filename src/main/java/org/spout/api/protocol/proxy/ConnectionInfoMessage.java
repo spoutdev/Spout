@@ -37,6 +37,6 @@ public interface ConnectionInfoMessage extends Message {
 	 * @param info the previous ConnectionInfo for this connection, or null if none
 	 * @return the updated ConnectionInfo
 	 */
-	public ConnectionInfo getConnectionInfo(boolean upstream, ConnectionInfo info);
+	public ConnectionInfo getConnectionInfo(ConnectionInfo info);
 
 }

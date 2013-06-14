@@ -27,114 +27,20 @@
 package org.spout.api.meta;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.Validate;
 import org.spout.api.Engine;
-import org.spout.api.generator.WorldGenerator;
-import org.spout.api.lang.PluginDictionary;
+import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginDescriptionFile;
-import org.spout.api.plugin.PluginLoader;
-import org.spout.api.protocol.Protocol;
 
-public final class SpoutMetaPlugin implements Plugin {
-	private PluginDescriptionFile pdf;
-	private Engine engine;
-	private PluginDictionary dictionary; // TODO extend this dictionary to load translation from a different location
-
+public final class SpoutMetaPlugin extends Plugin {
 	public SpoutMetaPlugin(Engine engine) {
 		this.engine = engine;
-		pdf = new PluginDescriptionFile("Spout", engine.getVersion(), "", "ALL");
+		file = new File(engine.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
+		description = new PluginDescriptionFile("Spout", engine.getVersion(), "", "ALL");
 		dictionary = new SpoutMetaPluginDictionary(this);
-	}
-
-	@Override
-	public void onEnable() {
-	}
-
-	@Override
-	public void onDisable() {
-	}
-
-	@Override
-	public String getName() {
-		return "Spout";
-	}
-
-	@Override
-	public void onReload() {
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
-
-	@Override
-	public void setEnabled(boolean enabled) {
-	}
-
-	@Override
-	public PluginLoader getPluginLoader() {
-		return null;
-	}
-
-	@Override
-	public Logger getLogger() {
-		return getEngine().getLogger();
-	}
-
-	@Override
-	public PluginDescriptionFile getDescription() {
-		return pdf;
-	}
-
-	@Override
-	public Engine getEngine() {
-		return engine;
-	}
-
-	@Override
-	public WorldGenerator getWorldGenerator(String world, String generator) {
-		return null;
-	}
-
-	@Override
-	public File getDataFolder() {
-		return engine.getDataFolder();
-	}
-
-	@Override
-	public File getFile() {
-		return new File(engine.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
-	}
-
-	@Override
-	public InputStream getResource(String path) {
-		Validate.notNull(path);
-		return engine.getClass().getClassLoader().getResourceAsStream("/" + path);
-	}
-
-	@Override
-	public void extractResource(String path, File destination) throws IOException {
-		Validate.notNull(destination);
-		InputStream stream = getResource(path);
-		if (stream == null) {
-			throw new IOException("No resource found at path " + path);
-		}
-		FileUtils.copyInputStreamToFile(stream, destination);
-	}
-
-	@Override
-	public void loadLibrary(File file) {
-	}
-
-	@Override
-	public PluginDictionary getDictionary() {
-		return dictionary;
+		enabled = true;
+		dataFolder = engine.getDataFolder();
+		logger = Spout.getLogger();
 	}
 }

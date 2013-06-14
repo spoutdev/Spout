@@ -26,8 +26,8 @@
  */
 package org.spout.api.event.server.service;
 
-import org.spout.api.plugin.ServiceManager.ServicePriority;
-import org.spout.api.plugin.ServiceProvider;
+import org.spout.api.plugin.services.ServiceManager.ServicePriority;
+import org.spout.api.plugin.services.ServiceProvider;
 
 /**
  * Called when a new {@link ServiceProvider} is being registered by the {@link ServiceManager}.

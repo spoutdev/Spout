@@ -304,7 +304,7 @@ public abstract class EconomyService {
 				Spout.getEventManager().callEvent(new AccountChangeEvent(this, name, -amount, null));
 				return true;
 			}
-		} catch (UnknownCurrencyException e) {
+		} catch (UnknownCurrencyException ignored) {
 		}
 		return false;
 	}
@@ -377,7 +377,7 @@ public abstract class EconomyService {
 				Spout.getEventManager().callEvent(new AccountChangeEvent(this, name, amount, null));
 				return true;
 			}
-		} catch (UnknownCurrencyException e) {
+		} catch (UnknownCurrencyException ignored) {
 
 		}
 		return false;

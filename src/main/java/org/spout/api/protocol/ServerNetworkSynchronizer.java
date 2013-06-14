@@ -60,17 +60,22 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	private final Set<Point> chunkSendQueue = new LinkedHashSet<Point>();
 	private final Set<Point> chunkFreeQueue = new LinkedHashSet<Point>();
 
+	/** Chunks that have initialized on the client. May also have chunks that have been sent. */
 	private final Set<Point> initializedChunks = new LinkedHashSet<Point>();
+	/** Chunks that have been sent to the client */
 	private final Set<Point> activeChunks = new LinkedHashSet<Point>();
 
 	private boolean removed = false;
-	private boolean first = true;
 	private volatile boolean teleported = false;
 	private volatile boolean teleportPending = false;
 	private volatile boolean worldChanged = false;
+	/** The point that the player was at for the last tick. Used to check world changes */
+	//TODO: can we not check the player's live transform versus snapshot?
 	private Point lastPosition = null;
+	/** If the player is going to teleport, this is the point the player was at before. Used to prevent teleport -> free -> send */
 	private Point holdingPosition = null;
 	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
+	/** Includes chunks that need to be observed. When observation is successfully attained or no longer wanted, point is removed */
 	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
 
 	//Holds all entities that have ever been sync'd to this Synchronizer
@@ -90,7 +95,6 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	public void setRespawned() {
-		first = true;
 		worldChanged = true;
 		setPositionDirty();
 	}
@@ -131,10 +135,10 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	 */
 	@Override
 	public void finalizeTick() {
-		tickCounter++;
 		if (removed) {
 			return;
 		}
+		tickCounter++;
 
 		//TODO: update chunk lists?
 		final int prevViewDistance = viewDistance;
@@ -145,12 +149,12 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 
 		Point currentPosition = player.getScene().getPosition();
 		if (currentPosition != null) {
-			if (prevViewDistance != currentViewDistance || worldChanged || (!currentPosition.equals(lastChunkCheck) &&	currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.BLOCKS.SIZE >> 1)) {
+			if (prevViewDistance != currentViewDistance || worldChanged || (!currentPosition.equals(lastChunkCheck) && currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.BLOCKS.SIZE >> 1)) {
 				checkChunkUpdates(currentPosition);
 				lastChunkCheck = currentPosition;
 				worldChanged = false;
 			}
-			if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
+			if (lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
 				clearObservers();
 				worldChanged = true;
 				setPositionDirty();
@@ -173,7 +177,7 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 
 			for (Point p : chunkInitQueue) {
 				if (!initializedChunks.contains(p)) {
-					addObserver(p);
+					observe(p);
 				}
 			}
 
@@ -203,13 +207,13 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	@Override
 	public void preSnapshot() {
 		if (removed) {
+			// TODO: confirm this is never going to be called and remove it
 			removed = false;
 			for (Point p : initializedChunks) {
 				freeChunk(p);
 			}
 		} else {
 			if (worldChanged) {
-				first = false;
 				Point ep = player.getScene().getPosition();
 				resetChunks();
 				worldChanged(ep.getWorld());
@@ -242,7 +246,7 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 				i = priorityChunkSendQueue.iterator();
 				while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
 					Point p = i.next();
-					i = attemptSendChunk(i, priorityChunkSendQueue, p, unsendable);
+					i = attemptSendChunk(i, priorityChunkSendQueue, p);
 				}
 				
 				if (!priorityChunkSendQueue.isEmpty()) {
@@ -259,7 +263,7 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 				i = chunkSendQueue.iterator();
 				while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
 					Point p = i.next();
-					i = attemptSendChunk(i, chunkSendQueue, p, unsendable);
+					i = attemptSendChunk(i, chunkSendQueue, p);
 					tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 				}
 			}
@@ -271,8 +275,7 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 		return true;
 	}
 
-	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Point p, Set<Point> unsendable) {
-		System.out.println("ATTEMPTING SEND CHUNK");
+	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Point p) {
 		Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.LOAD_ONLY);
 		if (c == null) {
 			unsendable.add(p);
@@ -286,21 +289,17 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 			activeChunks.add(c.getBase());
 			i.remove();
 			if (sent != null) {
-				boolean updated = false;
 				for (Chunk s : sent) {
 					Point base = s.getBase();
 					boolean removed = priorityChunkSendQueue.remove(base);
 					removed |= chunkSendQueue.remove(base);
 					if (removed) {
-						updated = true;
 						if (initializedChunks.contains(base)) {
 							activeChunks.add(base);
 						}
 						chunksSent++;
+						i = queue.iterator();
 					}
-				}
-				if (updated) {
-					i = queue.iterator();
 				}
 			}
 			chunksSent++;
@@ -320,23 +319,23 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 			} else {
 				Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.NO_LOAD);
 				if (c != null) {
-					addObserver(c);
+					observe(c);
 					i.remove();
 				}
 			}
 		}
 	}
 
-	private void addObserver(Point p) {
+	private void observe(Point p) {
 		Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.NO_LOAD);
 		if (c != null) {
-			addObserver(c);
+			observe(c);
 		} else {
 			chunksToObserve.add(p);
 		}
 	}
 
-	private void addObserver(Chunk c) {
+	private void observe(Chunk c) {
 		observed.add(c);
 		c.refreshObserver(player);
 	}
@@ -384,9 +383,6 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 
 		Iterator<IntVector3> itr = getViewableVolume(cx, cy, cz, viewDistance);
 
-		priorityChunkSendQueue.clear();
-		chunkSendQueue.clear();
-
 		while (itr.hasNext()) {
 			IntVector3 v = itr.next();
 			Point base = new Point(world, v.getX() << Chunk.BLOCKS.BITS, v.getY() << Chunk.BLOCKS.BITS, v.getZ() << Chunk.BLOCKS.BITS);
@@ -429,14 +425,10 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	 * multiple threads
 	 *
 	 * @param c the chunk
-	 * @return the chunks that were sent, or null if no chunk was sent
+	 * @return chunks that were sent
 	 */
-	public Collection<Chunk> sendChunk(Chunk c) {
-		if (canSendChunk(c)) {
-			return sendChunk(c, true);
-		} else {
-			return null;
-		}
+	public final Collection<Chunk> sendChunk(Chunk c) {
+		return sendChunk(c, false);
 	}
 	
 	/**
@@ -452,14 +444,22 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	 *
 	 * @param c the chunk
 	 * @param force forces sending of the chunk without checking the canSendChunk method
-	 * @return the chunks that were sent, or null if no chunk was sent
+	 * @return true if the chunk was send
 	 */
-	protected Collection<Chunk> sendChunk(Chunk c, boolean force) {
+	public final Collection<Chunk> sendChunk(Chunk c, boolean force) {
+		if (force || canSendChunk(c)) {
+			return doSendChunk(c);
+		} else {
+			return null;
+		}
+	}
+
+	protected Collection<Chunk> doSendChunk(Chunk c) {
 		return null;
 	}
 
 	/**
-	 * Frees a chunk on the client.
+	 * Inits a chunk on the client.
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
@@ -470,6 +470,7 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	 *
 	 * @param p the base Point for the chunk
 	 */
+	//TODO: is this needed?
 	protected void initChunk(Point p) {
 		//TODO: Implement Spout Protocol
 	}

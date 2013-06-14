@@ -34,6 +34,11 @@ import java.util.Set;
 
 public interface FileSystem {
 	/**
+	 * The standard permission for installing plugins by command line.
+	 */
+	public static final String INSTALLATION_PERMISSION = "spout.install";
+
+	/**
 	 * Called before engine is started.
 	 */
 	public void init();
@@ -184,4 +189,12 @@ public interface FileSystem {
 	 * @param pathResolver to remove
 	 */
 	public void removePathResolver(ResourcePathResolver pathResolver);
+
+	/**
+	 * Requests an install on the system.
+	 *
+	 * @param name of plugin to install
+	 * @param uri location of plugin
+	 */
+	public void requestPluginInstall(String name, URI uri);
 }

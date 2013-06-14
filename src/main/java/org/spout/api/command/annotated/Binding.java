@@ -32,7 +32,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.spout.api.input.Keyboard;
-import org.spout.api.input.Mouse;
 
 /**
  * Represents a key-binding used with the {@link Command} annotation in
@@ -53,7 +52,7 @@ public @interface Binding {
 	 *
 	 * @return mouse buttons
 	 */
-	public Mouse[] mouse() default {};
+	public int[] mouse() default {};
 
 	/**
 	 * Returns true if this binding should be run asynchronously.

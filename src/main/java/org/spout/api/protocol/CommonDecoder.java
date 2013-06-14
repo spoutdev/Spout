@@ -45,11 +45,11 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 	private int[] previousOpcodes = new int[previousMask + 1];
 	private int opcodeCounter = 0;
 	private volatile Protocol protocol;
-	private final boolean upstream;
+	private final boolean onClient;
 
-	public CommonDecoder(boolean upstream) {
+	public CommonDecoder(boolean onClient) {
 		super(512);
-		this.upstream = upstream;
+		this.onClient = onClient;
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 		}
 
 		previousOpcodes[(opcodeCounter++) & previousMask] = codec.getOpcode();
-		return codec.decode(upstream, buf);
+		return codec.decode(onClient, buf);
 	}
 
 	void setProtocol(Protocol proto) {

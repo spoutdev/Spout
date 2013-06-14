@@ -26,6 +26,9 @@
  */
 package org.spout.api.protocol;
 
+import org.spout.api.Platform;
+import org.spout.api.Spout;
+
 public abstract class MessageHandler<T extends Message> {
 	
 	/**
@@ -33,12 +36,11 @@ public abstract class MessageHandler<T extends Message> {
 	 *
 	 * Otherwise, it will call handleServer or handleClient as required.
 	 *
-	 * @param upstream true, if the connection is to a server
 	 * @param session the network session
 	 * @param message the message that was received
 	 */
-	public void handle(boolean upstream, Session session, T message) {
-		if (upstream) {
+	public void handle(Session session, T message) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
 			handleClient((ClientSession) session, message);
 		} else {
 			handleServer((ServerSession) session, message);

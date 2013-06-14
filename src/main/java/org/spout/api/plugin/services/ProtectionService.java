@@ -34,7 +34,6 @@ import org.spout.api.Spout;
 import org.spout.api.geo.Protection;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.plugin.ServiceProvider;
 
 /**
  * The protection service is a basic service that can be extended and registered as a service provider.
@@ -99,21 +98,21 @@ public abstract class ProtectionService {
 
 	/**
 	 * Attempts to lookup the protection by name.
-	 * @param name
+	 * @param name to get protection from
 	 * @return the region
 	 */
 	public abstract Protection getProtection(String name);
 
 	/**
 	 * Gets all protections on the given world.
-	 * @param world
+	 * @param world to get protections from
 	 * @return a collection of protections.
 	 */
 	public abstract Collection<Protection> getAllProtections(World world);
 
 	/**
 	 * Gets all protections at the given point.
-	 * @param point
+	 * @param point to get protections from
 	 * @return a collection of protections
 	 */
 	public abstract Collection<Protection> getAllProtections(Point point);

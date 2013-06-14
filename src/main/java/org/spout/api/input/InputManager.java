@@ -71,10 +71,10 @@ public interface InputManager {
 	/**
 	 * Returns the bindings that are bound to the specified mouse button.
 	 *
-	 * @param mouse button bound
+	 * @param button button bound
 	 * @return bindings bound to specified button
 	 */
-	public Set<Binding> getMouseBindingsFor(Mouse mouse);
+	public Set<Binding> getMouseBindingsFor(int button);
 
 	/**
 	 * Returns a set of {@link InputExecutor} that are added.

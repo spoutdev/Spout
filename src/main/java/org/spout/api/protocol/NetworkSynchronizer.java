@@ -45,7 +45,6 @@ import org.spout.api.protocol.event.ProtocolEventListener;
 import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.api.util.OutwardIterator;
-import org.spout.api.util.set.concurrent.TSyncIntHashSet;
 
 public abstract class NetworkSynchronizer {
 	protected final Player player;
@@ -58,6 +57,7 @@ public abstract class NetworkSynchronizer {
 		this.session = session;
 		player = session.getPlayer();
 		if (player != null) {
+			// TODO this shouldn't be needed because setObserver(true) is in SpoutPlayer; is there a reason?
 			player.setObserver(true);
 		}
 	}
@@ -119,9 +119,7 @@ public abstract class NetworkSynchronizer {
 			try {
 				Message[] messages = executor.execute(event);
 				if (messages != null && messages.length > 0) {
-					for (Message msg : messages) {
-						session.send(false, msg);
-					}
+					session.sendAll(messages);
 					return true;
 				}
 			} catch (EventException e) {
@@ -168,16 +166,6 @@ public abstract class NetworkSynchronizer {
 	 */
 	public boolean isInViewVolume(Point playerChunkBase, Point testChunkBase, int viewDistance) {
 		return testChunkBase.getManhattanDistance(playerChunkBase) <= (viewDistance << Chunk.BLOCKS.BITS);
-	}
-
-	/**
-	 * Gets the entity protocol manager
-	 *
-	 * @return the entity protocol manager
-	 */
-	// TODO what is this for?
-	public EntityProtocol getEntityProtocol() {
-		throw new IllegalStateException("No entity protocol available for core class");
 	}
 
 	/**
