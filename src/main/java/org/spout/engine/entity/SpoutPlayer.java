@@ -68,12 +68,10 @@ import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
 import org.spout.engine.SpoutConfiguration;
-import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutServerWorld;
-import org.spout.engine.world.SpoutWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicReference<SpoutSession<?>> sessionLive = new AtomicReference<SpoutSession<?>>();
@@ -177,6 +175,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			setupInitialChunk(newTransform, LoadOption.LOAD_GEN);
 		}
 		sessionLive.set(session);
+		session.setPlayer(this);
 		copySnapshot();
 		return true;
 	}
@@ -193,7 +192,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (msg == null) {
 			return;
 		}
-		session.send(false, msg);
+		session.send(msg);
 	}
 
 	@Override
@@ -383,15 +382,16 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			remove();
 		}
 		super.finalizeRun();
-		if (this.isOnline()) {
-			this.getNetworkSynchronizer().finalizeTick();
-		}
+
 		if (isRemoved()) {
 			if (getEngine().getPlatform() == Platform.SERVER) {
 				((ServerNetworkSynchronizer) getNetworkSynchronizer()).onRemoved();
 				((SpoutServer) getEngine()).removePlayer(this);
 			}
+			// TODO stop client?
 			sessionLive.set(null);
+		} else if (this.isOnline()) {
+			this.getNetworkSynchronizer().finalizeTick();
 		}
 	}
 

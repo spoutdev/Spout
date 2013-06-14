@@ -24,34 +24,20 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.entity;
+package org.spout.engine.filesystem;
 
-import org.spout.api.Client;
-import org.spout.api.Engine;
-import org.spout.api.component.Component;
-import org.spout.api.component.entity.CameraComponent;
-import org.spout.api.geo.discrete.Transform;
-import org.spout.engine.gui.SpoutScreenStack;
-import org.spout.engine.protocol.SpoutSession;
+import java.net.URI;
 
-/**
- * A subclass of SpoutPlayer with modifications for the client
- */
-public class SpoutClientPlayer extends SpoutPlayer {
+import org.spout.api.Spout;
+import org.spout.api.command.CommandSource;
 
-	public SpoutClientPlayer(Engine engine, String name, Transform transform, int viewDistance) {
-		super(engine, name, transform, viewDistance, null, false, (byte[])null, (Class<? extends Component>[]) null);
-
-		add(CameraComponent.class);
-	}
-
+public class ServerFileSystem extends CommonFileSystem {
 	@Override
-	public void sendMessage(String message) {
-		SpoutSession<?> session = getSession();
-		if (session == null) {
-			((SpoutScreenStack)((Client)getEngine()).getScreenStack()).getConsole().addMessage(message);
-		} else {
-			super.sendMessage(message);
-		}
+	public void requestPluginInstall(String name, URI uri) {
+		CommandSource source = Spout.getEngine().getCommandSource();
+		source.sendMessage("A request has been made to install the plugin '" + name + "'.");
+		source.sendMessage("This plugin will be downloaded from '" + uri.toString() + "' if accepted.");
+		source.sendMessage("Use '/install allow " + name + "' or '/install deny " + name + "' to continue.");
+		super.requestPluginInstall(name, uri);
 	}
 }

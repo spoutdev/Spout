@@ -51,15 +51,6 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> i
 		super(engine, channel, bootstrapProtocol);
 	}
 
-	@Override
-	public void send(boolean upstream, boolean force, Message message) {
-		if (upstream) {
-			getEngine().getLogger().warning("Attempt made to send packet to server");
-			return;
-		}
-		super.send(upstream, force, message);
-	}
-
 	public String getDefaultLeaveMessage() {
 		if (getPlayer() == null) {
 			return "Unknown player has left the game";

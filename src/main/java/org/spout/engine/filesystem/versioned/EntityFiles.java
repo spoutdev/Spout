@@ -44,7 +44,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.nbt.TransformTag;
 import org.spout.api.io.nbt.UUIDTag;
-import org.spout.api.plugin.CommonClassLoader;
+import org.spout.api.plugin.PluginClassLoader;
 import org.spout.api.util.sanitation.SafeCast;
 
 import org.spout.engine.SpoutEngine;
@@ -223,7 +223,7 @@ public class EntityFiles {
 		for (StringTag component : components.getValue()) {
 			try {
 				try {
-					Class<? extends Component> clazz = (Class<? extends Component>) CommonClassLoader.findPluginClass(component.getValue());
+					Class<? extends Component> clazz = (Class<? extends Component>) PluginClassLoader.findPluginClass(component.getValue());
 					types.add(clazz);
 				} catch (ClassNotFoundException e) {
 					Class<? extends Component> clazz = (Class<? extends Component>) Class.forName(component.getValue());

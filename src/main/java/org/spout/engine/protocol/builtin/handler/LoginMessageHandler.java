@@ -42,7 +42,7 @@ public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 		session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName()));
 		session.setState(Session.State.GAME);
 		if (session.hasPlayer()) {
-			session.send(false, new LoginMessage("", session.getPlayer().getId()));
+			session.send(new LoginMessage("", session.getPlayer().getId()));
 		}
 	}
 
