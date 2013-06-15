@@ -73,6 +73,7 @@ import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
 
 import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.listener.SpoutServerListener;
 import org.spout.engine.protocol.PortBindingImpl;
@@ -88,7 +89,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	/**
 	 * The {@link FileSystem} for the server
 	 */
-	private final FileSystem filesystem;
+	private final ServerFileSystem filesystem;
 	/**
 	 * If the server allows flight.
 	 */
@@ -127,6 +128,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		getEventManager().registerEvents(listener, this);
 		getEventManager().callEvent(new EngineStartEvent());
 		filesystem.postStartup();
+		filesystem.notifyInstalls();
 		log("Done Loading, ready for players.");
 	}
 

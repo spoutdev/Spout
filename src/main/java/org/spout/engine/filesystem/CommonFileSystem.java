@@ -72,11 +72,11 @@ public abstract class CommonFileSystem implements FileSystem {
 	public static final File DATA_DIRECTORY = new File("data");
 	public static final File WORLDS_DIRECTORY = new File("worlds");
 
-	private final Set<ResourceLoader> loaders = new HashSet<ResourceLoader>();
-	private final Map<URI, Object> loadedResources = new HashMap<URI, Object>();
-	private final List<ResourcePathResolver> pathResolvers = new ArrayList<ResourcePathResolver>();
-	private final Map<String, URI> requestedInstallations = new HashMap<String, URI>();
-	private boolean initialized;
+	protected final Set<ResourceLoader> loaders = new HashSet<ResourceLoader>();
+	protected final Map<URI, Object> loadedResources = new HashMap<URI, Object>();
+	protected final List<ResourcePathResolver> pathResolvers = new ArrayList<ResourcePathResolver>();
+	protected final Map<String, URI> requestedInstallations = new HashMap<String, URI>();
+	protected boolean initialized;
 
 	private void createDirs() {
 		if (!PLUGINS_DIRECTORY.exists()) PLUGINS_DIRECTORY.mkdirs();
@@ -97,20 +97,44 @@ public abstract class CommonFileSystem implements FileSystem {
 		pathResolvers.add(new ZipFilePathResolver(RESOURCES_DIRECTORY.getPath()));
 		pathResolvers.add(new JarFilePathResolver());
 
-		// setup install command
+		initInstallations();
+
+		initialized = true;
+	}
+
+	private void initInstallations() {
 		Spout.getCommandManager().getCommand("install")
 				.setPermission(INSTALLATION_PERMISSION)
 				.setArgumentBounds(2, 2)
 				.setHelp("Replies to an installation request.")
-				.setUsage("<allow|deny> <plugin>")
+				.setUsage("<list|allow|deny> [plugin|all]")
 				.setExecutor(new Executor() {
 					@Override
 					public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
+						// list the requested installations
+						String arg = args.getString(0);
+						if (arg.equalsIgnoreCase("list")) {
+							source.sendMessage("Listing pending installations...");
+							for (Map.Entry<String, URI> e : requestedInstallations.entrySet()) {
+								source.sendMessage(e.getKey() + " from " + e.getValue());
+							}
+							return;
+						}
+
+						// install all pending installations
 						String plugin = args.getString(1);
+						if (plugin.equalsIgnoreCase("all")) {
+							for (String p : requestedInstallations.keySet()) {
+								allowInstallation(source, p);
+							}
+							return;
+						}
+
+						// specified plugin is not pending
 						if (!requestedInstallations.containsKey(plugin))
 							throw new CommandException("There is no install pending for that plugin.");
 
-						String arg = args.getString(0);
+						// allow or disallow the specified plugin
 						if (arg.equalsIgnoreCase("allow")) {
 							allowInstallation(source, plugin);
 							return;
@@ -122,8 +146,6 @@ public abstract class CommonFileSystem implements FileSystem {
 						throw new CommandException("Unknown argument: " + arg);
 					}
 				});
-
-		initialized = true;
 	}
 
 	private void loadFallback(ResourceLoader loader) {
