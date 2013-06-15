@@ -59,6 +59,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
+import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 
 //just need to,bottom,east,west,south,north, not diagonal neigbour it's 8 snapshot useless
@@ -73,7 +74,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	private final ChunkSnapshot[][][] chunks;
 	private ChunkSnapshot center;
 	private final boolean unload;
-	private final int distance;
+	//private final int distance;
 	private final int id;
 	
 	/**
@@ -95,14 +96,14 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	private final SpoutWorld world;
 	
 	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, long time) {
-		this(world, cx, cy, cz, unload, null, 0, null, false, time);
+		this(world, cx, cy, cz, unload, null/*, 0*/, null, false, time);
 	}
 	
-	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, boolean first, long time) {
-		this(world, cx, cy, cz, false, chunks, distance, renderMaterials, first, time);
+	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, ChunkSnapshot[][][] chunks/*, int distance*/, Set<RenderMaterial> renderMaterials, boolean first, long time) {
+		this(world, cx, cy, cz, false, chunks/*, distance*/, renderMaterials, first, time);
 	}
 
-	private SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, boolean first, long time) {
+	private SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks/*, int distance*/, Set<RenderMaterial> renderMaterials, boolean first, long time) {
 		this.world = world;
 		this.cx = cx;
 		this.cy = cy;
@@ -110,7 +111,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		this.chunks = chunks;
 		this.center = chunks != null ? chunks[1][1][1] : null;
 		this.unload = unload;
-		this.distance = distance;
+		//this.distance = distance;
 		this.id = idCounter.getAndIncrement();
 		this.renderMaterials = renderMaterials;
 		this.time = time;
@@ -132,9 +133,9 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		return cz;
 	}
 	
-	public int getDistance() {
+	/*public int getDistance() {
 		return distance;
-	}
+	}*/
 	
 	/**
 	 * Gets if the chunk was unloaded.  Unload models only indicate an unload occurred and contain no data.
@@ -207,14 +208,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	
 	@Override
 	public int compareTo(final SpoutChunkSnapshotModel o) {
-		int d1 = getDistance();
-		int d2 = o.getDistance();
-		
-		if (d1 == d2) {
-			return id - o.id;
-		} else {
-			return d1 - d2;
-		}
+		return getCenter().getBase().compareTo(o.getCenter().getBase());
 	}
 	
 	@Override

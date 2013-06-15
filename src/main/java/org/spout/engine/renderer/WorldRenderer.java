@@ -276,6 +276,8 @@ public class WorldRenderer {
 
 			// Add ChunkMesh to ChunkMeshBatch
 			while ((mesh = renderChunkMeshBatchQueue.poll()) != null) {
+				System.out.println("NEXT MESH");
+				//if (mesh.getChunk().getRenderSequence() !=)
 				world = mesh.getWorld();
 
 				if (world != currentWorld) {

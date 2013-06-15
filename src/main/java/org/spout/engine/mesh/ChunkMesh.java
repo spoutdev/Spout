@@ -54,7 +54,9 @@ import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
+import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
+import org.spout.engine.world.SpoutWorld;
 
 /**
  * Represents a mesh for a chunk.
@@ -66,6 +68,7 @@ public class ChunkMesh{
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
 	private final World world;
+	private final SpoutChunk chunk;
 	private final int chunkX,chunkY,chunkZ;
 	private boolean isUnloaded = false;
 	private boolean first = false;
@@ -76,7 +79,7 @@ public class ChunkMesh{
 	 */
 	private final long time;
 
-	public ChunkMesh(SpoutChunkSnapshotModel chunkModel) {
+	public ChunkMesh(SpoutChunkSnapshotModel chunkModel, SpoutChunk chunk) {
 		this.chunkModel = chunkModel;
 		first = chunkModel.isFirst();
 
@@ -85,6 +88,7 @@ public class ChunkMesh{
 		chunkX = chunkModel.getX();
 		chunkY = chunkModel.getY();
 		chunkZ = chunkModel.getZ();
+		this.chunk = chunk;
 
 		time = chunkModel.getTime();
 	}
@@ -191,7 +195,12 @@ public class ChunkMesh{
 			int y1 = facePos.getFloorY();
 			int z1 = facePos.getFloorZ();
 
-			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
+			ChunkSnapshot chunkFromBlock = chunkModel.getChunkFromBlock(x1, y1, z1);
+			if (chunkFromBlock == null) {
+				toRender[i] = false;
+				continue;
+			}
+			BlockMaterial neighbor = chunkFromBlock.getBlockMaterial(x1, y1, z1);
 
 			if (material.isFaceRendered(face, neighbor)) {
 				toRender[i] = true;
@@ -307,4 +316,7 @@ public class ChunkMesh{
 		return world;
 	}
 
+	public SpoutChunk getChunk() {
+		return chunk;
+	}
 }

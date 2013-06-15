@@ -1782,4 +1782,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return c.getLightBuffer(manager);
 	}
 
+	public SnapshotManager getSnapshotManager() {
+		return snapshotManager;
+	}
 }

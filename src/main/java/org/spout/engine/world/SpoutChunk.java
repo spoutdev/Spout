@@ -1,4 +1,4 @@
-/*
+	/*
  * This file is part of Spout.
  *
  * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
@@ -110,6 +110,13 @@ import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
 import com.google.common.collect.Sets;
+import java.util.HashSet;
+import org.spout.api.material.block.BlockFace;
+import org.spout.api.render.RenderMaterial;
+import org.spout.api.util.bytebit.ByteBitSet;
+import org.spout.api.util.map.TInt21TripleObjectHashMap;
+import org.spout.engine.mesh.ChunkMesh;
+import org.spout.engine.renderer.WorldRenderer;
 
 public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<SpoutChunk>(null);
@@ -122,6 +129,8 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	private final ConcurrentLinkedQueue<SpoutEntity> expiredObserversQueue = new ConcurrentLinkedQueue<SpoutEntity>();
 	private final LinkedHashSet<SpoutEntity> expiredObservers = new LinkedHashSet<SpoutEntity>();
 	private final Set<SpoutEntity> unmodifiableExpiredObservers = Collections.unmodifiableSet(expiredObservers);
+	private final AtomicInteger renderSequence = new AtomicInteger(0);
+	private SpoutChunkSnapshot renderSnapshotCache;
 	/**
 	 * Not thread safe, synchronize on access
 	 */
@@ -310,6 +319,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().globalPhysicsChunkQueue, this);
 		this.dirtyChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().dirtyChunkQueue, this);
 		this.newChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().newChunkQueue, this);
+		region.getSnapshotManager().add(this);
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			render(false);
+		}
 	}
 
 	@Override
@@ -1056,6 +1069,8 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	@Override
 	public void copySnapshot() {
+		renderSnapshotCache = null;
+		renderSequence.incrementAndGet();
 	}
 
 	public enum SaveState {
@@ -2141,7 +2156,136 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends CuboidLightBuffer> T getLightBuffer(LightingManager<T> manager) {
-		return (T) getLightBuffer(manager.getId());
+		return (T) getLightBuffer(manager.getId());	
+	}
+
+	public int getRenderSequence() {
+		return renderSequence.get();
+	}
+
+	private ChunkSnapshot getRenderSnapshot() {
+		SpoutChunkSnapshot snapshot = renderSnapshotCache;
+		if (snapshot != null) {
+			return snapshot;
+		}
+
+		snapshot = getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
+		renderSnapshotCache = snapshot;
+		return snapshot;
+	}
+	
+	private class MeshGeneratorThread extends Thread {
+
+		private WorldRenderer renderer = null;
+		private final SpoutChunkSnapshotModel model;
 		
+
+		public MeshGeneratorThread(SpoutChunkSnapshotModel model) {
+			super(SpoutChunk.this.toString() + " Mesh Generation Thread");
+			this.setDaemon(true);
+			this.model = model;
+		}
+
+		@Override
+		public void run() {
+			//Sleep while the renderer doesn't exist
+			while(((SpoutClient) Spout.getEngine()).getRenderer() == null){
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException ie) {
+					return;
+				}
+			}
+
+			renderer = ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer();
+			while (renderer == null) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException ie) {
+					return;
+				}
+				renderer = ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer();
+			}
+			ChunkMesh mesh = new ChunkMesh(model, SpoutChunk.this);
+			mesh.update();
+			renderer.addMeshToBatchQueue(mesh);
+		}
+	}
+	
+	private void render(boolean force) {
+		if (/*isInViewDistance()*/true) {
+			ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
+			for (int x = -1; x <= 1; x++) {
+				for (int y = -1; y <= 1; y++) {
+					for (int z = -1; z <= 1; z++) {
+						if (x == 0 && y == 0 && z == 0) { //Need for light
+							chunks[x + 1][y + 1][z + 1] = getRenderSnapshot();
+							continue;
+						}
+						SpoutChunk chunk = getWorld().getChunk(getX() + x, getY() + y, getZ() + z, LoadOption.NO_LOAD);
+						ChunkSnapshot snapshot = chunk == null ? null : chunk.getRenderSnapshot();
+						if (snapshot == null) {
+							//System.out.println("skip");
+							continue;
+						}
+						chunks[x + 1][y + 1][z + 1] = snapshot;
+						//}
+					}
+				}
+			}
+			boolean first = enteredViewDistance();
+			final HashSet<RenderMaterial> updatedRenderMaterials;
+
+			if (first || isDirtyOverflow() || force || isLightDirty()) {
+				updatedRenderMaterials = null;
+			} else {
+				updatedRenderMaterials = new HashSet<RenderMaterial>();
+				int dirtyBlocks = getDirtyBlocks();
+				for (int i = 0; i < dirtyBlocks; i++) {
+					addMaterialToSet(updatedRenderMaterials, getDirtyOldState(i));
+					addMaterialToSet(updatedRenderMaterials, getDirtyNewState(i));
+				}
+				int size = BLOCKS.SIZE;
+				for (int i = 0; i < dirtyBlocks; i++) {
+					Vector3 blockPos = getDirtyBlock(i);
+					BlockMaterial material = getBlockMaterial(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ());
+					ByteBitSet occlusion = material.getOcclusion(material.getData());
+					for(BlockFace face : BlockFace.values()){ 
+						if (face.equals(BlockFace.THIS)) {
+							continue;
+						}
+						if (occlusion.get(face)) {
+							continue;
+						}
+						Vector3 neighborPos = blockPos.add(face.getOffset());
+						int nx = neighborPos.getFloorX();
+						int ny = neighborPos.getFloorX();
+						int nz = neighborPos.getFloorX();
+						if (nx >= 0 && ny >= 0 && nz >= 0 && nx < size && ny < size && nz < size) {
+							int state = getBlockFullState(nx, ny, nz);
+							addMaterialToSet(updatedRenderMaterials, state);
+							//addSubMeshToSet(updatedSubMeshes, neighborPos);
+						}
+					}
+				}
+			}
+			setRendered(true);
+			setRenderDirty(false);
+			SpoutChunkSnapshotModel model = new SpoutChunkSnapshotModel(getWorld(), getX(), getY(), getZ(), chunks, updatedRenderMaterials, first, System.currentTimeMillis());
+			new MeshGeneratorThread(model).start();
+		} else {
+			if (leftViewDistance()) {
+				setRendered(false);
+				setRenderDirty(false);
+				SpoutChunkSnapshotModel model = new SpoutChunkSnapshotModel(getWorld(), getX(), getY(), getZ(), true, System.currentTimeMillis());
+				new MeshGeneratorThread(model).start();
+			}
+		}
+		viewDistanceCopy();
+	}
+
+	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {
+		BlockMaterial material = MaterialRegistry.get(blockState);
+		set.add(material.getModel().getRenderMaterial());
 	}
 }
