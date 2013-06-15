@@ -105,7 +105,7 @@ public abstract class CommonFileSystem implements FileSystem {
 	private void initInstallations() {
 		Spout.getCommandManager().getCommand("install")
 				.setPermission(INSTALLATION_PERMISSION)
-				.setArgumentBounds(2, 2)
+				.setArgumentBounds(1, 2)
 				.setHelp("Replies to an installation request.")
 				.setUsage("<list|allow|deny> [plugin|all]")
 				.setExecutor(new Executor() {
