@@ -701,7 +701,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public File getWorldFolder() {
-		return CommonFileSystem.WORLDS_DIRECTORY;
+		return ServerFileSystem.WORLDS_DIRECTORY;
 	}
 
 	@Override

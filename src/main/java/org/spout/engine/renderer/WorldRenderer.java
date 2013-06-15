@@ -333,7 +333,6 @@ public class WorldRenderer {
 			}
 
 			chunkMeshBatch.setSubBatch(batchVertex, mesh.getChunkX(), mesh.getChunkY(), mesh.getChunkZ());
-			chunkMeshBatch.setTime(mesh.getTime());
 
 			if (!chunkMeshBatch.isQueued()) {
 				addedBatch++;

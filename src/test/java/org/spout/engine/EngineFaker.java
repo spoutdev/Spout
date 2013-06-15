@@ -49,7 +49,7 @@ import org.spout.api.event.Order;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.lang.PluginDictionary;
-import org.spout.api.plugin.CommonPlugin;
+import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginDescriptionFile;
 import org.spout.api.resource.FileSystem;
 
@@ -68,12 +68,11 @@ public class EngineFaker {
 		World setupWorld = WorldFaker.setupWorld();
 		Mockito.when(server.getWorld(TEST_UUID)).thenReturn(setupWorld);
 
+		engineInstance = server;
 		TestPlugin plugin = new TestPlugin();
-		plugin.initialize(null, server, new PluginDescriptionFile("TestPlugin", "dev", "org.spout.api.TestPlugin", "all"), null, null, null);
 		TestPlugin.instance = plugin;
 
 		Spout.setEngine(server);
-		engineInstance = server;
 	}
 
 	public static Server setupEngine() {
@@ -83,38 +82,14 @@ public class EngineFaker {
 	public static void main(String[] args) {
 		
 	}
-	private static class TestPlugin extends CommonPlugin {
+	private static class TestPlugin extends Plugin {
 		public static TestPlugin instance;
-		@Override
-		public void onEnable() {
-		}
 
-		@Override
-		public void onDisable() {
+		public TestPlugin() {
+			this.initialize(null, engineInstance, new PluginDescriptionFile("TestPlugin", "dev", "org.spout.api.TestPlugin", "all"), null, null, null);
+			instance = this;
 		}
-
-		@Override
-		public void onReload() {
-		}
-
-		@Override
-		public WorldGenerator getWorldGenerator(String world, String generator) {
-			return null;
-		}
-
-		@Override
-		public InputStream getResource(String path) {
-			return null;
-		}
-
-		@Override
-		public void extractResource(String path, File destination) throws IOException {
-		}
-
-		@Override
-		public PluginDictionary getDictionary() {
-			return null;
-		}
+		
 	}
 
 	private static class TestEventManager implements EventManager {

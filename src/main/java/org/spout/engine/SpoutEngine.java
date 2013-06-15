@@ -96,7 +96,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	private final EventManager eventManager = new SimpleEventManager();
 	private final RecipeManager recipeManager = new SimpleRecipeManager();
 	private final ServiceManager serviceManager = new ServiceManager();
-	private final SnapshotManager snapshotManager = new SnapshotManager();
+	protected final SnapshotManager snapshotManager = new SnapshotManager();
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
