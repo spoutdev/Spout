@@ -320,9 +320,13 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		this.dirtyChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().dirtyChunkQueue, this);
 		this.newChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().newChunkQueue, this);
 		region.getSnapshotManager().add(this);
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			render(false);
+	}
+	
+	public void render() {
+		if (Spout.getPlatform() != Platform.CLIENT) {
+			throw new UnsupportedOperationException("Must be on client to render.");
 		}
+		render(false);
 	}
 
 	@Override
@@ -2222,11 +2226,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 							chunks[x + 1][y + 1][z + 1] = getRenderSnapshot();
 							continue;
 						}
-						SpoutChunk chunk = getWorld().getChunk(getX() + x, getY() + y, getZ() + z, LoadOption.NO_LOAD);
+						SpoutChunk chunk = getWorld().getChunk(getX() + x, getY() + y, getZ() + z, LoadOption.LOAD_GEN);
 						ChunkSnapshot snapshot = chunk == null ? null : chunk.getRenderSnapshot();
 						if (snapshot == null) {
 							//System.out.println("skip");
-							continue;
+							throw new IllegalStateException("Client should not have null chunks!");
 						}
 						chunks[x + 1][y + 1][z + 1] = snapshot;
 						//}

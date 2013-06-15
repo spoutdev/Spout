@@ -108,6 +108,7 @@ public class ChunkMesh{
 	public void update(){
 		if(chunkModel.isUnload()){
 			isUnloaded = true;
+			System.out.println("MESH UNLOADED");
 			return;
 		}
 
@@ -115,6 +116,8 @@ public class ChunkMesh{
 
 		//Update mesh vertex and light
 		updateBlock();
+		
+		//System.out.println("Meshes size: " + meshs.size());
 
 		//Execute post buffer effect for each renderMaterial
 		for(Entry<RenderMaterial, BufferContainer> entry : meshs.entrySet()){
@@ -145,10 +148,13 @@ public class ChunkMesh{
 			Vector3 position, boolean toRender[], OrientedMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
 		Vector3 model = new Vector3(position.getX(), position.getY(), position.getZ());
+		boolean could = false;
 		for(OrientedMeshFace meshFace : mesh){
 
-			if(!meshFace.canRender(toRender))
+			if(!meshFace.canRender(toRender)) {
+				System.out.println("Can't render");
 				continue;
+			}
 
 			Iterator<Vertex> it = meshFace.iterator();
 			Vertex v1 = new Vertex(it.next());
@@ -205,7 +211,7 @@ public class ChunkMesh{
 			if (material.isFaceRendered(face, neighbor)) {
 				toRender[i] = true;
 				fullyOccluded = false;
-			}else{
+			} else {
 				toRender[i] = false;
 				continue;
 			}
@@ -215,14 +221,15 @@ public class ChunkMesh{
 			if (occlusion.get(face.getOpposite())) {
 				toRender[i] = false;
 				continue;
-			}else{
+			} else {
 				toRender[i] = true;
 				fullyOccluded = false;
 			}
 		}
 
-		if(fullyOccluded)
+		if(fullyOccluded) {
 			return;
+		}
 
 		SnapshotMesh snapshotMesh = new SnapshotMesh(material, chunkSnapshotModel, new Point(position, world), toRender);
 
@@ -233,7 +240,7 @@ public class ChunkMesh{
 		renderMaterial.postMesh(snapshotMesh);
 		faces = snapshotMesh.getResult();
 
-		if(!faces.isEmpty()){
+		if(!faces.isEmpty()) {
 			BufferContainer container = meshs.get(renderMaterial);
 			TFloatArrayList vertexBuffer, normalBuffer, textureBuffer;
 
@@ -250,7 +257,7 @@ public class ChunkMesh{
 				container.setBuffers(VertexAttributes.Texture0.getLayout(), textureBuffer);
 				
 				meshs.put(renderMaterial, container);
-			}else{
+			} else {
 				 vertexBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Position.getLayout());
 				 normalBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Normal.getLayout());
 				 textureBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Texture0.getLayout());
