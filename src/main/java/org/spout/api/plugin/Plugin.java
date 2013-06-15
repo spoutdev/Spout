@@ -27,6 +27,7 @@
 package org.spout.api.plugin;
 
 import java.io.File;
+import java.net.URI;
 import java.util.logging.Logger;
 
 import org.spout.api.Engine;
@@ -81,6 +82,20 @@ public abstract class Plugin implements Named {
 	 * Called when the plugin is initially loaded
 	 */
 	public void onLoad() {
+	}
+
+	/**
+	 * Returns the {@link URI} location of the plugin's update. If the plugin
+	 * does not have an update available this method should return null. This
+	 * method will be called during startup; after all plugin have been loaded.
+	 * If the plugin does have an update, it will be added to the queue of
+	 * requested installations and will have to be confirmed by the server
+	 * administrator.
+	 *
+	 * @return plugin update
+	 */
+	public URI getUpdate() {
+		return null;
 	}
 
 	/**
