@@ -428,8 +428,6 @@ public abstract class CommonFileSystem implements FileSystem {
 			throw new IllegalArgumentException("Plugin name cannot be null");
 		if (uri == null)
 			throw new IllegalArgumentException("URI cannot be null");
-		if (!uri.toString().endsWith(".jar"))
-			throw new IllegalArgumentException("URI must point to a direct JAR file.");
 		requestedInstallations.put(name, uri);
 	}
 }
