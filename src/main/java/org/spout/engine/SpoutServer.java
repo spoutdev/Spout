@@ -57,6 +57,7 @@ import org.teleal.cling.transport.spi.InitializationException;
 
 import org.spout.api.Platform;
 import org.spout.api.Server;
+import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Listener;
@@ -73,7 +74,6 @@ import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
 
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.listener.SpoutServerListener;
 import org.spout.engine.protocol.PortBindingImpl;
@@ -83,7 +83,6 @@ import org.spout.engine.protocol.SpoutServerSession;
 import org.spout.engine.util.access.SpoutAccessManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
-import static org.spout.api.lang.Translation.log;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	/**
@@ -129,7 +128,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		getEventManager().callEvent(new EngineStartEvent());
 		filesystem.postStartup();
 		filesystem.notifyInstalls();
-		log("Done Loading, ready for players.");
+		Spout.info("Done Loading, ready for players.");
 	}
 
 	@Override
@@ -140,7 +139,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			portBindings.bindAll();
 			portBindings.save();
 		} catch (ConfigurationException e) {
-			log("Error loading port bindings: %0", Level.SEVERE, e);
+			Spout.severe("Error loading port bindings: ", e);
 		}
 
 		//UPnP
@@ -156,7 +155,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		setupBonjour();
 
 		if (boundProtocols.size() == 0) {
-			log("No port bindings registered! Clients will not be able to connect to the server.", Level.WARNING);
+			Spout.warn("No port bindings registered! Clients will not be able to connect to the server.");
 		}
 	}
 
@@ -229,11 +228,11 @@ public class SpoutServer extends SpoutEngine implements Server {
 		try {
 			getChannelGroup().add(bootstrap.bind(binding.getAddress()));
 		} catch (org.jboss.netty.channel.ChannelException ex) {
-			log("Failed to bind to address %0. Is there already another server running on this address?", Level.SEVERE, binding.getAddress(), ex);
+			Spout.severe("Failed to bind to address " + binding.getAddress() + ". Is there already another server running on this address?", ex);
 			return false;
 		}
 
-		log("Binding to address: %0...", binding.getAddress());
+		Spout.info("Binding to address: {0}...", binding.getAddress());
 		return true;
 	}
 
@@ -280,7 +279,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			try {
 				upnpService = new UpnpServiceImpl();
 			} catch (InitializationException e) {
-				log("Could not enable UPnP Service: %0", Level.SEVERE, e.getMessage());
+				Spout.severe("Could not enable UPnP Service", e.getMessage());
 			}
 		}
 
@@ -292,7 +291,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			return new PortMapping(port, InetAddress.getLocalHost().getHostAddress(), protocol, description);
 		} catch (UnknownHostException e) {
 			Error error = new Error("Error while trying to retrieve the localhost while creating a PortMapping object.", e);
-			getLogger().severe(e.getMessage());
+			Spout.severe(e.getMessage(), e);
 			throw error;
 		}
 	}

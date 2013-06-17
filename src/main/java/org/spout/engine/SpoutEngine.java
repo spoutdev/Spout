@@ -43,15 +43,14 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
-
 import org.spout.api.Engine;
+import org.spout.api.Spout;
 import org.spout.api.command.CommandManager;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
@@ -86,7 +85,6 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
-
 import org.spout.engine.command.AnnotatedCommandExecutorTest;
 import org.spout.engine.command.ClientCommands;
 import org.spout.engine.command.CommonCommands;
@@ -117,9 +115,6 @@ import org.spout.engine.world.MemoryReclamationThread;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
-
-import static org.spout.api.lang.Translation.log;
-import static org.spout.api.lang.Translation.tr;
 
 public abstract class SpoutEngine implements AsyncManager, Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
@@ -163,7 +158,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			config.load();
 			inputConfig.load();
 		} catch (ConfigurationException e) {
-			log("Error loading config: %0", Level.SEVERE, e.getMessage(), e);
+			Spout.severe("Error loading config: " + e.getMessage(), e);
 		}
 
 		consoleManager.setupConsole();
@@ -188,14 +183,14 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	public abstract void start();
 
 	public void start(boolean checkWorlds) {
-		log("Spout is starting in %0-only mode.", getPlatform().name().toLowerCase());
-		log("Current version is %0 (Implementing SpoutAPI %1).", getVersion(), getAPIVersion());
-		log("This software is currently in alpha status so components may");
-		log("have bugs or not work at all. Please report any issues to");
-		log("http://issues.spout.org");
+		Spout.info("Spout is starting in {0}-only mode.", getPlatform().name().toLowerCase());
+		Spout.info("Current version is {0} (Implementing SpoutAPI {1}).", getVersion(), getAPIVersion());
+		Spout.info("This software is currently in alpha status so components may");
+		Spout.info("have bugs or not work at all. Please report any issues to");
+		Spout.info("http://issues.spout.org");
 
 		if (debugMode()) {
-			log("Debug Mode has been toggled on!  This mode is intended for developers only", Level.WARNING);
+			Spout.warn("Debug Mode has been toggled on!  This mode is intended for developers only");
 		}
 
 		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
@@ -435,7 +430,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	@Override
 	public boolean stop() {
-		return stop(tr("Spout shutting down", getCommandSource())); // TODO distribute the message differently
+		return stop("Spout shutting down");
 	}
 
 	private final AtomicBoolean stopping = new AtomicBoolean();
