@@ -28,16 +28,21 @@ package org.spout.engine;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -110,7 +115,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		if (inJar || args.path != null) {
-			unpackLwjgl(args.path);
+			unpackNatives(args.path);
 		}
 
 		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutClient - Boss", true));
@@ -368,31 +373,41 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return world.get();
 	}
 
-	private void unpackLwjgl(String path) {
-		String[] files;
+	private void unpackNatives(String path) {
+		String natives;
 		String osPath;
-
 		if (SystemUtils.IS_OS_WINDOWS) {
-			files = new String[]{"jinput-dx8_64.dll", "jinput-dx8.dll", "jinput-raw_64.dll", "jinput-raw.dll", "jinput-wintab.dll", "lwjgl.dll", "lwjgl64.dll", "OpenAL32.dll", "OpenAL64.dll"};
+			natives = "windows.txt";
 			osPath = "windows/";
 		} else if (SystemUtils.IS_OS_MAC) {
-			files = new String[]{"libjinput-osx.jnilib", "liblwjgl.jnilib", "openal.dylib",};
+			natives = "osx.txt";
 			osPath = "mac/";
 		} else if (SystemUtils.IS_OS_LINUX) {
-			files = new String[]{"liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so"};
+			natives = "linux.txt";
 			osPath = "linux/";
 		} else {
 			getLogger().severe("Error loading natives of operating system type: " + SystemUtils.OS_NAME);
 			return;
 		}
 
+		BufferedReader reader = new BufferedReader(new InputStreamReader(SpoutClient.class.getResourceAsStream("/natives/" + natives)));
+		String str;
+		List<String> files = new ArrayList<String>();
+		try {
+			while ((str = reader.readLine()) != null) {
+				files.add(str);
+			}
+		} catch (IOException e) {
+			getLogger().log(Level.SEVERE, "Error getting native files to copy", e);
+		}
+
 		File cacheDir = new File(path == null ? System.getProperty("user.dir") : path, "natives" + File.separator + osPath);
 		cacheDir.mkdirs();
 		for (String f : files) {
-			File outFile = new File(cacheDir, f);
-			if (!outFile.exists()) {
+			File target = new File(cacheDir, f);
+			if (!target.exists()) {
 				try {
-					FileUtils.copyInputStreamToFile(SpoutClient.class.getResourceAsStream("/" + f), outFile);
+					FileUtils.copyInputStreamToFile(SpoutClient.class.getResourceAsStream("/" + f), target);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
