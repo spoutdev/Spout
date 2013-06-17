@@ -91,7 +91,6 @@ import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.map.WeakValueHashMap;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
-import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
 import org.spout.engine.SpoutEngine;
@@ -204,7 +203,7 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, StringMap lightingMap) {
 		this.engine = engine;
-		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
+		if (!name.matches("^[a-zA-Z0-9_]+")) {
 			name = Long.toHexString(System.currentTimeMillis());
 			getEngine().getLogger().severe("World name " + name + " is not valid, using " + name + " instead");
 		}
