@@ -17,7 +17,7 @@ public class MessageFormatter extends Formatter{
 		if (record.getThrown() != null) {
 			StringWriter sink = new StringWriter();
 			record.getThrown().printStackTrace(new PrintWriter(sink, true));
-			message += sink.toString();
+			message += "\n\t" + sink.toString();
 		}
 		return message;
 	}
