@@ -29,17 +29,20 @@ package org.spout.api.material.block;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.source.GenericMaterialSource;
+import org.spout.api.material.Material;
+import org.spout.api.util.hashing.ShortPairHashed;
 
 /**
  * Represents an immutable snapshot of the state of a block
  */
-public class BlockSnapshot extends GenericMaterialSource {
+public class BlockSnapshot {
+	private final BlockMaterial material;
+	private final short data;
 	private final int x, y, z;
 	private final World world;
 
 	public BlockSnapshot(Block block) {
-		this(block, block.getMaterial(), block.getData());
+		this(block, block.getMaterial(), block.getBlockData());
 	}
 
 	public BlockSnapshot(Block block, BlockMaterial material, short data) {
@@ -47,7 +50,8 @@ public class BlockSnapshot extends GenericMaterialSource {
 	}
 
 	public BlockSnapshot(World world, int x, int y, int z, BlockMaterial material, short data) {
-		super(material, data);
+		this.material = material;
+		this.data = data;
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -101,8 +105,43 @@ public class BlockSnapshot extends GenericMaterialSource {
 	 *
 	 * @return the material
 	 */
-	@Override
 	public BlockMaterial getMaterial() {
-		return (BlockMaterial) super.getMaterial();
+		return this.material;
+	}
+
+	public short getData() {
+		return this.data;
+	}
+
+	@Override
+	public String toString() {
+		return "BlockSnapshot { material: " + this.material + " , data:" + this.data + ", x: " + x + ", y: " + y + ", z: " + z + "}";
+	}
+
+	@Override
+	public int hashCode() {
+		return ShortPairHashed.key(this.material.getId(), this.data);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof BlockSnapshot) {
+			BlockSnapshot other = (BlockSnapshot)o;
+			return other.x == x && other.y == y && other.z == z && other.material.equals(material) && other.data == data;
+		}
+		return false;
+	}
+
+	public boolean isMaterial(Material... materials) {
+		if (this.material == null) {
+			for (Material material : materials) {
+				if (material == null) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return this.material.isMaterial(materials);
+		}
 	}
 }

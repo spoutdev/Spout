@@ -123,6 +123,7 @@ public class AnnotatedObjectConfiguration extends AnnotatedConfiguration {
 	 * @param path The path at which the object should be or is located in the
 	 * configuration
 	 */
+	@SuppressWarnings("unchecked")
 	public void addObject(Object object, String... path) {
 		if (!objectMembers.containsKey(object)) {
 			final Set<Member> members = new HashSet<Member>();

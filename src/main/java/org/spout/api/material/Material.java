@@ -44,7 +44,6 @@ import org.spout.api.event.player.Action;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.GenericMath;
 import org.spout.api.model.Model;
 import org.spout.api.render.effect.MeshEffect;
@@ -53,7 +52,7 @@ import org.spout.api.util.LogicUtil;
 import org.spout.api.util.flag.Flag;
 import org.spout.api.util.flag.FlagSingle;
 
-public abstract class Material extends MaterialRegistry implements MaterialSource {
+public abstract class Material extends MaterialRegistry {
 	private final short id;
 	private final short data;
 	private final String name;
@@ -195,7 +194,6 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 *
 	 * @return data value
 	 */
-	@Override
 	public final short getData() {
 		return this.data;
 	}
@@ -312,7 +310,6 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		}
 	}
 
-	@Override
 	@Deprecated
 	public Material getMaterial() {
 		return this;
@@ -461,7 +458,6 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	public void onInteract(Entity entity, Action type) {
 	}
 
-	@Override
 	public boolean isMaterial(Material... materials) {
 		if (LogicUtil.equalsAny(this, materials)) {
 			return true;
@@ -474,13 +470,8 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 
 	@Override
 	public boolean equals(Object other) {
-		if (other == null) {
-			return false;
-		} else if (other instanceof Material) {
+		if (other instanceof Material) {
 			return other == this;
-		} else if (other instanceof MaterialSource) {
-			MaterialSource bs = (MaterialSource) other;
-			return this == bs.getMaterial() && bs.getData() == this.getData();
 		} else {
 			return false;
 		}

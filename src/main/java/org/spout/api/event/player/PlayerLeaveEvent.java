@@ -26,8 +26,6 @@
  */
 package org.spout.api.event.player;
 
-import java.util.List;
-
 import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
 

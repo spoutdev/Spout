@@ -28,8 +28,6 @@ package org.spout.api.audio;
 
 import java.util.Set;
 
-import org.spout.api.Client;
-
 /**
  * Manages Sounds.
  */

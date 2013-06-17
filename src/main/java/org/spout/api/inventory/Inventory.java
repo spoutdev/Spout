@@ -154,10 +154,10 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * @param amount to add to current data
 	 * @return whether the data was added
 	 */
-	public boolean addData(int slot, int amount) {
+	public boolean addData(int slot, int data) {
 		ItemStack item = get(slot);
 		if (item != null) {
-			setData(slot, item.getData() + amount);
+			setData(slot, item.getData() + data);
 			return true;
 		}
 		return false;

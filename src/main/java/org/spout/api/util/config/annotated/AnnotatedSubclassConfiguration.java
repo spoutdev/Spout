@@ -54,6 +54,7 @@ public abstract class AnnotatedSubclassConfiguration extends AnnotatedConfigurat
 		return isConfigured;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Set<Field> getFields() {
 		if (!fieldsCached) {
 			fields.addAll(ReflectionUtils.getDeclaredFieldsRecur(getClass(), Setting.class));

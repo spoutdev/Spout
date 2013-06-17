@@ -28,12 +28,9 @@ package org.spout.api.audio;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.spout.api.Client;
-import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.Named;
 
 /**
  * Represents a source of sound in the game.

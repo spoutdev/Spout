@@ -26,14 +26,12 @@
  */
 package org.spout.api.protocol;
 
-import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
-import org.spout.api.map.DefaultedMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Player;
 

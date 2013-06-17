@@ -74,6 +74,7 @@ public final class ListFile {
 						}
 					}
 				}
+				input.close();
 				Collections.sort(list);
 				save();
 			} catch (FileNotFoundException ex) {

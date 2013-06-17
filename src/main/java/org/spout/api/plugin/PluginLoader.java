@@ -49,7 +49,6 @@ import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.UnknownDependencyException;
 import org.spout.api.exception.UnknownSoftDependencyException;
-import org.spout.api.lang.JavaPluginDictionary;
 import org.spout.api.plugin.security.PluginSecurityManager;
 
 public class PluginLoader {

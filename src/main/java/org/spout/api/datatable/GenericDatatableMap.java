@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.spout.api.Spout;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.VarInt;

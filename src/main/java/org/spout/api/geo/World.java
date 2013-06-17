@@ -46,7 +46,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.model.Model;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.Named;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;

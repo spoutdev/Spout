@@ -34,8 +34,9 @@ import java.util.Collection;
 public interface ComponentOwner {
 	/**
 	 * Adds the component of the specified type to the owner and returns it if it is not present.
-	 * <p/>
+	 * <p>
 	 * Otherwise, it returns the component of the specified type if there was one present.
+	 * </p>
 	 * @param type whose component is to be added to the owner
 	 * @return the new component that was added, or the existing one if it had one
 	 */
@@ -90,7 +91,7 @@ public interface ComponentOwner {
 	public Collection<Component> values();
 
 	/**
-	 * Gets the {@link DatatableComponent} which is always attached to each owner.
+	 * Gets the {@link DatatableComponent} attached to the owner.
 	 * @return datatable component
 	 */
 	public DatatableComponent getDatatable();
