@@ -41,19 +41,26 @@ public final class AnnotatedCommandExecutorFactory {
 	private AnnotatedCommandExecutorFactory() {
 	}
 
-	private static boolean isValidMethod(Method method) {
-		return hasValidModifiers(method) && hasValidParameters(method) && hasCommandAnnotation(method);
-	}
-
-	private static boolean hasValidModifiers(Method method) {
-		int mod = method.getModifiers();
-		return !Modifier.isAbstract(mod) && !Modifier.isPrivate(mod) && !Modifier.isProtected(mod)
-				&& !Modifier.isStatic(mod) && Modifier.isPublic(mod);
-	}
-
-	private static boolean hasValidParameters(Method method) {
-		Class<?>[] params = method.getParameterTypes();
-		return params.length == 2 && CommandSource.class.equals(params[0]) && CommandArguments.class.equals(params[1]);
+	private static boolean validateMethod(Method method) {
+		if (hasCommandAnnotation(method)) {
+			if (Modifier.isAbstract(method.getModifiers())) {
+				Spout.warn("Unable to register " + method.getName() + " as a command, method can not be abstract.");
+				return false;
+			}
+			Class<?>[] params = method.getParameterTypes();
+			if (params.length != 2) {
+				Spout.warn("Unable to register " + method.getName() + " as a command, method can only have 2 parameters");
+				return false;
+			}
+			if ((CommandSource.class.equals(params[0]) || CommandSource.class.equals(params[1])) &&
+					(CommandArguments.class.equals(params[0]) || CommandArguments.class.equals(params[1])))	{
+				return true;
+			} else {
+				Spout.warn("Unable to register " + method.getName() + " as a command, method parameters must be CommandSource and CommandArguments");
+				return false;
+			}
+		}
+		return false;
 	}
 
 	private static boolean hasCommandAnnotation(Method method) {
@@ -67,10 +74,10 @@ public final class AnnotatedCommandExecutorFactory {
 	 */
 	public static AnnotatedCommandExecutor create(Object instance, org.spout.api.command.Command parent) {
 		Map<org.spout.api.command.Command, Method> cmdMap = new HashMap<org.spout.api.command.Command, Method>();
-		for (Method method : instance.getClass().getMethods()) {
+		for (Method method : instance.getClass().getDeclaredMethods()) {
 			method.setAccessible(true);
 			// check the validity of the current method
-			if (!isValidMethod(method)) {
+			if (!validateMethod(method)) {
 				continue;
 			}
 

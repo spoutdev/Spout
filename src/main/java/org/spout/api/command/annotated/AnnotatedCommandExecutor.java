@@ -55,7 +55,12 @@ public final class AnnotatedCommandExecutor implements Executor {
 		if (method != null) {
 			method.setAccessible(true);
 			try {
-				method.invoke(instance, source, args);
+				//Support backwards arguments
+				if (method.getParameterTypes()[0] == CommandSource.class){
+					method.invoke(instance, source, args);
+				} else {
+					method.invoke(instance, args, source);
+				}
 			} catch (IllegalAccessException e) {
 				throw new WrappedCommandException(e);
 			} catch (InvocationTargetException e) {
