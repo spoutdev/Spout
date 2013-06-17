@@ -266,6 +266,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return getChunk(x, y, z, LoadOption.LOAD_GEN);
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
@@ -798,10 +799,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 					// a - acceleration
 
 					final Vector3 movement = prevVelocity.multiply(dt).add(acceleration.multiply(dt * dt).divide(2));
-					final Point position = scene.getTransformLive().getPosition();
 					Point newPosition = scene.getTransformLive().getPosition().add(movement);
 					final BoundingBox volume = scene.getVolume();
-					final BoundingBox oldVolume = volume.clone().offset(position);
 					BoundingBox worldVolume = volume.clone().offset(newPosition);
 					final int bx = newPosition.getBlockX();
 					final int by = newPosition.getBlockY();
