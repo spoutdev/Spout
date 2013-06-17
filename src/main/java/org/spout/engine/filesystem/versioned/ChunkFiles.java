@@ -300,7 +300,7 @@ public class ChunkFiles {
 			BlockComponentOwner component = chunk.getBlockComponentOwners().get(packed);
 			if (component != null) {
 				try {
-					component.getDatatable().deserialize(data.getValue());
+					component.getData().deserialize(data.getValue());
 				} catch (IOException e) {
 					Spout.getLogger().log(Level.SEVERE, "Unhandled exception deserializing block component data", e);
 				}

@@ -94,7 +94,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	protected SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
 		this(engine, name, transform, viewDistance, uid, load, (byte[])null, components);
-		this.getDatatable().putAll(dataMap);
+		this.getData().putAll(dataMap);
 	}
 
 	public SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {

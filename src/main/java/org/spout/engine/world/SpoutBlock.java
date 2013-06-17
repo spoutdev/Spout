@@ -349,12 +349,12 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public DatatableComponent getDatatable() {
+	public DatatableComponent getData() {
 		BlockComponentOwner owner = getChunk().getBlockComponentOwner(x, y, z, false);
 		if (owner == null) {
 			throw new IllegalStateException("The datatable is only available on blocks who have a BlockComponentOwner (blocks with components added)");
 		}
-		return owner.getDatatable();
+		return owner.getData();
 	}
 
 	@Override

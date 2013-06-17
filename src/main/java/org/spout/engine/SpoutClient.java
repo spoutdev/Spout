@@ -311,7 +311,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
 		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap(), getEngineItemMap());
 
-		SerializableMap map = world.getDatatable();
+		SerializableMap map = world.getData();
 		try {
 			map.deserialize(data);
 		} catch (IOException e) {
