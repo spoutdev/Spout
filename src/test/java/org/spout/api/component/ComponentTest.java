@@ -95,11 +95,11 @@ public final class ComponentTest {
 		GenericSubComponent2 c2 = base.add(GenericSubComponent2.class);
 		OtherGenericComponent c3 = base.add(OtherGenericComponent.class);
 		//Guarantee datatables are always there
-		assertNotNull(base.getDatatable());
-		assertNotNull(block.getDatatable());
-		assertNotNull(entity.getDatatable());
-		assertNotNull(widget.getDatatable());
-		assertNotNull(world.getDatatable());
+		assertNotNull(base.getData());
+		assertNotNull(block.getData());
+		assertNotNull(entity.getData());
+		assertNotNull(widget.getData());
+		assertNotNull(world.getData());
 		//Test block
 		GenericBlockComponent bc = block.add(GenericBlockComponent.class);
 		assertNotNull(bc);
@@ -122,7 +122,7 @@ public final class ComponentTest {
 		
 		Collection<Component> components = base.values();
 		assertTrue(components.size() == 4);
-		assertThat(components, hasItems(c1, c2, c3, base.getDatatable()));
+		assertThat(components, hasItems(c1, c2, c3, base.getData()));
 
 		GenericComponentWithInterface cwi = base.add(GenericComponentWithInterface.class);
 		Interface type = base.getType(Interface.class);

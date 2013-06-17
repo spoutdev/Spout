@@ -106,6 +106,6 @@ public abstract class Component implements Tickable {
 	 * @return datatable component
 	 */
 	public final DatatableComponent getDatatable() {
-		return getOwner().getDatatable();
+		return getOwner().getData();
 	}
 }

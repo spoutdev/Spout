@@ -94,5 +94,5 @@ public interface ComponentOwner {
 	 * Gets the {@link DatatableComponent} attached to the owner.
 	 * @return datatable component
 	 */
-	public DatatableComponent getDatatable();
+	public DatatableComponent getData();
 }

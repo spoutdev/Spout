@@ -198,5 +198,5 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	 * </p>
 	 * @return datatable component
 	 */
-	public DatatableComponent getDatatable();
+	public DatatableComponent getData();
 }

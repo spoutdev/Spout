@@ -512,5 +512,5 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * This is merely a convenience method.
 	 * @return datatable component
 	 */
-	public DatatableComponent getDatatable();
+	public DatatableComponent getData();
 }
