@@ -52,6 +52,10 @@ public class PlayerInteractEntityEvent extends EntityInteractEntityEvent {
 		return action;
 	}
 
+	public Player getEntity() {
+		return (Player) super.getEntity();
+	}
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;

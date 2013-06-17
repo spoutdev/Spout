@@ -55,6 +55,11 @@ public class PlayerInteractBlockEvent extends EntityInteractBlockEvent implement
 	}
 
 	@Override
+	public Player getEntity() {
+		return (Player) super.getEntity();
+	}
+
+	@Override
 	public void setCancelled(boolean cancelled) {
 		super.setCancelled(cancelled);
 	}
