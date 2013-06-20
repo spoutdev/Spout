@@ -59,8 +59,6 @@ import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.annotated.AnnotatedCommandExecutor;
-import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Listener;
 import org.spout.api.event.engine.EngineStartEvent;
@@ -75,7 +73,6 @@ import org.spout.api.resource.FileSystem;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
 
-import org.spout.engine.command.ServerCommands;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.listener.SpoutServerListener;
@@ -128,7 +125,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public void start(boolean checkWorlds, Listener listener) {
 		super.start(checkWorlds);
 		getEventManager().registerEvents(listener, this);
-		AnnotatedCommandExecutorFactory.create(new ServerCommands(this));
 		getEventManager().callEvent(new EngineStartEvent());
 		filesystem.postStartup();
 		filesystem.notifyInstalls();

@@ -194,7 +194,22 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		}
 
 		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
-		AnnotatedCommandExecutorFactory.create(new CommonCommands(this));
+
+		// Register commands
+		Object exe;
+		switch (getPlatform()) {
+			case CLIENT:
+				exe = new ClientCommands(this);
+				break;
+			case SERVER:
+				exe = new ServerCommands(this);
+				break;
+			default:
+				exe = new CommonCommands(this);
+				break;
+		}
+		AnnotatedCommandExecutorFactory.create(exe);
+
 		AnnotatedCommandExecutorFactory.create(new MessagingCommands(this));
 		InputCommands.setupInputCommands(this);
 
