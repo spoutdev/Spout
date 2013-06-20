@@ -79,8 +79,11 @@ public class PluginLoader {
 			}
 
 			try {
+				String version = plugin.getDescription().getVersion();
+				Spout.info("Enabling " + plugin.getName() + " v" + version + "...");
 				plugin.enabled = true;
 				plugin.onEnable();
+				Spout.info(plugin.getName() + " v" + version + " enabled.");
 			} catch (Throwable e) {
 				engine.getLogger().log(Level.SEVERE, "An error occured when enabling '" + plugin.getDescription().getFullName() + "': " + e.getMessage(), e);
 			}
