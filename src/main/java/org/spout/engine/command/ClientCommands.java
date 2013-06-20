@@ -41,14 +41,15 @@ import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.protocol.PortBindingImpl;
 
-public class ClientCommands extends CommonCommands {
-	public ClientCommands(SpoutEngine engine) {
-		super(engine);
+public class ClientCommands {
+	private final SpoutClient engine;
+
+	public ClientCommands(SpoutClient engine) {
+		this.engine = engine;
 	}
 
-	@Override
 	public SpoutClient getEngine() {
-		return (SpoutClient) super.getEngine();
+		return engine;
 	}
 
 	@Command(aliases = {"connect", "conn"}, desc = "Connect to a server", usage = "<protocol> <address> [port]", min = 2, max = 3)

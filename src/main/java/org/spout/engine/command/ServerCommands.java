@@ -43,14 +43,15 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
 
-public class ServerCommands extends CommonCommands {
-	public ServerCommands(SpoutEngine engine) {
-		super(engine);
+public class ServerCommands {
+	private final SpoutServer engine;
+
+	public ServerCommands(SpoutServer engine) {
+		this.engine = engine;
 	}
 
-	@Override
 	public SpoutServer getEngine() {
-		return (SpoutServer) super.getEngine();
+		return engine;
 	}
 
 	@Command(aliases = "worlds", desc = "Lists the worlds currently loaded", min = 0, max = 0)
