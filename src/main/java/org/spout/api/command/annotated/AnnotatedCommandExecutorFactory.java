@@ -74,83 +74,87 @@ public final class AnnotatedCommandExecutorFactory {
 	 */
 	public static AnnotatedCommandExecutor create(Object instance, org.spout.api.command.Command parent) {
 		Map<org.spout.api.command.Command, Method> cmdMap = new HashMap<org.spout.api.command.Command, Method>();
-		for (Method method : instance.getClass().getDeclaredMethods()) {
-			method.setAccessible(true);
-			// check the validity of the current method
-			if (!validateMethod(method)) {
-				continue;
-			}
-
-			// create the command
-			Engine engine = Spout.getEngine();
-			org.spout.api.command.annotated.Command a = method.getAnnotation(org.spout.api.command.annotated.Command.class);
-			org.spout.api.command.Command command;
-			if (parent != null) { // parent specified? create child
-				command = parent.getChild(a.aliases()[0]);
-			} else { // no parent specified? create normal command
-				command = engine.getCommandManager().getCommand(a.aliases()[0]);
-			}
-
-			// set annotation data
-			command.addAlias(a.aliases());
-			command.setHelp(a.desc());
-			command.setUsage(a.usage());
-			command.setArgumentBounds(a.min(), a.max());
-
-			// check the platform
-			if (method.isAnnotationPresent(Platform.class)) {
-				Platform pa = method.getAnnotation(Platform.class);
-				org.spout.api.Platform actual = Spout.getPlatform();
-				boolean success = false;
-				for (org.spout.api.Platform platform : pa.value()) {
-					if (platform == actual) {
-						success = true;
-						break;
-					}
-				}
-
-				if (!success) {
-					// current platform not supported for this command, skip it.
+		Class<?> c = instance.getClass();
+		while (c != null) {
+			for (Method method : c.getDeclaredMethods()) {
+				method.setAccessible(true);
+				// check the validity of the current method
+				if (!validateMethod(method)) {
 					continue;
 				}
-			}
 
-			// add the permissions
-			if (method.isAnnotationPresent(Permissible.class)) {
-				command.setPermission(method.getAnnotation(Permissible.class).value());
-			}
-
-			// add binding
-			// you can still have a binding annotation on a server command method but this block will be skipped
-			if (method.isAnnotationPresent(Binding.class) && engine instanceof Client) {
-				int max = a.max();
-				if (max < 1 && max != -1) {
-					throw new IllegalArgumentException("Command binding must allow at least 1 argument.");
+				// create the command
+				Engine engine = Spout.getEngine();
+				org.spout.api.command.annotated.Command a = method.getAnnotation(org.spout.api.command.annotated.Command.class);
+				org.spout.api.command.Command command;
+				if (parent != null) { // parent specified? create child
+					command = parent.getChild(a.aliases()[0]);
+				} else { // no parent specified? create normal command
+					command = engine.getCommandManager().getCommand(a.aliases()[0]);
 				}
-				Binding binding = method.getAnnotation(Binding.class);
-				org.spout.api.input.Binding b = new org.spout.api.input.Binding(command.getName(), binding.value(), binding.mouse()).setAsync(binding.async());
-				((Client) engine).getInputManager().bind(b);
-			}
 
-			// add filter
-			if (method.isAnnotationPresent(Filter.class)) {
-				Filter cfa = method.getAnnotation(Filter.class);
-				Class<? extends org.spout.api.command.filter.CommandFilter>[] filterTypes = cfa.value();
-				org.spout.api.command.filter.CommandFilter[] filters = new org.spout.api.command.filter.CommandFilter[filterTypes.length];
-				for (int i = 0; i < filters.length; i++) {
-					try {
-						filters[i] = filterTypes[i].newInstance();
-					} catch (InstantiationException e) {
-						throw new IllegalArgumentException("All CommandFilters must have an empty constructor.");
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
+				// set annotation data
+				command.addAlias(a.aliases());
+				command.setHelp(a.desc());
+				command.setUsage(a.usage());
+				command.setArgumentBounds(a.min(), a.max());
+
+				// check the platform
+				if (method.isAnnotationPresent(Platform.class)) {
+					Platform pa = method.getAnnotation(Platform.class);
+					org.spout.api.Platform actual = Spout.getPlatform();
+					boolean success = false;
+					for (org.spout.api.Platform platform : pa.value()) {
+						if (platform == actual) {
+							success = true;
+							break;
+						}
+					}
+
+					if (!success) {
+						// current platform not supported for this command, skip it.
+						continue;
 					}
 				}
-				command.addFilter(filters);
-			}
 
-			// put the command in our map
-			cmdMap.put(command, method);
+				// add the permissions
+				if (method.isAnnotationPresent(Permissible.class)) {
+					command.setPermission(method.getAnnotation(Permissible.class).value());
+				}
+
+				// add binding
+				// you can still have a binding annotation on a server command method but this block will be skipped
+				if (method.isAnnotationPresent(Binding.class) && engine instanceof Client) {
+					int max = a.max();
+					if (max < 1 && max != -1) {
+						throw new IllegalArgumentException("Command binding must allow at least 1 argument.");
+					}
+					Binding binding = method.getAnnotation(Binding.class);
+					org.spout.api.input.Binding b = new org.spout.api.input.Binding(command.getName(), binding.value(), binding.mouse()).setAsync(binding.async());
+					((Client) engine).getInputManager().bind(b);
+				}
+
+				// add filter
+				if (method.isAnnotationPresent(Filter.class)) {
+					Filter cfa = method.getAnnotation(Filter.class);
+					Class<? extends org.spout.api.command.filter.CommandFilter>[] filterTypes = cfa.value();
+					org.spout.api.command.filter.CommandFilter[] filters = new org.spout.api.command.filter.CommandFilter[filterTypes.length];
+					for (int i = 0; i < filters.length; i++) {
+						try {
+							filters[i] = filterTypes[i].newInstance();
+						} catch (InstantiationException e) {
+							throw new IllegalArgumentException("All CommandFilters must have an empty constructor.");
+						} catch (IllegalAccessException e) {
+							e.printStackTrace();
+						}
+					}
+					command.addFilter(filters);
+				}
+
+				// put the command in our map
+				cmdMap.put(command, method);
+			}
+			c = c.getSuperclass();
 		}
 
 		// set the executor of the commands
