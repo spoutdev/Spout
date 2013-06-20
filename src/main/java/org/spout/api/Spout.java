@@ -57,6 +57,15 @@ public final class Spout {
 	}
 
 	/**
+	 * Prints the specified object if debug mode is enabled.
+	 *
+	 * @param obj to print
+	 */
+	public static void debug(Object obj) {
+		if (debugMode()) info(obj.toString());
+	}
+
+	/**
 	 * Logs the specified message to print if debug mode is enabled.
 	 *
 	 * @param log message
