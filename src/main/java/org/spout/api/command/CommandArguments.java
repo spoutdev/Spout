@@ -69,6 +69,34 @@ public class CommandArguments {
 		return args.size();
 	}
 
+	/**
+	 * Parses the argument to a generic {@link Object}. The argument is parsed
+	 * in the following order.
+	 *
+	 * <ul>
+	 *     <li>{@link Double}</li>
+	 *     <li>{@link Float}</li>
+	 *     <li>{@link Integer}</li>
+	 *     <li>{@link World}</li>
+	 *     <li>{@link Player}</li>
+	 *     <li>{@link Boolean}</li>
+	 *     <li>{@link String}</li>
+	 * </ul>
+	 *
+	 * @param index to parse argument from
+	 * @return generic object at index
+	 * @throws CommandException
+	 */
+	public Object get(int index) throws CommandException {
+		if (isDouble(index)) return getDouble(index);
+		if (isFloat(index)) return getFloat(index);
+		if (isInteger(index)) return getInteger(index);
+		if (isWorld(index)) return getWorld(index);
+		if (isPlayer(index)) return getPlayer(index);
+		if (isBoolean(index)) return getBoolean(index);
+		return getString(index);
+	}
+
 	private String getString0(int index) {
 		if (index >= args.size()) {
 			return null;
@@ -122,6 +150,39 @@ public class CommandArguments {
 	 */
 	public boolean isInteger(int index) {
 		return getInteger0(index) != null;
+	}
+
+	private Float getFloat0(int index) {
+		try {
+			return Float.parseFloat(getString0(index));
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Parses and returns a float at the specified index.
+	 *
+	 * @param index to get float from
+	 * @return float at index
+	 * @throws CommandException if string at specified index is not a float
+	 */
+	public float getFloat(int index) throws CommandException {
+		Float f = getFloat0(index);
+		if (f == null) {
+			throw new CommandException("Expected floating point at index " + index);
+		}
+		return f;
+	}
+
+	/**
+	 * Returns true if the {@link String} at the specified index is a float.
+	 *
+	 * @param index to check
+	 * @return true if string at specified index is a float
+	 */
+	public boolean isFloat(int index) {
+		return getFloat0(index) != null;
 	}
 
 	private Double getDouble0(int index) {
