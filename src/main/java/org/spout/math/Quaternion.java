@@ -71,6 +71,16 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 		return w;
 	}
 
+	/**
+	 * Multiplies the quaternion by the given scalar.
+	 *
+	 * @param a the scalar
+	 * @return the multiplied Quaternion
+	 */
+	public Quaternion mul(float a) {
+		return new Quaternion(x * a, y * a, z * a, w * a);
+	}
+
 	public Quaternion mul(Quaternion q) {
 		return mul(q.x, q.y, q.z, q.w);
 	}
@@ -87,6 +97,16 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 				this.w * w - this.x * x - this.y * y - this.z * z);
 	}
 
+	/**
+	 * Divides the quaternion by the given scalar.
+	 *
+	 * @param a the scalar
+	 * @return the divided Quaternion
+	 */
+	public Quaternion div(float a) {
+		return new Quaternion(x / a, y / a, z / a, w / a);
+	}
+
 	public Vector3 getDirection() {
 		return toRotationMatrix(3).transform(Vector3.FORWARD);
 	}
@@ -101,14 +121,14 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 		double yaw;
 		final double test = w * x - y * z;
 		if (Math.abs(test) < 0.4999) {
-			roll = Math.atan2(2 * (w * z + x * y), 1 - 2 * (x * x + z * z));
-			pitch = Math.asin(2 * test);
-			yaw = Math.atan2(2 * (w * y + z * x), 1 - 2 * (x * x + y * y));
+			roll = TrigMath.atan2(2 * (w * z + x * y), 1 - 2 * (x * x + z * z));
+			pitch = TrigMath.asin(2 * test);
+			yaw = TrigMath.atan2(2 * (w * y + z * x), 1 - 2 * (x * x + y * y));
 		} else {
 			final int sign = (test < 0) ? -1 : 1;
 			roll = 0;
 			pitch = sign * Math.PI / 2;
-			yaw = -sign * 2 * Math.atan2(z, w);
+			yaw = -sign * 2 * TrigMath.atan2(z, w);
 		}
 		if (yaw > 180) {
 			yaw -= 360;
@@ -116,6 +136,31 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 			yaw += 360;
 		}
 		return new Vector3(pitch, yaw, roll);
+	}
+
+	/**
+	 * Conjugate the quaternion <br> Conjugation of a quaternion <code>a</code> is an operation
+	 * returning quaternion <code>a'</code> such that <code>a' * a = a * a' = |a|²</code> where
+	 * <code>|a|²</code> is squared length of <code>a</code>.
+	 *
+	 * @return the conjugated Quaternion
+	 * @see Matrix#transpose()
+	 */
+	public Quaternion conjugate() {
+		return new Quaternion(-x, -y, -z, w);
+	}
+
+	/**
+	 * Invert the quaternion <br> Inversion of a quaternion <code>a</code> returns quaternion <code>a⁻ⁱ
+	 * = a' / |a|²</code> where <code>a'</code> is {@link #conjugate() conjugation} of <code>a</code>,
+	 * and <code>|a|²</code> is squared length of <code>a</code>. <br> For any quaternions <code>a, b,
+	 * c</code>, such that <code>a * b = c</code> equations <code>a⁻ⁱ * c = b</code> and <code>c * b⁻ⁱ
+	 * = a</code> are true.
+	 *
+	 * @return the inverted Quaternion
+	 */
+	public Quaternion invert() {
+		return conjugate().div(lengthSquared());
 	}
 
 	public float lengthSquared() {
@@ -209,7 +254,7 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 	}
 
 	public static Quaternion fromRotationTo(Vector3 from, Vector3 to) {
-		return Quaternion.fromAngleRadAxis(Math.acos(from.dot(to) / (from.length() * to.length())), from.cross(to));
+		return Quaternion.fromAngleRadAxis(TrigMath.acos(from.dot(to) / (from.length() * to.length())), from.cross(to));
 	}
 
 	public static Quaternion fromAngleDegAxis(double angle, Vector3 axis) {
@@ -241,8 +286,8 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 	}
 
 	public static Quaternion fromAngleRadAxis(float angle, float x, float y, float z) {
-		final double halfAngle = angle / 2;
-		final double q = Math.sin(halfAngle) / Math.sqrt(x * x + y * y + z * z);
-		return new Quaternion(x * q, y * q, z * q, Math.cos(halfAngle));
+		final float halfAngle = angle / 2;
+		final double q = TrigMath.sin(halfAngle) / Math.sqrt(x * x + y * y + z * z);
+		return new Quaternion(x * q, y * q, z * q, TrigMath.cos(halfAngle));
 	}
 }

@@ -60,6 +60,10 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 		return y;
 	}
 
+	public Complex mul(float a) {
+		return new Complex(x * a, y * a);
+	}
+
 	public Complex mul(Complex c) {
 		return mul(c.x, c.y);
 	}
@@ -74,16 +78,28 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 				this.x * y + this.y * x);
 	}
 
+	public Complex div(float a) {
+		return new Complex(x / a, y / a);
+	}
+
 	public Vector2 getDirection() {
 		return new Vector2(x, y);
 	}
 
 	public float getAngleRad() {
-		return (float) Math.atan2(x, y);
+		return (float) TrigMath.atan2(x, y);
 	}
 
 	public float getAngleDeg() {
 		return (float) Math.toDegrees(getAngleRad());
+	}
+
+	public Complex conjugate() {
+		return new Complex(x, -y);
+	}
+
+	public Complex invert() {
+		return conjugate().div(lengthSquared());
 	}
 
 	public float lengthSquared() {
@@ -145,7 +161,7 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 	}
 
 	public static Complex fromRotationTo(Vector2 from, Vector2 to) {
-		return fromAngleRad(Math.acos(from.dot(to) / (from.length() * to.length())));
+		return fromAngleRad(TrigMath.acos(from.dot(to) / (from.length() * to.length())));
 	}
 
 	public static Complex fromAngleDeg(double angle) {
@@ -161,6 +177,6 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 	}
 
 	public static Complex fromAngleRad(float angle) {
-		return new Complex((float) Math.cos(angle), (float) Math.sin(angle));
+		return new Complex(TrigMath.cos(angle), TrigMath.sin(angle));
 	}
 }

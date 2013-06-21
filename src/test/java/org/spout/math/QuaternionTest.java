@@ -195,4 +195,42 @@ public class QuaternionTest {
 		assertEquals(angles3.getY(), poleYaw, eps);
 		assertEquals(angles3.getZ(), poleRoll, eps);
 	}
+
+	@Test
+	public void testConjugateQuaternion() {
+		Quaternion a = new Quaternion(5, 3, 1, 1);
+		Quaternion b = a.conjugate();
+		testValues(b, -5, -3, -1, 1);
+		Quaternion res = b.mul(a);
+		testValues(res.normalize(), 0, 0, 0, 1);
+		assertEquals(b.lengthSquared(), res.length(), eps);
+
+		Quaternion res2 = a.mul(b);
+		testValues(res, res2.getX(), res2.getY(), res2.getZ(), res2.getW());
+	}
+
+	@Test
+	public void testInvertQuaternion() {
+		Quaternion a = new Quaternion(5, 3, 1, 1);
+		Quaternion b = new Quaternion(6, 4, 3, 2);
+		Quaternion c = a.mul(b);
+		Quaternion res = c.mul(b.invert());
+		testValues(res, a.getX(), a.getY(), a.getZ(), a.getW());
+	}
+
+	@Test
+	public void testMultiplyQuaternionFloat() {
+		Quaternion a = new Quaternion(5, 3, 1, 1);
+		float b = 2.5f;
+		Quaternion res = a.mul(b);
+		testValues(res, 5 * b, 3 * b, 1 * b, 1 * b);
+	}
+
+	@Test
+	public void testDivideQuaternionFloat() {
+		Quaternion a = new Quaternion(5, 3, 1, 1);
+		float b = 2.5f;
+		Quaternion res = a.div(b);
+		testValues(res, 5 / b, 3 / b, 1 / b, 1 / b);
+	}
 }

@@ -105,12 +105,12 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 		return new Vector2(this.x - x, this.y - y);
 	}
 
-	public Vector2 mul(double scale) {
-		return mul((float) scale);
+	public Vector2 mul(double a) {
+		return mul((float) a);
 	}
 
-	public Vector2 mul(float scale) {
-		return mul(scale, scale);
+	public Vector2 mul(float a) {
+		return mul(a, a);
 	}
 
 	public Vector2 mul(Vector2 v) {
@@ -248,6 +248,10 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 
 	public Vector toVector() {
 		return new Vector(x, y);
+	}
+
+	public float[] toArray() {
+		return new float[]{x, y};
 	}
 
 	public Matrix toScalingMatrix(int size) {

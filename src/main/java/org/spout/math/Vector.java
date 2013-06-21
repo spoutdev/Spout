@@ -112,15 +112,15 @@ public class Vector implements Comparable<Vector>, Serializable, Cloneable {
 		return d;
 	}
 
-	public Vector mul(double scale) {
-		return mul((float) scale);
+	public Vector mul(double a) {
+		return mul((float) a);
 	}
 
-	public Vector mul(float scale) {
+	public Vector mul(float a) {
 		final int size = size();
 		final Vector d = new Vector(size);
 		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = vec[comp] * scale;
+			d.vec[comp] = vec[comp] * a;
 		}
 		return d;
 	}

@@ -114,6 +114,17 @@ public class Matrix implements Serializable, Cloneable {
 		return d;
 	}
 
+	public Matrix mul(float a) {
+		final int size = size();
+		final Matrix d = new Matrix(size);
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
+				d.mat[row][col] = mat[row][col] * a;
+			}
+		}
+		return d;
+	}
+
 	public Matrix mul(Matrix m) {
 		final int size = size();
 		if (size != m.size()) {
@@ -127,6 +138,17 @@ public class Matrix implements Serializable, Cloneable {
 					dot += mat[row][i] * m.mat[i][col];
 				}
 				d.mat[row][col] = dot;
+			}
+		}
+		return d;
+	}
+
+	public Matrix div(float a) {
+		final int size = size();
+		final Matrix d = new Matrix(size);
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
+				d.mat[row][col] = mat[row][col] / a;
 			}
 		}
 		return d;
@@ -275,6 +297,15 @@ public class Matrix implements Serializable, Cloneable {
 			}
 		}
 		return d;
+	}
+
+	public float trace() {
+		final int size = size();
+		float trace = 0;
+		for (int rowCol = 0; rowCol < size; rowCol++) {
+			trace += mat[rowCol][rowCol];
+		}
+		return trace;
 	}
 
 	public float determinant() {

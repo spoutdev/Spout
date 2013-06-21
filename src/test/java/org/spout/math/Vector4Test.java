@@ -373,7 +373,7 @@ public class Vector4Test {
 	@Test
 	public void testToArray() {
 		Vector4 x = new Vector4(5, 3, 6, 7);
-		float[] r = x.toVector().toArray();
+		float[] r = x.toArray();
 		assertArrayEquals(new float[]{5, 3, 6, 7}, r, (float) eps);
 		doAssertDouble(5, r[0]);
 		doAssertDouble(3, r[1]);

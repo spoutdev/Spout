@@ -119,12 +119,12 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 		return new Vector3(this.x - x, this.y - y, this.z - z);
 	}
 
-	public Vector3 mul(double scale) {
-		return mul((float) scale);
+	public Vector3 mul(double a) {
+		return mul((float) a);
 	}
 
-	public Vector3 mul(float scale) {
-		return mul(scale, scale, scale);
+	public Vector3 mul(float a) {
+		return mul(a, a, a);
 	}
 
 	public Vector3 mul(Vector3 v) {
@@ -274,6 +274,10 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 
 	public Vector toVector() {
 		return new Vector(x, y, z);
+	}
+
+	public float[] toArray() {
+		return new float[]{x, y, z};
 	}
 
 	public Matrix toScalingMatrix(int size) {

@@ -345,7 +345,7 @@ public class Vector2Test {
 	@Test
 	public void testToArray() {
 		Vector2 x = new Vector2(5, 3);
-		float[] r = x.toVector().toArray();
+		float[] r = x.toArray();
 		assertArrayEquals(new float[]{5, 3}, r, (float) eps);
 		doAssertDouble(5, r[0]);
 		doAssertDouble(3, r[1]);
