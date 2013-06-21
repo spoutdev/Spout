@@ -32,8 +32,6 @@ import java.util.Arrays;
 public class Vector implements Comparable<Vector>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
 	private final float[] vec;
-	private transient volatile boolean hashed = false;
-	private transient volatile int hashCode = 0;
 
 	public Vector(int size) {
 		if (size < 2) {
@@ -338,11 +336,7 @@ public class Vector implements Comparable<Vector>, Serializable, Cloneable {
 
 	@Override
 	public int hashCode() {
-		if (!hashed) {
-			hashCode = 67 * 5 + Arrays.hashCode(vec);
-			hashed = true;
-		}
-		return hashCode;
+		return 67 * 5 + Arrays.hashCode(vec);
 	}
 
 	public float[] toArray() {
