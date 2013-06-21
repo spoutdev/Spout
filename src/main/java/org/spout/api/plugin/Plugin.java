@@ -27,10 +27,12 @@
 package org.spout.api.plugin;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.logging.Logger;
 
 import org.spout.api.Engine;
+import org.spout.api.exception.SpoutRuntimeException;
 import org.spout.api.lang.JavaPluginDictionary;
 import org.spout.api.lang.PluginDictionary;
 import org.spout.api.util.Named;
@@ -165,6 +167,23 @@ public abstract class Plugin implements Named {
 	 */
 	public final PluginDictionary getDictionary() {
 		return dictionary;
+	}
+
+	/**
+	 * Adds the specified file to the plugin's classpath.
+	 *
+	 * @param file to add
+	 */
+	public final void loadLibrary(File file) {
+		if (!file.exists())
+			throw new IllegalArgumentException("Specified file must exist.");
+		if (!file.getPath().endsWith(".jar"))
+			throw new IllegalArgumentException("Invalid library file.");
+		try {
+			classLoader.addURL(file.toURI().toURL());
+		} catch (MalformedURLException e) {
+			throw new SpoutRuntimeException("Failed to load library at: " + file.getPath(), e);
+		}
 	}
 
 	@Override
