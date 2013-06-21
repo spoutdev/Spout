@@ -45,7 +45,7 @@ public class Vector3Test {
 	}
 
 	private void testValue(Vector3 v, Vector3 v2) {
-		testValue(v, v2.x, v2.y, v2.z);
+		testValue(v, v2.getX(), v2.getY(), v2.getZ());
 	}
 
 	@Test
@@ -58,43 +58,39 @@ public class Vector3Test {
 		testValue(Vector3.UP, Vector3.UNIT_Y);
 		testValue(Vector3.UNIT_Z, 0, 0, 1);
 		testValue(Vector3.RIGHT, Vector3.UNIT_X);
-
-		assertEquals(Vector3.RIGHT.getRight(), 1, 0);
-		assertEquals(Vector3.UP.getUp(), 1, 0);
-		assertEquals(Vector3.FORWARD.getForward(), 1, 0);
 	}
 
 	@Test
 	public void testConstructors() {
 		Vector3 x = new Vector3(2f, 3f, 4f);
-		doAssertDouble("x.X does not equal 2f", 2f, x.x);
-		doAssertDouble("x.Y does not equal 3f", 3f, x.y);
-		doAssertDouble("x.Z does not equal 4f", 4f, x.z);
+		doAssertDouble("x.X does not equal 2f", 2f, x.getX());
+		doAssertDouble("x.Y does not equal 3f", 3f, x.getY());
+		doAssertDouble("x.Z does not equal 4f", 4f, x.getZ());
 
 		x = new Vector3(4f, 5f, 6f);
-		doAssertDouble("x.X does not equal 4f", 4f, x.x);
-		doAssertDouble("x.Y does not equal 5f", 5f, x.y);
-		doAssertDouble("x.Z does not equal 6f", 6f, x.z);
+		doAssertDouble("x.X does not equal 4f", 4f, x.getX());
+		doAssertDouble("x.Y does not equal 5f", 5f, x.getY());
+		doAssertDouble("x.Z does not equal 6f", 6f, x.getZ());
 
 		x = new Vector3(6d, 7d, 8d);
-		doAssertDouble("x.X does not equal 6f", 6f, x.x);
-		doAssertDouble("x.Y does not equal 7f", 7f, x.y);
-		doAssertDouble("x.Z does not equal 8f", 8f, x.z);
+		doAssertDouble("x.X does not equal 6f", 6f, x.getX());
+		doAssertDouble("x.Y does not equal 7f", 7f, x.getY());
+		doAssertDouble("x.Z does not equal 8f", 8f, x.getZ());
 
 		x = new Vector3(8, 9, 10);
-		doAssertDouble("x.X does not equal 8f", 8f, x.x);
-		doAssertDouble("x.Y does not equal 9f", 9f, x.y);
-		doAssertDouble("x.Z does not equal 10f", 10f, x.z);
+		doAssertDouble("x.X does not equal 8f", 8f, x.getX());
+		doAssertDouble("x.Y does not equal 9f", 9f, x.getY());
+		doAssertDouble("x.Z does not equal 10f", 10f, x.getZ());
 
 		Vector3 y = new Vector3(x);
-		doAssertDouble("y.X does not equal 8f", 8f, y.x);
-		doAssertDouble("y.Y does not equal 9f", 9f, y.y);
-		doAssertDouble("x.Z does not equal 10f", 10f, x.z);
+		doAssertDouble("y.X does not equal 8f", 8f, y.getX());
+		doAssertDouble("y.Y does not equal 9f", 9f, y.getY());
+		doAssertDouble("x.Z does not equal 10f", 10f, x.getZ());
 
 		x = new Vector3();
-		doAssertDouble("x.X does not equal 0", 0, x.x);
-		doAssertDouble("x.Y does not equal 0", 0, x.y);
-		doAssertDouble("x.Z does not equal 0", 0, x.z);
+		doAssertDouble("x.X does not equal 0", 0, x.getX());
+		doAssertDouble("x.Y does not equal 0", 0, x.getY());
+		doAssertDouble("x.Z does not equal 0", 0, x.getZ());
 	}
 
 	@Test
@@ -103,9 +99,9 @@ public class Vector3Test {
 		Vector3 b = new Vector3(2, 6, 4);
 		Vector3 c = a.add(b);
 
-		doAssertDouble("x.X does not equal 3", 3, c.x);
-		doAssertDouble("x.Y does not equal 5", 5, c.y);
-		doAssertDouble("x.Z does not equal 7", 7, c.z);
+		doAssertDouble("x.X does not equal 3", 3, c.getX());
+		doAssertDouble("x.Y does not equal 5", 5, c.getY());
+		doAssertDouble("x.Z does not equal 7", 7, c.getZ());
 	}
 
 	@Test
@@ -113,9 +109,9 @@ public class Vector3Test {
 		Vector3 a = new Vector3(1, -1, 4);
 		Vector3 c = a.add(2.0F, 6.0F, 8.0F);
 
-		doAssertDouble("x.X does not equal 3", 3, c.x);
-		doAssertDouble("x.Y does not equal 5", 5, c.y);
-		doAssertDouble("x.Z does not equal 12", 12, c.z);
+		doAssertDouble("x.X does not equal 3", 3, c.getX());
+		doAssertDouble("x.Y does not equal 5", 5, c.getY());
+		doAssertDouble("x.Z does not equal 12", 12, c.getZ());
 	}
 
 	@Test
@@ -123,9 +119,9 @@ public class Vector3Test {
 		Vector3 a = new Vector3(1, -1, -3);
 		Vector3 c = a.add(2.0D, 6.0D, 3.0D);
 
-		doAssertDouble("x.X does not equal 3", 3, c.x);
-		doAssertDouble("x.Y does not equal 5", 5, c.y);
-		doAssertDouble("x.Z does not equal 0", 0, c.z);
+		doAssertDouble("x.X does not equal 3", 3, c.getX());
+		doAssertDouble("x.Y does not equal 5", 5, c.getY());
+		doAssertDouble("x.Z does not equal 0", 0, c.getZ());
 	}
 
 	@Test
@@ -133,77 +129,77 @@ public class Vector3Test {
 		Vector3 a = new Vector3(1, -1, 2);
 		Vector3 c = a.add(2, 6, 3);
 
-		doAssertDouble("x.X does not equal 3", 3, c.x);
-		doAssertDouble("x.Y does not equal 5", 5, c.y);
-		doAssertDouble("x.Z does not equal 5", 5, c.z);
+		doAssertDouble("x.X does not equal 3", 3, c.getX());
+		doAssertDouble("x.Y does not equal 5", 5, c.getY());
+		doAssertDouble("x.Z does not equal 5", 5, c.getZ());
 	}
 
 	@Test
 	public void testSubtractVector3() {
 		Vector3 a = new Vector3(1, -1, 4);
 		Vector3 b = new Vector3(2, 6, 2);
-		Vector3 c = a.subtract(b);
+		Vector3 c = a.sub(b);
 
-		doAssertDouble("x.X does not equal -1", -1, c.x);
-		doAssertDouble("x.Y does not equal -7", -7, c.y);
-		doAssertDouble("x.Z does not equal 2", 2, c.z);
+		doAssertDouble("x.X does not equal -1", -1, c.getX());
+		doAssertDouble("x.Y does not equal -7", -7, c.getY());
+		doAssertDouble("x.Z does not equal 2", 2, c.getZ());
 	}
 
 	@Test
 	public void testSubtractFloat() {
 		Vector3 a = new Vector3(1, -1, 1);
-		Vector3 c = a.subtract(2.0F, 6.0F, 1.0F);
+		Vector3 c = a.sub(2.0F, 6.0F, 1.0F);
 
-		doAssertDouble("x.X does not equal -1", -1, c.x);
-		doAssertDouble("x.Y does not equal -7", -7, c.y);
-		doAssertDouble("x.Z does not equal 0", 0, c.z);
+		doAssertDouble("x.X does not equal -1", -1, c.getX());
+		doAssertDouble("x.Y does not equal -7", -7, c.getY());
+		doAssertDouble("x.Z does not equal 0", 0, c.getZ());
 	}
 
 	@Test
 	public void testSubtractDouble() {
 		Vector3 a = new Vector3(1, -1, 19.5);
-		Vector3 c = a.subtract(2.0D, 6.0D, 18.5D);
+		Vector3 c = a.sub(2.0D, 6.0D, 18.5D);
 
-		doAssertDouble("x.X does not equal -1", -1, c.x);
-		doAssertDouble("x.Y does not equal -7", -7, c.y);
-		doAssertDouble("x.Z does not equal 1", 1, c.z);
+		doAssertDouble("x.X does not equal -1", -1, c.getX());
+		doAssertDouble("x.Y does not equal -7", -7, c.getY());
+		doAssertDouble("x.Z does not equal 1", 1, c.getZ());
 	}
 
 	@Test
 	public void testSubtractInt() {
 		Vector3 a = new Vector3(1, -1, 4);
-		Vector3 c = a.subtract(2, 6, 3);
+		Vector3 c = a.sub(2, 6, 3);
 
-		doAssertDouble("x.X does not equal -1", -1, c.x);
-		doAssertDouble("x.Y does not equal -7", -7, c.y);
-		doAssertDouble("x.Z does not equal 1", 1, c.z);
+		doAssertDouble("x.X does not equal -1", -1, c.getX());
+		doAssertDouble("x.Y does not equal -7", -7, c.getY());
+		doAssertDouble("x.Z does not equal 1", 1, c.getZ());
 	}
 
 	@Test
 	public void testMultiplyVector3() {
 		Vector3 a = new Vector3(1, -1, 3);
 		Vector3 b = new Vector3(2, 6, -3);
-		Vector3 c = a.multiply(b);
+		Vector3 c = a.mul(b);
 
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -6", -6, c.y);
-		doAssertDouble("x.Z does not equal -9", -9, c.z);
+		doAssertDouble("x.X does not equal 2", 2, c.getX());
+		doAssertDouble("x.Y does not equal -6", -6, c.getY());
+		doAssertDouble("x.Z does not equal -9", -9, c.getZ());
 	}
 
 	@Test
 	public void testMultiplyFloat() {
 		Vector3 a = new Vector3(1, -1, 3.5);
-		Vector3 b = a.multiply(2.0F, 6.0F, 2.0F);
+		Vector3 b = a.mul(2.0F, 6.0F, 2.0F);
 
-		doAssertDouble("x.X does not equal 2", 2, b.x);
-		doAssertDouble("x.Y does not equal -6", -6, b.y);
-		doAssertDouble("x.Z does not equal 7", 7, b.z);
+		doAssertDouble("x.X does not equal 2", 2, b.getX());
+		doAssertDouble("x.Y does not equal -6", -6, b.getY());
+		doAssertDouble("x.Z does not equal 7", 7, b.getZ());
 
-		Vector3 c = a.multiply(2.0F);
+		Vector3 c = a.mul(2.0F);
 
-		doAssertDouble("x.X does not equal 2", 2, c.x);
-		doAssertDouble("x.Y does not equal -2", -2, c.y);
-		doAssertDouble("x.Z does not equal 7", 7, c.z);
+		doAssertDouble("x.X does not equal 2", 2, c.getX());
+		doAssertDouble("x.Y does not equal -2", -2, c.getY());
+		doAssertDouble("x.Z does not equal 7", 7, c.getZ());
 	}
 
 	@Test
@@ -219,7 +215,7 @@ public class Vector3Test {
 	@Test
 	public void testToVector2() {
 		Vector3 x = new Vector3(3, 5, 6);
-		Vector2 y = new Vector2(3, 6);
+		Vector2 y = new Vector2(3, 5);
 
 		assertTrue(x.toVector2().equals(y));
 	}
@@ -241,60 +237,60 @@ public class Vector3Test {
 	public void testCeil() {
 		Vector3 x = new Vector3(1.4, 0.2, 3.4);
 		Vector3 y = x.ceil();
-		doAssertDouble(2, y.x);
-		doAssertDouble(1, y.y);
-		doAssertDouble(4, y.z);
+		doAssertDouble(2, y.getX());
+		doAssertDouble(1, y.getY());
+		doAssertDouble(4, y.getZ());
 
 		x = new Vector3(5.5, -3.3, 2.1);
 		y = x.ceil();
-		doAssertDouble(6, y.x);
-		doAssertDouble(-3, y.y);
-		doAssertDouble(3, y.z);
+		doAssertDouble(6, y.getX());
+		doAssertDouble(-3, y.getY());
+		doAssertDouble(3, y.getZ());
 	}
 
 	@Test
 	public void testFloor() {
 		Vector3 x = new Vector3(1.4, 0.2, 3.4);
 		Vector3 y = x.floor();
-		doAssertDouble(1, y.x);
-		doAssertDouble(0, y.y);
-		doAssertDouble(3, y.z);
+		doAssertDouble(1, y.getX());
+		doAssertDouble(0, y.getY());
+		doAssertDouble(3, y.getZ());
 
 		x = new Vector3(5.5, -3.3, 2.1);
 		y = x.floor();
-		doAssertDouble(5, y.x);
-		doAssertDouble(-4, y.y);
-		doAssertDouble(2, y.z);
+		doAssertDouble(5, y.getX());
+		doAssertDouble(-4, y.getY());
+		doAssertDouble(2, y.getZ());
 	}
 
 	@Test
 	public void testRound() {
 		Vector3 x = new Vector3(1.4, 0.2, 3.4);
 		Vector3 y = x.round();
-		doAssertDouble(1, y.x);
-		doAssertDouble(0, y.y);
-		doAssertDouble(3, y.z);
+		doAssertDouble(1, y.getX());
+		doAssertDouble(0, y.getY());
+		doAssertDouble(3, y.getZ());
 
 		x = new Vector3(5.5, -3.3, 2.1);
 		y = x.round();
-		doAssertDouble(6, y.x);
-		doAssertDouble(-3, y.y);
-		doAssertDouble(2, y.z);
+		doAssertDouble(6, y.getX());
+		doAssertDouble(-3, y.getY());
+		doAssertDouble(2, y.getZ());
 	}
 
 	@Test
 	public void testAbs() {
 		Vector3 x = new Vector3(1.4, 0.2, 3.4);
 		Vector3 y = x.abs();
-		doAssertDouble(1.4, y.x);
-		doAssertDouble(0.2, y.y);
-		doAssertDouble(3.4, y.z);
+		doAssertDouble(1.4, y.getX());
+		doAssertDouble(0.2, y.getY());
+		doAssertDouble(3.4, y.getZ());
 
 		x = new Vector3(5.5, -3.3, 2.1);
 		y = x.abs();
-		doAssertDouble(5.5, y.x);
-		doAssertDouble(3.3, y.y);
-		doAssertDouble(2.1, y.z);
+		doAssertDouble(5.5, y.getX());
+		doAssertDouble(3.3, y.getY());
+		doAssertDouble(2.1, y.getZ());
 	}
 
 	@Test
@@ -310,15 +306,15 @@ public class Vector3Test {
 	public void testPow() {
 		Vector3 x = new Vector3(1.4, 0.2, 3.4);
 		Vector3 y = x.pow(3);
-		doAssertDouble(2.744, y.x);
-		doAssertDouble(0.008, y.y);
-		doAssertDouble(39.304, y.z);
+		doAssertDouble(2.744, y.getX());
+		doAssertDouble(0.008, y.getY());
+		doAssertDouble(39.304, y.getZ());
 
 		x = new Vector3(5.5, -3.3, 2.1);
 		y = x.pow(2);
-		doAssertDouble(30.25, y.x);
-		doAssertDouble(10.89, y.y);
-		doAssertDouble(4.41, y.z);
+		doAssertDouble(30.25, y.getX());
+		doAssertDouble(10.89, y.getY());
+		doAssertDouble(4.41, y.getZ());
 	}
 
 	@Test
@@ -351,7 +347,7 @@ public class Vector3Test {
 	@Test
 	public void testToArray() {
 		Vector3 x = new Vector3(5, 3, 7);
-		float[] r = x.toArray();
+		float[] r = x.toVector().toArray();
 		assertArrayEquals(new float[]{5, 3, 7}, r, (float) eps);
 		doAssertDouble(5, r[0]);
 		doAssertDouble(3, r[1]);
@@ -375,65 +371,33 @@ public class Vector3Test {
 	}
 
 	@Test
-	public void testHashCode() {
-		Vector3 x = new Vector3(5, 27, 2);
-		Vector3 y = new Vector3(5, -3, 3);
-		doAssertDouble(1541237003, x.hashCode());
-		doAssertDouble(-1591383797, y.hashCode());
-	}
-
-	@Test
 	public void testToString() {
 		Vector3 x = new Vector3(3, 5, 7.3);
-		assertEquals("{3.0, 5.0, 7.3}", x.toString());
+		assertEquals("(3.0, 5.0, 7.3)", x.toString());
 	}
 
 	@Test
 	public void testMin() {
 		Vector3 x = new Vector3(5, -15, 4);
 		Vector3 y = new Vector3(3, 2, 6);
-		assertEquals(new Vector3(3, -15, 4), Vector3.min(x, y));
+		assertEquals(new Vector3(3, -15, 4), x.min(y));
 	}
 
 	@Test
 	public void testMax() {
 		Vector3 x = new Vector3(5, -15, 4);
 		Vector3 y = new Vector3(3, 2, 6);
-		assertEquals(new Vector3(5, 2, 6), Vector3.max(x, y));
+		assertEquals(new Vector3(5, 2, 6), x.max(y));
 	}
 
 	@Test
-	public void testRand() {
-		for (int i = 0; i < 100; ++i) {
-			Vector3 x = Vector3.rand();
-			assertTrue(x.x >= -1);
-			assertTrue(x.x <= 1);
-			assertTrue(x.y >= -1);
-			assertTrue(x.y <= 1);
-			assertTrue(x.z >= -1);
-			assertTrue(x.z <= 1);
-		}
-	}
-
-	@Test
-	public void testTransformVector3Matrix() {
+	public void testTransformVector3() {
 		Vector3 x = new Vector3(1, 0, 0);
-		Vector3 u = x.transform(MatrixMath.createRotatedY(90));
+		Vector3 u = Matrix.createRotation(3, Quaternion.fromAngleDegAxis(90, Vector3.UNIT_Y)).transform(x);
 		testValue(u, 0, 0, -1);
 
 		Vector3 y = new Vector3(2, 4, 5);
-		Vector3 v = y.transform(MatrixMath.createRotatedX(30));
+		Vector3 v = Matrix.createRotation(3, Quaternion.fromAngleDegAxis(30, Vector3.UNIT_X)).transform(y);
 		testValue(v, 2, .9666f, 6.333f);
-	}
-
-	@Test
-	public void testTransformVector3Quaternion() {
-		Vector3 x = new Vector3(1, 0, 0);
-		Vector3 u = x.transform(new Quaternion(90, new Vector3(0, 1, 0)));
-		testValue(u, 0, 0, -1);
-
-		Vector3 y = new Vector3(2, 4, 5);
-		Vector3 v = y.transform(new Quaternion(30, new Vector3(1, 0, 0)));
-		testValue(v, 2, .964f, 6.328f);
 	}
 }

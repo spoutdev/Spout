@@ -88,19 +88,6 @@
 
 	<!-- Project dependencies -->
 	<dependencies>
-		<!-- Include in final JAR -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.trove4j</groupId>
-			<artifactId>trove4j</artifactId>
-			<version>3.0.3</version>
-			<scope>compile</scope>
-		</dependency>
 		<!-- Testing only -->
 		<dependency>
 			<groupId>junit</groupId>

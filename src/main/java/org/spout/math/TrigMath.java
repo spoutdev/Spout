@@ -27,8 +27,8 @@
 package org.spout.math;
 
 /**
- * A class designed for fast trigonometry operations. Sine, Cosine, Tangent,
- * Cotangent Secant and Cosecant use a sine float table.
+ * A class designed for fast trigonometry operations. Sine, cosine, tangent, cotangent secant and
+ * cosecant use a sine float table.
  */
 public class TrigMath {
 	// Constants
@@ -38,16 +38,18 @@ public class TrigMath {
 	public static final double QUARTER_PI = HALF_PI / 2;
 	public static final double TWO_PI = 2 * PI;
 	public static final double THREE_PI_HALVES = TWO_PI - HALF_PI;
-	public static final double DEGTORAD = PI / 180;
-	public static final double HALF_DEGTORAD = PI / 360;
-	public static final double RADTODEG = 180 / PI;
-	public static final double SQRTOFTWO = Math.sqrt(2);
-	public static final double HALF_SQRTOFTWO = SQRTOFTWO / 2;
+	public static final double DEG_TO_RAD = PI / 180;
+	public static final double HALF_DEG_TO_RAD = PI / 360;
+	public static final double RAD_TO_DEG = 180 / PI;
+	public static final double SQRT_OF_TWO = Math.sqrt(2);
+	public static final double HALF_SQRT_OF_TWO = SQRT_OF_TWO / 2;
 	// Trig
-	private static final BitSize SIN_SCALE = new BitSize(16); // used to compute the size and mask to use for sin
-	private static final float[] SIN_TABLE = new float[SIN_SCALE.SIZE];
-	private static float SIN_CONVERSION_FACTOR = (float) (SIN_SCALE.SIZE / TWO_PI);
-	private static final int COS_OFFSET = SIN_SCALE.SIZE / 4;
+	private static final int SIN_BITS = 16;
+	private static final int SIN_SIZE = 1 << SIN_BITS;
+	private static final int SIN_MASK = SIN_SIZE - 1;
+	private static final float[] SIN_TABLE = new float[SIN_SIZE];
+	private static final float SIN_CONVERSION_FACTOR = (float) (SIN_SIZE / TWO_PI);
+	private static final int COS_OFFSET = SIN_SIZE / 4;
 	// Arc trig
 	private static final double sq2p1 = 2.414213562373095048802;
 	private static final double sq2m1 = 0.414213562373095048802;
@@ -63,8 +65,8 @@ public class TrigMath {
 	private static final double q0 = 0.89678597403663861962481162E3;
 
 	static {
-		for (int i = 0; i < SIN_SCALE.SIZE; i++) {
-			SIN_TABLE[i] = (float) Math.sin((i * TWO_PI) / SIN_SCALE.SIZE);
+		for (int i = 0; i < SIN_SIZE; i++) {
+			SIN_TABLE[i] = (float) Math.sin((i * TWO_PI) / SIN_SIZE);
 		}
 	}
 
@@ -72,19 +74,18 @@ public class TrigMath {
 	}
 
 	private static float sinRaw(int idx) {
-		return SIN_TABLE[idx & SIN_SCALE.MASK];
+		return SIN_TABLE[idx & SIN_MASK];
 	}
 
 	private static float cosRaw(int idx) {
-		return SIN_TABLE[(idx + COS_OFFSET) & SIN_SCALE.MASK];
+		return SIN_TABLE[(idx + COS_OFFSET) & SIN_MASK];
 	}
 
 	/**
-	 * Tangent calculations using a table.<br> <i>sin(angle) /
-	 * cos(angle)</i><br><br>
+	 * Tangent calculations using a table.<br> <i>sin(angle) / cos(angle)</i><br><br>
 	 * <p/>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle in radians
 	 * @return the tangent of the angle
 	 */
@@ -94,11 +95,10 @@ public class TrigMath {
 	}
 
 	/**
-	 * Cotangent calculations using a table.<br> <i>cos(angle) /
-	 * sin(angle)</i><br><br>
+	 * Cotangent calculations using a table.<br> <i>cos(angle) / sin(angle)</i><br><br>
 	 * <p/>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle in radians
 	 * @return the cotangent of the angle
 	 */
@@ -110,8 +110,8 @@ public class TrigMath {
 	/**
 	 * Secant calculations using a table:<br> <i>1 / cos(angle)</i><br><br>
 	 * <p/>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle the angle in radians
 	 * @return the secant of the angle
 	 */
@@ -122,8 +122,8 @@ public class TrigMath {
 	/**
 	 * Cosecant calculations using a table.<br> <i>1 / sin(angle)</i><br><br>
 	 * <p/>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle the angle in radians
 	 * @return the cosecant of the angle
 	 */
@@ -132,11 +132,11 @@ public class TrigMath {
 	}
 
 	/**
-	 * Sinus calculation using a table.<br> For double-precision sin values, use
-	 * the MathHelper sin function<br><br>
+	 * Sinus calculation using a table.<br> For double-precision sin values, use the MathHelper sin
+	 * function<br><br>
 	 * <p/>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle the angle in radians
 	 * @return the sinus of the angle
 	 */
@@ -145,11 +145,11 @@ public class TrigMath {
 	}
 
 	/**
-	 * Cosinus calculation using a table.<br> For double-precision cos values,
-	 * use the MathHelper cos function<br><br>
+	 * Cosinus calculation using a table.<br> For double-precision cos values, use the MathHelper cos
+	 * function<br><br>
 	 * <p/>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle the angle in radians
 	 * @return the cosinus of the angle
 	 */
@@ -176,6 +176,7 @@ public class TrigMath {
 
 	/**
 	 * Calculates the arc tangent of the value specified
+	 *
 	 * @param value of the tangent
 	 * @return tangent arc in radians
 	 */
@@ -188,9 +189,9 @@ public class TrigMath {
 	}
 
 	/**
-	 * Computes the phase theta by computing an arc tangent of y/x<br> Gets the
-	 * yaw rotation component in radians when looking into the direction
-	 * specified
+	 * Computes the phase theta by computing an arc tangent of y/x<br> Gets the yaw rotation component
+	 * in radians when looking into the direction specified
+	 *
 	 * @param y direction
 	 * @param x direction
 	 * @return tangent arc in radians
@@ -211,8 +212,9 @@ public class TrigMath {
 	}
 
 	/**
-	 * Calculates the arc sinus of the value specified<br><br> Returns NaN if
-	 * the input value is outside the sinus range
+	 * Calculates the arc sinus of the value specified<br><br> Returns NaN if the input value is
+	 * outside the sinus range
+	 *
 	 * @param value of the sinus
 	 * @return sinus arc in radians
 	 */
@@ -232,8 +234,9 @@ public class TrigMath {
 	}
 
 	/**
-	 * Calculates the arc cosinus of the value specified<br><br> Returns NaN if
-	 * the input value is outside the cosinus range
+	 * Calculates the arc cosinus of the value specified<br><br> Returns NaN if the input value is
+	 * outside the cosinus range
+	 *
 	 * @param value of the cosinus
 	 * @return cosinus arc in radians
 	 */
@@ -246,8 +249,9 @@ public class TrigMath {
 	}
 
 	/**
-	 * Calculates the arc cotangent of the value specified<br><br> Returns NaN if
-	 * the input value is outside the cotangent range
+	 * Calculates the arc cotangent of the value specified<br><br> Returns NaN if the input value is
+	 * outside the cotangent range
+	 *
 	 * @param value of the secant
 	 * @return secant arc in radians
 	 */
@@ -262,8 +266,9 @@ public class TrigMath {
 	}
 
 	/**
-	 * Calculates the arc secant of the value specified<br><br> Returns NaN if
-	 * the input value is outside the secant range
+	 * Calculates the arc secant of the value specified<br><br> Returns NaN if the input value is
+	 * outside the secant range
+	 *
 	 * @param value of the secant
 	 * @return secant arc in radians
 	 */
@@ -275,8 +280,9 @@ public class TrigMath {
 	}
 
 	/**
-	 * Calculates the arc cosecant of the value specified<br><br> Returns NaN if
-	 * the input value is outside the cosecant range
+	 * Calculates the arc cosecant of the value specified<br><br> Returns NaN if the input value is
+	 * outside the cosecant range
+	 *
 	 * @param value of the cosecant
 	 * @return cosecant arc in radians
 	 */

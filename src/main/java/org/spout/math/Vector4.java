@@ -28,59 +28,41 @@ package org.spout.math;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import org.spout.math.util.StringUtil;
-
-/**
- * A 4-dimensional vector represented by float-precision x,y,z,w coordinates
- * <p/>
- * Note, this is the Immutable form of Vector4. All operations will construct a
- * new Vector4.
- */
-public class Vector4 implements Comparable<Vector4>, Serializable {
-	private static final long serialVersionUID = 1L;
-	/**
-	 * Represents the Zero vector (0, 0, 0, 0)
-	 */
-	public final static Vector4 ZERO = new Vector4(0, 0, 0, 0);
-	/**
-	 * Represents a unit vector (1, 1, 1, 1)
-	 */
-	public final static Vector4 ONE = new Vector4(1, 1, 1, 1);
-	/**
-	 * Represents a unit vector in the X direction (1, 0, 0, 0)
-	 */
-	public final static Vector4 UNIT_X = new Vector4(1, 0, 0, 0);
-	/**
-	 * Represents a unit vector in the Y direction (0, 1, 0, 0)
-	 */
-	public final static Vector4 UNIT_Y = new Vector4(0, 1, 0, 0);
-	/**
-	 * Represents a unit vector in the Z direction (0, 0, 1, 0)
-	 */
-	public final static Vector4 UNIT_Z = new Vector4(0, 0, 1, 0);
-	/**
-	 * Represents a unit vector in the W direction (0, 0, 1, 1)
-	 */
-	public final static Vector4 UNIT_W = new Vector4(0, 0, 0, 1);
-	/**
-	 * Hashcode caching
-	 */
+public class Vector4 implements Comparable<Vector4>, Serializable, Cloneable {
+	private static final long serialVersionUID = 1;
+	public static final Vector4 ZERO = new Vector4(0, 0, 0, 0);
+	public static final Vector4 ONE = new Vector4(1, 1, 1, 1);
+	public static final Vector4 UNIT_X = new Vector4(1, 0, 0, 0);
+	public static final Vector4 UNIT_Y = new Vector4(0, 1, 0, 0);
+	public static final Vector4 UNIT_Z = new Vector4(0, 0, 1, 0);
+	public static final Vector4 UNIT_W = new Vector4(0, 0, 0, 1);
+	private final float x;
+	private final float y;
+	private final float z;
+	private final float w;
 	private transient volatile boolean hashed = false;
-	private transient volatile int hashcode = 0;
-	protected final float x;
-	protected final float y;
-	protected final float z;
-	protected final float w;
+	private transient volatile int hashCode = 0;
 
-	/**
-	 * Constructs and initializes a Vector4 from the given x, y, z, w
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param w the w coordinate
-	 */
+	public Vector4() {
+		this(0, 0, 0, 0);
+	}
+
+	public Vector4(Vector2 v) {
+		this(v.getX(), v.getY(), 0, 0);
+	}
+
+	public Vector4(Vector3 v) {
+		this(v.getX(), v.getY(), v.getZ(), 0);
+	}
+
+	public Vector4(Vector4 v) {
+		this(v.x, v.y, v.z, v.w);
+	}
+
+	public Vector4(double x, double y, double z, double w) {
+		this((float) x, (float) y, (float) z, (float) w);
+	}
+
 	public Vector4(float x, float y, float z, float w) {
 		this.x = x;
 		this.y = y;
@@ -88,71 +70,18 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 		this.w = w;
 	}
 
-	/**
-	 * Constructs and initializes a Vector4 from the given x, y, z, w
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param w the w coordinate
-	 */
-	public Vector4(double x, double y, double z, double w) {
-		this((float) x, (float) y, (float) z, (float) w);
-	}
-
-	/**
-	 * Constructs and initializes a Vector4 from the given x, y, z, w
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param w the w coordinate
-	 */
-	public Vector4(int x, int y, int z, int w) {
-		this((float) x, (float) y, (float) z, (float) w);
-	}
-
-	/**
-	 * Constructs and initializes a Vector4 from an old Vector4
-	 * @param o
-	 */
-	public Vector4(Vector4 o) {
-		this(o.x, o.y, o.z, o.w);
-	}
-
-	/**
-	 * Constructs and initializes a Vector4 to (0,0)
-	 */
-	public Vector4() {
-		this(0, 0, 0, 0);
-	}
-
-	/**
-	 * Gets the X coordinate
-	 * @return The X coordinate
-	 */
 	public float getX() {
 		return x;
 	}
 
-	/**
-	 * Gets the Y coordinate
-	 * @return The Y coordinate
-	 */
 	public float getY() {
 		return y;
 	}
 
-	/**
-	 * Gets the Z coordinate
-	 * @return The Z coordinate
-	 */
 	public float getZ() {
 		return z;
 	}
 
-	/**
-	 * Gets the W coordinate
-	 * @return The W coordinate
-	 */
 	public float getW() {
 		return w;
 	}
@@ -173,610 +102,233 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 		return GenericMath.floor(w);
 	}
 
-	/**
-	 * Adds this Vector4 to the value of the Vector4 argument
-	 * @param that The Vector4 to add
-	 * @return the new Vector4
-	 */
-	public Vector4 add(Vector4 that) {
-		return Vector4.add(this, that);
+	public Vector4 add(Vector4 v) {
+		return add(v.x, v.y, v.z, v.w);
 	}
 
-	/**
-	 * Adds a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
-	public Vector4 add(float x, float y, float z, float w) {
-		return add(new Vector4(x, y, z, w));
-	}
-
-	/**
-	 * Adds a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
 	public Vector4 add(double x, double y, double z, double w) {
-		return add(new Vector4(x, y, z, w));
+		return add((float) x, (float) y, (float) z, (float) w);
 	}
 
-	/**
-	 * Adds a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
-	public Vector4 add(int x, int y, int z, int w) {
-		return add(new Vector4(x, y, z, w));
+	public Vector4 add(float x, float y, float z, float w) {
+		return new Vector4(this.x + x, this.y + y, this.z + z, this.w + w);
 	}
 
-	/**
-	 * Subtracts this Vector4 to the value of the Vector4 argument
-	 * @param that The Vector4 to subtract
-	 * @return the new Vector4
-	 */
-	public Vector4 subtract(Vector4 that) {
-		return Vector4.subtract(this, that);
+	public Vector4 sub(Vector4 v) {
+		return sub(v.x, v.y, v.z, v.w);
 	}
 
-	/**
-	 * Subtracts a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
-	public Vector4 subtract(float x, float y, float z, float w) {
-		return subtract(new Vector4(x, y, z, w));
+	public Vector4 sub(double x, double y, double z, double w) {
+		return sub((float) x, (float) y, (float) z, (float) w);
 	}
 
-	/**
-	 * Subtracts a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
-	public Vector4 subtract(double x, double y, double z, double w) {
-		return subtract(new Vector4(x, y, z, w));
+	public Vector4 sub(float x, float y, float z, float w) {
+		return new Vector4(this.x - x, this.y - y, this.z - z, this.w - w);
 	}
 
-	/**
-	 * Subtracts a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
-	public Vector4 subtract(int x, int y, int z, int w) {
-		return subtract(new Vector4(x, y, z, w));
+	public Vector4 mul(double scale) {
+		return mul((float) scale);
 	}
 
-	/**
-	 * Multiplies this Vector4 to the value of the Vector4 argument
-	 * @param that The Vector4 to multiply
-	 * @return the new Vector4
-	 */
-	public Vector4 multiply(Vector4 that) {
-		return Vector4.multiply(this, that);
+	public Vector4 mul(float scale) {
+		return mul(scale, scale, scale, scale);
 	}
 
-	/**
-	 * Multiplies a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
-	public Vector4 multiply(float x, float y, float z, float w) {
-		return multiply(new Vector4(x, y, z, w));
+	public Vector4 mul(Vector4 v) {
+		return mul(v.x, v.y, v.z, v.w);
 	}
 
-	/**
-	 * Multiplies a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
-	public Vector4 multiply(double x, double y, double z, double w) {
-		return multiply(new Vector4(x, y, z, w));
+	public Vector4 mul(double x, double y, double z, double w) {
+		return mul((float) x, (float) y, (float) z, (float) w);
 	}
 
-	/**
-	 * Multiplies a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
-	public Vector4 multiply(int x, int y, int z, int w) {
-		return multiply(new Vector4(x, y, z, w));
+	public Vector4 mul(float x, float y, float z, float w) {
+		return new Vector4(this.x * x, this.y * y, this.z * z, this.w * w);
 	}
 
-	/**
-	 * Multiplies a Vector4 by the given value
-	 * @param val
-	 * @return
-	 */
-	public Vector4 multiply(float val) {
-		return multiply(new Vector4(val, val, val, val));
+	public Vector4 div(Vector4 v) {
+		return div(v.x, v.y, v.z, v.w);
 	}
 
-	/**
-	 * Multiplies a Vector4 by the given value
-	 * @param val
-	 * @return
-	 */
-	public Vector4 multiply(double val) {
-		return multiply(new Vector4(val, val, val, val));
+	public Vector4 div(double x, double y, double z, double w) {
+		return div((float) x, (float) y, (float) z, (float) w);
 	}
 
-	/**
-	 * Multiplies a Vector4 by the given value
-	 * @param val
-	 * @return
-	 */
-	public Vector4 multiply(int val) {
-		return multiply(new Vector4(val, val, val, val));
+	public Vector4 div(float x, float y, float z, float w) {
+		return new Vector4(this.x / x, this.y / y, this.z / z, this.w / w);
 	}
 
-	/**
-	 * Divides the given Vector4 from this Vector4
-	 * @param that The Vector4 to divide
-	 * @return the new Vector4
-	 */
-	public Vector4 divide(Vector4 that) {
-		return Vector4.divide(this, that);
+	public float dot(Vector4 v) {
+		return dot(v.x, v.y, v.z, v.w);
 	}
 
-	/**
-	 * Divides a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
-	public Vector4 divide(float x, float y, float z, float w) {
-		return divide(new Vector4(x, y, z, w));
+	public float dot(double x, double y, double z, double w) {
+		return dot((float) x, (float) y, (float) z, (float) w);
 	}
 
-	/**
-	 * Divides a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
-	public Vector4 divide(double x, double y, double z, double w) {
-		return divide(new Vector4(x, y, z, w));
+	public float dot(float x, float y, float z, float w) {
+		return this.x * x + this.y * y + this.z * z + this.w * w;
 	}
 
-	/**
-	 * Divides a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
-	 */
-	public Vector4 divide(int x, int y, int z, int w) {
-		return divide(new Vector4(x, y, z, w));
-	}
-
-	/**
-	 * Divides a Vector4 by the given value
-	 * @param val
-	 * @return
-	 */
-	public Vector4 divide(float val) {
-		return divide(new Vector4(val, val, val, val));
-	}
-
-	/**
-	 * Divides a Vector4 by the given value
-	 * @param val
-	 * @return
-	 */
-	public Vector4 divide(double val) {
-		return divide(new Vector4(val, val, val, val));
-	}
-
-	/**
-	 * Divides a Vector4 by the given value
-	 * @param val
-	 * @return
-	 */
-	public Vector4 divide(int val) {
-		return divide(new Vector4(val, val, val, val));
-	}
-
-	/**
-	 * Returns this Vector4 dot the Vector4 argument. Dot Product is defined as
-	 * a.x*b.x + a.y*b.y
-	 * @param that The Vector4 to dot with this.
-	 * @return The dot product
-	 */
-	public float dot(Vector4 that) {
-		return Vector4.dot(this, that);
-	}
-
-	/**
-	 * Returns a Vector3 object with the x, y, z values from this Vector4
-	 * object.
-	 * @return
-	 */
-	public Vector3 toVector3() {
-		return Vector4.toVector3(this);
-	}
-
-	/**
-	 * Returns a Vector2 object with the x, y values from this Vector4 object.
-	 * @return
-	 */
-	public Vector2 toVector2() {
-		return Vector4.toVector2(this);
-	}
-
-	/**
-	 * Rounds the values of this Vector4 up to the nearest integer value.
-	 * @return
-	 */
-	public Vector4 ceil() {
-		return Vector4.ceil(this);
-	}
-
-	/**
-	 * Rounds the values of this Vector4 down to the nearest integer value.
-	 * @return
-	 */
-	public Vector4 floor() {
-		return Vector4.floor(this);
-	}
-
-	/**
-	 * Rounds the values of this Vector4 to the nearest integer value.
-	 * @return
-	 */
-	public Vector4 round() {
-		return Vector4.round(this);
-	}
-
-	/**
-	 * Sets the values of this Vector4 to their absolute value.
-	 * @return
-	 */
-	public Vector4 abs() {
-		return Vector4.abs(this);
-	}
-
-	/**
-	 * Gets the distance between this Vector4 and a given Vector4.
-	 * @param a
-	 * @return
-	 */
-	public double distance(Vector4 a) {
-		return Vector4.distance(a, this);
-	}
-
-	/**
-	 * Gets the distance between this Vector4 and a given Vector4.
-	 * @param a
-	 * @return
-	 */
-	public double distanceSquared(Vector4 a) {
-		return Vector4.distanceSquared(a, this);
-	}
-
-	/**
-	 * Raises the values of this Vector4 to the given power.
-	 * @param power
-	 * @return
-	 */
 	public Vector4 pow(double power) {
-		return Vector4.pow(this, power);
+		return pow((float) power);
 	}
 
-	/**
-	 * Calculates the length of this Vector4 squared.
-	 * @return the squared length
-	 */
+	public Vector4 pow(float power) {
+		return new Vector4(Math.pow(x, power), Math.pow(y, power), Math.pow(z, power), Math.pow(w, power));
+	}
+
+	public Vector4 ceil() {
+		return new Vector4(Math.ceil(x), Math.ceil(y), Math.ceil(z), Math.ceil(w));
+	}
+
+	public Vector4 floor() {
+		return new Vector4(GenericMath.floor(x), GenericMath.floor(y), GenericMath.floor(z), GenericMath.floor(w));
+	}
+
+	public Vector4 round() {
+		return new Vector4(Math.round(x), Math.round(y), Math.round(z), Math.round(w));
+	}
+
+	public Vector4 abs() {
+		return new Vector4(Math.abs(x), Math.abs(y), Math.abs(z), Math.abs(w));
+	}
+
+	public Vector4 negate() {
+		return new Vector4(-x, -y, -z, -w);
+	}
+
+	public Vector4 min(Vector4 v) {
+		return min(v.x, v.y, v.z, v.w);
+	}
+
+	public Vector4 min(double x, double y, double z, double w) {
+		return min((float) x, (float) y, (float) z, (float) w);
+	}
+
+	public Vector4 min(float x, float y, float z, float w) {
+		return new Vector4(Math.min(this.x, x), Math.min(this.y, y), Math.min(this.z, z), Math.min(this.w, w));
+	}
+
+	public Vector4 max(Vector4 v) {
+		return max(v.x, v.y, v.z, v.w);
+	}
+
+	public Vector4 max(double x, double y, double z, double w) {
+		return max((float) x, (float) y, (float) z, (float) w);
+	}
+
+	public Vector4 max(float x, float y, float z, float w) {
+		return new Vector4(Math.max(this.x, x), Math.max(this.y, y), Math.max(this.z, z), Math.max(this.w, w));
+	}
+
+	public float distanceSquared(Vector4 v) {
+		return distanceSquared(v.x, v.y, v.z, v.w);
+	}
+
+	public float distanceSquared(double x, double y, double z, double w) {
+		return distanceSquared((float) x, (float) y, (float) z, (float) w);
+	}
+
+	public float distanceSquared(float x, float y, float z, float w) {
+		return GenericMath.lengthSquared(this.x - x, this.y - y, this.z - z, this.w - w);
+	}
+
+	public float distance(Vector4 v) {
+		return distance(v.x, v.y, v.z, v.w);
+	}
+
+	public float distance(double x, double y, double z, double w) {
+		return distance((float) x, (float) y, (float) z, (float) w);
+	}
+
+	public float distance(float x, float y, float z, float w) {
+		return GenericMath.length(this.x - x, this.y - y, this.z - z, this.w - w);
+	}
+
 	public float lengthSquared() {
-		return Vector4.lengthSquared(this);
+		return GenericMath.lengthSquared(x, y, z, w);
 	}
 
-	/**
-	 * Calculates the length of this Vector4 Note: This makes use of the sqrt
-	 * function, and is not cached. That could affect performance
-	 * @return the length of this Vector4
-	 */
 	public float length() {
-		return Vector4.length(this);
+		return GenericMath.length(x, y, z, w);
 	}
 
-	/**
-	 * Returns this Vector4 where the length is equal to 1
-	 * @return This Vector4 with length 1
-	 */
 	public Vector4 normalize() {
-		return Vector4.normalize(this);
+		final float length = length();
+		return new Vector4(x / length, y / length, z / length, w / length);
 	}
 
-	/**
-	 * Returns this Vector4 in an array. Element 0 contains x Element 1 contains
-	 * y
-	 * @return The array containing this Vector4
-	 */
-	public float[] toArray() {
-		return Vector4.toArray(this);
+	public Vector2 toVector2() {
+		return new Vector2(x, y);
 	}
 
-	/**
-	 * Compares two Vector3s
-	 */
+	public Vector3 toVector3() {
+		return new Vector3(x, y, z);
+	}
+
+	public Vector toVector() {
+		return new Vector(x, y, z, w);
+	}
+
+	public Matrix toScalingMatrix(int size) {
+		return Matrix.createScaling(size, this);
+	}
+
+	public Matrix toTranslationMatrix(int size) {
+		return Matrix.createTranslation(size, this);
+	}
+
 	@Override
-	public int compareTo(Vector4 o) {
-		return Vector4.compareTo(this, o);
+	public int compareTo(Vector4 v) {
+		return (int) (lengthSquared() - v.lengthSquared());
 	}
 
-	/**
-	 * Checks if two Vector4s are equal
-	 */
 	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Vector4)) {
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof Vector4)) {
 			return false;
 		}
-		return this == o || compareTo(this, (Vector4) o) == 0;
+		final Vector4 other = (Vector4) obj;
+		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x)) {
+			return false;
+		}
+		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y)) {
+			return false;
+		}
+		if (Float.floatToIntBits(z) != Float.floatToIntBits(other.z)) {
+			return false;
+		}
+		if (Float.floatToIntBits(w) != Float.floatToIntBits(other.w)) {
+			return false;
+		}
+		return true;
 	}
 
-	/**
-	 * Generates a hashcode for this Vector
-	 */
 	@Override
 	public int hashCode() {
 		if (!hashed) {
-			hashcode = new HashCodeBuilder(7, 53).append(x).append(y).append(z).append(w).toHashCode();
+			int hash = 13;
+			hash = 83 * hash + Float.floatToIntBits(x);
+			hash = 83 * hash + Float.floatToIntBits(y);
+			hash = 83 * hash + Float.floatToIntBits(z);
+			hash = 83 * hash + Float.floatToIntBits(w);
+			hashCode = hash;
 			hashed = true;
 		}
-		return hashcode;
+		return hashCode;
+	}
+
+	@Override
+	public Vector4 clone() {
+		return new Vector4(this);
 	}
 
 	@Override
 	public String toString() {
-		return StringUtil.toString(this.x, this.y, this.z, this.w);
-	}
-
-	/**
-	 * Returns the length of the provided Vector4 Note: This makes use of the
-	 * sqrt function, and is not cached. This could affect performance.
-	 * @param a The Vector4 to calculate the length of
-	 * @return The length of the Vector4
-	 */
-	public static float length(Vector4 a) {
-		return (float) Math.sqrt(lengthSquared(a));
-	}
-
-	/**
-	 * Returns the length squared of the provided Vector4
-	 * @param a the Vector4 to calculate the length squared
-	 * @return the length squared of the Vector4
-	 */
-	public static float lengthSquared(Vector4 a) {
-		return Vector4.dot(a, a);
-	}
-
-	/**
-	 * Returns a Vector4 that is the unit form of the provided Vector4
-	 * @param a
-	 * @return
-	 */
-	public static Vector4 normalize(Vector4 a) {
-		return a.multiply(1.f / a.length());
-	}
-
-	/**
-	 * Adds one Vector4 to the other Vector4
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static Vector4 add(Vector4 a, Vector4 b) {
-		return new Vector4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
-	}
-
-	/**
-	 * Subtracts one Vector4 from the other Vector4
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static Vector4 subtract(Vector4 a, Vector4 b) {
-		return new Vector4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
-	}
-
-	/**
-	 * Multiplies one Vector4 by the other Vector4
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static Vector4 multiply(Vector4 a, Vector4 b) {
-		return new Vector4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
-	}
-
-	/**
-	 * Divides one Vector4 by the other Vector4
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static Vector4 divide(Vector4 a, Vector4 b) {
-		return new Vector4(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
-	}
-
-	/**
-	 * Calculates the Dot Product of two Vector4s Dot Product is defined as
-	 * a.x*b.x + a.y*b.y
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static float dot(Vector4 a, Vector4 b) {
-		return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
-	}
-
-	/**
-	 * Returns a Vector3 object with the x, y, z values from this Vector4
-	 * object.
-	 * @return
-	 */
-	public static Vector3 toVector3(Vector4 o) {
-		return new Vector3(o.x, o.y, o.z);
-	}
-
-	/**
-	 * Returns a Vector2 object with the x, y values from this Vector4 object.
-	 * @return
-	 */
-	public static Vector2 toVector2(Vector4 o) {
-		return new Vector2(o.x, o.y);
-	}
-
-	/**
-	 * Rounds the values of the given Vector4 up to the nearest integer value.
-	 * @param o Vector4 to use
-	 * @return
-	 */
-	public static Vector4 ceil(Vector4 o) {
-		return new Vector4(Math.ceil(o.x), Math.ceil(o.y), Math.ceil(o.z), Math.ceil(o.w));
-	}
-
-	/**
-	 * Rounds the values of the given Vector4 down to the nearest integer value.
-	 * @param o Vector4 to use
-	 * @return
-	 */
-	public static Vector4 floor(Vector4 o) {
-		return new Vector4(Math.floor(o.x), Math.floor(o.y), Math.floor(o.z), Math.floor(o.w));
-	}
-
-	/**
-	 * Rounds the values of the given Vector4 to the nearest integer value.
-	 * @param o Vector4 to use
-	 * @return
-	 */
-	public static Vector4 round(Vector4 o) {
-		return new Vector4(Math.round(o.x), Math.round(o.y), Math.round(o.z), Math.round(o.w));
-	}
-
-	/**
-	 * Sets the values of the given Vector4 to their absolute value.
-	 * @param o Vector4 to use
-	 * @return
-	 */
-	public static Vector4 abs(Vector4 o) {
-		return new Vector4(Math.abs(o.x), Math.abs(o.y), Math.abs(o.z), Math.abs(o.w));
-	}
-
-	/**
-	 * Returns a Vector4 containing the smallest values.
-	 * @param o1
-	 * @param o2
-	 * @return
-	 */
-	public static Vector4 min(Vector4 o1, Vector4 o2) {
-		return new Vector4(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y), Math.min(o1.z, o2.z), Math.min(o1.w, o2.w));
-	}
-
-	/**
-	 * Returns a Vector4 containing the largest values.
-	 * @param o1
-	 * @param o2
-	 * @return
-	 */
-	public static Vector4 max(Vector4 o1, Vector4 o2) {
-		return new Vector4(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y), Math.max(o1.z, o2.z), Math.max(o1.w, o2.w));
-	}
-
-	/**
-	 * Returns a Vector4 with random values (between 0 and 1)
-	 * @param o
-	 * @return
-	 */
-	public static Vector4 rand() {
-		double[] rands = new double[4];
-		for (int i = 0; i < 4; i++) {
-			rands[i] = Math.random() * 2 - 1;
-		}
-		return new Vector4(rands[0], rands[1], rands[2], rands[3]);
-	}
-
-	/**
-	 * Returns the provided Vector4 in an array.
-	 * @return The array containing the Vector4
-	 */
-	public static float[] toArray(Vector4 a) {
-		return new float[]{a.x, a.y, a.z, a.w};
-	}
-
-	/**
-	 * Compares two Vector3s
-	 */
-	public static int compareTo(Vector4 a, Vector4 b) {
-		return (int) a.lengthSquared() - (int) b.lengthSquared();
-	}
-
-	/**
-	 * Gets the distance between two Vector4.
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static double distance(Vector4 a, Vector4 b) {
-		return GenericMath.length(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
-	}
-
-	/**
-	 * Gets the squared distance between two Vector4.
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static double distanceSquared(Vector4 a, Vector4 b) {
-		return GenericMath.lengthSquared(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
-	}
-
-	/**
-	 * Raises the values of a Vector4 to the given power.
-	 * @param o
-	 * @param power
-	 * @return
-	 */
-	public static Vector4 pow(Vector4 o, double power) {
-		return new Vector4(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power), Math.pow(o.w, power));
-	}
-
-	/**
-	 * Checks if two Vector4s are equal
-	 */
-	public static boolean equals(Object a, Object b) {
-		return a.equals(b);
+		return "(" + x + ", " + y + ", " + z + ", " + w + ")";
 	}
 }

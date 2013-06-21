@@ -39,62 +39,62 @@ import static org.spout.math.TestUtils.eps;
 public class Vector4Test {
 	@Test
 	public void testUnits() {
-		doAssertDouble("ONE.x does not equal 1", 1, Vector4.ONE.x);
-		doAssertDouble("ONE.y does not equal 1", 1, Vector4.ONE.y);
-		doAssertDouble("ONE.z does not equal 1", 1, Vector4.ONE.z);
-		doAssertDouble("ONE.w does not equal 1", 1, Vector4.ONE.w);
+		doAssertDouble("ONE.getX() does not equal 1", 1, Vector4.ONE.getX());
+		doAssertDouble("ONE.getY() does not equal 1", 1, Vector4.ONE.getY());
+		doAssertDouble("ONE.getZ() does not equal 1", 1, Vector4.ONE.getZ());
+		doAssertDouble("ONE.getW() does not equal 1", 1, Vector4.ONE.getW());
 
-		doAssertDouble("ZERO.x does not equal 0", 0, Vector4.ZERO.x);
-		doAssertDouble("ZERO.y does not equal 0", 0, Vector4.ZERO.y);
-		doAssertDouble("ZERO.z does not equal 0", 0, Vector4.ZERO.z);
-		doAssertDouble("ZERO.w does not equal 0", 0, Vector4.ZERO.w);
+		doAssertDouble("ZERO.getX() does not equal 0", 0, Vector4.ZERO.getX());
+		doAssertDouble("ZERO.getY() does not equal 0", 0, Vector4.ZERO.getY());
+		doAssertDouble("ZERO.getZ() does not equal 0", 0, Vector4.ZERO.getZ());
+		doAssertDouble("ZERO.getW() does not equal 0", 0, Vector4.ZERO.getW());
 
-		doAssertDouble("UNIT_X.x does not equal 1", 1, Vector4.UNIT_X.x);
-		doAssertDouble("UNIT_X.y does not equal 0", 0, Vector4.UNIT_X.y);
-		doAssertDouble("UNIT_X.z does not equal 0", 0, Vector4.UNIT_X.z);
-		doAssertDouble("UNIT_X.w does not equal 0", 0, Vector4.UNIT_X.w);
+		doAssertDouble("UNIT_X.getX() does not equal 1", 1, Vector4.UNIT_X.getX());
+		doAssertDouble("UNIT_X.getY() does not equal 0", 0, Vector4.UNIT_X.getY());
+		doAssertDouble("UNIT_X.getZ() does not equal 0", 0, Vector4.UNIT_X.getZ());
+		doAssertDouble("UNIT_X.getW() does not equal 0", 0, Vector4.UNIT_X.getW());
 
-		doAssertDouble("UNIT_Y.x does not equal 0", 0, Vector4.UNIT_Y.x);
-		doAssertDouble("UNIT_Y.y does not equal 1", 1, Vector4.UNIT_Y.y);
-		doAssertDouble("UNIT_Y.z does not equal 0", 0, Vector4.UNIT_Y.z);
-		doAssertDouble("UNIT_Y.w does not equal 0", 0, Vector4.UNIT_Y.w);
+		doAssertDouble("UNIT_Y.getX() does not equal 0", 0, Vector4.UNIT_Y.getX());
+		doAssertDouble("UNIT_Y.getY() does not equal 1", 1, Vector4.UNIT_Y.getY());
+		doAssertDouble("UNIT_Y.getZ() does not equal 0", 0, Vector4.UNIT_Y.getZ());
+		doAssertDouble("UNIT_Y.getW() does not equal 0", 0, Vector4.UNIT_Y.getW());
 
-		doAssertDouble("UNIT_Z.x does not equal 0", 0, Vector4.UNIT_Z.x);
-		doAssertDouble("UNIT_Z.y does not equal 0", 0, Vector4.UNIT_Z.y);
-		doAssertDouble("UNIT_Z.z does not equal 1", 1, Vector4.UNIT_Z.z);
-		doAssertDouble("UNIT_Z.w does not equal 0", 0, Vector4.UNIT_Z.w);
+		doAssertDouble("UNIT_Z.getX() does not equal 0", 0, Vector4.UNIT_Z.getX());
+		doAssertDouble("UNIT_Z.getY() does not equal 0", 0, Vector4.UNIT_Z.getY());
+		doAssertDouble("UNIT_Z.getZ() does not equal 1", 1, Vector4.UNIT_Z.getZ());
+		doAssertDouble("UNIT_Z.getW() does not equal 0", 0, Vector4.UNIT_Z.getW());
 
-		doAssertDouble("UNIT_W.x does not equal 0", 0, Vector4.UNIT_W.x);
-		doAssertDouble("UNIT_W.y does not equal 0", 0, Vector4.UNIT_W.y);
-		doAssertDouble("UNIT_W.z does not equal 0", 0, Vector4.UNIT_W.z);
-		doAssertDouble("UNIT_W.w does not equal 1", 1, Vector4.UNIT_W.w);
+		doAssertDouble("UNIT_W.getX() does not equal 0", 0, Vector4.UNIT_W.getX());
+		doAssertDouble("UNIT_W.getY() does not equal 0", 0, Vector4.UNIT_W.getY());
+		doAssertDouble("UNIT_W.getZ() does not equal 0", 0, Vector4.UNIT_W.getZ());
+		doAssertDouble("UNIT_W.getW() does not equal 1", 1, Vector4.UNIT_W.getW());
 	}
 
 	@Test
 	public void testConstructors() {
 		Vector4 x = new Vector4(2f, 3f, 4f, 5f);
-		doAssertDouble("x.X does not equal 2f", 2f, x.x);
-		doAssertDouble("x.Y does not equal 3f", 3f, x.y);
-		doAssertDouble("x.Z does not equal 2f", 4f, x.z);
-		doAssertDouble("x.W does not equal 3f", 5f, x.w);
+		doAssertDouble("x.X does not equal 2f", 2f, x.getX());
+		doAssertDouble("x.Y does not equal 3f", 3f, x.getY());
+		doAssertDouble("x.Z does not equal 2f", 4f, x.getZ());
+		doAssertDouble("x.W does not equal 3f", 5f, x.getW());
 
 		x = new Vector4(6d, 7d, 8d, 9d);
-		doAssertDouble("x.X does not equal 6f", 6f, x.x);
-		doAssertDouble("x.Y does not equal 7f", 7f, x.y);
-		doAssertDouble("x.Z does not equal 8f", 8f, x.z);
-		doAssertDouble("x.W does not equal 9f", 9f, x.w);
+		doAssertDouble("x.X does not equal 6f", 6f, x.getX());
+		doAssertDouble("x.Y does not equal 7f", 7f, x.getY());
+		doAssertDouble("x.Z does not equal 8f", 8f, x.getZ());
+		doAssertDouble("x.W does not equal 9f", 9f, x.getW());
 
 		x = new Vector4(8, 9, 10, 11);
-		doAssertDouble("x.X does not equal 8f", 8f, x.x);
-		doAssertDouble("x.Y does not equal 9f", 9f, x.y);
-		doAssertDouble("x.X does not equal 10f", 10f, x.z);
-		doAssertDouble("x.Y does not equal 11f", 11f, x.w);
+		doAssertDouble("x.X does not equal 8f", 8f, x.getX());
+		doAssertDouble("x.Y does not equal 9f", 9f, x.getY());
+		doAssertDouble("x.X does not equal 10f", 10f, x.getZ());
+		doAssertDouble("x.Y does not equal 11f", 11f, x.getW());
 
 		Vector4 y = new Vector4(x);
-		doAssertDouble("y.X does not equal 8f", 8f, y.x);
-		doAssertDouble("y.Y does not equal 9f", 9f, y.y);
-		doAssertDouble("x.X does not equal 10f", 10f, x.z);
-		doAssertDouble("x.Y does not equal 11f", 11f, x.w);
+		doAssertDouble("y.X does not equal 8f", 8f, y.getX());
+		doAssertDouble("y.Y does not equal 9f", 9f, y.getY());
+		doAssertDouble("x.X does not equal 10f", 10f, x.getZ());
+		doAssertDouble("x.Y does not equal 11f", 11f, x.getW());
 
 		x = new Vector4();
 		assertEquals(x, Vector4.ZERO);
@@ -106,10 +106,10 @@ public class Vector4Test {
 		Vector4 b = new Vector4(2, 6, -2, 5);
 		Vector4 c = a.add(b);
 
-		doAssertDouble(3, c.x);
-		doAssertDouble(5, c.y);
-		doAssertDouble(1, c.z);
-		doAssertDouble(10, c.w);
+		doAssertDouble(3, c.getX());
+		doAssertDouble(5, c.getY());
+		doAssertDouble(1, c.getZ());
+		doAssertDouble(10, c.getW());
 	}
 
 	@Test
@@ -117,10 +117,10 @@ public class Vector4Test {
 		Vector4 a = new Vector4(1, -1, 3, 5);
 		Vector4 c = a.add(2f, 6f, -2f, 5f);
 
-		doAssertDouble(3, c.x);
-		doAssertDouble(5, c.y);
-		doAssertDouble(1, c.z);
-		doAssertDouble(10, c.w);
+		doAssertDouble(3, c.getX());
+		doAssertDouble(5, c.getY());
+		doAssertDouble(1, c.getZ());
+		doAssertDouble(10, c.getW());
 	}
 
 	@Test
@@ -128,10 +128,10 @@ public class Vector4Test {
 		Vector4 a = new Vector4(1, -1, 3, 5);
 		Vector4 c = a.add(2d, 6d, -2d, 5d);
 
-		doAssertDouble(3, c.x);
-		doAssertDouble(5, c.y);
-		doAssertDouble(1, c.z);
-		doAssertDouble(10, c.w);
+		doAssertDouble(3, c.getX());
+		doAssertDouble(5, c.getY());
+		doAssertDouble(1, c.getZ());
+		doAssertDouble(10, c.getW());
 	}
 
 	@Test
@@ -139,121 +139,121 @@ public class Vector4Test {
 		Vector4 a = new Vector4(1, -1, 3, 5);
 		Vector4 c = a.add(2, 6, -2, 5);
 
-		doAssertDouble(3, c.x);
-		doAssertDouble(5, c.y);
-		doAssertDouble(1, c.z);
-		doAssertDouble(10, c.w);
+		doAssertDouble(3, c.getX());
+		doAssertDouble(5, c.getY());
+		doAssertDouble(1, c.getZ());
+		doAssertDouble(10, c.getW());
 	}
 
 	@Test
 	public void testSubtractVector4() {
 		Vector4 a = new Vector4(1, -1, 4, -2);
 		Vector4 b = new Vector4(2, 6, 4, 1);
-		Vector4 c = a.subtract(b);
+		Vector4 c = a.sub(b);
 
-		doAssertDouble(-1, c.x);
-		doAssertDouble(-7, c.y);
-		doAssertDouble(0, c.z);
-		doAssertDouble(-3, c.w);
+		doAssertDouble(-1, c.getX());
+		doAssertDouble(-7, c.getY());
+		doAssertDouble(0, c.getZ());
+		doAssertDouble(-3, c.getW());
 	}
 
 	@Test
 	public void testSubtractFloat() {
 		Vector4 a = new Vector4(1, -1, 4, -2);
-		Vector4 c = a.subtract(2f, 6f, 4f, 1f);
+		Vector4 c = a.sub(2f, 6f, 4f, 1f);
 
-		doAssertDouble(-1, c.x);
-		doAssertDouble(-7, c.y);
-		doAssertDouble(0, c.z);
-		doAssertDouble(-3, c.w);
+		doAssertDouble(-1, c.getX());
+		doAssertDouble(-7, c.getY());
+		doAssertDouble(0, c.getZ());
+		doAssertDouble(-3, c.getW());
 	}
 
 	@Test
 	public void testSubtractDouble() {
 		Vector4 a = new Vector4(1, -1, 4, -2);
-		Vector4 c = a.subtract(2d, 6d, 4d, 1d);
+		Vector4 c = a.sub(2d, 6d, 4d, 1d);
 
-		doAssertDouble(-1, c.x);
-		doAssertDouble(-7, c.y);
-		doAssertDouble(0, c.z);
-		doAssertDouble(-3, c.w);
+		doAssertDouble(-1, c.getX());
+		doAssertDouble(-7, c.getY());
+		doAssertDouble(0, c.getZ());
+		doAssertDouble(-3, c.getW());
 	}
 
 	@Test
 	public void testSubtractInt() {
 		Vector4 a = new Vector4(1, -1, 4, -2);
-		Vector4 c = a.subtract(2, 6, 4, 1);
+		Vector4 c = a.sub(2, 6, 4, 1);
 
-		doAssertDouble(-1, c.x);
-		doAssertDouble(-7, c.y);
-		doAssertDouble(0, c.z);
-		doAssertDouble(-3, c.w);
+		doAssertDouble(-1, c.getX());
+		doAssertDouble(-7, c.getY());
+		doAssertDouble(0, c.getZ());
+		doAssertDouble(-3, c.getW());
 	}
 
 	@Test
 	public void testMultiplyVector4() {
 		Vector4 a = new Vector4(1, -1, 4, 2);
 		Vector4 b = new Vector4(2, 6, 4, 1);
-		Vector4 c = a.multiply(b);
+		Vector4 c = a.mul(b);
 
-		doAssertDouble(2, c.x);
-		doAssertDouble(-6, c.y);
-		doAssertDouble(16, c.z);
-		doAssertDouble(2, c.w);
+		doAssertDouble(2, c.getX());
+		doAssertDouble(-6, c.getY());
+		doAssertDouble(16, c.getZ());
+		doAssertDouble(2, c.getW());
 	}
 
 	@Test
 	public void testMultiplyFloat() {
 		Vector4 a = new Vector4(1, -1, 4, 2);
-		Vector4 b = a.multiply(2f, 6f, 4f, 1f);
+		Vector4 b = a.mul(2f, 6f, 4f, 1f);
 
-		doAssertDouble(2, b.x);
-		doAssertDouble(-6, b.y);
-		doAssertDouble(16, b.z);
-		doAssertDouble(2, b.w);
+		doAssertDouble(2, b.getX());
+		doAssertDouble(-6, b.getY());
+		doAssertDouble(16, b.getZ());
+		doAssertDouble(2, b.getW());
 
-		Vector4 c = a.multiply(2.0F);
+		Vector4 c = a.mul(2.0F);
 
-		doAssertDouble(2, c.x);
-		doAssertDouble(-2, c.y);
-		doAssertDouble(8, c.z);
-		doAssertDouble(4, c.w);
+		doAssertDouble(2, c.getX());
+		doAssertDouble(-2, c.getY());
+		doAssertDouble(8, c.getZ());
+		doAssertDouble(4, c.getW());
 	}
 
 	@Test
 	public void testMultiplyDouble() {
 		Vector4 a = new Vector4(1, -1, 4, 2);
-		Vector4 b = a.multiply(2d, 6d, 4d, 1d);
+		Vector4 b = a.mul(2d, 6d, 4d, 1d);
 
-		doAssertDouble(2, b.x);
-		doAssertDouble(-6, b.y);
-		doAssertDouble(16, b.z);
-		doAssertDouble(2, b.w);
+		doAssertDouble(2, b.getX());
+		doAssertDouble(-6, b.getY());
+		doAssertDouble(16, b.getZ());
+		doAssertDouble(2, b.getW());
 
-		Vector4 c = a.multiply(2.0d);
+		Vector4 c = a.mul(2.0d);
 
-		doAssertDouble(2, c.x);
-		doAssertDouble(-2, c.y);
-		doAssertDouble(8, c.z);
-		doAssertDouble(4, c.w);
+		doAssertDouble(2, c.getX());
+		doAssertDouble(-2, c.getY());
+		doAssertDouble(8, c.getZ());
+		doAssertDouble(4, c.getW());
 	}
 
 	@Test
 	public void testMultiplyInt() {
 		Vector4 a = new Vector4(1, -1, 4, 2);
-		Vector4 b = a.multiply(2, 6, 4, 1);
+		Vector4 b = a.mul(2, 6, 4, 1);
 
-		doAssertDouble(2, b.x);
-		doAssertDouble(-6, b.y);
-		doAssertDouble(16, b.z);
-		doAssertDouble(2, b.w);
+		doAssertDouble(2, b.getX());
+		doAssertDouble(-6, b.getY());
+		doAssertDouble(16, b.getZ());
+		doAssertDouble(2, b.getW());
 
-		Vector4 c = a.multiply(2.0);
+		Vector4 c = a.mul(2.0);
 
-		doAssertDouble(2, c.x);
-		doAssertDouble(-2, c.y);
-		doAssertDouble(8, c.z);
-		doAssertDouble(4, c.w);
+		doAssertDouble(2, c.getX());
+		doAssertDouble(-2, c.getY());
+		doAssertDouble(8, c.getZ());
+		doAssertDouble(4, c.getW());
 	}
 
 	@Test
@@ -278,40 +278,40 @@ public class Vector4Test {
 	public void testCeil() {
 		Vector4 x = new Vector4(1.4, -0.2, -2.4, 3.4);
 		Vector4 y = x.ceil();
-		doAssertDouble(2, y.x);
-		doAssertDouble(0, y.y);
-		doAssertDouble(-2, y.z);
-		doAssertDouble(4, y.w);
+		doAssertDouble(2, y.getX());
+		doAssertDouble(0, y.getY());
+		doAssertDouble(-2, y.getZ());
+		doAssertDouble(4, y.getW());
 	}
 
 	@Test
 	public void testFloor() {
 		Vector4 x = new Vector4(1.4, -0.2, -2.4, 3.4);
 		Vector4 y = x.floor();
-		doAssertDouble(1, y.x);
-		doAssertDouble(-1, y.y);
-		doAssertDouble(-3, y.z);
-		doAssertDouble(3, y.w);
+		doAssertDouble(1, y.getX());
+		doAssertDouble(-1, y.getY());
+		doAssertDouble(-3, y.getZ());
+		doAssertDouble(3, y.getW());
 	}
 
 	@Test
 	public void testRound() {
 		Vector4 x = new Vector4(1.4, -0.2, -2.4, 3.4);
 		Vector4 y = x.round();
-		doAssertDouble(1, y.x);
-		doAssertDouble(0, y.y);
-		doAssertDouble(-2, y.z);
-		doAssertDouble(3, y.w);
+		doAssertDouble(1, y.getX());
+		doAssertDouble(0, y.getY());
+		doAssertDouble(-2, y.getZ());
+		doAssertDouble(3, y.getW());
 	}
 
 	@Test
 	public void testAbs() {
 		Vector4 x = new Vector4(1.4, -0.2, -2.4, 3.4);
 		Vector4 y = x.abs();
-		doAssertDouble(1.4, y.x);
-		doAssertDouble(0.2, y.y);
-		doAssertDouble(2.4, y.z);
-		doAssertDouble(3.4, y.w);
+		doAssertDouble(1.4, y.getX());
+		doAssertDouble(0.2, y.getY());
+		doAssertDouble(2.4, y.getZ());
+		doAssertDouble(3.4, y.getW());
 	}
 
 	@Test
@@ -329,24 +329,24 @@ public class Vector4Test {
 	public void testPow() {
 		Vector4 x = new Vector4(1, 2, 3, 4);
 		Vector4 y = x.pow(3);
-		doAssertDouble(1, y.x);
-		doAssertDouble(8, y.y);
-		doAssertDouble(27, y.z);
-		doAssertDouble(64, y.w);
+		doAssertDouble(1, y.getX());
+		doAssertDouble(8, y.getY());
+		doAssertDouble(27, y.getZ());
+		doAssertDouble(64, y.getW());
 
 		x = new Vector4(1, 2, 3, 4);
 		y = x.pow(2);
-		doAssertDouble(1, y.x);
-		doAssertDouble(4, y.y);
-		doAssertDouble(9, y.z);
-		doAssertDouble(16, y.w);
+		doAssertDouble(1, y.getX());
+		doAssertDouble(4, y.getY());
+		doAssertDouble(9, y.getZ());
+		doAssertDouble(16, y.getW());
 
 		x = new Vector4(25, 16, 9, 4);
 		y = x.pow(0.5);
-		doAssertDouble(5, y.x);
-		doAssertDouble(4, y.y);
-		doAssertDouble(3, y.z);
-		doAssertDouble(2, y.w);
+		doAssertDouble(5, y.getX());
+		doAssertDouble(4, y.getY());
+		doAssertDouble(3, y.getZ());
+		doAssertDouble(2, y.getW());
 	}
 
 	@Test
@@ -365,15 +365,15 @@ public class Vector4Test {
 	public void testNormalize() {
 		Vector4 x = new Vector4(3, 4, 5, 6);
 		Vector4 y = x.normalize();
-		doAssertDouble(0.323, y.x);
-		doAssertDouble(0.431, y.y);
+		doAssertDouble(0.323, y.getX());
+		doAssertDouble(0.431, y.getY());
 		doAssertDouble(1, y.length());
 	}
 
 	@Test
 	public void testToArray() {
 		Vector4 x = new Vector4(5, 3, 6, 7);
-		float[] r = x.toArray();
+		float[] r = x.toVector().toArray();
 		assertArrayEquals(new float[]{5, 3, 6, 7}, r, (float) eps);
 		doAssertDouble(5, r[0]);
 		doAssertDouble(3, r[1]);
@@ -400,45 +400,22 @@ public class Vector4Test {
 	}
 
 	@Test
-	public void testHashCode() {
-		Vector4 x = new Vector4(5, 27, 1, 2);
-		Vector4 y = new Vector4(5, -3, 0, 1);
-		doAssertDouble(-1677538473, x.hashCode());
-		doAssertDouble(2032847703, y.hashCode());
-	}
-
-	@Test
 	public void testToString() {
 		Vector4 x = new Vector4(3, 5, 0, 1);
-		assertEquals("{3.0, 5.0, 0.0, 1.0}", x.toString());
+		assertEquals("(3.0, 5.0, 0.0, 1.0)", x.toString());
 	}
 
 	@Test
 	public void testMin() {
 		Vector4 x = new Vector4(5, -15, 3, 1);
 		Vector4 y = new Vector4(3, 2, 5, -1);
-		assertEquals(new Vector4(3, -15, 3, -1), Vector4.min(x, y));
+		assertEquals(new Vector4(3, -15, 3, -1), x.min(y));
 	}
 
 	@Test
 	public void testMax() {
 		Vector4 x = new Vector4(5, -15, 3, 1);
 		Vector4 y = new Vector4(3, 2, 5, -1);
-		assertEquals(new Vector4(5, 2, 5, 1), Vector4.max(x, y));
-	}
-
-	@Test
-	public void testRand() {
-		for (int i = 0; i < 100; ++i) {
-			Vector4 x = Vector4.rand();
-			assertTrue(x.x >= -1);
-			assertTrue(x.x <= 1);
-			assertTrue(x.y >= -1);
-			assertTrue(x.y <= 1);
-			assertTrue(x.z >= -1);
-			assertTrue(x.z <= 1);
-			assertTrue(x.w >= -1);
-			assertTrue(x.w <= 1);
-		}
+		assertEquals(new Vector4(5, 2, 5, 1), x.max(y));
 	}
 }

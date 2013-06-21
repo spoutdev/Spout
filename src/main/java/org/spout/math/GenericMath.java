@@ -58,6 +58,31 @@ public class GenericMath {
 
 	/**
 	 * Calculates the squared length of all axis offsets given
+	 *
+	 * @param values of the axis to get the squared length of
+	 * @return the squared length
+	 */
+	public static float lengthSquared(float... values) {
+		float rval = 0;
+		for (float value : values) {
+			rval += value * value;
+		}
+		return rval;
+	}
+
+	/**
+	 * Calculates the length of all axis offsets given
+	 *
+	 * @param values of the axis to get the length of
+	 * @return the length
+	 */
+	public static float length(float... values) {
+		return (float) Math.sqrt(lengthSquared(values));
+	}
+
+	/**
+	 * Calculates the squared length of all axis offsets given
+	 *
 	 * @param values of the axis to get the squared length of
 	 * @return the squared length
 	 */
@@ -71,6 +96,7 @@ public class GenericMath {
 
 	/**
 	 * Calculates the length of all axis offsets given
+	 *
 	 * @param values of the axis to get the length of
 	 * @return the length
 	 */
@@ -80,6 +106,7 @@ public class GenericMath {
 
 	/**
 	 * Calculates the squared length of all axis offsets given
+	 *
 	 * @param values of the axis to get the squared length of
 	 * @return the squared length
 	 */
@@ -93,6 +120,7 @@ public class GenericMath {
 
 	/**
 	 * Calculates the length of all axis offsets given
+	 *
 	 * @param values of the axis to get the length of
 	 * @return the length
 	 */
@@ -101,8 +129,8 @@ public class GenericMath {
 	}
 
 	/**
-	 * Gets the difference between two angles This value is always positive (0 -
-	 * 180)
+	 * Gets the difference between two angles This value is always positive (0 - 180)
+	 *
 	 * @param angle1 The first angle
 	 * @param angle2 The second angle
 	 * @return the positive angle difference
@@ -112,8 +140,8 @@ public class GenericMath {
 	}
 
 	/**
-	 * Gets the difference between two radians This value is always positive (0
-	 * - PI)
+	 * Gets the difference between two radians This value is always positive (0 - PI)
+	 *
 	 * @param radian1 The first angle
 	 * @param radian2 The second angle
 	 * @return the positive radian difference
@@ -124,6 +152,7 @@ public class GenericMath {
 
 	/**
 	 * Wraps the angle between -180 and 180 degrees
+	 *
 	 * @param angle to wrap
 	 * @return -180 < angle <= 180
 	 */
@@ -140,6 +169,7 @@ public class GenericMath {
 
 	/**
 	 * Wraps the pitch angle between -90 and 90 degrees
+	 *
 	 * @param angle to wrap
 	 * @return -90 < angle < 90
 	 */
@@ -157,6 +187,7 @@ public class GenericMath {
 
 	/**
 	 * Wraps a byte between 0 and 256
+	 *
 	 * @param value to wrap
 	 * @return 0 < byte < 256
 	 */
@@ -170,6 +201,7 @@ public class GenericMath {
 
 	/**
 	 * Wraps the radian between -PI and PI
+	 *
 	 * @param radian to wrap
 	 * @return -PI < radian <= PI
 	 */
@@ -186,6 +218,7 @@ public class GenericMath {
 
 	/**
 	 * Rounds a number to the amount of decimals specified
+	 *
 	 * @param input to round
 	 * @param decimals to round to
 	 * @return the rounded number
@@ -196,8 +229,8 @@ public class GenericMath {
 	}
 
 	/**
-	 * Calculates the linear interpolation between a and b with the given
-	 * percent
+	 * Calculates the linear interpolation between a and b with the given percent
+	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -208,8 +241,8 @@ public class GenericMath {
 	}
 
 	/**
-	 * Calculates the linear interpolation between a and b with the given
-	 * percent
+	 * Calculates the linear interpolation between a and b with the given percent
+	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -220,8 +253,8 @@ public class GenericMath {
 	}
 
 	/**
-	 * Calculates the linear interpolation between a and b with the given
-	 * percent
+	 * Calculates the linear interpolation between a and b with the given percent
+	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -232,31 +265,32 @@ public class GenericMath {
 	}
 
 	/**
-	 * Calculates the linear interpolation between a and b with the given
-	 * percent
+	 * Calculates the linear interpolation between a and b with the given percent
+	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
 	 * @return the interpolated vector
 	 */
 	public static Vector3 lerp(Vector3 a, Vector3 b, float percent) {
-		return a.multiply(1 - percent).add(b.multiply(percent));
+		return a.mul(1 - percent).add(b.mul(percent));
 	}
 
 	/**
-	 * Calculates the linear interpolation between a and b with the given
-	 * percent
+	 * Calculates the linear interpolation between a and b with the given percent
+	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
 	 * @return the interpolated vector
 	 */
 	public static Vector2 lerp(Vector2 a, Vector2 b, float percent) {
-		return a.multiply(1 - percent).add(b.multiply(percent));
+		return a.mul(1 - percent).add(b.mul(percent));
 	}
 
 	/**
 	 * Calculates the value at x using linear interpolation
+	 *
 	 * @param x the X coord of the value to interpolate
 	 * @param x1 the X coord of q0
 	 * @param x2 the X coord of q1
@@ -269,8 +303,8 @@ public class GenericMath {
 	}
 
 	/**
-	 * Calculates the linear interpolation between a and b with the given
-	 * percent
+	 * Calculates the linear interpolation between a and b with the given percent
+	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -285,8 +319,8 @@ public class GenericMath {
 	}
 
 	/**
-	 * Calculates the linear interpolation between a and b with the given
-	 * percent
+	 * Calculates the linear interpolation between a and b with the given percent
+	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -297,11 +331,12 @@ public class GenericMath {
 		float y = lerp(a.getY(), b.getY(), percent);
 		float z = lerp(a.getZ(), b.getZ(), percent);
 		float w = lerp(a.getW(), b.getW(), percent);
-		return new Quaternion(x, y, z, w, true);
+		return new Quaternion(x, y, z, w);
 	}
 
 	/**
 	 * Calculates the value at x,y using bilinear interpolation
+	 *
 	 * @param x the X coord of the value to interpolate
 	 * @param y the Y coord of the value to interpolate
 	 * @param q00 the first known value (x1, y1)
@@ -323,6 +358,7 @@ public class GenericMath {
 
 	/**
 	 * Calculates the value at a target using bilinear interpolation
+	 *
 	 * @param target the vector of the value to interpolate
 	 * @param q00 the first known value (known1.x, known1.y)
 	 * @param q01 the second known value (known1.x, known2.y)
@@ -340,6 +376,7 @@ public class GenericMath {
 
 	/**
 	 * Calculates the value at x,y,z using trilinear interpolation
+	 *
 	 * @param x the X coord of the value to interpolate
 	 * @param y the Y coord of the value to interpolate
 	 * @param z the Z coord of the value to interpolate
@@ -373,6 +410,7 @@ public class GenericMath {
 
 	/**
 	 * Calculates the value at target using trilinear interpolation
+	 *
 	 * @param target the vector of the value to interpolate
 	 * @param q000 the first known value (known1.x, known1.y, known1.z)
 	 * @param q001 the second known value (known1.x, known2.y, known1.z)
@@ -382,10 +420,10 @@ public class GenericMath {
 	 * @param q101 the sixth known value (known2.x, known2.y, known1.z)
 	 * @param q110 the seventh known value (known2.x, known1.y, known2.z)
 	 * @param q111 the eighth known value (known2.x, known2.y, known2.z)
-	 * @param known1 the X coord of q000, q001, q010 and q011, the Y coord of
-	 * q000, q010, q100 and q110 and the Z coord of q000, q001, q100 and q101
-	 * @param known2 the X coord of q100, q101, q110 and q111, the Y coord of
-	 * q001, q011, q101 and q111 and the Z coord of q010, q011, q110 and q111
+	 * @param known1 the X coord of q000, q001, q010 and q011, the Y coord of q000, q010, q100 and q110
+	 * and the Z coord of q000, q001, q100 and q101
+	 * @param known2 the X coord of q100, q101, q110 and q111, the Y coord of q001, q011, q101 and q111
+	 * and the Z coord of q010, q011, q110 and q111
 	 * @return the interpolated value
 	 */
 	public static double triLerp(Vector3 target, double q000, double q001, double q010,
@@ -396,6 +434,7 @@ public class GenericMath {
 
 	/**
 	 * Blends two colors into one.
+	 *
 	 * @param a The first color
 	 * @param b The second color
 	 * @return The blended color
@@ -410,6 +449,7 @@ public class GenericMath {
 
 	/**
 	 * Generates a random color
+	 *
 	 * @return Random color
 	 */
 	public static Color randomColor() {
@@ -419,6 +459,7 @@ public class GenericMath {
 
 	/**
 	 * Clamps the value between the low and high boundaries
+	 *
 	 * @param value The value to clamp
 	 * @param low The low bound of the clamp
 	 * @param high The high bound of the clamp
@@ -436,6 +477,7 @@ public class GenericMath {
 
 	/**
 	 * Clamps the value between the low and high boundaries
+	 *
 	 * @param value The value to clamp
 	 * @param low The low bound of the clamp
 	 * @param high The high bound of the clamp
@@ -453,6 +495,7 @@ public class GenericMath {
 
 	/**
 	 * Returns a fast estimate of the inverse square root of the value
+	 *
 	 * @param x The value
 	 * @return The estimate of the inverse square root
 	 */
@@ -463,9 +506,8 @@ public class GenericMath {
 	}
 
 	/**
-	 * <<<<<<< HEAD
-	 * =======
 	 * Returns a fast estimate of the square root of the value
+	 *
 	 * @param x The value
 	 * @return The estimate of the square root
 	 */
@@ -474,8 +516,8 @@ public class GenericMath {
 	}
 
 	/**
-	 * >>>>>>> scene
 	 * Rounds x down to the closest integer
+	 *
 	 * @param x The value to floor
 	 * @return The closest integer
 	 */
@@ -489,6 +531,7 @@ public class GenericMath {
 
 	/**
 	 * Rounds x down to the closest integer
+	 *
 	 * @param x The value to floor
 	 * @return The closest integer
 	 */
@@ -502,6 +545,7 @@ public class GenericMath {
 
 	/**
 	 * Gets the maximum byte value from two values
+	 *
 	 * @param value1 The first value
 	 * @param value2 The second value
 	 * @return the maximum of value1 and value2
@@ -512,6 +556,7 @@ public class GenericMath {
 
 	/**
 	 * Rounds an integer up to the next power of 2.
+	 *
 	 * @param x The integer to round
 	 * @return the lowest power of 2 greater or equal to x
 	 */
@@ -534,6 +579,7 @@ public class GenericMath {
 
 	/**
 	 * Rounds an integer up to the next power of 2.
+	 *
 	 * @param x The long to round
 	 * @return the lowest power of 2 greater or equal to x
 	 */
@@ -557,6 +603,7 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a float. May return null.
+	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a float
 	 */
@@ -578,6 +625,7 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a byte. May return null.
+	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a byte
 	 */
@@ -599,6 +647,7 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a short. May return null.
+	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a short
 	 */
@@ -620,6 +669,7 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to an integer. May return null.
+	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as an int
 	 */
@@ -641,6 +691,7 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a double. May return null.
+	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a double
 	 */
@@ -662,6 +713,7 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a long. May return null.
+	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a long
 	 */
@@ -683,6 +735,7 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a boolean. May return null.
+	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a boolean
 	 */
@@ -706,6 +759,7 @@ public class GenericMath {
 
 	/**
 	 * Calculates the mean of a set of values
+	 *
 	 * @param values to calculate the mean of
 	 * @return the mean of the values
 	 */
@@ -719,6 +773,7 @@ public class GenericMath {
 
 	/**
 	 * Calculates the mean of a set of values.
+	 *
 	 * @param values to calculate the mean of
 	 * @return the mean of the values
 	 */
@@ -731,8 +786,9 @@ public class GenericMath {
 	}
 
 	/**
-	 * Converts an integer to hexadecimal form with at least the minimum of
-	 * digits specified (by adding leading zeros).
+	 * Converts an integer to hexadecimal form with at least the minimum of digits specified (by adding
+	 * leading zeros).
+	 *
 	 * @param dec The integer to convert
 	 * @param minDigits The minimum of digits in the hexadecimal form
 	 * @return The integer in hexadecimal form
@@ -747,6 +803,7 @@ public class GenericMath {
 
 	/**
 	 * Returns the modulo of x by div with corrections for negative numbers.
+	 *
 	 * @param x The number as an int
 	 * @param div The div as an int
 	 * @return The corrected modulo
@@ -757,6 +814,7 @@ public class GenericMath {
 
 	/**
 	 * Returns the modulo of x by div with corrections for negative numbers.
+	 *
 	 * @param x The number as an float
 	 * @param div The div as an float
 	 * @return The corrected modulo
@@ -767,6 +825,7 @@ public class GenericMath {
 
 	/**
 	 * Returns the modulo of x by div with corrections for negative numbers.
+	 *
 	 * @param x The number as an double
 	 * @param div The div as an double
 	 * @return The corrected modulo
@@ -776,8 +835,9 @@ public class GenericMath {
 	}
 
 	/**
-	 * Gets a thread local Random object that is seeded using SecureRandom. Only
-	 * one Random is created per thread.
+	 * Gets a thread local Random object that is seeded using SecureRandom. Only one Random is created
+	 * per thread.
+	 *
 	 * @return The random for the thread
 	 */
 	public static Random getRandom() {

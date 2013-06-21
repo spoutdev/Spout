@@ -28,230 +28,221 @@ package org.spout.math;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneable {
+	private static final long serialVersionUID = 1;
+	public static final Quaternion IDENTITY = new Quaternion();
+	private final float x;
+	private final float y;
+	private final float z;
+	private final float w;
 
-import org.spout.math.util.StringUtil;
+	public Quaternion() {
+		this(0, 0, 0, 1);
+	}
 
-/**
- * Represents a rotation around a unit 4d circle.
- */
-public class Quaternion implements Serializable {
-	private static final long serialVersionUID = 1L;
-	protected final float x, y, z, w;
-	protected transient volatile Vector3 cachedAngle = null;
-	/**
-	 * Represents no rotation
-	 */
-	public static final Quaternion IDENTITY = new Quaternion(0, 0, 0, 1, true);
-	/**
-	 * Represents 90 degrees rotation around the x axis
-	 */
-	public static final Quaternion UNIT_X = new Quaternion(1, 0, 0, 0, true);
-	/**
-	 * Represents 90 degrees rotation around the < axis
-	 */
-	public static final Quaternion UNIT_Y = new Quaternion(0, 1, 0, 0, true);
-	/**
-	 * Represents 90 degrees rotation around the z axis
-	 */
-	public static final Quaternion UNIT_Z = new Quaternion(0, 0, 1, 0, true);
+	public Quaternion(Quaternion q) {
+		this(q.x, q.y, q.z, q.w);
+	}
 
-	/**
-	 * Constructs a new Quaternion with the given xyzw NOTE: This represents a
-	 * Unit Vector in 4d space. Do not use unless you know what you are doing.
-	 * If you want to create a normal rotation, use the angle/axis override.
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @param ignore Ignored. This is because float float float float should be
-	 * for angle/x,y,z
-	 */
-	public Quaternion(float x, float y, float z, float w, boolean ignore) {
+	public Quaternion(double x, double y, double z, double w) {
+		this((float) x, (float) y, (float) z, (float) w);
+	}
+
+	public Quaternion(float x, float y, float z, float w) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.w = w;
 	}
 
-	/**
-	 * Constructs a new Quaternion that represents a given rotation around an
-	 * arbitrary axis
-	 * @param angle Angle, in Degrees, to rotate the axis about by
-	 * @param x-axis
-	 * @param y-axis
-	 * @param z-axis
-	 */
-	public Quaternion(float angle, float x, float y, float z) {
-		double halfAngle = Math.toRadians(angle) / 2;
-		double q = Math.sin(halfAngle) / Math.sqrt(x * x + y * y + z * z);
-		this.x = (float) (x * q);
-		this.y = (float) (y * q);
-		this.z = (float) (z * q);
-		this.w = (float) Math.cos(halfAngle);
-	}
-
-	/**
-	 * Constructs a new Quaternion that represents a given rotation around an
-	 * arbitrary axis
-	 * @param angle Angle, in Degrees, to rotate the axis about by
-	 * @param axis
-	 */
-	public Quaternion(float angle, Vector3 axis) {
-		this(angle, axis.getX(), axis.getY(), axis.getZ());
-	}
-
-	/**
-	 * Copy Constructor
-	 */
-	public Quaternion(Quaternion rotation) {
-		this(rotation.x, rotation.y, rotation.z, rotation.w, false);
-	}
-
-	/**
-	 * Returns the X component of the quaternion
-	 * @return
-	 */
 	public float getX() {
 		return x;
 	}
 
-	/**
-	 * Returns the Y component of the quaternion
-	 * @return
-	 */
 	public float getY() {
 		return y;
 	}
 
-	/**
-	 * Returns the Z component of the quaternion
-	 * @return
-	 */
 	public float getZ() {
 		return z;
 	}
 
-	/**
-	 * Returns the W component of the quaternion
-	 * @return
-	 */
 	public float getW() {
 		return w;
 	}
 
-	public float getPitch() {
-		return getAxisAngles().getX();
+	public Quaternion mul(Quaternion q) {
+		return mul(q.x, q.y, q.z, q.w);
 	}
 
-	public float getYaw() {
-		return getAxisAngles().getY();
+	public Quaternion mul(double x, double y, double z, double w) {
+		return mul((float) x, (float) y, (float) z, (float) w);
 	}
 
-	public float getRoll() {
-		return getAxisAngles().getZ();
+	public Quaternion mul(float x, float y, float z, float w) {
+		return new Quaternion(
+				this.w * x + this.x * w + this.y * z - this.z * y,
+				this.w * y + this.y * w + this.z * x - this.x * z,
+				this.w * z + this.z * w + this.x * y - this.y * x,
+				this.w * w - this.x * x - this.y * y - this.z * z);
 	}
 
-	/**
-	 * Returns the direction this Quaternion is pointed at.
-	 * @return direction of Quaternion
-	 */
 	public Vector3 getDirection() {
-		return VectorMath.getDirection(this);
+		return toRotationMatrix(3).transform(Vector3.FORWARD);
 	}
 
-	/**
-	 * Returns the length squared of the quaternion
-	 * @return
-	 */
-	public float lengthSquared() {
-		return QuaternionMath.lengthSquared(this);
+	public Vector3 getAxesAngleDeg() {
+		return getAxesAnglesRad().mul(TrigMath.RAD_TO_DEG);
 	}
 
-	/**
-	 * Returns the length of the quaternion. Note: This uses square root, so is
-	 * slowish
-	 * @return
-	 */
-	public float length() {
-		return QuaternionMath.length(this);
-	}
-
-	/**
-	 * Returns this quaternion but length() == 1
-	 * @return
-	 */
-	public Quaternion normalize() {
-		return QuaternionMath.normalize(this);
-	}
-
-	/**
-	 * Multiplies this Quaternion by the other Quaternion
-	 * @param o
-	 * @return
-	 */
-	public Quaternion multiply(Quaternion o) {
-		return QuaternionMath.multiply(this, o);
-	}
-
-	/**
-	 * Creates and returns a new Quaternion that represnets this quaternion
-	 * rotated by the given Axis and Angle
-	 * @param angle
-	 * @param axis
-	 * @return rotated Quaternion
-	 */
-	public Quaternion rotate(float angle, Vector3 axis) {
-		return QuaternionMath.rotate(this, angle, axis);
-	}
-
-	/**
-	 * Creates and returns a new Quaternion that represnets this quaternion
-	 * rotated by the given Axis and Angle
-	 * @param angle
-	 * @param x axis
-	 * @param y axis
-	 * @param z axis
-	 * @return rotated Quaternion
-	 */
-	public Quaternion rotate(float angle, float x, float y, float z) {
-		return QuaternionMath.rotate(this, angle, x, y, z);
-	}
-
-	/**
-	 * Returns the angles about each axis of this quaternion stored in a Vector3
-	 * <p/>
-	 * vect.X = Rotation about the X axis (Roll) vect.Y = Rotation about the Y
-	 * axis (Yaw) vect.Z = Rotation about the Z axis (Pitch)
-	 * @return
-	 */
-	public Vector3 getAxisAngles() {
-		if (cachedAngle == null) {
-			cachedAngle = QuaternionMath.getAxisAngles(this);
+	public Vector3 getAxesAnglesRad() {
+		final double roll;
+		final double pitch;
+		double yaw;
+		final double test = w * x - y * z;
+		if (Math.abs(test) < 0.4999) {
+			roll = Math.atan2(2 * (w * z + x * y), 1 - 2 * (x * x + z * z));
+			pitch = Math.asin(2 * test);
+			yaw = Math.atan2(2 * (w * y + z * x), 1 - 2 * (x * x + y * y));
+		} else {
+			final int sign = (test < 0) ? -1 : 1;
+			roll = 0;
+			pitch = sign * Math.PI / 2;
+			yaw = -sign * 2 * Math.atan2(z, w);
 		}
-
-		return cachedAngle;
+		if (yaw > 180) {
+			yaw -= 360;
+		} else if (yaw < -180) {
+			yaw += 360;
+		}
+		return new Vector3(pitch, yaw, roll);
 	}
 
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + StringUtil.toString(this.x, this.y, this.z, this.w);
+	public float lengthSquared() {
+		return GenericMath.lengthSquared(x, y, z, w);
+	}
+
+	public float length() {
+		return GenericMath.length(x, y, z, w);
+	}
+
+	public Quaternion normalize() {
+		final float length = length();
+		return new Quaternion(x / length, y / length, z / length, w / length);
+	}
+
+	public Matrix toRotationMatrix(int size) {
+		return Matrix.createRotation(size, this);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof Quaternion)) {
-			return false;
-		}
 		if (obj == this) {
 			return true;
 		}
-		Quaternion q = (Quaternion) obj;
-		return this.w == q.w && this.x == q.x && this.y == q.y && this.z == q.z;
+		if (!(obj instanceof Quaternion)) {
+			return false;
+		}
+		final Quaternion other = (Quaternion) obj;
+		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x)) {
+			return false;
+		}
+		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y)) {
+			return false;
+		}
+		if (Float.floatToIntBits(z) != Float.floatToIntBits(other.z)) {
+			return false;
+		}
+		if (Float.floatToIntBits(w) != Float.floatToIntBits(other.w)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(41, 63).append(w).append(x).append(y).append(z).toHashCode();
+		int hash = 3;
+		hash = 59 * hash + Float.floatToIntBits(x);
+		hash = 59 * hash + Float.floatToIntBits(y);
+		hash = 59 * hash + Float.floatToIntBits(z);
+		hash = 59 * hash + Float.floatToIntBits(w);
+		return hash;
+	}
+
+	@Override
+	public int compareTo(Quaternion q) {
+		return (int) (lengthSquared() - q.lengthSquared());
+	}
+
+	@Override
+	public Quaternion clone() {
+		return new Quaternion(this);
+	}
+
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + ", " + z + ", " + w + ")";
+	}
+
+	public static Quaternion fromAxesAnglesDeg(double pitch, double yaw, double roll) {
+		return fromAxesAnglesDeg((float) pitch, (float) yaw, (float) roll);
+	}
+
+	public static Quaternion fromAxesAnglesRad(double pitch, double yaw, double roll) {
+		return fromAxesAnglesRad((float) pitch, (float) yaw, (float) roll);
+	}
+
+	public static Quaternion fromAxesAnglesDeg(float pitch, float yaw, float roll) {
+		return Quaternion.fromAngleDegAxis(yaw, Vector3.UNIT_Y).
+				mul(Quaternion.fromAngleDegAxis(pitch, Vector3.UNIT_X)).
+				mul(Quaternion.fromAngleDegAxis(roll, Vector3.UNIT_Z));
+	}
+
+	public static Quaternion fromAxesAnglesRad(float pitch, float yaw, float roll) {
+		return Quaternion.fromAngleRadAxis(yaw, Vector3.UNIT_Y).
+				mul(Quaternion.fromAngleRadAxis(pitch, Vector3.UNIT_X)).
+				mul(Quaternion.fromAngleRadAxis(roll, Vector3.UNIT_Z));
+	}
+
+	public static Quaternion fromRotationTo(Vector3 from) {
+		return Quaternion.fromRotationTo(from, Vector3.UNIT_Z);
+	}
+
+	public static Quaternion fromRotationTo(Vector3 from, Vector3 to) {
+		return Quaternion.fromAngleRadAxis(Math.acos(from.dot(to) / (from.length() * to.length())), from.cross(to));
+	}
+
+	public static Quaternion fromAngleDegAxis(double angle, Vector3 axis) {
+		return fromAngleRadAxis(Math.toRadians(angle), axis);
+	}
+
+	public static Quaternion fromAngleRadAxis(double angle, Vector3 axis) {
+		return fromAngleRadAxis((float) angle, axis);
+	}
+
+	public static Quaternion fromAngleDegAxis(float angle, Vector3 axis) {
+		return fromAngleRadAxis((float) Math.toRadians(angle), axis);
+	}
+
+	public static Quaternion fromAngleRadAxis(float angle, Vector3 axis) {
+		return fromAngleRadAxis(angle, axis.getX(), axis.getY(), axis.getZ());
+	}
+
+	public static Quaternion fromAngleDegAxis(double angle, double x, double y, double z) {
+		return fromAngleRadAxis(Math.toDegrees(angle), x, y, z);
+	}
+
+	public static Quaternion fromAngleRadAxis(double angle, double x, double y, double z) {
+		return fromAngleRadAxis((float) angle, (float) x, (float) y, (float) z);
+	}
+
+	public static Quaternion fromAngleDegAxis(float angle, float x, float y, float z) {
+		return fromAngleRadAxis((float) Math.toRadians(angle), x, y, z);
+	}
+
+	public static Quaternion fromAngleRadAxis(float angle, float x, float y, float z) {
+		final double halfAngle = angle / 2;
+		final double q = Math.sin(halfAngle) / Math.sqrt(x * x + y * y + z * z);
+		return new Quaternion(x * q, y * q, z * q, Math.cos(halfAngle));
 	}
 }
