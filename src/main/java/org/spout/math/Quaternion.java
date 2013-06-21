@@ -119,11 +119,11 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 	}
 
 	public float lengthSquared() {
-		return GenericMath.lengthSquared(x, y, z, w);
+		return GenericMath.lengthSquaredF(x, y, z, w);
 	}
 
 	public float length() {
-		return GenericMath.length(x, y, z, w);
+		return GenericMath.lengthF(x, y, z, w);
 	}
 
 	public Quaternion normalize() {

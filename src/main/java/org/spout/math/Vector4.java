@@ -231,7 +231,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable, Cloneable {
 	}
 
 	public float distanceSquared(float x, float y, float z, float w) {
-		return GenericMath.lengthSquared(this.x - x, this.y - y, this.z - z, this.w - w);
+		return GenericMath.lengthSquaredF(this.x - x, this.y - y, this.z - z, this.w - w);
 	}
 
 	public float distance(Vector4 v) {
@@ -243,15 +243,15 @@ public class Vector4 implements Comparable<Vector4>, Serializable, Cloneable {
 	}
 
 	public float distance(float x, float y, float z, float w) {
-		return GenericMath.length(this.x - x, this.y - y, this.z - z, this.w - w);
+		return GenericMath.lengthF(this.x - x, this.y - y, this.z - z, this.w - w);
 	}
 
 	public float lengthSquared() {
-		return GenericMath.lengthSquared(x, y, z, w);
+		return GenericMath.lengthSquaredF(x, y, z, w);
 	}
 
 	public float length() {
-		return GenericMath.length(x, y, z, w);
+		return GenericMath.lengthF(x, y, z, w);
 	}
 
 	public Vector4 normalize() {

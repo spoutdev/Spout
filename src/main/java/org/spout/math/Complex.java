@@ -87,11 +87,11 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 	}
 
 	public float lengthSquared() {
-		return GenericMath.lengthSquared(x, y);
+		return GenericMath.lengthSquaredF(x, y);
 	}
 
 	public float length() {
-		return GenericMath.length(x, y);
+		return GenericMath.lengthF(x, y);
 	}
 
 	public Complex normalize() {

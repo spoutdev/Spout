@@ -260,7 +260,7 @@ public class Vector implements Comparable<Vector>, Serializable, Cloneable {
 		for (int comp = 0; comp < size; comp++) {
 			d[comp] = vec[comp] - v[comp];
 		}
-		return GenericMath.lengthSquared(d);
+		return GenericMath.lengthSquaredF(d);
 	}
 
 	public float distance(Vector v) {
@@ -273,15 +273,15 @@ public class Vector implements Comparable<Vector>, Serializable, Cloneable {
 		for (int comp = 0; comp < size; comp++) {
 			d[comp] = vec[comp] - v[comp];
 		}
-		return GenericMath.length(d);
+		return GenericMath.lengthF(d);
 	}
 
 	public float lengthSquared() {
-		return GenericMath.lengthSquared(vec);
+		return GenericMath.lengthSquaredF(vec);
 	}
 
 	public float length() {
-		return GenericMath.length(vec);
+		return GenericMath.lengthF(vec);
 	}
 
 	public Vector normalize() {

@@ -210,7 +210,7 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 	}
 
 	public float distanceSquared(float x, float y) {
-		return GenericMath.lengthSquared(this.x - x, this.y - y);
+		return GenericMath.lengthSquaredF(this.x - x, this.y - y);
 	}
 
 	public float distance(Vector2 v) {
@@ -222,15 +222,15 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 	}
 
 	public float distance(float x, float y) {
-		return GenericMath.length(this.x - x, this.y - y);
+		return GenericMath.lengthF(this.x - x, this.y - y);
 	}
 
 	public float lengthSquared() {
-		return GenericMath.lengthSquared(x, y);
+		return GenericMath.lengthSquaredF(x, y);
 	}
 
 	public float length() {
-		return GenericMath.length(x, y);
+		return GenericMath.lengthF(x, y);
 	}
 
 	public Vector2 normalize() {

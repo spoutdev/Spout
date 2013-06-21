@@ -57,27 +57,13 @@ public class GenericMath {
 	}
 
 	/**
-	 * Calculates the squared length of all axis offsets given
-	 *
-	 * @param values of the axis to get the squared length of
-	 * @return the squared length
-	 */
-	public static float lengthSquared(float... values) {
-		float rval = 0;
-		for (float value : values) {
-			rval += value * value;
-		}
-		return rval;
-	}
-
-	/**
 	 * Calculates the length of all axis offsets given
 	 *
 	 * @param values of the axis to get the length of
 	 * @return the length
 	 */
-	public static float length(float... values) {
-		return (float) Math.sqrt(lengthSquared(values));
+	public static int lengthI(int... values) {
+		return (int) Math.sqrt(lengthSquaredI(values));
 	}
 
 	/**
@@ -86,31 +72,7 @@ public class GenericMath {
 	 * @param values of the axis to get the squared length of
 	 * @return the squared length
 	 */
-	public static double lengthSquared(double... values) {
-		double rval = 0;
-		for (double value : values) {
-			rval += value * value;
-		}
-		return rval;
-	}
-
-	/**
-	 * Calculates the length of all axis offsets given
-	 *
-	 * @param values of the axis to get the length of
-	 * @return the length
-	 */
-	public static double length(double... values) {
-		return Math.sqrt(lengthSquared(values));
-	}
-
-	/**
-	 * Calculates the squared length of all axis offsets given
-	 *
-	 * @param values of the axis to get the squared length of
-	 * @return the squared length
-	 */
-	public static int lengthSquared(int... values) {
+	public static int lengthSquaredI(int... values) {
 		int rval = 0;
 		for (int value : values) {
 			rval += value * value;
@@ -124,8 +86,46 @@ public class GenericMath {
 	 * @param values of the axis to get the length of
 	 * @return the length
 	 */
-	public static int length(int... values) {
-		return (int) Math.sqrt(lengthSquared(values));
+	public static float lengthF(float... values) {
+		return (float) Math.sqrt(lengthSquaredF(values));
+	}
+
+	/**
+	 * Calculates the squared length of all axis offsets given
+	 *
+	 * @param values of the axis to get the squared length of
+	 * @return the squared length
+	 */
+	public static float lengthSquaredF(float... values) {
+		float rval = 0;
+		for (float value : values) {
+			rval += value * value;
+		}
+		return rval;
+	}
+
+	/**
+	 * Calculates the length of all axis offsets given
+	 *
+	 * @param values of the axis to get the length of
+	 * @return the length
+	 */
+	public static double lengthD(double... values) {
+		return Math.sqrt(lengthSquaredD(values));
+	}
+
+	/**
+	 * Calculates the squared length of all axis offsets given
+	 *
+	 * @param values of the axis to get the squared length of
+	 * @return the squared length
+	 */
+	public static double lengthSquaredD(double... values) {
+		double rval = 0;
+		for (double value : values) {
+			rval += value * value;
+		}
+		return rval;
 	}
 
 	/**
