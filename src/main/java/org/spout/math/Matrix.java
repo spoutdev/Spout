@@ -77,6 +77,13 @@ public class Matrix implements Serializable, Cloneable {
 		}
 	}
 
+	public void setZero() {
+		final int size = size();
+		for (int row = 0; row < size; row++) {
+			Arrays.fill(mat[row], 0);
+		}
+	}
+
 	public Matrix resize(int size) {
 		final Matrix d = new Matrix(size);
 		size = Math.min(size, size());
@@ -421,14 +428,6 @@ public class Matrix implements Serializable, Cloneable {
 		return clone;
 	}
 
-	public static Matrix createScaling(int size, double scale) {
-		return createScaling(size, (float) scale);
-	}
-
-	public static Matrix createScaling(int size, float scale) {
-		return createScaling(size, adjustSize(new float[0], size, scale));
-	}
-
 	public static Matrix createScaling(int size, Vector2 v) {
 		return createScaling(size, v.getX(), v.getY());
 	}
@@ -438,7 +437,7 @@ public class Matrix implements Serializable, Cloneable {
 	}
 
 	public static Matrix createScaling(int size, Vector4 v) {
-		return createScaling(size, v.getX(), v.getY(), v.getW());
+		return createScaling(size, v.getX(), v.getY(), v.getZ(), v.getW());
 	}
 
 	public static Matrix createScaling(int size, Vector v) {
@@ -505,7 +504,7 @@ public class Matrix implements Serializable, Cloneable {
 		m.set(1, 1, 1 - 2 * rot.getX() * rot.getX() - 2 * rot.getZ() * rot.getZ());
 		m.set(1, 2, 2 * rot.getY() * rot.getZ() - 2 * rot.getW() * rot.getX());
 		m.set(2, 0, 2 * rot.getX() * rot.getZ() - 2 * rot.getW() * rot.getY());
-		m.set(2, 1, 2 * rot.getY() * rot.getZ() + 2.f * rot.getX() * rot.getW());
+		m.set(2, 1, 2 * rot.getY() * rot.getZ() + 2 * rot.getX() * rot.getW());
 		m.set(2, 2, 1 - 2 * rot.getX() * rot.getX() - 2 * rot.getY() * rot.getY());
 		return m;
 	}
@@ -537,8 +536,7 @@ public class Matrix implements Serializable, Cloneable {
 		mat.set(0, 2, -f.getX());
 		mat.set(1, 2, -f.getY());
 		mat.set(2, 2, -f.getZ());
-		final Matrix trans = createTranslation(size, eye.mul(-1));
-		return trans.mul(mat);
+		return mat.translate(eye.mul(-1));
 	}
 
 	/**
@@ -596,7 +594,12 @@ public class Matrix implements Serializable, Cloneable {
 		}
 
 		@Override
-		public void set(int col, int row, float val) {
+		public void set(int row, int col, float val) {
+			throw new UnsupportedOperationException("You may not alter this matrix");
+		}
+
+		@Override
+		public void setZero() {
 			throw new UnsupportedOperationException("You may not alter this matrix");
 		}
 	}

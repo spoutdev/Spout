@@ -50,7 +50,11 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 	}
 
 	public Vector3(Vector2 v) {
-		this(v.getX(), v.getY(), 0);
+		this(v, 0);
+	}
+
+	public Vector3(Vector2 v, float z) {
+		this(v.getX(), v.getY(), z);
 	}
 
 	public Vector3(Vector3 v) {
@@ -269,7 +273,15 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 	}
 
 	public Vector4 toVector4() {
-		return new Vector4(x, y, z, 0);
+		return toVector4(0);
+	}
+
+	public Vector4 toVector4(double w) {
+		return toVector4((float) w);
+	}
+
+	public Vector4 toVector4(float w) {
+		return new Vector4(this, w);
 	}
 
 	public Vector toVector() {

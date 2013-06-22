@@ -48,11 +48,19 @@ public class Vector4 implements Comparable<Vector4>, Serializable, Cloneable {
 	}
 
 	public Vector4(Vector2 v) {
-		this(v.getX(), v.getY(), 0, 0);
+		this(v, 0, 0);
+	}
+
+	public Vector4(Vector2 v, float z, float w) {
+		this(v.getX(), v.getY(), z, w);
 	}
 
 	public Vector4(Vector3 v) {
-		this(v.getX(), v.getY(), v.getZ(), 0);
+		this(v, 0);
+	}
+
+	public Vector4(Vector3 v, float w) {
+		this(v.getX(), v.getY(), v.getZ(), w);
 	}
 
 	public Vector4(Vector4 v) {

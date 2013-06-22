@@ -239,11 +239,27 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 	}
 
 	public Vector3 toVector3() {
-		return new Vector3(x, y, 0);
+		return toVector3(0);
+	}
+
+	public Vector3 toVector3(double z) {
+		return toVector3((float) z);
+	}
+
+	public Vector3 toVector3(float z) {
+		return new Vector3(this, z);
 	}
 
 	public Vector4 toVector4() {
-		return new Vector4(x, y, 0, 0);
+		return toVector4(0, 0);
+	}
+
+	public Vector4 toVector4(double z, double w) {
+		return toVector4((float) z, (float) w);
+	}
+
+	public Vector4 toVector4(float z, float w) {
+		return new Vector4(this, z, w);
 	}
 
 	public Vector toVector() {

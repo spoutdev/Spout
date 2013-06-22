@@ -143,13 +143,6 @@ public class MatrixTest {
 	}
 
 	@Test
-	public void testScaleDouble() {
-		double[][] id = {{5, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 5, 0}};
-		Matrix m = Matrix.createScaling(3, 5);
-		compareMatrixToArray(m, id);
-	}
-
-	@Test
 	public void testScaleVector3() {
 		Vector3 s = new Vector3(-1, 5, 3);
 		double[][] id = {{-1, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 3, 0}, {0, 0, 0, 1}};
@@ -172,7 +165,12 @@ public class MatrixTest {
 		rot = new Quaternion(4, 3, 2, 0);
 		m = Matrix.createRotation(4, rot);
 
-		id = new double[][]{{0.103448, 0.827586, 0.551724, 0}, {0.827586, -0.37931, 0.413793, 0}, {0.551724, 0.413793, -0.724138, 0}, {0, 0, 0, 1}};
+		id = new double[][]{
+				{0.103448, 0.827586, 0.551724, 0},
+				{0.827586, -0.37931, 0.413793, 0},
+				{0.551724, 0.413793, -0.724138, 0},
+				{0, 0, 0, 1}
+		};
 
 		compareMatrixToArray(m, id);
 
