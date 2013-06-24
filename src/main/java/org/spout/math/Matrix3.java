@@ -31,15 +31,9 @@ import java.io.Serializable;
 public class Matrix3 implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
 	public static final Matrix3 IDENTITY = new ImmutableIdentityMatrix3();
-	private float m00;
-	private float m01;
-	private float m02;
-	private float m10;
-	private float m11;
-	private float m12;
-	private float m20;
-	private float m21;
-	private float m22;
+	private float m00, m01, m02;
+	private float m10, m11, m12;
+	private float m20, m21, m22;
 
 	public Matrix3() {
 		setIdentity();
@@ -114,9 +108,9 @@ public class Matrix3 implements Serializable, Cloneable {
 	}
 
 	public void set(int row, int col, float val) {
-		switch (col) {
+		switch (row) {
 			case 0:
-				switch (row) {
+				switch (col) {
 					case 0:
 						m00 = val;
 						return;
@@ -128,7 +122,7 @@ public class Matrix3 implements Serializable, Cloneable {
 						return;
 				}
 			case 1:
-				switch (row) {
+				switch (col) {
 					case 0:
 						m10 = val;
 						return;
@@ -140,7 +134,7 @@ public class Matrix3 implements Serializable, Cloneable {
 						return;
 				}
 			case 2:
-				switch (row) {
+				switch (col) {
 					case 0:
 						m20 = val;
 						return;
@@ -323,7 +317,11 @@ public class Matrix3 implements Serializable, Cloneable {
 	}
 
 	public float[] toArray() {
-		return new float[]{m00, m01, m02, m10, m11, m12, m20, m21, m22};
+		return new float[]{
+				m00, m01, m02,
+				m10, m11, m12,
+				m20, m21, m22
+		};
 	}
 
 	@Override

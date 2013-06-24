@@ -440,10 +440,10 @@ public class GenericMath {
 	 * @return The blended color
 	 */
 	public static Color blend(Color a, Color b) {
-		int red = lerp(a.getRed(), b.getRed(), (a.getAlpha() / 255.0));
-		int blue = lerp(a.getBlue(), b.getBlue(), (a.getAlpha() / 255.0));
-		int green = lerp(a.getGreen(), b.getGreen(), (a.getAlpha() / 255.0));
-		int alpha = lerp(a.getAlpha(), b.getAlpha(), (a.getAlpha() / 255.0));
+		final int red = lerp(a.getRed(), b.getRed(), (a.getAlpha() / 255.0));
+		final int blue = lerp(a.getBlue(), b.getBlue(), (a.getAlpha() / 255.0));
+		final int green = lerp(a.getGreen(), b.getGreen(), (a.getAlpha() / 255.0));
+		final int alpha = lerp(a.getAlpha(), b.getAlpha(), (a.getAlpha() / 255.0));
 		return new Color(red, green, blue, alpha);
 	}
 
@@ -611,11 +611,9 @@ public class GenericMath {
 		if (o == null) {
 			return null;
 		}
-
 		if (o instanceof Number) {
 			return ((Number) o).floatValue();
 		}
-
 		try {
 			return Float.valueOf(o.toString());
 		} catch (NumberFormatException e) {
@@ -633,11 +631,9 @@ public class GenericMath {
 		if (o == null) {
 			return null;
 		}
-
 		if (o instanceof Number) {
 			return ((Number) o).byteValue();
 		}
-
 		try {
 			return Byte.valueOf(o.toString());
 		} catch (NumberFormatException e) {
@@ -655,11 +651,9 @@ public class GenericMath {
 		if (o == null) {
 			return null;
 		}
-
 		if (o instanceof Number) {
 			return ((Number) o).shortValue();
 		}
-
 		try {
 			return Short.valueOf(o.toString());
 		} catch (NumberFormatException e) {
@@ -677,11 +671,9 @@ public class GenericMath {
 		if (o == null) {
 			return null;
 		}
-
 		if (o instanceof Number) {
 			return ((Number) o).intValue();
 		}
-
 		try {
 			return Integer.valueOf(o.toString());
 		} catch (NumberFormatException e) {
@@ -699,11 +691,9 @@ public class GenericMath {
 		if (o == null) {
 			return null;
 		}
-
 		if (o instanceof Number) {
 			return ((Number) o).doubleValue();
 		}
-
 		try {
 			return Double.valueOf(o.toString());
 		} catch (NumberFormatException e) {
@@ -721,11 +711,9 @@ public class GenericMath {
 		if (o == null) {
 			return null;
 		}
-
 		if (o instanceof Number) {
 			return ((Number) o).longValue();
 		}
-
 		try {
 			return Long.valueOf(o.toString());
 		} catch (NumberFormatException e) {
@@ -743,7 +731,6 @@ public class GenericMath {
 		if (o == null) {
 			return null;
 		}
-
 		if (o instanceof Boolean) {
 			return (Boolean) o;
 		} else if (o instanceof String) {

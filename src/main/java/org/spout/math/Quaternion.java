@@ -35,6 +35,8 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 	private final float y;
 	private final float z;
 	private final float w;
+	private transient volatile boolean hashed = false;
+	private transient volatile int hashCode = 0;
 
 	public Quaternion() {
 		this(0, 0, 0, 1);
@@ -181,24 +183,24 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		}
-		if (!(obj instanceof Quaternion)) {
+		if (!(o instanceof Quaternion)) {
 			return false;
 		}
-		final Quaternion other = (Quaternion) obj;
-		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x)) {
+		final Quaternion that = (Quaternion) o;
+		if (Float.compare(that.w, w) != 0) {
 			return false;
 		}
-		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y)) {
+		if (Float.compare(that.x, x) != 0) {
 			return false;
 		}
-		if (Float.floatToIntBits(z) != Float.floatToIntBits(other.z)) {
+		if (Float.compare(that.y, y) != 0) {
 			return false;
 		}
-		if (Float.floatToIntBits(w) != Float.floatToIntBits(other.w)) {
+		if (Float.compare(that.z, z) != 0) {
 			return false;
 		}
 		return true;
@@ -206,12 +208,14 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 
 	@Override
 	public int hashCode() {
-		int hash = 3;
-		hash = 59 * hash + Float.floatToIntBits(x);
-		hash = 59 * hash + Float.floatToIntBits(y);
-		hash = 59 * hash + Float.floatToIntBits(z);
-		hash = 59 * hash + Float.floatToIntBits(w);
-		return hash;
+		if (!hashed) {
+			int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
+			result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+			result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
+			hashCode = 31 * result + (w != +0.0f ? Float.floatToIntBits(w) : 0);
+			hashed = true;
+		}
+		return hashCode;
 	}
 
 	@Override

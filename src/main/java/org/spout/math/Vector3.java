@@ -306,21 +306,21 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		}
-		if (!(obj instanceof Vector3)) {
+		if (!(o instanceof Vector3)) {
 			return false;
 		}
-		final Vector3 other = (Vector3) obj;
-		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x)) {
+		final Vector3 vector3 = (Vector3) o;
+		if (Float.compare(vector3.x, x) != 0) {
 			return false;
 		}
-		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y)) {
+		if (Float.compare(vector3.y, y) != 0) {
 			return false;
 		}
-		if (Float.floatToIntBits(z) != Float.floatToIntBits(other.z)) {
+		if (Float.compare(vector3.z, z) != 0) {
 			return false;
 		}
 		return true;
@@ -329,17 +329,16 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 	@Override
 	public int hashCode() {
 		if (!hashed) {
-			int hash = 7;
-			hash = 79 * hash + Float.floatToIntBits(x);
-			hash = 79 * hash + Float.floatToIntBits(y);
-			hash = 79 * hash + Float.floatToIntBits(z);
-			hashCode = hash;
+			int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
+			result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+			hashCode = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
 			hashed = true;
 		}
 		return hashCode;
 	}
 
 	@Override
+
 	public Vector3 clone() {
 		return new Vector3(this);
 	}

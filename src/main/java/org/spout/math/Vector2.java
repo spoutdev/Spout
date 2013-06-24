@@ -284,18 +284,18 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		}
-		if (!(obj instanceof Vector2)) {
+		if (!(o instanceof Vector2)) {
 			return false;
 		}
-		final Vector2 other = (Vector2) obj;
-		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x)) {
+		final Vector2 vector2 = (Vector2) o;
+		if (Float.compare(vector2.x, x) != 0) {
 			return false;
 		}
-		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y)) {
+		if (Float.compare(vector2.y, y) != 0) {
 			return false;
 		}
 		return true;
@@ -304,10 +304,8 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 	@Override
 	public int hashCode() {
 		if (!hashed) {
-			int hash = 5;
-			hash = 29 * hash + Float.floatToIntBits(x);
-			hash = 29 * hash + Float.floatToIntBits(y);
-			hashCode = hash;
+			final int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
+			hashCode = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
 			hashed = true;
 		}
 		return hashCode;

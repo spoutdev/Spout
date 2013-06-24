@@ -33,6 +33,8 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 	public static final Complex IDENTITY = new Complex();
 	private final float x;
 	private final float y;
+	private transient volatile boolean hashed = false;
+	private transient volatile int hashCode = 0;
 
 	public Complex() {
 		this(1, 0);
@@ -120,18 +122,18 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		}
-		if (!(obj instanceof Complex)) {
+		if (!(o instanceof Complex)) {
 			return false;
 		}
-		final Complex other = (Complex) obj;
-		if (Float.floatToIntBits(this.x) != Float.floatToIntBits(other.x)) {
+		final Complex complex = (Complex) o;
+		if (Float.compare(complex.x, x) != 0) {
 			return false;
 		}
-		if (Float.floatToIntBits(this.y) != Float.floatToIntBits(other.y)) {
+		if (Float.compare(complex.y, y) != 0) {
 			return false;
 		}
 		return true;
@@ -139,10 +141,12 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 
 	@Override
 	public int hashCode() {
-		int hash = 5;
-		hash = 97 * hash + Float.floatToIntBits(this.x);
-		hash = 97 * hash + Float.floatToIntBits(this.y);
-		return hash;
+		if (!hashed) {
+			final int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
+			hashCode = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+			hashed = true;
+		}
+		return hashCode;
 	}
 
 	@Override

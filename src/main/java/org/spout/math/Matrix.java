@@ -421,7 +421,7 @@ public class Matrix implements Serializable, Cloneable {
 
 	private static float[][] deepClone(float[][] array) {
 		final int size = array.length;
-		float[][] clone = array.clone();
+		final float[][] clone = array.clone();
 		for (int i = 0; i < size; i++) {
 			clone[i] = array[i].clone();
 		}
