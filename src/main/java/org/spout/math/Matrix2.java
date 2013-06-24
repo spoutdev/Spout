@@ -30,12 +30,19 @@ import java.io.Serializable;
 
 public class Matrix2 implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
-	public static final Matrix2 IDENTITY = new ImmutableIdentityMatrix2();
-	private float m00, m01;
-	private float m10, m11;
+	public static final Matrix2 ZERO = new Matrix2(
+			0, 0,
+			0, 0);
+	public static final Matrix2 IDENTITY = new Matrix2();
+	private final float m00, m01;
+	private final float m10, m11;
+	private transient volatile boolean hashed = false;
+	private transient volatile int hashCode = 0;
 
 	public Matrix2() {
-		setIdentity();
+		this(
+				1, 0,
+				0, 1);
 	}
 
 	public Matrix2(Matrix2 m) {
@@ -44,7 +51,7 @@ public class Matrix2 implements Serializable, Cloneable {
 				m.m10, m.m11);
 	}
 
-	private Matrix2(
+	public Matrix2(
 			float m00, float m01,
 			float m10, float m11) {
 		this.m00 = m00;
@@ -73,50 +80,6 @@ public class Matrix2 implements Serializable, Cloneable {
 		throw new IllegalArgumentException(
 				(row < 0 || row > 1 ? "row must be greater than zero and smaller than 2. " : "") +
 						(col < 0 || col > 1 ? "col must be greater than zero and smaller than 2." : ""));
-	}
-
-	public void set(int row, int col, double val) {
-		set(row, col, (float) val);
-	}
-
-	public void set(int row, int col, float val) {
-		switch (row) {
-			case 0:
-				switch (col) {
-					case 0:
-						m00 = val;
-						return;
-					case 1:
-						m01 = val;
-						return;
-				}
-			case 1:
-				switch (col) {
-					case 0:
-						m10 = val;
-						return;
-					case 1:
-						m11 = val;
-						return;
-				}
-		}
-		throw new IllegalArgumentException(
-				(row < 0 || row > 1 ? "row must be greater than zero and smaller than 2. " : "") +
-						(col < 0 || col > 1 ? "col must be greater than zero and smaller than 2." : ""));
-	}
-
-	public final void setIdentity() {
-		m00 = 1;
-		m01 = 0;
-		m10 = 0;
-		m11 = 1;
-	}
-
-	public void setZero() {
-		m00 = 0;
-		m01 = 0;
-		m10 = 0;
-		m11 = 0;
 	}
 
 	public Matrix2 add(Matrix2 m) {
@@ -275,11 +238,14 @@ public class Matrix2 implements Serializable, Cloneable {
 
 	@Override
 	public int hashCode() {
-		int result = (m00 != +0.0f ? Float.floatToIntBits(m00) : 0);
-		result = 31 * result + (m01 != +0.0f ? Float.floatToIntBits(m01) : 0);
-		result = 31 * result + (m10 != +0.0f ? Float.floatToIntBits(m10) : 0);
-		result = 31 * result + (m11 != +0.0f ? Float.floatToIntBits(m11) : 0);
-		return result;
+		if (!hashed) {
+			int result = (m00 != +0.0f ? Float.floatToIntBits(m00) : 0);
+			result = 31 * result + (m01 != +0.0f ? Float.floatToIntBits(m01) : 0);
+			result = 31 * result + (m10 != +0.0f ? Float.floatToIntBits(m10) : 0);
+			hashCode = 31 * result + (m11 != +0.0f ? Float.floatToIntBits(m11) : 0);
+			hashed = true;
+		}
+		return hashCode;
 	}
 
 	@Override
@@ -316,17 +282,5 @@ public class Matrix2 implements Serializable, Cloneable {
 		return new Matrix2(
 				rot.getX(), -rot.getY(),
 				rot.getY(), rot.getX());
-	}
-
-	private static class ImmutableIdentityMatrix2 extends Matrix2 {
-		@Override
-		public void set(int row, int col, float val) {
-			throw new UnsupportedOperationException("You may not alter this matrix");
-		}
-
-		@Override
-		public void setZero() {
-			throw new UnsupportedOperationException("You may not alter this matrix");
-		}
 	}
 }

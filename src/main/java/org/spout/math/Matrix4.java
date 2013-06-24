@@ -1,17 +1,54 @@
+/*
+ * This file is part of Math.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Math is licensed under the Spout License Version 1.
+ *
+ * Math is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Math is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
 package org.spout.math;
 
 import java.io.Serializable;
 
 public class Matrix4 implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
-	public static final Matrix4 IDENTITY = new ImmutableIdentityMatrix4();
-	private float m00, m01, m02, m03;
-	private float m10, m11, m12, m13;
-	private float m20, m21, m22, m23;
-	private float m30, m31, m32, m33;
+	public static final Matrix4 ZERO = new Matrix4(
+			0, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0);
+	public static final Matrix4 IDENTITY = new Matrix4();
+	private final float m00, m01, m02, m03;
+	private final float m10, m11, m12, m13;
+	private final float m20, m21, m22, m23;
+	private final float m30, m31, m32, m33;
+	private transient volatile boolean hashed = false;
+	private transient volatile int hashCode = 0;
 
 	public Matrix4() {
-		setIdentity();
+		this(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	public Matrix4(Matrix2 m) {
@@ -38,7 +75,7 @@ public class Matrix4 implements Serializable, Cloneable {
 				m.m30, m.m31, m.m32, m.m33);
 	}
 
-	private Matrix4(
+	public Matrix4(
 			float m00, float m01, float m02, float m03,
 			float m10, float m11, float m12, float m13,
 			float m20, float m21, float m22, float m23,
@@ -111,116 +148,6 @@ public class Matrix4 implements Serializable, Cloneable {
 		throw new IllegalArgumentException(
 				(row < 0 || row > 2 ? "row must be greater than zero and smaller than 3. " : "") +
 						(col < 0 || col > 2 ? "col must be greater than zero and smaller than 3." : ""));
-	}
-
-	public void set(int row, int col, double val) {
-		set(row, col, (float) val);
-	}
-
-	public void set(int row, int col, float val) {
-		switch (row) {
-			case 0:
-				switch (col) {
-					case 0:
-						m00 = val;
-						return;
-					case 1:
-						m01 = val;
-						return;
-					case 2:
-						m02 = val;
-						return;
-					case 3:
-						m03 = val;
-						return;
-				}
-			case 1:
-				switch (col) {
-					case 0:
-						m10 = val;
-						return;
-					case 1:
-						m11 = val;
-						return;
-					case 2:
-						m12 = val;
-						return;
-					case 3:
-						m13 = val;
-						return;
-				}
-			case 2:
-				switch (col) {
-					case 0:
-						m20 = val;
-						return;
-					case 1:
-						m21 = val;
-						return;
-					case 2:
-						m22 = val;
-						return;
-					case 3:
-						m23 = val;
-						return;
-				}
-			case 3:
-				switch (col) {
-					case 0:
-						m30 = val;
-						return;
-					case 1:
-						m31 = val;
-						return;
-					case 2:
-						m32 = val;
-						return;
-					case 3:
-						m33 = val;
-						return;
-				}
-		}
-		throw new IllegalArgumentException(
-				(row < 0 || row > 2 ? "row must be greater than zero and smaller than 3. " : "") +
-						(col < 0 || col > 2 ? "col must be greater than zero and smaller than 3." : ""));
-	}
-
-	public final void setIdentity() {
-		m00 = 1;
-		m01 = 0;
-		m02 = 0;
-		m03 = 0;
-		m10 = 0;
-		m11 = 1;
-		m12 = 0;
-		m13 = 0;
-		m20 = 0;
-		m21 = 0;
-		m22 = 1;
-		m23 = 0;
-		m30 = 0;
-		m31 = 0;
-		m32 = 0;
-		m33 = 1;
-	}
-
-	public void setZero() {
-		m00 = 0;
-		m01 = 0;
-		m02 = 0;
-		m03 = 0;
-		m10 = 0;
-		m11 = 0;
-		m12 = 0;
-		m13 = 0;
-		m20 = 0;
-		m21 = 0;
-		m22 = 0;
-		m23 = 0;
-		m30 = 0;
-		m31 = 0;
-		m32 = 0;
-		m33 = 0;
 	}
 
 	public Matrix4 add(Matrix4 m) {
@@ -474,23 +401,26 @@ public class Matrix4 implements Serializable, Cloneable {
 
 	@Override
 	public int hashCode() {
-		int result = (m00 != +0.0f ? Float.floatToIntBits(m00) : 0);
-		result = 31 * result + (m01 != +0.0f ? Float.floatToIntBits(m01) : 0);
-		result = 31 * result + (m02 != +0.0f ? Float.floatToIntBits(m02) : 0);
-		result = 31 * result + (m03 != +0.0f ? Float.floatToIntBits(m03) : 0);
-		result = 31 * result + (m10 != +0.0f ? Float.floatToIntBits(m10) : 0);
-		result = 31 * result + (m11 != +0.0f ? Float.floatToIntBits(m11) : 0);
-		result = 31 * result + (m12 != +0.0f ? Float.floatToIntBits(m12) : 0);
-		result = 31 * result + (m13 != +0.0f ? Float.floatToIntBits(m13) : 0);
-		result = 31 * result + (m20 != +0.0f ? Float.floatToIntBits(m20) : 0);
-		result = 31 * result + (m21 != +0.0f ? Float.floatToIntBits(m21) : 0);
-		result = 31 * result + (m22 != +0.0f ? Float.floatToIntBits(m22) : 0);
-		result = 31 * result + (m23 != +0.0f ? Float.floatToIntBits(m23) : 0);
-		result = 31 * result + (m30 != +0.0f ? Float.floatToIntBits(m30) : 0);
-		result = 31 * result + (m31 != +0.0f ? Float.floatToIntBits(m31) : 0);
-		result = 31 * result + (m32 != +0.0f ? Float.floatToIntBits(m32) : 0);
-		result = 31 * result + (m33 != +0.0f ? Float.floatToIntBits(m33) : 0);
-		return result;
+		if (!hashed) {
+			int result = (m00 != +0.0f ? Float.floatToIntBits(m00) : 0);
+			result = 31 * result + (m01 != +0.0f ? Float.floatToIntBits(m01) : 0);
+			result = 31 * result + (m02 != +0.0f ? Float.floatToIntBits(m02) : 0);
+			result = 31 * result + (m03 != +0.0f ? Float.floatToIntBits(m03) : 0);
+			result = 31 * result + (m10 != +0.0f ? Float.floatToIntBits(m10) : 0);
+			result = 31 * result + (m11 != +0.0f ? Float.floatToIntBits(m11) : 0);
+			result = 31 * result + (m12 != +0.0f ? Float.floatToIntBits(m12) : 0);
+			result = 31 * result + (m13 != +0.0f ? Float.floatToIntBits(m13) : 0);
+			result = 31 * result + (m20 != +0.0f ? Float.floatToIntBits(m20) : 0);
+			result = 31 * result + (m21 != +0.0f ? Float.floatToIntBits(m21) : 0);
+			result = 31 * result + (m22 != +0.0f ? Float.floatToIntBits(m22) : 0);
+			result = 31 * result + (m23 != +0.0f ? Float.floatToIntBits(m23) : 0);
+			result = 31 * result + (m30 != +0.0f ? Float.floatToIntBits(m30) : 0);
+			result = 31 * result + (m31 != +0.0f ? Float.floatToIntBits(m31) : 0);
+			result = 31 * result + (m32 != +0.0f ? Float.floatToIntBits(m32) : 0);
+			hashCode = 31 * result + (m33 != +0.0f ? Float.floatToIntBits(m33) : 0);
+			hashed = true;
+		}
+		return hashCode;
 	}
 
 	@Override
@@ -554,16 +484,64 @@ public class Matrix4 implements Serializable, Cloneable {
 				0, 0, 0, 1);
 	}
 
-	private static class ImmutableIdentityMatrix4 extends Matrix4 {
-		@Override
-		public void set(int row, int col, float val) {
-			throw new UnsupportedOperationException("You may not alter this matrix");
-		}
+	/**
+	 * Creates a "look at" matrix for the given eye point.
+	 *
+	 * @param eye The position of the camera
+	 * @param at The point that the camera is looking at
+	 * @param up The "up" vector
+	 * @return A rotational transform that corresponds to a camera looking at the given point
+	 */
+	public static Matrix4 createLookAt(Vector3 eye, Vector3 at, Vector3 up) {
+		final Vector3 f = at.sub(eye).normalize();
+		up = up.normalize();
+		final Vector3 s = f.cross(up).normalize();
+		final Vector3 u = s.cross(f).normalize();
+		final Matrix4 mat = new Matrix4(
+				s.getX(), s.getY(), s.getZ(), 0,
+				u.getX(), u.getY(), u.getZ(), 0,
+				-f.getX(), -f.getY(), -f.getZ(), 0,
+				0, 0, 0, 1);
+		return mat.translate(eye.mul(-1));
+	}
 
-		@Override
-		public void setZero() {
-			throw new UnsupportedOperationException("You may not alter this matrix");
-		}
+	/**
+	 * Creates a perspective projection matrix with the given (x) FOV, aspect, near and far planes
+	 *
+	 * @param fov The field of view in the x direction
+	 * @param aspect The aspect ratio, usually width/height
+	 * @param zNear The near plane, cannot be 0
+	 * @param zFar the far plane, zFar cannot equal zNear
+	 * @return A perspective projection matrix built from the given values
+	 */
+	public static Matrix4 createPerspective(float fov, float aspect, float zNear, float zFar) {
+		final float yMax = zNear * TrigMath.tan(fov * (float) TrigMath.HALF_DEG_TO_RAD);
+		final float xMax = yMax * aspect;
+		return createOrthographic(xMax, -xMax, yMax, -yMax, zNear, zFar);
+	}
+
+	/**
+	 * Creates an orthographic viewing frustum built from the provided values
+	 *
+	 * @param right the right most plane of the viewing frustum
+	 * @param left the left most plane of the viewing frustum
+	 * @param top the top plane of the viewing frustum
+	 * @param bottom the bottom plane of the viewing frustum
+	 * @param near the near plane of the viewing frustum
+	 * @param far the far plane of the viewing frustum
+	 * @return A viewing frustum built from the provided values
+	 */
+	public static Matrix4 createOrthographic(float right, float left, float top, float bottom,
+											 float near, float far) {
+		final float near2 = 2 * near;
+		final float RmL = right - left;
+		final float TmB = top - bottom;
+		final float FmN = far - near;
+		return new Matrix4(
+				near2 / RmL, 0, (right + left) / RmL, 0,
+				0, near2 / TmB, (top + bottom) / TmB, 0,
+				0, 0, (-far - near) / FmN, -1,
+				0, 0, -near2 * far / FmN, 0);
 	}
 
 	private static float det3(float m00, float m01, float m02,

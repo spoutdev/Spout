@@ -528,13 +528,13 @@ public class Matrix implements Serializable, Cloneable {
 		final Vector3 u = s.cross(f).normalize();
 		final Matrix mat = new Matrix(size);
 		mat.set(0, 0, s.getX());
-		mat.set(1, 0, s.getY());
-		mat.set(2, 0, s.getZ());
-		mat.set(0, 1, u.getX());
+		mat.set(0, 1, s.getY());
+		mat.set(0, 2, s.getZ());
+		mat.set(1, 0, u.getX());
 		mat.set(1, 1, u.getY());
-		mat.set(2, 1, u.getZ());
-		mat.set(0, 2, -f.getX());
-		mat.set(1, 2, -f.getY());
+		mat.set(1, 2, u.getZ());
+		mat.set(2, 0, -f.getX());
+		mat.set(2, 1, -f.getY());
 		mat.set(2, 2, -f.getZ());
 		return mat.translate(eye.mul(-1));
 	}
@@ -565,7 +565,7 @@ public class Matrix implements Serializable, Cloneable {
 	 * @param bottom the bottom plane of the viewing frustum
 	 * @param near the near plane of the viewing frustum
 	 * @param far the far plane of the viewing frustum
-	 * @return A viewing frustum build from the provided values
+	 * @return A viewing frustum built from the provided values
 	 */
 	public static Matrix createOrthographic(int size, float right, float left, float top, float bottom,
 											float near, float far) {
@@ -573,17 +573,17 @@ public class Matrix implements Serializable, Cloneable {
 			throw new IllegalArgumentException("Minimum matrix size is 4");
 		}
 		final Matrix orthographic = new Matrix(size);
-		final float temp1 = 2.0f * near;
-		final float temp2 = right - left;
-		final float temp3 = top - bottom;
-		final float temp4 = far - near;
-		orthographic.set(0, 0, temp1 / temp2);
-		orthographic.set(1, 1, temp1 / temp3);
-		orthographic.set(0, 2, (right + left) / temp2);
-		orthographic.set(1, 2, (top + bottom) / temp3);
-		orthographic.set(2, 2, (-far - near) / temp4);
+		final float near2 = 2 * near;
+		final float RmL = right - left;
+		final float TmB = top - bottom;
+		final float FmN = far - near;
+		orthographic.set(0, 0, near2 / RmL);
+		orthographic.set(1, 1, near2 / TmB);
+		orthographic.set(0, 2, (right + left) / RmL);
+		orthographic.set(1, 2, (top + bottom) / TmB);
+		orthographic.set(2, 2, (-far - near) / FmN);
 		orthographic.set(2, 3, -1);
-		orthographic.set(3, 2, -temp1 * far / temp4);
+		orthographic.set(3, 2, -near2 * far / FmN);
 		orthographic.set(3, 3, 0);
 		return orthographic;
 	}
