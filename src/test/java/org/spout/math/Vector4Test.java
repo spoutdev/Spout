@@ -28,6 +28,9 @@ package org.spout.math;
 
 import org.junit.Test;
 
+import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector4;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

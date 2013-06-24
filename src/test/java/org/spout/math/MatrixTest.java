@@ -28,6 +28,10 @@ package org.spout.math;
 
 import org.junit.Test;
 
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.matrix.Matrix;
+import org.spout.math.vector.Vector3;
+
 import static org.junit.Assert.fail;
 
 public class MatrixTest {

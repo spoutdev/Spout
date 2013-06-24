@@ -30,6 +30,10 @@ import java.awt.Color;
 import java.security.SecureRandom;
 import java.util.Random;
 
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
+
 /**
  * Class containing generic mathematical functions.
  */

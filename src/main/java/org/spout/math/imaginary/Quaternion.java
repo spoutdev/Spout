@@ -24,9 +24,14 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.math;
+package org.spout.math.imaginary;
 
 import java.io.Serializable;
+
+import org.spout.math.GenericMath;
+import org.spout.math.matrix.Matrix;
+import org.spout.math.TrigMath;
+import org.spout.math.vector.Vector3;
 
 public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
@@ -146,7 +151,7 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 	 * <code>|a|²</code> is squared length of <code>a</code>.
 	 *
 	 * @return the conjugated Quaternion
-	 * @see Matrix#transpose()
+	 * @see org.spout.math.matrix.Matrix#transpose()
 	 */
 	public Quaternion conjugate() {
 		return new Quaternion(-x, -y, -z, w);

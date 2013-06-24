@@ -24,10 +24,19 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.math;
+package org.spout.math.matrix;
 
 import java.io.Serializable;
 import java.util.Arrays;
+
+import org.spout.math.GenericMath;
+import org.spout.math.TrigMath;
+import org.spout.math.vector.Vector;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector4;
+import org.spout.math.imaginary.Complex;
+import org.spout.math.imaginary.Quaternion;
 
 public class Matrix implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1;

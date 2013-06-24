@@ -24,10 +24,13 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.math;
+package org.spout.math.vector;
 
 import java.io.Serializable;
 import java.util.Arrays;
+
+import org.spout.math.GenericMath;
+import org.spout.math.matrix.Matrix;
 
 public class Vector implements Comparable<Vector>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
