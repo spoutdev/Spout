@@ -42,11 +42,6 @@ import static org.spout.math.TestUtils.eps;
 public class Vector4Test {
 	@Test
 	public void testUnits() {
-		doAssertDouble("ONE.getX() does not equal 1", 1, Vector4.ONE.getX());
-		doAssertDouble("ONE.getY() does not equal 1", 1, Vector4.ONE.getY());
-		doAssertDouble("ONE.getZ() does not equal 1", 1, Vector4.ONE.getZ());
-		doAssertDouble("ONE.getW() does not equal 1", 1, Vector4.ONE.getW());
-
 		doAssertDouble("ZERO.getX() does not equal 0", 0, Vector4.ZERO.getX());
 		doAssertDouble("ZERO.getY() does not equal 0", 0, Vector4.ZERO.getY());
 		doAssertDouble("ZERO.getZ() does not equal 0", 0, Vector4.ZERO.getZ());
@@ -386,8 +381,6 @@ public class Vector4Test {
 
 	@Test
 	public void testCompareTo() {
-		assertTrue(Vector4.ZERO.compareTo(Vector4.ONE) < 0);
-
 		Vector4 x = new Vector4(5, 3, 4, 6);
 		Vector4 y = new Vector4(-2, 5, -2, 4);
 		assertTrue(x.compareTo(y) >= 0);

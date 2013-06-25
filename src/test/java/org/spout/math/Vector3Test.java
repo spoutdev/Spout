@@ -55,7 +55,6 @@ public class Vector3Test {
 
 	@Test
 	public void testUnits() {
-		testValue(Vector3.ONE, 1, 1, 1);
 		testValue(Vector3.ZERO, 0, 0, 0);
 		testValue(Vector3.UNIT_X, 1, 0, 0);
 		testValue(Vector3.FORWARD, Vector3.UNIT_Z);

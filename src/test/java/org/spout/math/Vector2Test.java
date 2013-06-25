@@ -49,9 +49,6 @@ public class Vector2Test {
 
 	@Test
 	public void testUnits() {
-		doAssertDouble("ONE.getX() does not equal 1", 1, Vector2.ONE.getX());
-		doAssertDouble("ONE.getY() does not equal 1", 1, Vector2.ONE.getY());
-
 		doAssertDouble("UNIT_X.getX() does not equal 1", 1, Vector2.UNIT_X.getX());
 		doAssertDouble("UNIT_X.getY() does not equal 0", 0, Vector2.UNIT_X.getY());
 
