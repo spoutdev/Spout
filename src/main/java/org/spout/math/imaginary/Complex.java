@@ -29,11 +29,14 @@ package org.spout.math.imaginary;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
-import org.spout.math.matrix.MatrixN;
 import org.spout.math.TrigMath;
+import org.spout.math.matrix.Matrix2;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.matrix.MatrixN;
 import org.spout.math.vector.Vector2;
 
-public class Complex implements Comparable<Complex>, Serializable, Cloneable {
+public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
 	public static final Complex IDENTITY = new Complex();
 	private final float x;
@@ -67,6 +70,11 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 		return y;
 	}
 
+	public Complex mul(double a) {
+		return mul((float) a);
+	}
+
+	@Override
 	public Complex mul(float a) {
 		return new Complex(x * a, y * a);
 	}
@@ -85,6 +93,11 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 				this.x * y + this.y * x);
 	}
 
+	public Complex div(double a) {
+		return div((float) a);
+	}
+
+	@Override
 	public Complex div(float a) {
 		return new Complex(x / a, y / a);
 	}
@@ -101,28 +114,45 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 		return (float) Math.toDegrees(getAngleRad());
 	}
 
+	@Override
 	public Complex conjugate() {
 		return new Complex(x, -y);
 	}
 
+	@Override
 	public Complex invert() {
 		return conjugate().div(lengthSquared());
 	}
 
+	@Override
 	public float lengthSquared() {
 		return GenericMath.lengthSquaredF(x, y);
 	}
 
+	@Override
 	public float length() {
 		return GenericMath.lengthF(x, y);
 	}
 
+	@Override
 	public Complex normalize() {
 		final float length = length();
 		return new Complex(x / length, y / length);
 	}
 
-	public MatrixN toRotationMatrix(int size) {
+	public Matrix2 toRotationMatrix2() {
+		return Matrix2.createRotation(this);
+	}
+
+	public Matrix3 toRotationMatrix3() {
+		return Matrix3.createRotation(this);
+	}
+
+	public Matrix4 toRotationMatrix4() {
+		return Matrix4.createRotation(this);
+	}
+
+	public MatrixN toRotationMatrixN(int size) {
 		return MatrixN.createRotation(size, this);
 	}
 

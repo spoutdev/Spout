@@ -29,11 +29,13 @@ package org.spout.math.imaginary;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
 import org.spout.math.matrix.MatrixN;
 import org.spout.math.TrigMath;
 import org.spout.math.vector.Vector3;
 
-public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneable {
+public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
 	public static final Quaternion IDENTITY = new Quaternion();
 	private final float x;
@@ -78,12 +80,17 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 		return w;
 	}
 
+	public Quaternion mul(double a) {
+		return mul((float) a);
+	}
+
 	/**
 	 * Multiplies the quaternion by the given scalar.
 	 *
 	 * @param a the scalar
 	 * @return the multiplied Quaternion
 	 */
+	@Override
 	public Quaternion mul(float a) {
 		return new Quaternion(x * a, y * a, z * a, w * a);
 	}
@@ -104,18 +111,23 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 				this.w * w - this.x * x - this.y * y - this.z * z);
 	}
 
+	public Quaternion div(double a) {
+		return div((float) a);
+	}
+
 	/**
 	 * Divides the quaternion by the given scalar.
 	 *
 	 * @param a the scalar
 	 * @return the divided Quaternion
 	 */
+	@Override
 	public Quaternion div(float a) {
 		return new Quaternion(x / a, y / a, z / a, w / a);
 	}
 
 	public Vector3 getDirection() {
-		return toRotationMatrix(3).transform(Vector3.FORWARD);
+		return toRotationMatrix3().transform(Vector3.FORWARD);
 	}
 
 	public Vector3 getAxesAngleDeg() {
@@ -153,6 +165,7 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 	 * @return the conjugated Quaternion
 	 * @see org.spout.math.matrix.MatrixN#transpose()
 	 */
+	@Override
 	public Quaternion conjugate() {
 		return new Quaternion(-x, -y, -z, w);
 	}
@@ -166,24 +179,36 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 	 *
 	 * @return the inverted Quaternion
 	 */
+	@Override
 	public Quaternion invert() {
 		return conjugate().div(lengthSquared());
 	}
 
+	@Override
 	public float lengthSquared() {
 		return GenericMath.lengthSquaredF(x, y, z, w);
 	}
 
+	@Override
 	public float length() {
 		return GenericMath.lengthF(x, y, z, w);
 	}
 
+	@Override
 	public Quaternion normalize() {
 		final float length = length();
 		return new Quaternion(x / length, y / length, z / length, w / length);
 	}
 
-	public MatrixN toRotationMatrix(int size) {
+	public Matrix3 toRotationMatrix3() {
+		return Matrix3.createRotation(this);
+	}
+
+	public Matrix4 toRotationMatrix4() {
+		return Matrix4.createRotation(this);
+	}
+
+	public MatrixN toRotationMatrixN(int size) {
 		return MatrixN.createRotation(size, this);
 	}
 
