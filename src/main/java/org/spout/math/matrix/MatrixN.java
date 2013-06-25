@@ -445,12 +445,24 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		return new Matrix4(this);
 	}
 
-	@Override
 	public float[] toArray() {
+		return toArray(false);
+	}
+
+	@Override
+	public float[] toArray(boolean columnMajor) {
 		final int size = size();
 		final float[] array = new float[size * size];
-		for (int row = 0; row < size; row++) {
-			System.arraycopy(mat[row], 0, array, row * size, size);
+		if (columnMajor) {
+			for (int col = 0; col < size; col++) {
+				for (int row = 0; row < size; row++) {
+					array[row + col * size] = mat[row][col];
+				}
+			}
+		} else {
+			for (int row = 0; row < size; row++) {
+				System.arraycopy(mat[row], 0, array, row * size, size);
+			}
 		}
 		return array;
 	}

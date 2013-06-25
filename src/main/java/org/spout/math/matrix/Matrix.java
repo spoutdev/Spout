@@ -53,5 +53,5 @@ public interface Matrix {
 
 	public Matrix invert();
 
-	public float[] toArray();
+	public float[] toArray(boolean columnMajor);
 }

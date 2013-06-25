@@ -344,13 +344,25 @@ public class Matrix3 implements Matrix, Serializable, Cloneable {
 		return new MatrixN(this);
 	}
 
-	@Override
 	public float[] toArray() {
-		return new float[]{
-				m00, m01, m02,
-				m10, m11, m12,
-				m20, m21, m22
-		};
+		return toArray(false);
+	}
+
+	@Override
+	public float[] toArray(boolean columnMajor) {
+		if (columnMajor) {
+			return new float[]{
+					m00, m10, m20,
+					m01, m11, m21,
+					m02, m12, m22
+			};
+		} else {
+			return new float[]{
+					m00, m01, m02,
+					m10, m11, m12,
+					m20, m21, m22
+			};
+		}
 	}
 
 	@Override

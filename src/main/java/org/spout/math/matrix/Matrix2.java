@@ -277,12 +277,23 @@ public class Matrix2 implements Matrix, Serializable, Cloneable {
 		return new MatrixN(this);
 	}
 
-	@Override
 	public float[] toArray() {
-		return new float[]{
-				m00, m01,
-				m10, m11
-		};
+		return toArray(false);
+	}
+
+	@Override
+	public float[] toArray(boolean columnMajor) {
+		if (columnMajor) {
+			return new float[]{
+					m00, m10,
+					m01, m11
+			};
+		} else {
+			return new float[]{
+					m00, m01,
+					m10, m11
+			};
+		}
 	}
 
 	@Override
