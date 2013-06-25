@@ -29,7 +29,7 @@ package org.spout.math.imaginary;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
-import org.spout.math.matrix.Matrix;
+import org.spout.math.matrix.MatrixN;
 import org.spout.math.TrigMath;
 import org.spout.math.vector.Vector3;
 
@@ -151,7 +151,7 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 	 * <code>|a|²</code> is squared length of <code>a</code>.
 	 *
 	 * @return the conjugated Quaternion
-	 * @see org.spout.math.matrix.Matrix#transpose()
+	 * @see org.spout.math.matrix.MatrixN#transpose()
 	 */
 	public Quaternion conjugate() {
 		return new Quaternion(-x, -y, -z, w);
@@ -183,8 +183,8 @@ public class Quaternion implements Comparable<Quaternion>, Serializable, Cloneab
 		return new Quaternion(x / length, y / length, z / length, w / length);
 	}
 
-	public Matrix toRotationMatrix(int size) {
-		return Matrix.createRotation(size, this);
+	public MatrixN toRotationMatrix(int size) {
+		return MatrixN.createRotation(size, this);
 	}
 
 	@Override

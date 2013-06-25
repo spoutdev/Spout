@@ -29,9 +29,9 @@ package org.spout.math.vector;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
-import org.spout.math.matrix.Matrix;
+import org.spout.math.matrix.MatrixN;
 
-public class Vector4 implements Comparable<Vector4>, Serializable, Cloneable {
+public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
 	public static final Vector4 ZERO = new Vector4(0, 0, 0, 0);
 	public static final Vector4 ONE = new Vector4(1, 1, 1, 1);
@@ -141,6 +141,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable, Cloneable {
 		return mul((float) a);
 	}
 
+	@Override
 	public Vector4 mul(float a) {
 		return mul(a, a, a, a);
 	}
@@ -155,6 +156,15 @@ public class Vector4 implements Comparable<Vector4>, Serializable, Cloneable {
 
 	public Vector4 mul(float x, float y, float z, float w) {
 		return new Vector4(this.x * x, this.y * y, this.z * z, this.w * w);
+	}
+
+	public Vector4 div(double a) {
+		return div((float) a);
+	}
+
+	@Override
+	public Vector4 div(float a) {
+		return div(a, a, a, a);
 	}
 
 	public Vector4 div(Vector4 v) {
@@ -181,30 +191,36 @@ public class Vector4 implements Comparable<Vector4>, Serializable, Cloneable {
 		return this.x * x + this.y * y + this.z * z + this.w * w;
 	}
 
-	public Vector4 pow(double power) {
-		return pow((float) power);
+	public Vector4 pow(double pow) {
+		return pow((float) pow);
 	}
 
+	@Override
 	public Vector4 pow(float power) {
 		return new Vector4(Math.pow(x, power), Math.pow(y, power), Math.pow(z, power), Math.pow(w, power));
 	}
 
+	@Override
 	public Vector4 ceil() {
 		return new Vector4(Math.ceil(x), Math.ceil(y), Math.ceil(z), Math.ceil(w));
 	}
 
+	@Override
 	public Vector4 floor() {
 		return new Vector4(GenericMath.floor(x), GenericMath.floor(y), GenericMath.floor(z), GenericMath.floor(w));
 	}
 
+	@Override
 	public Vector4 round() {
 		return new Vector4(Math.round(x), Math.round(y), Math.round(z), Math.round(w));
 	}
 
+	@Override
 	public Vector4 abs() {
 		return new Vector4(Math.abs(x), Math.abs(y), Math.abs(z), Math.abs(w));
 	}
 
+	@Override
 	public Vector4 negate() {
 		return new Vector4(-x, -y, -z, -w);
 	}
@@ -257,14 +273,17 @@ public class Vector4 implements Comparable<Vector4>, Serializable, Cloneable {
 		return GenericMath.lengthF(this.x - x, this.y - y, this.z - z, this.w - w);
 	}
 
+	@Override
 	public float lengthSquared() {
 		return GenericMath.lengthSquaredF(x, y, z, w);
 	}
 
+	@Override
 	public float length() {
 		return GenericMath.lengthF(x, y, z, w);
 	}
 
+	@Override
 	public Vector4 normalize() {
 		final float length = length();
 		return new Vector4(x / length, y / length, z / length, w / length);
@@ -278,20 +297,21 @@ public class Vector4 implements Comparable<Vector4>, Serializable, Cloneable {
 		return new Vector3(x, y, z);
 	}
 
-	public Vector toVector() {
-		return new Vector(x, y, z, w);
+	public VectorN toVector() {
+		return new VectorN(x, y, z, w);
 	}
 
+	@Override
 	public float[] toArray() {
 		return new float[]{x, y, z, w};
 	}
 
-	public Matrix toScalingMatrix(int size) {
-		return Matrix.createScaling(size, this);
+	public MatrixN toScalingMatrix(int size) {
+		return MatrixN.createScaling(size, this);
 	}
 
-	public Matrix toTranslationMatrix(int size) {
-		return Matrix.createTranslation(size, this);
+	public MatrixN toTranslationMatrix(int size) {
+		return MatrixN.createTranslation(size, this);
 	}
 
 	@Override

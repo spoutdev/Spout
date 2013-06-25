@@ -35,7 +35,7 @@ import org.spout.math.vector.Vector4;
 import org.spout.math.imaginary.Complex;
 import org.spout.math.imaginary.Quaternion;
 
-public class Matrix4 implements Serializable, Cloneable {
+public class Matrix4 implements Matrix, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
 	public static final Matrix4 ZERO = new Matrix4(
 			0, 0, 0, 0,
@@ -82,6 +82,62 @@ public class Matrix4 implements Serializable, Cloneable {
 				m.m30, m.m31, m.m32, m.m33);
 	}
 
+	public Matrix4(MatrixN m) {
+		m00 = m.get(0, 0);
+		m01 = m.get(0, 1);
+		m10 = m.get(1, 0);
+		m11 = m.get(1, 1);
+		if (m.size() > 2) {
+			m02 = m.get(0, 2);
+			m12 = m.get(1, 2);
+			m20 = m.get(2, 0);
+			m21 = m.get(2, 1);
+			m22 = m.get(2, 2);
+			if (m.size() > 3) {
+				m03 = m.get(0, 3);
+				m13 = m.get(1, 3);
+				m23 = m.get(2, 3);
+				m30 = m.get(3, 0);
+				m31 = m.get(3, 1);
+				m32 = m.get(3, 2);
+				m33 = m.get(3, 3);
+			} else {
+				m03 = 0;
+				m13 = 0;
+				m23 = 0;
+				m30 = 0;
+				m31 = 0;
+				m32 = 0;
+				m33 = 0;
+			}
+		} else {
+			m02 = 0;
+			m12 = 0;
+			m20 = 0;
+			m21 = 0;
+			m22 = 0;
+			m03 = 0;
+			m13 = 0;
+			m23 = 0;
+			m30 = 0;
+			m31 = 0;
+			m32 = 0;
+			m33 = 0;
+		}
+	}
+
+	public Matrix4(
+			double m00, double m01, double m02, double m03,
+			double m10, double m11, double m12, double m13,
+			double m20, double m21, double m22, double m23,
+			double m30, double m31, double m32, double m33) {
+		this(
+				(float) m00, (float) m01, (float) m02, (float) m03,
+				(float) m10, (float) m11, (float) m12, (float) m13,
+				(float) m20, (float) m21, (float) m22, (float) m23,
+				(float) m30, (float) m31, (float) m32, (float) m33);
+	}
+
 	public Matrix4(
 			float m00, float m01, float m02, float m03,
 			float m10, float m11, float m12, float m13,
@@ -105,6 +161,7 @@ public class Matrix4 implements Serializable, Cloneable {
 		this.m33 = m33;
 	}
 
+	@Override
 	public float get(int row, int col) {
 		switch (row) {
 			case 0:
@@ -173,6 +230,11 @@ public class Matrix4 implements Serializable, Cloneable {
 				m30 - m.m30, m31 - m.m31, m32 - m.m32, m33 - m.m33);
 	}
 
+	public Matrix4 mul(double a) {
+		return mul((float) a);
+	}
+
+	@Override
 	public Matrix4 mul(float a) {
 		return new Matrix4(
 				m00 * a, m01 * a, m02 * a, m03 * a,
@@ -201,12 +263,30 @@ public class Matrix4 implements Serializable, Cloneable {
 				m30 * m.m03 + m31 * m.m13 + m32 * m.m23 + m33 * m.m33);
 	}
 
+	public Matrix4 div(double a) {
+		return div((float) a);
+	}
+
+	@Override
 	public Matrix4 div(float a) {
 		return new Matrix4(
 				m00 / a, m01 / a, m02 / a, m03 / a,
 				m10 / a, m11 / a, m12 / a, m13 / a,
 				m20 / a, m21 / a, m22 / a, m23 / a,
 				m30 / a, m31 / a, m32 / a, m33 / a);
+	}
+
+	public Matrix4 pow(double pow) {
+		return pow((float) pow);
+	}
+
+	@Override
+	public Matrix4 pow(float pow) {
+		return new Matrix4(
+				Math.pow(m00, pow), Math.pow(m01, pow), Math.pow(m02, pow), Math.pow(m03, pow),
+				Math.pow(m10, pow), Math.pow(m11, pow), Math.pow(m12, pow), Math.pow(m13, pow),
+				Math.pow(m20, pow), Math.pow(m21, pow), Math.pow(m22, pow), Math.pow(m23, pow),
+				Math.pow(m30, pow), Math.pow(m31, pow), Math.pow(m32, pow), Math.pow(m33, pow));
 	}
 
 	public Matrix4 translate(Vector3 v) {
@@ -253,6 +333,7 @@ public class Matrix4 implements Serializable, Cloneable {
 				m30 * x + m31 * y + m32 * z + m33 * w);
 	}
 
+	@Override
 	public Matrix4 floor() {
 		return new Matrix4(
 				GenericMath.floor(m00), GenericMath.floor(m01), GenericMath.floor(m02), GenericMath.floor(m03),
@@ -261,14 +342,16 @@ public class Matrix4 implements Serializable, Cloneable {
 				GenericMath.floor(m30), GenericMath.floor(m31), GenericMath.floor(m32), GenericMath.floor(m33));
 	}
 
+	@Override
 	public Matrix4 ceil() {
 		return new Matrix4(
-				(float) Math.ceil(m00), (float) Math.ceil(m01), (float) Math.ceil(m02), (float) Math.ceil(m03),
-				(float) Math.ceil(m10), (float) Math.ceil(m11), (float) Math.ceil(m12), (float) Math.ceil(m13),
-				(float) Math.ceil(m20), (float) Math.ceil(m21), (float) Math.ceil(m22), (float) Math.ceil(m23),
-				(float) Math.ceil(m30), (float) Math.ceil(m31), (float) Math.ceil(m32), (float) Math.ceil(m33));
+				Math.ceil(m00), Math.ceil(m01), Math.ceil(m02), Math.ceil(m03),
+				Math.ceil(m10), Math.ceil(m11), Math.ceil(m12), Math.ceil(m13),
+				Math.ceil(m20), Math.ceil(m21), Math.ceil(m22), Math.ceil(m23),
+				Math.ceil(m30), Math.ceil(m31), Math.ceil(m32), Math.ceil(m33));
 	}
 
+	@Override
 	public Matrix4 round() {
 		return new Matrix4(
 				Math.round(m00), Math.round(m01), Math.round(m02), Math.round(m03),
@@ -277,6 +360,7 @@ public class Matrix4 implements Serializable, Cloneable {
 				Math.round(m30), Math.round(m31), Math.round(m32), Math.round(m33));
 	}
 
+	@Override
 	public Matrix4 abs() {
 		return new Matrix4(
 				Math.abs(m00), Math.abs(m01), Math.abs(m02), Math.abs(m03),
@@ -285,6 +369,7 @@ public class Matrix4 implements Serializable, Cloneable {
 				Math.abs(m30), Math.abs(m31), Math.abs(m32), Math.abs(m33));
 	}
 
+	@Override
 	public Matrix4 negate() {
 		return new Matrix4(
 				-m00, -m01, -m02, -m03,
@@ -293,6 +378,7 @@ public class Matrix4 implements Serializable, Cloneable {
 				-m30, -m31, -m32, -m33);
 	}
 
+	@Override
 	public Matrix4 transpose() {
 		return new Matrix4(
 				m00, m10, m20, m30,
@@ -301,10 +387,12 @@ public class Matrix4 implements Serializable, Cloneable {
 				m03, m13, m23, m33);
 	}
 
+	@Override
 	public float trace() {
 		return m00 + m11 + m22 + m33;
 	}
 
+	@Override
 	public float determinant() {
 		return m00 * (m11 * m22 * m33 + m21 * m32 * m13 + m31 * m12 * m23 - m31 * m22 * m13 - m11 * m32 * m23 - m21 * m12 * m33)
 				- m10 * (m01 * m22 * m33 + m21 * m32 * m03 + m31 * m02 * m23 - m31 * m22 * m03 - m01 * m32 * m23 - m21 * m02 * m33)
@@ -312,6 +400,7 @@ public class Matrix4 implements Serializable, Cloneable {
 				- m30 * (m01 * m12 * m23 + m11 * m22 * m03 + m21 * m02 * m13 - m21 * m12 * m03 - m01 * m22 * m13 - m11 * m02 * m23);
 	}
 
+	@Override
 	public Matrix4 invert() {
 		final float det = determinant();
 		if (det == 0) {
@@ -329,6 +418,19 @@ public class Matrix4 implements Serializable, Cloneable {
 		);
 	}
 
+	public Matrix2 toMatrix2() {
+		return new Matrix2(this);
+	}
+
+	public Matrix3 toMatrix3() {
+		return new Matrix3(this);
+	}
+
+	public MatrixN toMatrixN() {
+		return new MatrixN(this);
+	}
+
+	@Override
 	public float[] toArray() {
 		return new float[]{
 				m00, m01, m02, m03,

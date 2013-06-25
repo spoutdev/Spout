@@ -67,11 +67,11 @@ public class TrigMathTest {
 	}
 
 	private void test2D(float angle, float x, float y) {
-		assert2D(angle, Vector2.getDirection(angle), x, y);
+		assert2D(angle, Vector2.createDirection(angle), x, y);
 	}
 
 	private void test3D(float yaw, float pitch, float x, float y, float z) {
-		assert3D(yaw, pitch, Vector3.getDirection(yaw, pitch), x, y, z);
+		assert3D(yaw, pitch, Vector3.createDirection(yaw, pitch), x, y, z);
 	}
 
 	@Test
@@ -84,8 +84,8 @@ public class TrigMathTest {
 		// verify that the 2D axis are the same for 3D axis without pitch
 		float step = (float) (TrigMath.TWO_PI / 50.0); //50 steps in the circle
 		for (float i = (float) -TrigMath.PI; i < TrigMath.TWO_PI; i += step) {
-			Vector2 vec2D = Vector2.getDirection(i);
-			Vector3 vec3D = Vector3.getDirection(i, 0);
+			Vector2 vec2D = Vector2.createDirection(i);
+			Vector3 vec3D = Vector3.createDirection(i, 0);
 			assertEquals(vec2D.getX(), vec3D.getX(), 0.001f);
 			assertEquals(vec2D.getY(), vec3D.getZ(), 0.001f);
 		}

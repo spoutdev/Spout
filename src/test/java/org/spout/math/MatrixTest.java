@@ -29,7 +29,7 @@ package org.spout.math;
 import org.junit.Test;
 
 import org.spout.math.imaginary.Quaternion;
-import org.spout.math.matrix.Matrix;
+import org.spout.math.matrix.MatrixN;
 import org.spout.math.vector.Vector3;
 
 import static org.junit.Assert.fail;
@@ -37,7 +37,7 @@ import static org.junit.Assert.fail;
 public class MatrixTest {
 	private static final double eps = 0.01;
 
-	private void compareMatrixToArray(Matrix m, double[][] array) {
+	private void compareMatrixToArray(MatrixN m, double[][] array) {
 		for (int y = 0; y < m.size(); y++) {
 			for (int x = 0; x < m.size(); x++) {
 				if (Math.abs(m.get(x, y) - array[x][y]) > eps) {
@@ -49,7 +49,7 @@ public class MatrixTest {
 
 	@Test
 	public void testMatrix() {
-		Matrix m = new Matrix(4);
+		MatrixN m = new MatrixN(4);
 		if (m.size() != 4) {
 			fail("Constructor should make 4x4, got" + m.size());
 		}
@@ -61,7 +61,7 @@ public class MatrixTest {
 	public void testMatrixInt() {
 		for (int i = 2; i <= 4; i++) {
 
-			Matrix m = new Matrix(i);
+			MatrixN m = new MatrixN(i);
 			if (m.size() != i) {
 				fail("deminsion should be " + i + "x" + i + " , got" + m.size());
 			}
@@ -80,7 +80,7 @@ public class MatrixTest {
 
 	@Test
 	public void testGetAndSet() {
-		Matrix m = new Matrix(4);
+		MatrixN m = new MatrixN(4);
 		m.set(0, 0, 12);
 		m.set(1, 3, 2);
 		double[][] id = {{12, 0, 0, 0}, {0, 1, 0, 2}, {0, 0, 1, 0}, {0, 0, 0, 1}};
@@ -89,19 +89,19 @@ public class MatrixTest {
 
 	@Test
 	public void testMultiplyMatrix() {
-		Matrix a = new Matrix(4);
-		Matrix b = new Matrix(4);
-		Matrix m = a.mul(b);
+		MatrixN a = new MatrixN(4);
+		MatrixN b = new MatrixN(4);
+		MatrixN m = a.mul(b);
 		if (m.size() != 4) {
 			fail("Constructor should make 4x4, got" + m.size());
 		}
 		double[][] id = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 		compareMatrixToArray(m, id);
 
-		Matrix c = new Matrix(4);
+		MatrixN c = new MatrixN(4);
 		c.set(1, 3, 4);
 		c.set(0, 1, 10);
-		Matrix d = new Matrix(4);
+		MatrixN d = new MatrixN(4);
 		d.set(3, 2, 4);
 		d.set(0, 0, -1);
 		m = c.mul(d);
@@ -115,19 +115,19 @@ public class MatrixTest {
 
 	@Test
 	public void testAddMatrix() {
-		Matrix a = new Matrix(4);
-		Matrix b = new Matrix(4);
-		Matrix m = a.add(b);
+		MatrixN a = new MatrixN(4);
+		MatrixN b = new MatrixN(4);
+		MatrixN m = a.add(b);
 		if (m.size() != 4) {
 			fail("Constructor should make 4x4, got" + m.size());
 		}
 		double[][] id = {{2, 0, 0, 0}, {0, 2, 0, 0}, {0, 0, 2, 0}, {0, 0, 0, 2}};
 		compareMatrixToArray(m, id);
 
-		Matrix c = new Matrix(4);
+		MatrixN c = new MatrixN(4);
 		c.set(1, 3, 4);
 		c.set(0, 1, 10);
-		Matrix d = new Matrix(4);
+		MatrixN d = new MatrixN(4);
 		d.set(3, 2, 4);
 		d.set(0, 0, -1);
 		m = c.add(d);
@@ -142,7 +142,7 @@ public class MatrixTest {
 	public void testTranslate() {
 		Vector3 a = new Vector3(-1, 2, 4);
 		double[][] id = {{1, 0, 0, -1}, {0, 1, 0, 2}, {0, 0, 1, 4}, {0, 0, 0, 1}};
-		Matrix m = Matrix.createTranslation(4, a);
+		MatrixN m = MatrixN.createTranslation(4, a);
 		compareMatrixToArray(m, id);
 	}
 
@@ -150,24 +150,24 @@ public class MatrixTest {
 	public void testScaleVector3() {
 		Vector3 s = new Vector3(-1, 5, 3);
 		double[][] id = {{-1, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 3, 0}, {0, 0, 0, 1}};
-		Matrix m = Matrix.createScaling(4, s);
+		MatrixN m = MatrixN.createScaling(4, s);
 		compareMatrixToArray(m, id);
 	}
 
 	@Test
 	public void testRotate() {
-		Matrix m;
+		MatrixN m;
 		Quaternion rot;
 
 		rot = Quaternion.IDENTITY;
-		m = Matrix.createRotation(4, rot);
+		m = MatrixN.createRotation(4, rot);
 
 		double[][] id = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);
 
 		rot = new Quaternion(4, 3, 2, 0);
-		m = Matrix.createRotation(4, rot);
+		m = MatrixN.createRotation(4, rot);
 
 		id = new double[][]{
 				{0.103448, 0.827586, 0.551724, 0},
@@ -179,7 +179,7 @@ public class MatrixTest {
 		compareMatrixToArray(m, id);
 
 		rot = Quaternion.fromAngleDegAxis(90, new Vector3(0, 1, 0));
-		m = Matrix.createRotation(4, rot);
+		m = MatrixN.createRotation(4, rot);
 		id = new double[][]{{0, 0, 1, 0}, {0, 1, 0, 0}, {-1, 0, 0, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);

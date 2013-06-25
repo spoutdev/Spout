@@ -32,7 +32,7 @@ import org.spout.math.GenericMath;
 import org.spout.math.vector.Vector2;
 import org.spout.math.imaginary.Complex;
 
-public class Matrix2 implements Serializable, Cloneable {
+public class Matrix2 implements Matrix, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
 	public static final Matrix2 ZERO = new Matrix2(
 			0, 0,
@@ -55,6 +55,32 @@ public class Matrix2 implements Serializable, Cloneable {
 				m.m10, m.m11);
 	}
 
+	public Matrix2(Matrix3 m) {
+		this(
+				m.get(0, 0), m.get(0, 1),
+				m.get(1, 0), m.get(1, 1));
+	}
+
+	public Matrix2(Matrix4 m) {
+		this(
+				m.get(0, 0), m.get(0, 1),
+				m.get(1, 0), m.get(1, 1));
+	}
+
+	public Matrix2(MatrixN m) {
+		this(
+				m.get(0, 0), m.get(0, 1),
+				m.get(1, 0), m.get(1, 1));
+	}
+
+	public Matrix2(
+			double m00, double m01,
+			double m10, double m11) {
+		this(
+				(float) m00, (float) m01,
+				(float) m10, (float) m11);
+	}
+
 	public Matrix2(
 			float m00, float m01,
 			float m10, float m11) {
@@ -64,6 +90,7 @@ public class Matrix2 implements Serializable, Cloneable {
 		this.m11 = m11;
 	}
 
+	@Override
 	public float get(int row, int col) {
 		switch (row) {
 			case 0:
@@ -98,6 +125,11 @@ public class Matrix2 implements Serializable, Cloneable {
 				m10 - m.m10, m11 - m.m11);
 	}
 
+	public Matrix2 mul(double a) {
+		return mul((float) a);
+	}
+
+	@Override
 	public Matrix2 mul(float a) {
 		return new Matrix2(
 				m00 * a, m01 * a,
@@ -110,10 +142,30 @@ public class Matrix2 implements Serializable, Cloneable {
 				m10 * m.m00 + m11 * m.m10, m10 * m.m01 + m11 * m.m11);
 	}
 
+	public Matrix2 div(double a) {
+		return div((float) a);
+	}
+
+	@Override
 	public Matrix2 div(float a) {
 		return new Matrix2(
 				m00 / a, m01 / a,
 				m10 / a, m11 / a);
+	}
+
+	public Matrix2 div(Matrix2 m) {
+		return mul(m.invert());
+	}
+
+	public Matrix2 pow(double pow) {
+		return pow((float) pow);
+	}
+
+	@Override
+	public Matrix2 pow(float pow) {
+		return new Matrix2(
+				Math.pow(m00, pow), Math.pow(m01, pow),
+				Math.pow(m10, pow), Math.pow(m11, pow));
 	}
 
 	public Matrix2 translate(float x) {
@@ -150,50 +202,59 @@ public class Matrix2 implements Serializable, Cloneable {
 				m10 * x + m11 * y);
 	}
 
+	@Override
 	public Matrix2 floor() {
 		return new Matrix2(
 				GenericMath.floor(m00), GenericMath.floor(m01),
 				GenericMath.floor(m10), GenericMath.floor(m11));
 	}
 
+	@Override
 	public Matrix2 ceil() {
 		return new Matrix2(
-				(float) Math.ceil(m00), (float) Math.ceil(m01),
-				(float) Math.ceil(m10), (float) Math.ceil(m11));
+				Math.ceil(m00), Math.ceil(m01),
+				Math.ceil(m10), Math.ceil(m11));
 	}
 
+	@Override
 	public Matrix2 round() {
 		return new Matrix2(
 				Math.round(m00), Math.round(m01),
 				Math.round(m10), Math.round(m11));
 	}
 
+	@Override
 	public Matrix2 abs() {
 		return new Matrix2(
 				Math.abs(m00), Math.abs(m01),
 				Math.abs(m10), Math.abs(m11));
 	}
 
+	@Override
 	public Matrix2 negate() {
 		return new Matrix2(
 				-m00, -m01,
 				-m10, -m11);
 	}
 
+	@Override
 	public Matrix2 transpose() {
 		return new Matrix2(
 				m00, m10,
 				m01, m11);
 	}
 
+	@Override
 	public float trace() {
 		return m00 + m11;
 	}
 
+	@Override
 	public float determinant() {
 		return m00 * m11 - m01 * m10;
 	}
 
+	@Override
 	public Matrix2 invert() {
 		final float det = determinant();
 		if (det == 0) {
@@ -204,6 +265,19 @@ public class Matrix2 implements Serializable, Cloneable {
 				-m10 / det, m00 / det);
 	}
 
+	public Matrix3 toMatrix3() {
+		return new Matrix3(this);
+	}
+
+	public Matrix4 toMatrix4() {
+		return new Matrix4(this);
+	}
+
+	public MatrixN toMatrixN() {
+		return new MatrixN(this);
+	}
+
+	@Override
 	public float[] toArray() {
 		return new float[]{
 				m00, m01,

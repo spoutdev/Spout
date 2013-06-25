@@ -31,9 +31,9 @@ import java.util.Random;
 
 import org.spout.math.GenericMath;
 import org.spout.math.TrigMath;
-import org.spout.math.matrix.Matrix;
+import org.spout.math.matrix.MatrixN;
 
-public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
+public class Vector3 implements Vector, Comparable<Vector3>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
 	public static final Vector3 ZERO = new Vector3(0, 0, 0);
 	public static final Vector3 ONE = new Vector3(1, 1, 1);
@@ -131,6 +131,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 		return mul((float) a);
 	}
 
+	@Override
 	public Vector3 mul(float a) {
 		return mul(a, a, a);
 	}
@@ -145,6 +146,15 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 
 	public Vector3 mul(float x, float y, float z) {
 		return new Vector3(this.x * x, this.y * y, this.z * z);
+	}
+
+	public Vector3 div(double a) {
+		return div((float) a);
+	}
+
+	@Override
+	public Vector3 div(float a) {
+		return div(a, a, a);
 	}
 
 	public Vector3 div(Vector3 v) {
@@ -183,30 +193,36 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 		return new Vector3(this.y * z - this.z * y, this.z * x - this.x * z, this.x * y - this.y * x);
 	}
 
-	public Vector3 pow(double power) {
-		return pow((float) power);
+	public Vector3 pow(double pow) {
+		return pow((float) pow);
 	}
 
+	@Override
 	public Vector3 pow(float power) {
 		return new Vector3(Math.pow(x, power), Math.pow(y, power), Math.pow(z, power));
 	}
 
+	@Override
 	public Vector3 ceil() {
 		return new Vector3(Math.ceil(x), Math.ceil(y), Math.ceil(z));
 	}
 
+	@Override
 	public Vector3 floor() {
 		return new Vector3(GenericMath.floor(x), GenericMath.floor(y), GenericMath.floor(z));
 	}
 
+	@Override
 	public Vector3 round() {
 		return new Vector3(Math.round(x), Math.round(y), Math.round(z));
 	}
 
+	@Override
 	public Vector3 abs() {
 		return new Vector3(Math.abs(x), Math.abs(y), Math.abs(z));
 	}
 
+	@Override
 	public Vector3 negate() {
 		return new Vector3(-x, -y, -z);
 	}
@@ -259,14 +275,17 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 		return GenericMath.lengthF(this.x - x, this.y - y, this.z - z);
 	}
 
+	@Override
 	public float lengthSquared() {
 		return GenericMath.lengthSquaredF(x, y, z);
 	}
 
+	@Override
 	public float length() {
 		return GenericMath.lengthF(x, y, z);
 	}
 
+	@Override
 	public Vector3 normalize() {
 		final float length = length();
 		return new Vector3(x / length, y / length, z / length);
@@ -288,20 +307,21 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 		return new Vector4(this, w);
 	}
 
-	public Vector toVector() {
-		return new Vector(x, y, z);
+	public VectorN toVector() {
+		return new VectorN(x, y, z);
 	}
 
+	@Override
 	public float[] toArray() {
 		return new float[]{x, y, z};
 	}
 
-	public Matrix toScalingMatrix(int size) {
-		return Matrix.createScaling(size, this);
+	public MatrixN toScalingMatrix(int size) {
+		return MatrixN.createScaling(size, this);
 	}
 
-	public Matrix toTranslationMatrix(int size) {
-		return Matrix.createTranslation(size, this);
+	public MatrixN toTranslationMatrix(int size) {
+		return MatrixN.createTranslation(size, this);
 	}
 
 	@Override
@@ -342,7 +362,6 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 	}
 
 	@Override
-
 	public Vector3 clone() {
 		return new Vector3(this);
 	}
@@ -358,8 +377,8 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 	 * @param random to use
 	 * @return the random direction vector
 	 */
-	public static Vector3 getRandomDirection(Random random) {
-		return getDirection(random.nextFloat() * (float) TrigMath.TWO_PI,
+	public static Vector3 createRandomDirection(Random random) {
+		return createDirection(random.nextFloat() * (float) TrigMath.TWO_PI,
 				random.nextFloat() * (float) TrigMath.TWO_PI);
 	}
 
@@ -370,7 +389,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable, Cloneable {
 	 * @param inclination in radians
 	 * @return the random direction vector
 	 */
-	public static Vector3 getDirection(float azimuth, float inclination) {
+	public static Vector3 createDirection(float azimuth, float inclination) {
 		final float yFact = TrigMath.cos(inclination);
 		return new Vector3(yFact * TrigMath.cos(azimuth), TrigMath.sin(inclination), yFact * TrigMath.sin(azimuth));
 	}

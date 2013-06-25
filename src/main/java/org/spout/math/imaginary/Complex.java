@@ -29,7 +29,7 @@ package org.spout.math.imaginary;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
-import org.spout.math.matrix.Matrix;
+import org.spout.math.matrix.MatrixN;
 import org.spout.math.TrigMath;
 import org.spout.math.vector.Vector2;
 
@@ -122,8 +122,8 @@ public class Complex implements Comparable<Complex>, Serializable, Cloneable {
 		return new Complex(x / length, y / length);
 	}
 
-	public Matrix toRotationMatrix(int size) {
-		return Matrix.createRotation(size, this);
+	public MatrixN toRotationMatrix(int size) {
+		return MatrixN.createRotation(size, this);
 	}
 
 	@Override

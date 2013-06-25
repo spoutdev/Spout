@@ -31,9 +31,9 @@ import java.util.Random;
 
 import org.spout.math.GenericMath;
 import org.spout.math.TrigMath;
-import org.spout.math.matrix.Matrix;
+import org.spout.math.matrix.MatrixN;
 
-public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
+public class Vector2 implements Vector, Comparable<Vector2>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
 	public static final Vector2 ZERO = new Vector2(0, 0);
 	public static final Vector2 ONE = new Vector2(1, 1);
@@ -113,6 +113,7 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 		return mul((float) a);
 	}
 
+	@Override
 	public Vector2 mul(float a) {
 		return mul(a, a);
 	}
@@ -127,6 +128,15 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 
 	public Vector2 mul(float x, float y) {
 		return new Vector2(this.x * x, this.y * y);
+	}
+
+	public Vector2 div(double a) {
+		return div((float) a);
+	}
+
+	@Override
+	public Vector2 div(float a) {
+		return div(a, a);
 	}
 
 	public Vector2 div(Vector2 v) {
@@ -153,30 +163,36 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 		return this.x * x + this.y * y;
 	}
 
-	public Vector2 pow(double power) {
-		return pow((float) power);
+	public Vector2 pow(double pow) {
+		return pow((float) pow);
 	}
 
+	@Override
 	public Vector2 pow(float power) {
 		return new Vector2(Math.pow(x, power), Math.pow(y, power));
 	}
 
+	@Override
 	public Vector2 ceil() {
 		return new Vector2(Math.ceil(x), Math.ceil(y));
 	}
 
+	@Override
 	public Vector2 floor() {
 		return new Vector2(GenericMath.floor(x), GenericMath.floor(y));
 	}
 
+	@Override
 	public Vector2 round() {
 		return new Vector2(Math.round(x), Math.round(y));
 	}
 
+	@Override
 	public Vector2 abs() {
 		return new Vector2(Math.abs(x), Math.abs(y));
 	}
 
+	@Override
 	public Vector2 negate() {
 		return new Vector2(-x, -y);
 	}
@@ -229,14 +245,17 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 		return GenericMath.lengthF(this.x - x, this.y - y);
 	}
 
+	@Override
 	public float lengthSquared() {
 		return GenericMath.lengthSquaredF(x, y);
 	}
 
+	@Override
 	public float length() {
 		return GenericMath.lengthF(x, y);
 	}
 
+	@Override
 	public Vector2 normalize() {
 		final float length = length();
 		return new Vector2(x / length, y / length);
@@ -266,20 +285,21 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 		return new Vector4(this, z, w);
 	}
 
-	public Vector toVector() {
-		return new Vector(x, y);
+	public VectorN toVector() {
+		return new VectorN(x, y);
 	}
 
+	@Override
 	public float[] toArray() {
 		return new float[]{x, y};
 	}
 
-	public Matrix toScalingMatrix(int size) {
-		return Matrix.createScaling(size, this);
+	public MatrixN toScalingMatrix(int size) {
+		return MatrixN.createScaling(size, this);
 	}
 
-	public Matrix toTranslationMatrix(int size) {
-		return Matrix.createTranslation(size, this);
+	public MatrixN toTranslationMatrix(int size) {
+		return MatrixN.createTranslation(size, this);
 	}
 
 	@Override
@@ -331,8 +351,8 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 	 * @param random to use
 	 * @return the random direction vector
 	 */
-	public static Vector2 getRandomDirection(Random random) {
-		return getDirection(random.nextFloat() * (float) TrigMath.TWO_PI);
+	public static Vector2 createRandomDirection(Random random) {
+		return createDirection(random.nextFloat() * (float) TrigMath.TWO_PI);
 	}
 
 	/**
@@ -341,7 +361,7 @@ public class Vector2 implements Comparable<Vector2>, Serializable, Cloneable {
 	 * @param azimuth in radians
 	 * @return the direction vector
 	 */
-	public static Vector2 getDirection(float azimuth) {
+	public static Vector2 createDirection(float azimuth) {
 		return new Vector2(TrigMath.cos(azimuth), TrigMath.sin(azimuth));
 	}
 }
