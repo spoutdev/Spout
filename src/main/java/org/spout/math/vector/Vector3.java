@@ -36,7 +36,6 @@ import org.spout.math.matrix.MatrixN;
 public class Vector3 implements Vector, Comparable<Vector3>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
 	public static final Vector3 ZERO = new Vector3(0, 0, 0);
-	public static final Vector3 ONE = new Vector3(1, 1, 1);
 	public static final Vector3 UNIT_X = new Vector3(1, 0, 0);
 	public static final Vector3 UNIT_Y = new Vector3(0, 1, 0);
 	public static final Vector3 UNIT_Z = new Vector3(0, 0, 1);

@@ -707,29 +707,21 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		private final MatrixN aug;
 		private final int size;
 
-		public AugmentedMatrixN(MatrixN mat) {
+		private AugmentedMatrixN(MatrixN mat) {
 			this.mat = mat.clone();
 			this.size = mat.size();
 			aug = new MatrixN(size);
 		}
 
-		public MatrixN getMatrix() {
-			return mat;
-		}
-
-		public MatrixN getAugmentation() {
+		private MatrixN getAugmentation() {
 			return aug;
 		}
 
-		public int getSize() {
-			return size;
+		private int getAugmentedSize() {
+			return size * 2;
 		}
 
-		public int getAugmentedSize() {
-			return getSize() * 2;
-		}
-
-		public float get(int row, int col) {
+		private float get(int row, int col) {
 			if (col < size) {
 				return mat.get(row, col);
 			} else {
@@ -737,7 +729,7 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 			}
 		}
 
-		public void set(int row, int col, float val) {
+		private void set(int row, int col, float val) {
 			if (col < size) {
 				mat.set(row, col, val);
 			} else {
