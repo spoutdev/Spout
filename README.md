@@ -1,4 +1,5 @@
-01001101011000010111010001101000
-================================
+Math
+====
 
-This... is... MATH!
+Immutable math library developed for the Spout voxel game platform.
+http://www.spout.org
