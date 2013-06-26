@@ -31,7 +31,6 @@ import java.util.Random;
 
 import org.spout.math.GenericMath;
 import org.spout.math.TrigMath;
-import org.spout.math.matrix.MatrixN;
 
 public class Vector2 implements Vector, Comparable<Vector2>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
@@ -284,21 +283,13 @@ public class Vector2 implements Vector, Comparable<Vector2>, Serializable, Clone
 		return new Vector4(this, z, w);
 	}
 
-	public VectorN toVector() {
+	public VectorN toVectorN() {
 		return new VectorN(x, y);
 	}
 
 	@Override
 	public float[] toArray() {
 		return new float[]{x, y};
-	}
-
-	public MatrixN toScalingMatrix(int size) {
-		return MatrixN.createScaling(size, this);
-	}
-
-	public MatrixN toTranslationMatrix(int size) {
-		return MatrixN.createTranslation(size, this);
 	}
 
 	@Override

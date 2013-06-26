@@ -31,12 +31,10 @@ import java.util.Arrays;
 
 import org.spout.math.GenericMath;
 import org.spout.math.TrigMath;
-import org.spout.math.vector.VectorN;
-import org.spout.math.vector.Vector2;
-import org.spout.math.vector.Vector3;
-import org.spout.math.vector.Vector4;
 import org.spout.math.imaginary.Complex;
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
+import org.spout.math.vector.VectorN;
 
 public class MatrixN implements Matrix, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
@@ -225,36 +223,12 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		return d;
 	}
 
-	public MatrixN translate(Vector2 v) {
-		return translate(v.getX(), v.getY());
-	}
-
-	public MatrixN translate(Vector3 v) {
-		return translate(v.getX(), v.getY(), v.getZ());
-	}
-
-	public MatrixN translate(Vector4 v) {
-		return translate(v.getX(), v.getY(), v.getZ(), v.getW());
-	}
-
 	public MatrixN translate(VectorN v) {
 		return translate(v.toArray());
 	}
 
 	public MatrixN translate(float... v) {
 		return createTranslation(size(), v).mul(this);
-	}
-
-	public MatrixN scale(Vector2 v) {
-		return scale(v.getX(), v.getY());
-	}
-
-	public MatrixN scale(Vector3 v) {
-		return scale(v.getX(), v.getY(), v.getZ());
-	}
-
-	public MatrixN scale(Vector4 v) {
-		return scale(v.getX(), v.getY(), v.getZ(), v.getW());
 	}
 
 	public MatrixN scale(VectorN v) {
@@ -271,18 +245,6 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 
 	public MatrixN rotate(Quaternion rot) {
 		return createRotation(size(), rot).mul(this);
-	}
-
-	public Vector2 transform(Vector2 v) {
-		return transform(v.getX(), v.getY()).toVector2();
-	}
-
-	public Vector3 transform(Vector3 v) {
-		return transform(v.getX(), v.getY(), v.getZ()).toVector3();
-	}
-
-	public Vector4 transform(Vector4 v) {
-		return transform(v.getX(), v.getY(), v.getZ(), v.getW()).toVector4();
 	}
 
 	public VectorN transform(VectorN v) {
@@ -506,38 +468,6 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		return new MatrixN(this);
 	}
 
-	private static float[] adjustSize(float[] array, int toSize, float filler) {
-		if (array.length == toSize) {
-			return array;
-		}
-		final float[] d = new float[toSize];
-		final int size = Math.min(array.length, toSize);
-		System.arraycopy(array, 0, d, 0, size);
-		Arrays.fill(d, size, toSize, filler);
-		return d;
-	}
-
-	private static float[][] deepClone(float[][] array) {
-		final int size = array.length;
-		final float[][] clone = array.clone();
-		for (int i = 0; i < size; i++) {
-			clone[i] = array[i].clone();
-		}
-		return clone;
-	}
-
-	public static MatrixN createScaling(int size, Vector2 v) {
-		return createScaling(size, v.getX(), v.getY());
-	}
-
-	public static MatrixN createScaling(int size, Vector3 v) {
-		return createScaling(size, v.getX(), v.getY(), v.getZ());
-	}
-
-	public static MatrixN createScaling(int size, Vector4 v) {
-		return createScaling(size, v.getX(), v.getY(), v.getZ(), v.getW());
-	}
-
 	public static MatrixN createScaling(int size, VectorN v) {
 		return createScaling(size, v.toArray());
 	}
@@ -549,18 +479,6 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 			m.set(rowCol, rowCol, vec[rowCol]);
 		}
 		return m;
-	}
-
-	public static MatrixN createTranslation(int size, Vector2 v) {
-		return createTranslation(size, v.getX(), v.getY());
-	}
-
-	public static MatrixN createTranslation(int size, Vector3 v) {
-		return createTranslation(size, v.getX(), v.getY(), v.getZ());
-	}
-
-	public static MatrixN createTranslation(int size, Vector4 v) {
-		return createTranslation(size, v.getX(), v.getY(), v.getW());
 	}
 
 	public static MatrixN createTranslation(int size, VectorN v) {
@@ -634,7 +552,7 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		mat.set(2, 0, -f.getX());
 		mat.set(2, 1, -f.getY());
 		mat.set(2, 2, -f.getZ());
-		return mat.translate(eye.mul(-1));
+		return mat.translate(eye.mul(-1).toVectorN());
 	}
 
 	/**
@@ -684,6 +602,26 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		orthographic.set(3, 2, -near2 * far / FmN);
 		orthographic.set(3, 3, 0);
 		return orthographic;
+	}
+
+	private static float[] adjustSize(float[] array, int toSize, float filler) {
+		if (array.length == toSize) {
+			return array;
+		}
+		final float[] d = new float[toSize];
+		final int size = Math.min(array.length, toSize);
+		System.arraycopy(array, 0, d, 0, size);
+		Arrays.fill(d, size, toSize, filler);
+		return d;
+	}
+
+	private static float[][] deepClone(float[][] array) {
+		final int size = array.length;
+		final float[][] clone = array.clone();
+		for (int i = 0; i < size; i++) {
+			clone[i] = array[i].clone();
+		}
+		return clone;
 	}
 
 	private static class ImmutableIdentityMatrixN extends MatrixN {

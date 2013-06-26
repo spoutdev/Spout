@@ -29,7 +29,7 @@ package org.spout.math;
 import org.junit.Test;
 
 import org.spout.math.imaginary.Quaternion;
-import org.spout.math.matrix.MatrixN;
+import org.spout.math.matrix.Matrix3;
 import org.spout.math.vector.Vector2;
 import org.spout.math.vector.Vector3;
 
@@ -397,11 +397,11 @@ public class Vector3Test {
 	@Test
 	public void testTransformVector3() {
 		Vector3 x = new Vector3(1, 0, 0);
-		Vector3 u = MatrixN.createRotation(3, Quaternion.fromAngleDegAxis(90, Vector3.UNIT_Y)).transform(x);
+		Vector3 u = Matrix3.createRotation(Quaternion.fromAngleDegAxis(90, Vector3.UNIT_Y)).transform(x);
 		testValue(u, 0, 0, -1);
 
 		Vector3 y = new Vector3(2, 4, 5);
-		Vector3 v = MatrixN.createRotation(3, Quaternion.fromAngleDegAxis(30, Vector3.UNIT_X)).transform(y);
+		Vector3 v = Matrix3.createRotation(Quaternion.fromAngleDegAxis(30, Vector3.UNIT_X)).transform(y);
 		testValue(v, 2, .9666f, 6.333f);
 	}
 }

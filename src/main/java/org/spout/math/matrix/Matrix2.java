@@ -29,8 +29,8 @@ package org.spout.math.matrix;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
-import org.spout.math.vector.Vector2;
 import org.spout.math.imaginary.Complex;
+import org.spout.math.vector.Vector2;
 
 public class Matrix2 implements Matrix, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;

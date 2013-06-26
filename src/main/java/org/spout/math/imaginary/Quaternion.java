@@ -29,10 +29,8 @@ package org.spout.math.imaginary;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
-import org.spout.math.matrix.Matrix3;
-import org.spout.math.matrix.Matrix4;
-import org.spout.math.matrix.MatrixN;
 import org.spout.math.TrigMath;
+import org.spout.math.matrix.Matrix3;
 import org.spout.math.vector.Vector3;
 
 public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializable, Cloneable {
@@ -127,7 +125,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	public Vector3 getDirection() {
-		return toRotationMatrix3().transform(Vector3.FORWARD);
+		return Matrix3.createRotation(this).transform(Vector3.FORWARD);
 	}
 
 	public Vector3 getAxesAngleDeg() {
@@ -159,8 +157,8 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 
 	/**
 	 * Conjugate the quaternion <br> Conjugation of a quaternion <code>a</code> is an operation
-	 * returning quaternion <code>a'</code> such that <code>a' * a = a * a' = |a|²</code> where
-	 * <code>|a|²</code> is squared length of <code>a</code>.
+	 * returning quaternion <code>a'</code> such that <code>a' * a = a * a' = |a|^2</code> where
+	 * <code>|a|^2</code> is squared length of <code>a</code>.
 	 *
 	 * @return the conjugated Quaternion
 	 * @see org.spout.math.matrix.MatrixN#transpose()
@@ -171,11 +169,11 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Invert the quaternion <br> Inversion of a quaternion <code>a</code> returns quaternion <code>a⁻ⁱ
-	 * = a' / |a|²</code> where <code>a'</code> is {@link #conjugate() conjugation} of <code>a</code>,
-	 * and <code>|a|²</code> is squared length of <code>a</code>. <br> For any quaternions <code>a, b,
-	 * c</code>, such that <code>a * b = c</code> equations <code>a⁻ⁱ * c = b</code> and <code>c * b⁻ⁱ
-	 * = a</code> are true.
+	 * Invert the quaternion <br> Inversion of a quaternion <code>a</code> returns quaternion
+	 * <code>a^-i = a' / |a|^2</code> where <code>a'</code> is {@link #conjugate() conjugation} of
+	 * <code>a</code>, and <code>|a|^2</code> is squared length of <code>a</code>. <br> For any
+	 * quaternions <code>a, b, c</code>, such that <code>a * b = c</code> equations <code>a^-i * c =
+	 * b</code> and <code>c * b^-i = a</code> are true.
 	 *
 	 * @return the inverted Quaternion
 	 */
@@ -198,18 +196,6 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	public Quaternion normalize() {
 		final float length = length();
 		return new Quaternion(x / length, y / length, z / length, w / length);
-	}
-
-	public Matrix3 toRotationMatrix3() {
-		return Matrix3.createRotation(this);
-	}
-
-	public Matrix4 toRotationMatrix4() {
-		return Matrix4.createRotation(this);
-	}
-
-	public MatrixN toRotationMatrixN(int size) {
-		return MatrixN.createRotation(size, this);
 	}
 
 	@Override

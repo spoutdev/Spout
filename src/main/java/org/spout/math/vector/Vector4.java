@@ -29,7 +29,6 @@ package org.spout.math.vector;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
-import org.spout.math.matrix.MatrixN;
 
 public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
@@ -296,21 +295,13 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 		return new Vector3(x, y, z);
 	}
 
-	public VectorN toVector() {
+	public VectorN toVectorN() {
 		return new VectorN(x, y, z, w);
 	}
 
 	@Override
 	public float[] toArray() {
 		return new float[]{x, y, z, w};
-	}
-
-	public MatrixN toScalingMatrix(int size) {
-		return MatrixN.createScaling(size, this);
-	}
-
-	public MatrixN toTranslationMatrix(int size) {
-		return MatrixN.createTranslation(size, this);
 	}
 
 	@Override

@@ -30,10 +30,6 @@ import java.io.Serializable;
 
 import org.spout.math.GenericMath;
 import org.spout.math.TrigMath;
-import org.spout.math.matrix.Matrix2;
-import org.spout.math.matrix.Matrix3;
-import org.spout.math.matrix.Matrix4;
-import org.spout.math.matrix.MatrixN;
 import org.spout.math.vector.Vector2;
 
 public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cloneable {
@@ -138,22 +134,6 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 	public Complex normalize() {
 		final float length = length();
 		return new Complex(x / length, y / length);
-	}
-
-	public Matrix2 toRotationMatrix2() {
-		return Matrix2.createRotation(this);
-	}
-
-	public Matrix3 toRotationMatrix3() {
-		return Matrix3.createRotation(this);
-	}
-
-	public Matrix4 toRotationMatrix4() {
-		return Matrix4.createRotation(this);
-	}
-
-	public MatrixN toRotationMatrixN(int size) {
-		return MatrixN.createRotation(size, this);
 	}
 
 	@Override

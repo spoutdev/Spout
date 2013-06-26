@@ -29,10 +29,10 @@ package org.spout.math.matrix;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
-import org.spout.math.vector.Vector2;
-import org.spout.math.vector.Vector3;
 import org.spout.math.imaginary.Complex;
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
 
 public class Matrix3 implements Matrix, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;

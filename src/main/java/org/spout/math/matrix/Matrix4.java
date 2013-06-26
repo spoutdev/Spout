@@ -30,10 +30,10 @@ import java.io.Serializable;
 
 import org.spout.math.GenericMath;
 import org.spout.math.TrigMath;
-import org.spout.math.vector.Vector3;
-import org.spout.math.vector.Vector4;
 import org.spout.math.imaginary.Complex;
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector4;
 
 public class Matrix4 implements Matrix, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;

@@ -29,6 +29,8 @@ package org.spout.math;
 import org.junit.Test;
 
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
 import org.spout.math.matrix.MatrixN;
 import org.spout.math.vector.Vector3;
 
@@ -36,6 +38,14 @@ import static org.junit.Assert.fail;
 
 public class MatrixTest {
 	private static final double eps = 0.01;
+
+	private void compareMatrixToArray(Matrix3 m, double[][] array) {
+		compareMatrixToArray(m.toMatrixN(), array);
+	}
+
+	private void compareMatrixToArray(Matrix4 m, double[][] array) {
+		compareMatrixToArray(m.toMatrixN(), array);
+	}
 
 	private void compareMatrixToArray(MatrixN m, double[][] array) {
 		for (int y = 0; y < m.size(); y++) {
@@ -142,15 +152,15 @@ public class MatrixTest {
 	public void testTranslate() {
 		Vector3 a = new Vector3(-1, 2, 4);
 		double[][] id = {{1, 0, 0, -1}, {0, 1, 0, 2}, {0, 0, 1, 4}, {0, 0, 0, 1}};
-		MatrixN m = MatrixN.createTranslation(4, a);
+		Matrix4 m = Matrix4.createTranslation(a);
 		compareMatrixToArray(m, id);
 	}
 
 	@Test
 	public void testScaleVector3() {
 		Vector3 s = new Vector3(-1, 5, 3);
-		double[][] id = {{-1, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 3, 0}, {0, 0, 0, 1}};
-		MatrixN m = MatrixN.createScaling(4, s);
+		double[][] id = {{-1, 0, 0}, {0, 5, 0}, {0, 0, 3}};
+		Matrix3 m = Matrix3.createScaling(s);
 		compareMatrixToArray(m, id);
 	}
 
