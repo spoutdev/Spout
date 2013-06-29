@@ -35,6 +35,7 @@ import static org.junit.Assert.assertSame;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.spout.api.EngineFaker;
 import org.spout.api.material.Material;
 import org.spout.api.material.BlockMaterial;
 

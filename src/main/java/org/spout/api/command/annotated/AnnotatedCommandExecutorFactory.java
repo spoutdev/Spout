@@ -41,10 +41,14 @@ public final class AnnotatedCommandExecutorFactory {
 	private AnnotatedCommandExecutorFactory() {
 	}
 
-	private static boolean validateMethod(Method method) {
+	private static boolean validateMethod(Method method, boolean classProcessed) {
 		if (hasCommandAnnotation(method)) {
 			if (Modifier.isAbstract(method.getModifiers())) {
 				Spout.warn("Unable to register " + method.getName() + " as a command, method can not be abstract.");
+				return false;
+			}
+			if (classProcessed && !Modifier.isStatic(method.getModifiers())) {
+				Spout.warn("Unable to register " + method.getName() + " as a command, method must be static.");
 				return false;
 			}
 			Class<?>[] params = method.getParameterTypes();
@@ -66,20 +70,14 @@ public final class AnnotatedCommandExecutorFactory {
 	private static boolean hasCommandAnnotation(Method method) {
 		return method.isAnnotationPresent(org.spout.api.command.annotated.Command.class);
 	}
-
-	/**
-	 * Registers all the defined commands by method in this class.
-	 *
-	 * @param parent to register commands under
-	 */
-	public static AnnotatedCommandExecutor create(Object instance, org.spout.api.command.Command parent) {
+	
+	private static AnnotatedCommandExecutor create(Class<?> commands, Object instance, org.spout.api.command.Command parent) {
 		Map<org.spout.api.command.Command, Method> cmdMap = new HashMap<org.spout.api.command.Command, Method>();
-		Class<?> c = instance.getClass();
-		while (c != null) {
-			for (Method method : c.getDeclaredMethods()) {
+		while (commands != null) {
+			for (Method method : commands.getDeclaredMethods()) {
 				method.setAccessible(true);
 				// check the validity of the current method
-				if (!validateMethod(method)) {
+				if (!validateMethod(method, instance == null)) {
 					continue;
 				}
 
@@ -154,7 +152,7 @@ public final class AnnotatedCommandExecutorFactory {
 				// put the command in our map
 				cmdMap.put(command, method);
 			}
-			c = c.getSuperclass();
+			commands = commands.getSuperclass();
 		}
 
 		// set the executor of the commands
@@ -168,8 +166,37 @@ public final class AnnotatedCommandExecutorFactory {
 
 	/**
 	 * Registers all the defined commands by method in this class.
+	 * @param instance the object containing the commands
 	 */
-	public static void create(Object instance) {
-		create(instance, null);
+	public static AnnotatedCommandExecutor create(Object instance) {
+		return create(instance.getClass(), instance, null);
+	}
+	
+	/**
+	 * Registers all the defined commands by method in this class.
+	 * @param commands the class containing the static commands
+	 */
+	public static AnnotatedCommandExecutor create(Class<?> commands) {
+		return create(commands, null, null);
+	}
+	
+	/**
+	 * Registers all the defined commands by method in this class.
+	 *
+	 * @param instance the object containing the commands
+	 * @param parent to register commands under
+	 */
+	public static AnnotatedCommandExecutor create(Object instance, org.spout.api.command.Command parent) {
+		return create(instance.getClass(), instance, parent);
+	}
+	
+	/**
+	 * Registers all the defined commands by method in this class.
+	 *
+	 * @param commands the class containing the static commands
+	 * @param parent to register commands under
+	 */
+	public static AnnotatedCommandExecutor create(Class<?> commands, org.spout.api.command.Command parent) {
+		return create(commands, null, parent);
 	}
 }
