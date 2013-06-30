@@ -24,35 +24,32 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.inventory.recipe;
+package org.spout.api;
 
-import org.powermock.api.mockito.PowerMockito;
+import org.mockito.Mockito;
+
 import org.spout.api.Engine;
-import org.spout.api.Platform;
 import org.spout.api.Spout;
+import org.spout.api.command.CommandManager;
 import org.spout.api.resource.FileSystem;
 
-@SuppressWarnings("deprecation")
 public class EngineFaker {
-	
 	private final static Engine engineInstance;
-	
+
 	static {
-		Engine engine = PowerMockito.mock(Engine.class);
-		FileSystem filesystem = PowerMockito.mock(FileSystem.class);
-		try {
-			PowerMockito.when(engine, Engine.class.getMethod("getPlatform", (Class[])null)).withNoArguments().thenReturn(Platform.SERVER);
-			PowerMockito.stub(Engine.class.getMethod("getFileSystem", (Class[])null)).andReturn(filesystem);
-			PowerMockito.stub(FileSystem.class.getMethod("getResource", new Class[] {String.class})).andReturn(null);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		if (engine == null) throw new NullPointerException("Engine is null");
-		if (engine.getPlatform() == null) throw new NullPointerException("Platform is null");
+		Engine engine = Mockito.mock(Engine.class);
+		FileSystem filesystem = Mockito.mock(FileSystem.class);
+		
+		Mockito.when(filesystem.getResource(Mockito.anyString())).thenReturn(null);
+		
+		Mockito.when(engine.getPlatform()).thenReturn(Platform.SERVER);
+		Mockito.when(engine.getFileSystem()).thenReturn(filesystem);
+		Mockito.when(engine.getCommandManager()).thenReturn(new CommandManager());
+
 		Spout.setEngine(engine);
 		engineInstance = engine;
 	}
-	
+
 	public static Engine setupEngine() {
 		return engineInstance;
 	}
