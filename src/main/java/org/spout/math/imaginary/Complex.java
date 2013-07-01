@@ -66,6 +66,30 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 		return y;
 	}
 
+	public Complex add(Complex c) {
+		return add(c.x, c.y);
+	}
+
+	public Complex add(double x, double y) {
+		return add((float) x, (float) y);
+	}
+
+	public Complex add(float x, float y) {
+		return new Complex(this.x + x, this.y + y);
+	}
+
+	public Complex sub(Complex c) {
+		return sub(c.x, c.y);
+	}
+
+	public Complex sub(double x, double y) {
+		return sub((float) x, (float) y);
+	}
+
+	public Complex sub(float x, float y) {
+		return new Complex(this.x - x, this.y - y);
+	}
+
 	public Complex mul(double a) {
 		return mul((float) a);
 	}
@@ -98,6 +122,18 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 		return new Complex(x / a, y / a);
 	}
 
+	public float dot(Complex c) {
+		return dot(c.x, c.y);
+	}
+
+	public float dot(double x, double y) {
+		return dot((float) x, (float) y);
+	}
+
+	public float dot(float x, float y) {
+		return this.x * x + this.y * y;
+	}
+
 	public Vector2 getDirection() {
 		return new Vector2(x, y);
 	}
@@ -122,12 +158,12 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 
 	@Override
 	public float lengthSquared() {
-		return GenericMath.lengthSquaredF(x, y);
+		return (float) GenericMath.lengthSquared(x, y);
 	}
 
 	@Override
 	public float length() {
-		return GenericMath.lengthF(x, y);
+		return (float) GenericMath.length(x, y);
 	}
 
 	@Override

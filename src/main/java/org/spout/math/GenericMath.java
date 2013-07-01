@@ -63,73 +63,49 @@ public class GenericMath {
 	/**
 	 * Calculates the length of all axis offsets given
 	 *
-	 * @param values of the axis to get the length of
+	 * @param vec of the axis to get the length of
 	 * @return the length
 	 */
-	public static int lengthI(int... values) {
-		return (int) Math.sqrt(lengthSquaredI(values));
+	public static int length(int... vec) {
+		return (int) Math.sqrt(lengthSquared(vec));
 	}
 
 	/**
 	 * Calculates the squared length of all axis offsets given
 	 *
-	 * @param values of the axis to get the squared length of
+	 * @param vec of the axis to get the squared length of
 	 * @return the squared length
 	 */
-	public static int lengthSquaredI(int... values) {
-		int rval = 0;
-		for (int value : values) {
-			rval += value * value;
+	public static int lengthSquared(int... vec) {
+		int lengthSquared = 0;
+		for (int comp : vec) {
+			lengthSquared += comp * comp;
 		}
-		return rval;
+		return lengthSquared;
 	}
 
 	/**
 	 * Calculates the length of all axis offsets given
 	 *
-	 * @param values of the axis to get the length of
+	 * @param vec of the axis to get the length of
 	 * @return the length
 	 */
-	public static float lengthF(float... values) {
-		return (float) Math.sqrt(lengthSquaredF(values));
+	public static double length(double... vec) {
+		return Math.sqrt(lengthSquared(vec));
 	}
 
 	/**
 	 * Calculates the squared length of all axis offsets given
 	 *
-	 * @param values of the axis to get the squared length of
+	 * @param vec of the axis to get the squared length of
 	 * @return the squared length
 	 */
-	public static float lengthSquaredF(float... values) {
-		float rval = 0;
-		for (float value : values) {
-			rval += value * value;
+	public static double lengthSquared(double... vec) {
+		double lengthSquared = 0;
+		for (double comp : vec) {
+			lengthSquared += comp * comp;
 		}
-		return rval;
-	}
-
-	/**
-	 * Calculates the length of all axis offsets given
-	 *
-	 * @param values of the axis to get the length of
-	 * @return the length
-	 */
-	public static double lengthD(double... values) {
-		return Math.sqrt(lengthSquaredD(values));
-	}
-
-	/**
-	 * Calculates the squared length of all axis offsets given
-	 *
-	 * @param values of the axis to get the squared length of
-	 * @return the squared length
-	 */
-	public static double lengthSquaredD(double... values) {
-		double rval = 0;
-		for (double value : values) {
-			rval += value * value;
-		}
-		return rval;
+		return lengthSquared;
 	}
 
 	/**
@@ -139,8 +115,8 @@ public class GenericMath {
 	 * @param angle2 The second angle
 	 * @return the positive angle difference
 	 */
-	public static float getAngleDifference(float angle1, float angle2) {
-		return Math.abs(wrapAngle(angle1 - angle2));
+	public static float getDegreeDifference(float angle1, float angle2) {
+		return Math.abs(wrapAngleDeg(angle1 - angle2));
 	}
 
 	/**
@@ -151,7 +127,7 @@ public class GenericMath {
 	 * @return the positive radian difference
 	 */
 	public static double getRadianDifference(double radian1, double radian2) {
-		return Math.abs(wrapRadian(radian1 - radian2));
+		return Math.abs(wrapAngleRad(radian1 - radian2));
 	}
 
 	/**
@@ -160,7 +136,7 @@ public class GenericMath {
 	 * @param angle to wrap
 	 * @return -180 < angle <= 180
 	 */
-	public static float wrapAngle(float angle) {
+	public static float wrapAngleDeg(float angle) {
 		angle %= 360f;
 		if (angle <= -180) {
 			return angle + 360;
@@ -172,14 +148,30 @@ public class GenericMath {
 	}
 
 	/**
+	 * Wraps the radian between -PI and PI
+	 *
+	 * @param angle to wrap
+	 * @return -PI < radian <= PI
+	 */
+	public static double wrapAngleRad(double angle) {
+		angle %= TrigMath.TWO_PI;
+		if (angle <= -TrigMath.PI) {
+			return angle + TrigMath.TWO_PI;
+		}
+		if (angle > TrigMath.PI) {
+			return angle - TrigMath.TWO_PI;
+		}
+		return angle;
+	}
+
+	/**
 	 * Wraps the pitch angle between -90 and 90 degrees
 	 *
 	 * @param angle to wrap
 	 * @return -90 < angle < 90
 	 */
-	public static float wrapAnglePitch(float angle) {
-		angle = wrapAngle(angle);
-
+	public static float wrapAnglePitchDeg(float angle) {
+		angle = wrapAngleDeg(angle);
 		if (angle < -90) {
 			return -90;
 		}
@@ -204,23 +196,6 @@ public class GenericMath {
 	}
 
 	/**
-	 * Wraps the radian between -PI and PI
-	 *
-	 * @param radian to wrap
-	 * @return -PI < radian <= PI
-	 */
-	public static double wrapRadian(double radian) {
-		radian %= TrigMath.TWO_PI;
-		if (radian <= -TrigMath.PI) {
-			return radian + TrigMath.TWO_PI;
-		} else if (radian > TrigMath.PI) {
-			return radian - TrigMath.TWO_PI;
-		} else {
-			return radian;
-		}
-	}
-
-	/**
 	 * Rounds a number to the amount of decimals specified
 	 *
 	 * @param input to round
@@ -228,7 +203,7 @@ public class GenericMath {
 	 * @return the rounded number
 	 */
 	public static double round(double input, int decimals) {
-		double p = Math.pow(10, decimals);
+		final double p = Math.pow(10, decimals);
 		return Math.round(input * p) / p;
 	}
 
@@ -264,8 +239,8 @@ public class GenericMath {
 	 * @param percent The percent
 	 * @return the interpolated value
 	 */
-	public static int lerp(int a, int b, double percent) {
-		return (int) ((1 - percent) * a + percent * b);
+	public static int lerp(int a, int b, int percent) {
+		return (1 - percent) * a + percent * b;
 	}
 
 	/**
@@ -314,28 +289,40 @@ public class GenericMath {
 	 * @param percent The percent
 	 * @return Color
 	 */
-	public static Color lerp(Color a, Color b, double percent) {
-		int red = lerp(a.getRed(), b.getRed(), percent);
-		int blue = lerp(a.getBlue(), b.getBlue(), percent);
-		int green = lerp(a.getGreen(), b.getGreen(), percent);
-		int alpha = lerp(a.getAlpha(), b.getAlpha(), percent);
+	public static Color lerp(Color a, Color b, float percent) {
+		int red = (int) lerp(a.getRed(), b.getRed(), percent);
+		int blue = (int) lerp(a.getBlue(), b.getBlue(), percent);
+		int green = (int) lerp(a.getGreen(), b.getGreen(), percent);
+		int alpha = (int) lerp(a.getAlpha(), b.getAlpha(), percent);
 		return new Color(red, green, blue, alpha);
 	}
 
 	/**
-	 * Calculates the linear interpolation between a and b with the given percent
+	 * Interpolates a quaternion between two others using spherical linear interpolation.
 	 *
-	 * @param a The first know value
-	 * @param b The second know value
-	 * @param percent The percent
-	 * @return Quarternion
+	 * @param a The first quaternion
+	 * @param b The second quaternion
+	 * @param percent The percent for the interpolation, between 0 and 1 inclusively
+	 * @return The interpolated quaternion
 	 */
-	public static Quaternion lerp(Quaternion a, Quaternion b, float percent) {
-		float x = lerp(a.getX(), b.getX(), percent);
-		float y = lerp(a.getY(), b.getY(), percent);
-		float z = lerp(a.getZ(), b.getZ(), percent);
-		float w = lerp(a.getW(), b.getW(), percent);
-		return new Quaternion(x, y, z, w);
+	public static Quaternion slerp(Quaternion a, Quaternion b, float percent) {
+		final float inverted;
+		float cosineTheta = a.dot(b);
+		if (cosineTheta < 0) {
+			cosineTheta = -cosineTheta;
+			inverted = -1;
+		} else {
+			inverted = 1;
+		}
+		final float epsilon = 0.00001f;
+		if (1 - cosineTheta < epsilon) {
+			return a.mul(1 - percent).add(b.mul(percent * inverted));
+		}
+		final float theta = (float) TrigMath.acos(cosineTheta);
+		final float sineTheta = TrigMath.sin(theta);
+		final float coefficient1 = TrigMath.sin((1 - percent) * theta) / sineTheta;
+		final float coefficient2 = TrigMath.sin(percent * theta) / sineTheta * inverted;
+		return a.mul(coefficient1).add(b.mul(coefficient2));
 	}
 
 	/**
@@ -358,24 +345,6 @@ public class GenericMath {
 		double q0 = lerp(x, x1, x2, q00, q10);
 		double q1 = lerp(x, x1, x2, q01, q11);
 		return lerp(y, y1, y2, q0, q1);
-	}
-
-	/**
-	 * Calculates the value at a target using bilinear interpolation
-	 *
-	 * @param target the vector of the value to interpolate
-	 * @param q00 the first known value (known1.x, known1.y)
-	 * @param q01 the second known value (known1.x, known2.y)
-	 * @param q10 the third known value (known2.x, known1.y)
-	 * @param q11 the fourth known value (known2.x, known2.y)
-	 * @param known1 the X coord of q00 and q01 and the Y coord of q00 and q10
-	 * @param known2 the X coord of q10 and q11 and the Y coord of q01 and q11
-	 * @return the interpolated value
-	 */
-	public static double biLerp(Vector2 target, double q00, double q01,
-								double q10, double q11, Vector2 known1, Vector2 known2) {
-		return biLerp(target.getX(), target.getY(), q00, q01, q10, q11,
-				known1.getX(), known2.getX(), known1.getY(), known2.getY());
 	}
 
 	/**
@@ -413,30 +382,6 @@ public class GenericMath {
 	}
 
 	/**
-	 * Calculates the value at target using trilinear interpolation
-	 *
-	 * @param target the vector of the value to interpolate
-	 * @param q000 the first known value (known1.x, known1.y, known1.z)
-	 * @param q001 the second known value (known1.x, known2.y, known1.z)
-	 * @param q010 the third known value (known1.x, known1.y, known2.z)
-	 * @param q011 the fourth known value (known1.x, known2.y, known2.z)
-	 * @param q100 the fifth known value (known2.x, known1.y, known1.z)
-	 * @param q101 the sixth known value (known2.x, known2.y, known1.z)
-	 * @param q110 the seventh known value (known2.x, known1.y, known2.z)
-	 * @param q111 the eighth known value (known2.x, known2.y, known2.z)
-	 * @param known1 the X coord of q000, q001, q010 and q011, the Y coord of q000, q010, q100 and q110
-	 * and the Z coord of q000, q001, q100 and q101
-	 * @param known2 the X coord of q100, q101, q110 and q111, the Y coord of q001, q011, q101 and q111
-	 * and the Z coord of q010, q011, q110 and q111
-	 * @return the interpolated value
-	 */
-	public static double triLerp(Vector3 target, double q000, double q001, double q010,
-								 double q011, double q100, double q101, double q110, double q111, Vector3 known1, Vector3 known2) {
-		return triLerp(target.getX(), target.getY(), target.getZ(), q000, q001, q010, q011, q100, q101, q110, q111,
-				known1.getX(), known2.getX(), known1.getY(), known2.getY(), known1.getZ(), known2.getZ());
-	}
-
-	/**
 	 * Blends two colors into one.
 	 *
 	 * @param a The first color
@@ -444,21 +389,7 @@ public class GenericMath {
 	 * @return The blended color
 	 */
 	public static Color blend(Color a, Color b) {
-		final int red = lerp(a.getRed(), b.getRed(), (a.getAlpha() / 255.0));
-		final int blue = lerp(a.getBlue(), b.getBlue(), (a.getAlpha() / 255.0));
-		final int green = lerp(a.getGreen(), b.getGreen(), (a.getAlpha() / 255.0));
-		final int alpha = lerp(a.getAlpha(), b.getAlpha(), (a.getAlpha() / 255.0));
-		return new Color(red, green, blue, alpha);
-	}
-
-	/**
-	 * Generates a random color
-	 *
-	 * @return Random color
-	 */
-	public static Color randomColor() {
-		Random rng = new Random();
-		return new Color(rng.nextInt(255), rng.nextInt(255), rng.nextInt(255));
+		return lerp(a, b, a.getAlpha() / 255f);
 	}
 
 	/**

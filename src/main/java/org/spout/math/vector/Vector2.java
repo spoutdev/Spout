@@ -58,6 +58,10 @@ public class Vector2 implements Vector, Comparable<Vector2>, Serializable, Clone
 		this(v.getX(), v.getY());
 	}
 
+	public Vector2(VectorN v) {
+		this(v.get(0), v.get(1));
+	}
+
 	public Vector2(double x, double y) {
 		this((float) x, (float) y);
 	}
@@ -228,7 +232,7 @@ public class Vector2 implements Vector, Comparable<Vector2>, Serializable, Clone
 	}
 
 	public float distanceSquared(float x, float y) {
-		return GenericMath.lengthSquaredF(this.x - x, this.y - y);
+		return (float) GenericMath.lengthSquared(this.x - x, this.y - y);
 	}
 
 	public float distance(Vector2 v) {
@@ -240,17 +244,17 @@ public class Vector2 implements Vector, Comparable<Vector2>, Serializable, Clone
 	}
 
 	public float distance(float x, float y) {
-		return GenericMath.lengthF(this.x - x, this.y - y);
+		return (float) GenericMath.length(this.x - x, this.y - y);
 	}
 
 	@Override
 	public float lengthSquared() {
-		return GenericMath.lengthSquaredF(x, y);
+		return (float) GenericMath.lengthSquared(x, y);
 	}
 
 	@Override
 	public float length() {
-		return GenericMath.lengthF(x, y);
+		return (float) GenericMath.length(x, y);
 	}
 
 	@Override
@@ -284,7 +288,7 @@ public class Vector2 implements Vector, Comparable<Vector2>, Serializable, Clone
 	}
 
 	public VectorN toVectorN() {
-		return new VectorN(x, y);
+		return new VectorN(this);
 	}
 
 	@Override

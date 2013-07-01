@@ -78,6 +78,30 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 		return w;
 	}
 
+	public Quaternion add(Quaternion q) {
+		return add(q.x, q.y, q.z, q.w);
+	}
+
+	public Quaternion add(double x, double y, double z, double w) {
+		return add((float) x, (float) y, (float) z, (float) w);
+	}
+
+	public Quaternion add(float x, float y, float z, float w) {
+		return new Quaternion(this.x + x, this.y + y, this.z + z, this.w + w);
+	}
+
+	public Quaternion sub(Quaternion q) {
+		return sub(q.x, q.y, q.z, q.w);
+	}
+
+	public Quaternion sub(double x, double y, double z, double w) {
+		return sub((float) x, (float) y, (float) z, (float) w);
+	}
+
+	public Quaternion sub(float x, float y, float z, float w) {
+		return new Quaternion(this.x - x, this.y - y, this.z - z, this.w - w);
+	}
+
 	public Quaternion mul(double a) {
 		return mul((float) a);
 	}
@@ -122,6 +146,18 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	@Override
 	public Quaternion div(float a) {
 		return new Quaternion(x / a, y / a, z / a, w / a);
+	}
+
+	public float dot(Quaternion q) {
+		return dot(q.x, q.y, q.z, q.w);
+	}
+
+	public float dot(double x, double y, double z, double w) {
+		return dot((float) x, (float) y, (float) z, (float) w);
+	}
+
+	public float dot(float x, float y, float z, float w) {
+		return this.x * x + this.y * y + this.z * z + this.w * w;
 	}
 
 	public Vector3 getDirection() {
@@ -184,12 +220,12 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 
 	@Override
 	public float lengthSquared() {
-		return GenericMath.lengthSquaredF(x, y, z, w);
+		return (float) GenericMath.lengthSquared(x, y, z, w);
 	}
 
 	@Override
 	public float length() {
-		return GenericMath.lengthF(x, y, z, w);
+		return (float) GenericMath.length(x, y, z, w);
 	}
 
 	@Override

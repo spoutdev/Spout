@@ -284,7 +284,7 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 		for (int comp = 0; comp < size; comp++) {
 			d[comp] = vec[comp] - v[comp];
 		}
-		return GenericMath.lengthSquaredF(d);
+		return lengthSquared(d);
 	}
 
 	public float distance(VectorN v) {
@@ -297,17 +297,17 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 		for (int comp = 0; comp < size; comp++) {
 			d[comp] = vec[comp] - v[comp];
 		}
-		return GenericMath.lengthF(d);
+		return length(d);
 	}
 
 	@Override
 	public float lengthSquared() {
-		return GenericMath.lengthSquaredF(vec);
+		return lengthSquared(vec);
 	}
 
 	@Override
 	public float length() {
-		return GenericMath.lengthF(vec);
+		return length(vec);
 	}
 
 	@Override
@@ -322,16 +322,15 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	public Vector2 toVector2() {
-		return new Vector2(vec[0], vec[1]);
+		return new Vector2(this);
 	}
 
 	public Vector3 toVector3() {
-		return new Vector3(vec[0], vec[1], size() > 2 ? vec[2] : 0);
+		return new Vector3(this);
 	}
 
 	public Vector4 toVector4() {
-		final int size = size();
-		return new Vector4(vec[0], vec[1], size > 2 ? vec[2] : 0, size > 3 ? vec[3] : 0);
+		return new Vector4(this);
 	}
 
 	@Override
@@ -368,6 +367,18 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	@Override
 	public String toString() {
 		return Arrays.toString(vec).replace('[', '(').replace(']', ')');
+	}
+
+	private static float length(float... vec) {
+		return (float) Math.sqrt(lengthSquared(vec));
+	}
+
+	private static float lengthSquared(float... vec) {
+		float lengthSquared = 0;
+		for (float comp : vec) {
+			lengthSquared += comp * comp;
+		}
+		return lengthSquared;
 	}
 
 	private static class ImmutableZeroVectorN extends VectorN {

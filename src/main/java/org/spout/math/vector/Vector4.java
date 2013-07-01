@@ -68,6 +68,10 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 		this(v.x, v.y, v.z, v.w);
 	}
 
+	public Vector4(VectorN v) {
+		this(v.get(0), v.get(1), v.size() > 2 ? v.get(2) : 0, v.size() > 3 ? v.get(3) : 0);
+	}
+
 	public Vector4(double x, double y, double z, double w) {
 		this((float) x, (float) y, (float) z, (float) w);
 	}
@@ -256,7 +260,7 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 	}
 
 	public float distanceSquared(float x, float y, float z, float w) {
-		return GenericMath.lengthSquaredF(this.x - x, this.y - y, this.z - z, this.w - w);
+		return (float) GenericMath.lengthSquared(this.x - x, this.y - y, this.z - z, this.w - w);
 	}
 
 	public float distance(Vector4 v) {
@@ -268,17 +272,17 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 	}
 
 	public float distance(float x, float y, float z, float w) {
-		return GenericMath.lengthF(this.x - x, this.y - y, this.z - z, this.w - w);
+		return (float) GenericMath.length(this.x - x, this.y - y, this.z - z, this.w - w);
 	}
 
 	@Override
 	public float lengthSquared() {
-		return GenericMath.lengthSquaredF(x, y, z, w);
+		return (float) GenericMath.lengthSquared(x, y, z, w);
 	}
 
 	@Override
 	public float length() {
-		return GenericMath.lengthF(x, y, z, w);
+		return (float) GenericMath.length(x, y, z, w);
 	}
 
 	@Override
@@ -288,15 +292,15 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 	}
 
 	public Vector2 toVector2() {
-		return new Vector2(x, y);
+		return new Vector2(this);
 	}
 
 	public Vector3 toVector3() {
-		return new Vector3(x, y, z);
+		return new Vector3(this);
 	}
 
 	public VectorN toVectorN() {
-		return new VectorN(x, y, z, w);
+		return new VectorN(this);
 	}
 
 	@Override
