@@ -35,7 +35,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.material.Material;
 
 public class ShapelessRecipe extends Recipe {
-	private static final long serialVersionUID = 1L;
 	private final List<Material> ingredients;
 
 	public ShapelessRecipe(RecipeBuilder builder) {

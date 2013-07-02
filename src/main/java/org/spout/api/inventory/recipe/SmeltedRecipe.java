@@ -27,8 +27,7 @@
 package org.spout.api.inventory.recipe;
 
 public class SmeltedRecipe extends ShapelessRecipe {
-	private static final long serialVersionUID = 1L;
-
+	//TODO: why does this class exist?
 	public SmeltedRecipe(RecipeBuilder builder) {
 		super(builder);
 	}

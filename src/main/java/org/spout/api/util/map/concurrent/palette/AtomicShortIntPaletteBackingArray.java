@@ -29,7 +29,6 @@ package org.spout.api.util.map.concurrent.palette;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import org.spout.api.Spout;
 import org.spout.api.math.GenericMath;
 import org.spout.api.util.map.concurrent.AtomicVariableWidthArray;
 

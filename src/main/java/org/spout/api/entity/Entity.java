@@ -35,11 +35,9 @@ import org.spout.api.component.DatatableComponent;
 import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.component.entity.SceneComponent;
 import org.spout.api.event.entity.EntityInteractEvent;
-import org.spout.api.event.player.Action;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.IntVector3;
 import org.spout.api.tickable.Tickable;
@@ -168,13 +166,14 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	 * This will trigger all owned {@link org.spout.api.component.entity.EntityComponent #onInteract(EntityInteractEvent)}.
 	 * @param event {@see org.spout.api.event.entity.EntityInteractEvent}
 	 */
-	public void interact(final EntityInteractEvent event);
+	public void interact(final EntityInteractEvent<?> event);
 
 	/**
 	 * Gets the {@link SceneComponent} which is the representation of this Entity within space.
-	 * <p/>
+	 * <p>
 	 * It provides the {@link Transform} which is Position, Rotation, Scale as well as physics to manipulate
 	 * the entity in respect to the environment.
+	 * </p>
 	 * @return The scene component.
 	 */
 	public SceneComponent getScene();
@@ -194,9 +193,10 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 
 	/**
 	 * Gets the {@link org.spout.api.component.DatatableComponent} which is always attached to each entity.
-	 * <p/>
-	 * This is merely a convenience method.
+	 * <p>
+	 * This is a convenience method for get(DatatableComponent.class).
+	 * </p>
 	 * @return datatable component
 	 */
-	public DatatableComponent getDatatable();
+	public DatatableComponent getData();
 }

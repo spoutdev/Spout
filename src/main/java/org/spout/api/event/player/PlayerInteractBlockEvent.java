@@ -29,11 +29,9 @@ package org.spout.api.event.player;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
-import org.spout.api.event.Result;
 import org.spout.api.event.entity.EntityInteractBlockEvent;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.block.BlockFace;
 
 /**
@@ -54,6 +52,11 @@ public class PlayerInteractBlockEvent extends EntityInteractBlockEvent implement
 	 */
 	public Action getAction() {
 		return action;
+	}
+
+	@Override
+	public Player getEntity() {
+		return (Player) super.getEntity();
 	}
 
 	@Override

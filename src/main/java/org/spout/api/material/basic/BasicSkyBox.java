@@ -32,6 +32,7 @@ import org.spout.api.material.BlockMaterial;
 
 public class BasicSkyBox extends BlockMaterial {
 
+	@SuppressWarnings("unchecked")
 	public BasicSkyBox() {
 		super("Skybox");
 		this.setTransparent();

@@ -28,6 +28,7 @@ package org.spout.api.plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -225,6 +226,14 @@ public class PluginManager {
 				break;
 			} else if (failed) {
 				lastPass = true;
+			}
+		}
+
+		// request updates
+		for (Plugin plugin : result) {
+			URI update = plugin.getUpdate();
+			if (update != null) {
+				engine.getFileSystem().requestPluginInstall(plugin.getName(), update);
 			}
 		}
 

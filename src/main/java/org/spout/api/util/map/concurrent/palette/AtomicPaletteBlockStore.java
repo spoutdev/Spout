@@ -30,9 +30,8 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.material.Material;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
-import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
@@ -43,7 +42,6 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	private final int shift;
 	private final int doubleShift;
 	private final int length;
-	private final boolean storeState;
 	private final AtomicShortIntArray store;
 	private final byte[] dirtyX;
 	private final byte[] dirtyY;
@@ -75,7 +73,6 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		int size = side * side * side;
 		store = new AtomicShortIntArray(size);
 		this.length = size;
-		this.storeState = storeState;
 		dirtyX = new byte[dirtySize];
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
@@ -136,27 +133,26 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 			markDirty(x, y, z, oldState, newState);
 		}
 	}
-	
+
 	@Override
-	public int getAndSetBlock(int x, int y, int z, MaterialSource material) {
-		Material m = material.getMaterial();
+	public int getAndSetBlock(int x, int y, int z, BlockMaterial m) {
 		return getAndSetBlock(x, y, z, m.getId(), m.getData());
 	}
-	
+
 	@Override
 	public int touchBlock(int x, int y, int z) {
 		int state = getFullData(x, y, z);
 		markDirty(x, y, z, state, state);
 		return state;
 	}
-	
+
 	@Override
 	public void setBlock(int x, int y, int z, short id, short data) {
 		getAndSetBlock(x, y, z, id, data);
 	}
-	
+
 	@Override
-	public void setBlock(int x, int y, int z, MaterialSource material) {
+	public void setBlock(int x, int y, int z, BlockMaterial material) {
 		getAndSetBlock(x, y, z, material);
 	}
 

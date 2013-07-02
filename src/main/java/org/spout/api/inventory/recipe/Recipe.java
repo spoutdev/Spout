@@ -26,7 +26,6 @@
  */
 package org.spout.api.inventory.recipe;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.spout.api.inventory.ItemStack;
@@ -36,7 +35,7 @@ import org.spout.api.plugin.Plugin;
 /**
  * Represents an arrangement of {@link ItemStack} with an outcome
  */
-public abstract class Recipe implements Serializable, Cloneable {
+public abstract class Recipe implements Cloneable {
 	protected final ItemStack result;
 	protected final Plugin plugin;
 	protected final boolean includeData;
@@ -67,7 +66,7 @@ public abstract class Recipe implements Serializable, Cloneable {
 	public Plugin getPlugin() {
 		return plugin;
 	}
-	
+
 	public boolean getIncludeData() {
 		return includeData;
 	}
@@ -83,5 +82,4 @@ public abstract class Recipe implements Serializable, Cloneable {
 
 	@Override
 	public abstract Recipe clone();
-
 }

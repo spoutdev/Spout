@@ -31,6 +31,8 @@ package org.spout.api.resource;
  * when a scheme is expected to have an associated loader.
  */
 public class LoaderNotFoundException extends Exception {
+	private static final long serialVersionUID = 1L;
+
 	public LoaderNotFoundException(String scheme) {
 		super("Could not find loader for scheme: " + scheme);
 	}

@@ -26,8 +26,6 @@
  */
 package org.spout.api.model.animation;
 
-import org.spout.api.math.Matrix;
-
 public class Animation {
 
 	private String name; //Debug

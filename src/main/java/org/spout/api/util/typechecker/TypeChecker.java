@@ -274,7 +274,7 @@ public class TypeChecker<T> {
 	 * @return The object contained in the tag, cast to the specified class
 	 * @throws ClassCastException if casting fails
 	 */
-	public final T checkTag(Tag tag) {
+	public final T checkTag(Tag<?> tag) {
 		return check(tag.getValue());
 	}
 
@@ -286,7 +286,7 @@ public class TypeChecker<T> {
 	 * @param defaultValue The default value to be returned if casting fails
 	 * @return The object contained in the tag, cast to the specified class, or the default value, if casting fails
 	 */
-	public final T checkTag(Tag tag, T defaultValue) {
+	public final T checkTag(Tag<?> tag, T defaultValue) {
 		if (tag == null) {
 			return defaultValue;
 		}

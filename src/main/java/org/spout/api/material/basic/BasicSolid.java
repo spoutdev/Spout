@@ -30,9 +30,9 @@ import org.spout.api.material.BlockMaterial;
 
 public class BasicSolid extends BlockMaterial {
 
+	@SuppressWarnings("unchecked")
 	public BasicSolid(String name, String model) {
 		super((short)0, name, model);		
-		
 		setHardness(100);
 	}
 }

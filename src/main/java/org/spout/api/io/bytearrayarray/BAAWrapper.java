@@ -32,7 +32,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.Spout;
 import org.spout.api.io.regionfile.SimpleRegionFile;
 
 public class BAAWrapper {

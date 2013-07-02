@@ -224,7 +224,7 @@ public class BaseComponentOwner implements ComponentOwner {
 	}
 
 	@Override
-	public DatatableComponent getDatatable() {
+	public DatatableComponent getData() {
 		return data;
 	}
 

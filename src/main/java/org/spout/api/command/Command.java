@@ -86,10 +86,6 @@ public final class Command implements Named {
 	 * throws a CommandException.
 	 */
 	public void execute(CommandSource source, CommandArguments args) throws CommandException {
-		if (executor == null) {
-			throw new CommandException("Command exists but has no set executor.");
-		}
-
 		if (permission != null && !source.hasPermission(permission)) {
 			throw new CommandException("You do not have permission to execute this command.");
 		}
@@ -119,9 +115,14 @@ public final class Command implements Named {
 			}
 		}
 
-		// no child found, try to execute
+		// no child found, filter...
 		for (CommandFilter filter : filters) {
 			filter.validate(this, source, args);
+		}
+
+		// ...then try to execute
+		if (executor == null) {
+			throw new CommandException("Command exists but has no set executor.");
 		}
 		executor.execute(source, this, args);
 	}

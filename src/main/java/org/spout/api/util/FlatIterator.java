@@ -29,7 +29,6 @@ package org.spout.api.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.spout.api.Spout;
 import org.spout.api.math.IntVector3;
 
 /**

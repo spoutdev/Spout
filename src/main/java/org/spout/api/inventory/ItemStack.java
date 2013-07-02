@@ -36,9 +36,6 @@ import org.spout.api.datatable.SerializableMap;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
-import org.spout.api.material.source.DataSource;
-import org.spout.api.material.source.GenericMaterialAccess;
-import org.spout.api.material.source.MaterialSource;
 import org.spout.api.util.LogicUtil;
 
 import org.spout.nbt.CompoundMap;
@@ -49,8 +46,10 @@ import org.spout.nbt.stream.NBTOutputStream;
 /**
  * Represents a stack of items
  */
-public class ItemStack extends GenericMaterialAccess implements Serializable, Cloneable {
+public class ItemStack implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
+	private Material material;
+	private short data;
 	private int amount;
 	private CompoundMap nbtData = null;
 	private SerializableMap auxData;
@@ -76,7 +75,8 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	 * specified amount, with the specified aux data
 	 */
 	public ItemStack(Material material, int data, int amount, SerializableMap auxData) {
-		super(material, data);
+		this.material = material;
+		this.data = (short) data;
 		this.amount = amount;
 		if (auxData != null) {
 			this.auxData = auxData;
@@ -89,9 +89,8 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	 * Gets the Material of the stack
 	 * @return the material
 	 */
-	@Override
 	public Material getMaterial() {
-		return super.getMaterial();
+		return material;
 	}
 
 	/**
@@ -119,7 +118,6 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 		return this.amount == 0;
 	}
 
-	@Override
 	public boolean isMaterial(Material... materials) {
 		if (this.material == null) {
 			for (Material material : materials) {
@@ -133,19 +131,14 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 		}
 	}
 
-	@Override
-	public ItemStack setMaterial(MaterialSource material) {
-		return (ItemStack) super.setMaterial(material);
+	public ItemStack setMaterial(Material material) {
+		return setMaterial(material, material.getData());
 	}
 
-	@Override
-	public ItemStack setMaterial(MaterialSource material, DataSource datasource) {
-		return (ItemStack) super.setMaterial(material, datasource);
-	}
-
-	@Override
-	public ItemStack setMaterial(MaterialSource material, int data) {
-		return (ItemStack) super.setMaterial(material, data);
+	public ItemStack setMaterial(Material material, int data) {
+		this.material = material;
+		this.data = (short) data;
+		return this;
 	}
 
 	/**
@@ -224,19 +217,16 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 		return "ItemStack{" + "material=" + material + ",id=" + material.getId() + ",data=" + data + ",amount=" + amount + ",nbtData=" + nbtData + '}';
 	}
 
-	@Override
-	public ItemStack setData(DataSource datasource) {
+	public ItemStack setData(Material datasource) {
 		return this.setData(datasource.getData());
 	}
 
-	@Override
 	public ItemStack setData(int data) {
 		this.data = (short) data;
 		this.material = this.material.getRoot().getSubMaterial(this.data);
 		return this;
 	}
 
-	@Override
 	public short getData() {
 		return this.data;
 	}

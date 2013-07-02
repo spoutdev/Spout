@@ -95,11 +95,11 @@ public final class ComponentTest {
 		GenericSubComponent2 c2 = base.add(GenericSubComponent2.class);
 		OtherGenericComponent c3 = base.add(OtherGenericComponent.class);
 		//Guarantee datatables are always there
-		assertNotNull(base.getDatatable());
-		assertNotNull(block.getDatatable());
-		assertNotNull(entity.getDatatable());
-		assertNotNull(widget.getDatatable());
-		assertNotNull(world.getDatatable());
+		assertNotNull(base.getData());
+		assertNotNull(block.getData());
+		assertNotNull(entity.getData());
+		assertNotNull(widget.getData());
+		assertNotNull(world.getData());
 		//Test block
 		GenericBlockComponent bc = block.add(GenericBlockComponent.class);
 		assertNotNull(bc);
@@ -122,7 +122,7 @@ public final class ComponentTest {
 		
 		Collection<Component> components = base.values();
 		assertTrue(components.size() == 4);
-		assertThat(components, hasItems(c1, c2, c3, base.getDatatable()));
+		assertThat(components, hasItems(c1, c2, c3, base.getData()));
 
 		GenericComponentWithInterface cwi = base.add(GenericComponentWithInterface.class);
 		Interface type = base.getType(Interface.class);
@@ -183,746 +183,725 @@ public final class ComponentTest {
 	public static class TestEntity extends BaseComponentOwner implements Entity {
 		@Override
 		public int getId() {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public UUID getUID() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Engine getEngine() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public void remove() {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public boolean isRemoved() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public boolean isSpawned() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public void setSavable(boolean savable) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public boolean isSavable() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public void setViewDistance(int distance) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public int getViewDistance() {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public void setObserver(boolean obs) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public void setObserver(Iterator<IntVector3> custom) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public boolean isObserver() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public Chunk getChunk() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Region getRegion() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
-		public void interact(EntityInteractEvent event) {
-			//To change body of implemented methods use File | Settings | File Templates.
+		public void interact(EntityInteractEvent<?> event) {
 		}
 
 		@Override
 		public SceneComponent getScene() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public NetworkComponent getNetwork() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public EntitySnapshot snapshot() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public void onTick(float dt) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public boolean canTick() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public void tick(float dt) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public World getWorld() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 	}
 
 	public static class TestWidget extends BaseComponentOwner implements Widget {
 		@Override
 		public void update() {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public Screen getScreen() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public void setScreen(Screen screen) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public Transform2D getTransform() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Rectangle getBounds() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public void setBounds(Rectangle bounds) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public boolean canFocus() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public boolean isFocused() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public void onFocus(FocusReason reason) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public void onBlur() {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public void onClick(PlayerClickEvent event) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public void onKey(PlayerKeyEvent event) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public void onMouseMoved(IntVector2 prev, IntVector2 pos, boolean hovered) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public List<RenderPartPack> getRenderPartPacks() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public void onTick(float dt) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public boolean canTick() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public void tick(float dt) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 	}
 
 	public static class TestWorld extends BaseComponentOwner implements World {
 		@Override
 		public String getName() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public long getAge() {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public UUID getUID() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public int getSurfaceHeight(int x, int z, LoadOption loadopt) {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public int getSurfaceHeight(int x, int z) {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public BlockMaterial getTopmostBlock(int x, int z) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public BlockMaterial getTopmostBlock(int x, int z, LoadOption loadopt) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public BiomeManager getBiomeManager(int x, int z, LoadOption loadopt) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Entity getEntity(UUID uid) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Entity createEntity(Point point, Class<? extends Component>... classes) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Entity createEntity(Point point, EntityPrefab prefab) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public void spawnEntity(Entity e) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public Entity createAndSpawnEntity(Point point, LoadOption option, EntityPrefab prefab) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Entity createAndSpawnEntity(Point point, LoadOption option, Class<? extends Component>... classes) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Entity[] createAndSpawnEntity(Point[] points, LoadOption option, Class<? extends Component>... classes) {
-			return new Entity[0];  //To change body of implemented methods use File | Settings | File Templates.
+			return new Entity[0];
 		}
 
 		@Override
 		public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, LoadOption option, Class<? extends Component>... classes) {
-			return new Entity[0];  //To change body of implemented methods use File | Settings | File Templates.
+			return new Entity[0];
 		}
 
 		@Override
 		public Transform getSpawnPoint() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public void setSpawnPoint(Transform transform) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public long getSeed() {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public WorldGenerator getGenerator() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Engine getEngine() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public byte getSkyLight() {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public void setSkyLight(byte newLight) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		@Override
 		public List<Entity> getAll() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Entity getEntity(int id) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public List<Player> getPlayers() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public File getDirectory() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public TaskManager getParallelTaskManager() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public TaskManager getTaskManager() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public List<Entity> getNearbyEntities(Point position, Entity ignore, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public List<Entity> getNearbyEntities(Point position, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public List<Entity> getNearbyEntities(Entity entity, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Entity getNearestEntity(Point position, Entity ignore, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Entity getNearestEntity(Point position, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Entity getNearestEntity(Entity entity, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public List<Player> getNearbyPlayers(Point position, Player ignore, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public List<Player> getNearbyPlayers(Point position, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public List<Player> getNearbyPlayers(Entity entity, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Player getNearestPlayer(Point position, Player ignore, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Player getNearestPlayer(Point position, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Player getNearestPlayer(Entity entity, int range) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public boolean setBlockData(int x, int y, int z, short data, Cause<?> source) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public boolean addBlockData(int x, int y, int z, short data, Cause<?> source) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> source) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public boolean compareAndSetData(int x, int y, int z, int expect, short data, Cause<?> source) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public short setBlockDataBits(int x, int y, int z, int bits, Cause<?> source) {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Cause<?> source) {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public short clearBlockDataBits(int x, int y, int z, int bits, Cause<?> source) {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public int getBlockDataField(int x, int y, int z, int bits) {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public boolean isBlockDataBitSet(int x, int y, int z, int bits) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public int setBlockDataField(int x, int y, int z, int bits, int value, Cause<?> source) {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public int addBlockDataField(int x, int y, int z, int bits, int value, Cause<?> source) {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public boolean containsBlock(int x, int y, int z) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public Block getBlock(int x, int y, int z) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Block getBlock(float x, float y, float z) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Block getBlock(Vector3 position) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public void setCuboid(int x, int y, int z, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public CuboidLightBuffer getLightBuffer(short id) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public CuboidBlockMaterialBuffer getCuboid(boolean backBuffer) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz, boolean backBuffer) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public void getCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public void getCuboid(CuboidBlockMaterialBuffer buffer) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public void unload(boolean save) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public boolean addLightingManager(LightingManager<?> manager) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public void save() {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public Collection<Region> getRegions() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Region getRegion(int x, int y, int z) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Region getRegion(int x, int y, int z, LoadOption loadopt) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Region getRegionFromChunk(int x, int y, int z) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Region getRegionFromChunk(int x, int y, int z, LoadOption loadopt) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Region getRegionFromBlock(int x, int y, int z) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Region getRegionFromBlock(int x, int y, int z, LoadOption loadopt) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Region getRegionFromBlock(Vector3 position) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Region getRegionFromBlock(Vector3 position, LoadOption loadopt) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Chunk getChunk(int x, int y, int z) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Chunk getChunk(int x, int y, int z, LoadOption loadopt) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public boolean containsChunk(int x, int y, int z) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public Chunk getChunkFromBlock(int x, int y, int z) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Chunk getChunkFromBlock(int x, int y, int z, LoadOption loadopt) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Chunk getChunkFromBlock(Vector3 position) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public Chunk getChunkFromBlock(Vector3 position, LoadOption loadopt) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public boolean hasChunk(int x, int y, int z) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public boolean hasChunkAtBlock(int x, int y, int z) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public void saveChunk(int x, int y, int z) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public void unloadChunk(int x, int y, int z, boolean save) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public int getNumLoadedChunks() {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public void queueChunksForGeneration(List<Vector3> chunks) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public void queueChunkForGeneration(Vector3 chunk) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public <T extends CuboidLightBuffer> T getLightBuffer(LightingManager<T> manager, int x, int y, int z, LoadOption loadopt) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public BlockMaterial getBlockMaterial(int x, int y, int z) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public int getBlockFullState(int x, int y, int z) {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public short getBlockData(int x, int y, int z) {
-			return 0;  //To change body of implemented methods use File | Settings | File Templates.
+			return 0;
 		}
 
 		@Override
 		public Biome getBiome(int x, int y, int z) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public void resetDynamicBlock(int x, int y, int z) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public void resetDynamicBlocks(Chunk c) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public void syncResetDynamicBlock(int x, int y, int z) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, boolean exclusive) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, boolean exclusive) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, boolean exclusive) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public void queueBlockPhysics(int x, int y, int z, EffectRange range) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public void updateBlockPhysics(int x, int y, int z) {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		@Override
 		public ValueHolder getData(String node) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public ValueHolder getData(World world, String node) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Override
 		public boolean hasData(String node) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@Override
 		public boolean hasData(World world, String node) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 	}
 }

@@ -82,5 +82,5 @@ public interface Widget extends Tickable, ComponentOwner, Focusable, RenderPartC
 	 * This is merely a convenience method.
 	 * @return datatable component
 	 */
-	public DatatableComponent getDatatable();
+	public DatatableComponent getData();
 }

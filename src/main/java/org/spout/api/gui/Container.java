@@ -27,8 +27,6 @@
 package org.spout.api.gui;
 
 import java.util.Collection;
-import java.util.Set;
-
 import org.spout.api.math.IntVector2;
 import org.spout.api.plugin.Plugin;
 

@@ -28,7 +28,6 @@ package org.spout.api.block;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import org.spout.api.material.block.BlockFace;

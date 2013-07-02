@@ -30,8 +30,6 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import org.spout.api.Spout;
-
 public abstract class AtomicShortIntBackingArray {
 	
 	/**

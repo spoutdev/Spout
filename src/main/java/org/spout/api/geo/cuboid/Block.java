@@ -27,7 +27,6 @@
 package org.spout.api.geo.cuboid;
 
 import org.spout.api.component.ComponentOwner;
-import org.spout.api.component.DatatableComponent;
 import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.World;
@@ -35,17 +34,16 @@ import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
+import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.material.source.DataSource;
-import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveWrite;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
-public interface Block extends MaterialSource, WorldSource, ComponentOwner {
+public interface Block extends WorldSource, ComponentOwner {
 
 	/**
 	 * Gets the {@link Point} position of this block in the world
@@ -148,16 +146,27 @@ public interface Block extends MaterialSource, WorldSource, ComponentOwner {
 	 */
 	public Block getSurface();
 
-	@Override
+	/**
+	 * Gets the block material of this block
+	 * 
+	 * @return block material
+	 */
 	public BlockMaterial getMaterial();
 
 	/**
-	 * Sets the data of this block
+	 * Gets the block data for this block
+	 * 
+	 * @return data
+	 */
+	public short getBlockData();
+
+	/**
+	 * Sets the data of this block to the given material's data
 	 *
 	 * @param data to set to
 	 * @return this Block
 	 */
-	public Block setData(DataSource data);
+	public Block setData(BlockMaterial data);
 
 	/**
 	 * Sets the data of this block
@@ -200,15 +209,6 @@ public interface Block extends MaterialSource, WorldSource, ComponentOwner {
 	 * @return whether the material set was successful
 	 */
 	public boolean setMaterial(BlockMaterial material, Cause<?> cause);
-
-	/**
-	 * Sets the material and data of this block
-	 *
-	 * @param material to set to
-	 * @param data to set to
-	 * @return whether the material set was successful
-	 */
-	public boolean setMaterial(BlockMaterial material, DataSource data);
 
 	/**
 	 * Sets the material and data of this block
@@ -386,4 +386,6 @@ public interface Block extends MaterialSource, WorldSource, ComponentOwner {
 	 * @return the old update for that block at that time instant, or null if none
 	 **/
 	public DynamicUpdateEntry dynamicUpdate(long nextUpdate, int data, boolean exclusive);
+
+	public boolean isMaterial(Material... materials);
 }

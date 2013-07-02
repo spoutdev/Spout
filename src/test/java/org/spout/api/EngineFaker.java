@@ -24,41 +24,33 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.util;
+package org.spout.api;
 
-import java.lang.ref.SoftReference;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.mockito.Mockito;
 
-import org.junit.Test;
+import org.spout.api.Engine;
+import org.spout.api.Spout;
+import org.spout.api.command.CommandManager;
+import org.spout.api.resource.FileSystem;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+public class EngineFaker {
+	private final static Engine engineInstance;
 
-public class SoftReferenceIteratorTest {
+	static {
+		Engine engine = Mockito.mock(Engine.class);
+		FileSystem filesystem = Mockito.mock(FileSystem.class);
+		
+		Mockito.when(filesystem.getResource(Mockito.anyString())).thenReturn(null);
+		
+		Mockito.when(engine.getPlatform()).thenReturn(Platform.SERVER);
+		Mockito.when(engine.getFileSystem()).thenReturn(filesystem);
+		Mockito.when(engine.getCommandManager()).thenReturn(new CommandManager());
 
-	@Test
-	public void iteratorTest() {
-		List<SoftReference<Integer>> items = new ArrayList<SoftReference<Integer>>();
-		List<Integer> realItems = new ArrayList<Integer>();
-		items.add(new SoftReference<Integer>(12));
-		realItems.add(12);
-		items.add(new SoftReference<Integer>(32));
-		realItems.add(32);
-		items.add(new SoftReference<Integer>(555));
-		realItems.add(555);
-		items.add(new SoftReference<Integer>(131));
-		realItems.add(131);
-		SoftReferenceIterator<Integer> iter = new SoftReferenceIterator<Integer>(items);
-		Iterator<Integer> realIter = realItems.iterator();
-		while (iter.hasNext()) {
-			assertTrue(realIter.hasNext());
-			assertEquals(iter.next(), realIter.next());
-			iter.remove();
-		}
-		iter = new SoftReferenceIterator<Integer>(items.iterator());
-		assertFalse(iter.hasNext());
+		Spout.setEngine(engine);
+		engineInstance = engine;
+	}
+
+	public static Engine setupEngine() {
+		return engineInstance;
 	}
 }
