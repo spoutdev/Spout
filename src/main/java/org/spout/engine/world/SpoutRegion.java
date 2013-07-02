@@ -56,7 +56,6 @@ import org.spout.api.event.chunk.ChunkPopulateEvent;
 import org.spout.api.event.chunk.ChunkUnloadEvent;
 import org.spout.api.event.chunk.ChunkUpdatedEvent;
 import org.spout.api.generator.biome.Biome;
-import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.AreaChunkAccess;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -80,6 +79,7 @@ import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
@@ -211,9 +211,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 		}
 
-		generator = new RegionGenerator(this, 4);
-
-		this.chunkStore = world.getRegionFile(getX(), getY(), getZ());
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			this.generator = null;
+			this.chunkStore = null;
+		} else {
+			this.generator = new RegionGenerator(this, 4);
+			this.chunkStore = ((SpoutServerWorld) world).getRegionFile(getX(), getY(), getZ());
+		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), null, this, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
 	}
@@ -229,6 +233,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return getChunk(x, y, z, LoadOption.LOAD_GEN);
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
@@ -250,7 +255,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 		SpoutChunk newChunk = null;
 		ChunkDataForRegion dataForRegion = null;
 
-		boolean fileExists = this.inputStreamExists(x, y, z);
+		//Files never exist on the client
+		boolean fileExists = Spout.getPlatform() == Platform.CLIENT ? false : this.inputStreamExists(x, y, z);
 
 		if (loadopt.loadIfNeeded() && fileExists) {
 			dataForRegion = new ChunkDataForRegion();
@@ -302,25 +308,25 @@ public class SpoutRegion extends Region implements AsyncManager {
 	public SpoutChunk getChunkFromBlock(int x, int y, int z, LoadOption loadopt) {
 		return this.getChunk(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS, loadopt);
 	}
-	
-	
+
 	private void generateColumn(int x, int z) {
 		generator.generateColumn(x, z);
 	}
-	
+
 	// Method should only be called from the region generator
 	protected boolean setChunkIfNotGeneratedWithoutLock(SpoutChunk newChunk, int x, int y, int z) {
 		int cx = newChunk.getX();
 		int cy = newChunk.getY();
 		int cz = newChunk.getZ();
-		boolean exists = this.inputStreamExists(cx, cy, cz);
+		//Files never exist on the client
+		boolean exists = Spout.getPlatform() == Platform.CLIENT ? false : this.inputStreamExists(cx, cy, cz);
 		if (exists) {
 			return false;
 		}
 		// chunk has not been generated
 		return setChunk(newChunk, x, y, z, null, true) == newChunk;
 	}
-	
+
 	private SpoutChunk setChunk(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated) {
 		final AtomicReference<SpoutChunk> chunkReference = chunks[x][y][z];
 		while (true) {
@@ -714,10 +720,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 					// a - acceleration
 
 					final Vector3 movement = prevVelocity.multiply(dt).add(acceleration.multiply(dt * dt).divide(2));
-					final Point position = scene.getTransformLive().getPosition();
+					//final Point position = scene.getTransformLive().getPosition();
 					Point newPosition = scene.getTransformLive().getPosition().add(movement);
 					final BoundingBox volume = scene.getVolume();
-					final BoundingBox oldVolume = volume.clone().offset(position);
+					//final BoundingBox oldVolume = volume.clone().offset(position);
 					BoundingBox worldVolume = volume.clone().offset(newPosition);
 					final int bx = newPosition.getBlockX();
 					final int by = newPosition.getBlockY();
@@ -882,7 +888,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			if (chunk != null) {
 				chunk.compressIfRequired();
 				boolean doUnload;
-				if (doUnload = chunk.isReapable(worldAge)) {
+				if (doUnload = chunk.isReapable()) {
 					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
 						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
 						if (event.isCancelled()) {
@@ -903,7 +909,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	private void syncChunkToPlayer(SpoutChunk chunk, Player player) {
 		if (player.isOnline()) {
-			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
+			ServerNetworkSynchronizer synchronizer = (ServerNetworkSynchronizer) player.getNetworkSynchronizer();
 			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
 				for (int i = 0; true; i++) {
 					Vector3 block = chunk.getDirtyBlock(i);
@@ -954,11 +960,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 		SpoutChunk spoutChunk;
 
 		List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
-
+		
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 			if (spoutChunk.isDirty()) {
-				for (Player entity : spoutChunk.getObservingPlayers()) {
-					syncChunkToPlayer(spoutChunk, entity);
+				if (Spout.getPlatform() == Platform.SERVER) {
+					for (Player entity : spoutChunk.getObservingPlayers()) {
+						syncChunkToPlayer(spoutChunk, entity);
+					}
 				}
 				processChunkUpdatedEvent(spoutChunk);
 
@@ -983,8 +991,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 				}
 			}
 		}
-
-		entityManager.syncEntities();
+		if (Spout.getPlatform() == Platform.SERVER) {
+			entityManager.syncEntities();
+		}
 	}
 
 	@Override
@@ -1272,10 +1281,16 @@ public class SpoutRegion extends Region implements AsyncManager {
 	}
 
 	public boolean inputStreamExists(int x, int y, int z) {
+		if (chunkStore == null) {
+			throw new IllegalStateException("Client does not have chunk store");
+		}
 		return chunkStore.inputStreamExists(getChunkKey(x, y, z));
 	}
 
 	public boolean attemptClose() {
+		if (chunkStore == null) {
+			return true;
+		}
 		return chunkStore.attemptClose();
 	}
 
@@ -1287,6 +1302,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 * @return the DataInputStream
 	 */
 	public InputStream getChunkInputStream(int x, int y, int z) {
+		if (chunkStore == null) {
+			throw new IllegalStateException("Client does not have chunk store");
+		}
 		return chunkStore.getBlockInputStream(getChunkKey(x, y, z));
 	}
 
@@ -1436,6 +1454,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 * @return true if exists, false if doesn't exist
 	 */
 	public static boolean regionFileExists(World world, int x, int y, int z) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			return false;
+		}
 		File worldDirectory = world.getDirectory();
 		File regionDirectory = new File(worldDirectory, "region");
 		File regionFile = new File(regionDirectory, "reg" + x + "_" + y + "_" + z + ".spr");
@@ -1591,13 +1612,15 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return region.getChunk(x, y, z, loadopt);
 	}
 
-	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, BiomeManager biomes) {
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
-		SpoutChunk chunk = chunks[x >> Region.CHUNKS.BITS][y >> Region.CHUNKS.BITS][z >> Region.CHUNKS.BITS].get();
+	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData) {
+		x &= CHUNKS.MASK;
+		y &= CHUNKS.MASK;
+		z &= CHUNKS.MASK;
+		SpoutChunk chunk = chunks[x][y][z].get();
 		if (chunk != null) {
 			chunk.unload(false);
+			// TODO is this right?
+			chunks[x][y][z].set(null);
 		}
 		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, new ManagedHashMap(), true);
 		setChunk(newChunk, x, y, z, null, true);
@@ -1744,7 +1767,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public void queueChunkForGeneration(Vector3 chunk) {
-		getRegionGenerator().touchChunk(chunk.getFloorX(), chunk.getFloorY(), chunk.getFloorZ());
+		RegionGenerator generator = getRegionGenerator();
+		if (generator != null) {
+			generator.touchChunk(chunk.getFloorX(), chunk.getFloorY(), chunk.getFloorZ());
+		}
 	}
 
 	@Override

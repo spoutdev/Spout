@@ -26,8 +26,6 @@
  */
 package org.spout.engine.renderer;
 
-import gnu.trove.list.array.TFloatArrayList;
-
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -37,23 +35,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import gnu.trove.list.array.TFloatArrayList;
+
 import org.lwjgl.BufferUtils;
+
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
+
 import org.spout.engine.renderer.shader.SpoutShader;
 import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
 
 public abstract class BatchVertexRenderer implements Renderer {
+	public static HashMap<Integer, List<Renderer>> pool = new HashMap<Integer, List<Renderer>>();
 
-	public static HashMap<Integer,List<Renderer>> pool = new HashMap<Integer,List<Renderer>>();
-
-	public static void initPool(int renderMode, int number){
+	public static void initPool(int renderMode, int number) {
 		List<Renderer> list = pool.get(renderMode);
 
-		if(list == null){
+		if (list == null) {
 			list = new LinkedList<Renderer>();
 			pool.put(renderMode, list);
 		}
@@ -61,44 +62,42 @@ public abstract class BatchVertexRenderer implements Renderer {
 		Client client = (Client) Spout.getEngine();
 
 		switch (client.getRenderMode()) {
-			case GL11:
-				for(int i = 0; i < number; i++)
-					list.add(new GL11BatchVertexRenderer(renderMode));
-				return;
 			case GL20:
-				for(int i = 0; i < number; i++)
+				for (int i = 0; i < number; i++) {
 					list.add(new GL20BatchVertexRenderer(renderMode));
+				}
 				return;
 			case GL30:
-				for(int i = 0; i < number; i++)
+				for (int i = 0; i < number; i++) {
 					list.add(new GL30BatchVertexRenderer(renderMode));
+				}
 				return;
 			case GL40:
-				for(int i = 0; i < number; i++)
+				for (int i = 0; i < number; i++) {
 					list.add(new GL30BatchVertexRenderer(renderMode));
+				}
 				return;
 			case GLES20:
-				for(int i = 0; i < number; i++)
+				for (int i = 0; i < number; i++) {
 					list.add(new GLES20BatchVertexRenderer(renderMode));
+				}
 				return;
 			default:
-				throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
+				throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not recognized");
 		}
 	}
 
 	public static Renderer constructNewBatch(int renderMode) {
 		List<Renderer> list = pool.get(renderMode);
-		if(list != null && !list.isEmpty()){
+		if (list != null && !list.isEmpty()) {
 			Renderer batch = list.remove(0);
-			((BatchVertexRenderer)batch).used++;
+			((BatchVertexRenderer) batch).used++;
 			return batch;
 		}
 
 		Client client = (Client) Spout.getEngine();
 
 		switch (client.getRenderMode()) {
-			case GL11:
-				return new GL11BatchVertexRenderer(renderMode);
 			case GL20:
 				return new GL20BatchVertexRenderer(renderMode);
 			case GL30:
@@ -108,85 +107,86 @@ public abstract class BatchVertexRenderer implements Renderer {
 			case GLES20:
 				return new GLES20BatchVertexRenderer(renderMode);
 			default:
-				throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
+				throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not recognized");
 		}
 	}
 
 	final int renderMode;
-	
 	List<Integer> attributesUsed = new ArrayList<Integer>();
-
 	SpoutFloatBuffer currentBuffer = null;
 	SpoutFloatBuffer flushingBuffer = null;
 	int currentNumVertices = 0;
 	int flushingNumVertices = 0;
-	
 	int used = 1; // Benchmark
 
 	public BatchVertexRenderer(int mode) {
 		renderMode = mode;
 	}
 
-	public int getVertexCount(){
+	public int getVertexCount() {
 		return currentNumVertices;
 	}
 
 	protected abstract boolean doFlush(boolean force);
 
 	public final boolean flush(boolean force) {
-		if(doFlush(force)){
-			if(currentBuffer != null)
+		if (doFlush(force)) {
+			if (currentBuffer != null) {
 				currentBuffer.release();
+			}
 			currentBuffer = flushingBuffer;
 			flushingBuffer = null;
-			
+
 			currentNumVertices = flushingNumVertices;
 			flushingNumVertices = 0;
-			
+
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * The act of drawing.  The Batch will check if it's possible to render
 	 * as well as setup for rendering.  If it's possible to render, it will call doRender()
 	 */
 	protected abstract void doDraw(RenderMaterial material, int startVert, int endVert);
-	
+
 	@Override
-	public void draw(RenderMaterial material){
+	public void draw(RenderMaterial material) {
 		draw(material, 0, getVertexCount());
 	}
 
 	@Override
-	public void draw(RenderMaterial material, int startVert, int endVert){
-		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
-		((SpoutShader)material.getShader()).checkAttributes(attributesUsed);
+	public void draw(RenderMaterial material, int startVert, int endVert) {
+		if (getVertexCount() <= 0) {
+			throw new IllegalStateException("Cannot render 0 verticies");
+		}
+		((SpoutShader) material.getShader()).checkAttributes(attributesUsed);
 		doDraw(material, startVert, endVert);
 	}
 
-	@Override	
+	@Override
 	public final void render(RenderMaterial material) {
 		render(material, 0, getVertexCount());
 	}
 
 	@Override
 	public final void render(RenderMaterial material, int startVert, int endVert) {
-		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
+		if (getVertexCount() <= 0) {
+			throw new IllegalStateException("Cannot render 0 verticies");
+		}
 		preDraw();
-		((SpoutShader)material.getShader()).checkAttributes(attributesUsed);
+		((SpoutShader) material.getShader()).checkAttributes(attributesUsed);
 		doDraw(material, startVert, endVert);
 		postDraw();
 	}
 
 	public abstract void doRelease();
-	
+
 	public void release() {
 		//TODO : Implement for each version to empty display list, vbo, etc...
-
 		List<Renderer> list = pool.get(renderMode);
-		if(list == null){
+		if (list == null) {
 			list = new LinkedList<Renderer>();
 			pool.put(renderMode, list);
 		}
@@ -194,63 +194,68 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	@Override
-	public void finalize() { }
+	public void finalize() {
+	}
 
-	protected abstract void initFlush(Map<Integer,Buffer> buffers);
-	
+	protected abstract void initFlush(Map<Integer, Buffer> buffers);
+
 	public void setBufferContainer(BufferContainer bufferContainer) {
-		Map<Integer,Buffer> buffers = new HashMap<Integer, Buffer>();
+		Map<Integer, Buffer> buffers = new HashMap<Integer, Buffer>();
 
-		for(Entry<Integer, Object> entry : bufferContainer.getBuffers().entrySet()){
+		for (Entry<Integer, Object> entry : bufferContainer.getBuffers().entrySet()) {
 			int layout = entry.getKey();
 			Object buffer = entry.getValue();
 
-			if(buffer instanceof TFloatArrayList){
+			if (buffer instanceof TFloatArrayList) {
 
-				if(((TFloatArrayList) buffer).isEmpty())
+				if (((TFloatArrayList) buffer).isEmpty()) {
 					throw new IllegalStateException("Buffer can't be empty");
+				}
 
 				FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(((TFloatArrayList) buffer).size());
 				floatBuffer.clear();
-				floatBuffer.put(((TFloatArrayList)buffer).toArray());
+				floatBuffer.put(((TFloatArrayList) buffer).toArray());
 				floatBuffer.flip();
 
 				buffers.put(layout, floatBuffer);
-
-			}else{
+			} else {
 				throw new IllegalStateException("Buffer different of TFloatArrayList not yet supported");
 			}
 		}
 
 		flushingNumVertices = bufferContainer.element;
-		
+
 		initFlush(buffers);
 	}
 
-	public void setBufferContainers(BufferContainer []bufferContainers) {
-		Map<Integer,Buffer> buffers = new HashMap<Integer, Buffer>();
+	public void setBufferContainers(BufferContainer[] bufferContainers) {
+		Map<Integer, Buffer> buffers = new HashMap<Integer, Buffer>();
 
 		int first = 0;
-		
-		while(first < bufferContainers.length && bufferContainers[first] == null)
+
+		while (first < bufferContainers.length && bufferContainers[first] == null) {
 			first++;
-		
-		if(first == bufferContainers.length)
+		}
+
+		if (first == bufferContainers.length) {
 			throw new IllegalStateException("BufferContainers array can't be fully empty");
-		
+		}
+
 		//For each layout
-		for(Entry<Integer, Object> entry : bufferContainers[first].getBuffers().entrySet()){
+		for (Entry<Integer, Object> entry : bufferContainers[first].getBuffers().entrySet()) {
 
 			int layout = entry.getKey();
 			int count = 0;
 
-			if(entry.getValue() instanceof TFloatArrayList){
+			if (entry.getValue() instanceof TFloatArrayList) {
 
 				//First pass, count element
-				for(BufferContainer bufferContainer : bufferContainers){
-					if(bufferContainer == null) continue;
+				for (BufferContainer bufferContainer : bufferContainers) {
+					if (bufferContainer == null) {
+						continue;
+					}
 					Object buffer = bufferContainer.getBuffers().get(layout);
-					count += ((TFloatArrayList)buffer).size();
+					count += ((TFloatArrayList) buffer).size();
 				}
 
 				//Allocate with result (to avoid constant reallocation during copy)
@@ -258,38 +263,42 @@ public abstract class BatchVertexRenderer implements Renderer {
 				floatBuffer.clear();
 
 				//Second pass, add element
-				for(BufferContainer bufferContainer : bufferContainers){
-					if(bufferContainer == null) continue;
+				for (BufferContainer bufferContainer : bufferContainers) {
+					if (bufferContainer == null) {
+						continue;
+					}
 					Object buffer = bufferContainer.getBuffers().get(layout);
-					floatBuffer.put(((TFloatArrayList)buffer).toArray());
+					floatBuffer.put(((TFloatArrayList) buffer).toArray());
 				}
 
 				floatBuffer.flip();
 
 				buffers.put(layout, floatBuffer);
-
-			}else{
+			} else {
 				throw new IllegalStateException("Buffer different of TFloatArrayList not yet supported");
 			}
 		}
 
 		//Count vertices
-		flushingNumVertices = 0;	
-		for(BufferContainer bufferContainer : bufferContainers)
-			if(bufferContainer != null)
+		flushingNumVertices = 0;
+		for (BufferContainer bufferContainer : bufferContainers) {
+			if (bufferContainer != null) {
 				flushingNumVertices += bufferContainer.element;
-		
+			}
+		}
+
 		initFlush(buffers);
 	}
-	
-	public void setGLBufferContainer(GLBufferContainer container) {
-		Map<Integer,Buffer> buffers = new HashMap<Integer, Buffer>();
 
-		for(Entry<Integer, Buffer> entry : container.getBuffers().entrySet())
+	public void setGLBufferContainer(GLBufferContainer container) {
+		Map<Integer, Buffer> buffers = new HashMap<Integer, Buffer>();
+
+		for (Entry<Integer, Buffer> entry : container.getBuffers().entrySet()) {
 			buffers.put(entry.getKey(), entry.getValue());
+		}
 
 		flushingNumVertices = container.element;
-		
+
 		initFlush(buffers);
 	}
 }

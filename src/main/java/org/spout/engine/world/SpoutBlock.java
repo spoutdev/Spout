@@ -46,14 +46,13 @@ import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.material.source.DataSource;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
 
 public class SpoutBlock implements Block {
 	private final int x, y, z;
-	private final WeakReference<SpoutWorld> world;
+	private final WeakReference<? extends SpoutWorld> world;
 	private final AtomicReference<WeakReference<SpoutChunk>> chunk;
 
 	public SpoutBlock(SpoutWorld world, int x, int y, int z) {
@@ -208,7 +207,7 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public SpoutBlock setData(DataSource data) {
+	public SpoutBlock setData(BlockMaterial data) {
 		return this.setData(data.getData());
 	}
 
@@ -230,7 +229,7 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public short getData() {
+	public short getBlockData() {
 		return this.getChunk().getBlockData(this.x, this.y, this.z);
 	}
 
@@ -287,11 +286,6 @@ public class SpoutBlock implements Block {
 	@Override
 	public boolean setMaterial(BlockMaterial material, Cause<?> cause) {
 		return this.setMaterial(material, material.getData(), cause);
-	}
-
-	@Override
-	public boolean setMaterial(BlockMaterial material, DataSource data) {
-		return this.setMaterial(material, data.getData());
 	}
 
 	@Override
@@ -355,12 +349,12 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public DatatableComponent getDatatable() {
+	public DatatableComponent getData() {
 		BlockComponentOwner owner = getChunk().getBlockComponentOwner(x, y, z, false);
 		if (owner == null) {
 			throw new IllegalStateException("The datatable is only available on blocks who have a BlockComponentOwner (blocks with components added)");
 		}
-		return owner.getDatatable();
+		return owner.getData();
 	}
 
 	@Override

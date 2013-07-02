@@ -1,0 +1,9 @@
+jinput-dx8_64.dll
+jinput-dx8.dll
+jinput-raw_64.dll
+jinput-raw.dll
+jinput-wintab.dll
+lwjgl.dll
+lwjgl64.dll
+OpenAL32.dll
+OpenAL64.dll

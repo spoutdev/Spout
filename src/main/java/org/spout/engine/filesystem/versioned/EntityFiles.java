@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
+import org.spout.api.Platform;
+import org.spout.api.Server;
 
 import org.spout.api.Spout;
 import org.spout.api.component.Component;
@@ -42,7 +44,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.nbt.TransformTag;
 import org.spout.api.io.nbt.UUIDTag;
-import org.spout.api.plugin.CommonClassLoader;
+import org.spout.api.plugin.PluginClassLoader;
 import org.spout.api.util.sanitation.SafeCast;
 
 import org.spout.engine.SpoutEngine;
@@ -97,6 +99,9 @@ public class EntityFiles {
 	}
 
 	protected static SpoutEntity loadEntity(World w, CompoundTag tag) {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Entities cannot be loaded on the client");
+		}
 		try {
 			SpoutEntitySnapshot snapshot = loadEntityImpl(w, tag, null);
 			if (snapshot != null) {
@@ -118,6 +123,9 @@ public class EntityFiles {
 
 	@SuppressWarnings("unchecked")
 	private static SpoutEntitySnapshot loadEntityImpl(World w, CompoundTag tag, String name) {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Entities cannot be loaded on the client");
+		}
 		CompoundMap map = tag.getValue();
 
 		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
@@ -160,7 +168,7 @@ public class EntityFiles {
 				return null;
 			}
 			worldUUID = UUIDTag.getValue(map.get("world_uuid"));
-			w = Spout.getEngine().getWorld(worldUUID);
+			w = ((Server) Spout.getEngine()).getWorld(worldUUID);
 		} else if (w == null) {
 			return null;
 		}
@@ -215,7 +223,7 @@ public class EntityFiles {
 		for (StringTag component : components.getValue()) {
 			try {
 				try {
-					Class<? extends Component> clazz = (Class<? extends Component>) CommonClassLoader.findPluginClass(component.getValue());
+					Class<? extends Component> clazz = (Class<? extends Component>) PluginClassLoader.findPluginClass(component.getValue());
 					types.add(clazz);
 				} catch (ClassNotFoundException e) {
 					Class<? extends Component> clazz = (Class<? extends Component>) Class.forName(component.getValue());
@@ -327,7 +335,7 @@ public class EntityFiles {
 			return map;
 		}
 		
-		World world = Spout.getEngine().getWorld(tag.getName());
+		World world = ((Server) Spout.getEngine()).getWorld(tag.getName());
 		
 		if (world == null) {
 			Spout.getLogger().info("Conversion failed");

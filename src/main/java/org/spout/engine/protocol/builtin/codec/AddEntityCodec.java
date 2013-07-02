@@ -44,7 +44,7 @@ public class AddEntityCodec extends MessageCodec<AddEntityMessage> {
 
 	@Override
 	public ChannelBuffer encode(AddEntityMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(8 + ChannelBufferUtils.UUID_SIZE + ChannelBufferUtils.VECTOR3_SIZE * 2 + ChannelBufferUtils.QUATERNINON_SIZE);
+		ChannelBuffer buffer = ChannelBuffers.buffer(4 + ChannelBufferUtils.UUID_SIZE + ChannelBufferUtils.VECTOR3_SIZE * 2 + ChannelBufferUtils.QUATERNINON_SIZE);
 		buffer.writeInt(message.getEntityId());
 		ChannelBufferUtils.writeUUID(buffer, message.getWorldUid());
 		ChannelBufferUtils.writeVector3(buffer, message.getPosition());

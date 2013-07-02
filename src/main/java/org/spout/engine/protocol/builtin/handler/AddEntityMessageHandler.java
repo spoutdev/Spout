@@ -26,35 +26,27 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
-import org.spout.api.component.Component;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.Session;
+import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.reposition.RepositionManager;
+
 import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
+import org.spout.engine.world.SpoutWorld;
 
 public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
-	@SuppressWarnings("unchecked")
 	@Override
-	public void handleClient(Session session, AddEntityMessage message) {
-		if(!session.hasPlayer()) {
-			return;
-		}
-		System.out.println("Ading entity with id " + message.getEntityId());
-
-		Player player = session.getPlayer();
-		RepositionManager rmInverse = player.getNetworkSynchronizer().getRepositionManager().getInverse();
-		Entity newEntity;
+	public void handleClient(ClientSession session, AddEntityMessage message) {
+		RepositionManager rmInverse = session.getNetworkSynchronizer().getRepositionManager().getInverse();
+		Entity entity;
+		//Spawning a player
 		if (message.getEntityId() == session.getDataMap().get(SpoutProtocol.PLAYER_ENTITY_ID)) {
-			newEntity = player;
+			entity = session.getPlayer();
 		} else {
-			newEntity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()), (Class<? extends Component>)null);
+			entity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()));
 		}
-
-		newEntity.getScene().setTransform(rmInverse.convert(message.getTransform()));
-		//newEntity.setId(message.getEntityId()); // TODO: Allow providing an entity ID to use
-		session.getEngine().getDefaultWorld().spawnEntity(newEntity);
+		entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
+		((SpoutWorld) session.getEngine().getDefaultWorld()).spawnEntity(entity, message.getEntityId());
 	}
 }

@@ -288,7 +288,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 		physicsQueue = new PhysicsQueue(this);
 
-		column = world.getColumn(this.getX(), this.getZ(), LoadOption.LOAD_GEN);
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			column = world.getColumn(this.getX(), this.getZ(), LoadOption.NO_LOAD);
+		} else {
+			column = world.getColumn(this.getX(), this.getZ(), LoadOption.LOAD_GEN);
+		}
 		column.registerCuboid(getBlockY(), getBlockY() + Chunk.BLOCKS.SIZE - 1);
 		columnRegistered.set(true);
 		lastUnloadCheck.set(world.getAge());
@@ -828,7 +832,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				setIsInViewDistance(true);
 			}
 			if (wasEmpty) {
-				getRegion().getRegionGenerator().touchChunkNeighbors(this);
+				RegionGenerator generator = getRegion().getRegionGenerator();
+				if (generator != null) {
+					generator.touchChunkNeighbors(this);
+				}
 			}
 		}
 		SaveState.resetPostSaving(saveState);
@@ -1479,10 +1486,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public boolean isReapable() {
-		return isReapable(getWorld().getAge());
+		if (Spout.getPlatform() == Platform.SERVER) {
+			return isReapable(getWorld().getAge());
+		} else {
+			return false;
+		}
 	}
 
-	public boolean isReapable(long worldAge) {
+	private boolean isReapable(long worldAge) {
 		if (lastUnloadCheck.get() + SpoutConfiguration.CHUNK_REAP_DELAY.getLong() >= worldAge) {
 			return false;
 		}
@@ -1876,9 +1887,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			}
 		}
 
-		SpoutWorld world = this.getWorld();
-
-		int oldheight = column.getSurfaceHeight(x, z);
 		int wy = y + this.getBlockY();
 		column.notifyBlockChange(x, wy, z);
 		

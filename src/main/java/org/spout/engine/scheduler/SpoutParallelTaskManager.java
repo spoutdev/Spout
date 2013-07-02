@@ -152,7 +152,7 @@ public class SpoutParallelTaskManager implements TaskManager {
 				}
 				task.setParallelInfo(info);
 			}
-			Collection<World> worlds = (this.world == null) ? engine.getWorlds() : world;
+			Collection<? extends World> worlds = (this.world == null) ? engine.getWorlds() : world;
 			for (World w : worlds) {
 				SpoutWorld sw = (SpoutWorld)w;
 				for (Region r : sw.getRegions()) {
