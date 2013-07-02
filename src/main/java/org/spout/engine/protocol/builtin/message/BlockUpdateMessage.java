@@ -41,7 +41,7 @@ public class BlockUpdateMessage extends SpoutMessage {
 		this.y = block.getY();
 		this.z = block.getZ();
 		this.type = block.getMaterial().getId();
-		this.data = block.getData();
+		this.data = block.getBlockData();
 	}
 
 	public BlockUpdateMessage(int x, int y, int z, short type, short data) {

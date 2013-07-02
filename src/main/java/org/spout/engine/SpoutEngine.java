@@ -63,17 +63,20 @@ import org.spout.api.plugin.services.ServiceManager;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
+
 import org.spout.engine.command.AnnotatedCommandExecutorTest;
-import org.spout.engine.console.ConsoleManager;
 import org.spout.engine.command.ClientCommands;
 import org.spout.engine.command.CommonCommands;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.ServerCommands;
 import org.spout.engine.command.TestCommands;
+import org.spout.engine.component.entity.SpoutSceneComponent;
+import org.spout.engine.console.ConsoleManager;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.CommonFileSystem;
+import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.input.SpoutInputConfiguration;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
@@ -86,6 +89,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.MemoryReclamationThread;
 import org.spout.engine.world.SpoutRegion;
+import org.spout.engine.world.SpoutWorld;
 
 public abstract class SpoutEngine implements AsyncManager, Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
@@ -213,18 +217,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		pluginManager.clearPlugins();
 		pluginManager.installUpdates();
 
-		List<Plugin> plugins = pluginManager.loadPlugins(CommonFileSystem.PLUGINS_DIRECTORY);
-		pluginManager.loadPlugins(CommonFileSystem.PLUGINS_DIRECTORY);
-		for (Plugin plugin : plugins) {
-			try {
-				//Technically unsafe.  This should call the security manager
-				plugin.onLoad();
-			} catch (Exception ex) {
-				//TODO: fix
-				//log("Error loading %0: %1", Level.SEVERE, plugin.getDescription().getName(), ex.getMessage(), ex);
-				ex.printStackTrace();
-			}
-		}
+		pluginManager.loadPlugins(ServerFileSystem.PLUGINS_DIRECTORY);
 	}
 
 	public SpoutApplication getArguments() {
@@ -301,9 +294,9 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	/**
 	 * Used to allow subclasses submit final tasks before stopping the scheduler
-	 * @param message
-	 * @param stopScheduler
-	 * @return
+	 * @param message to send
+	 * @param stopScheduler true if should stop scheduler
+	 * @return true if successfully stopped
 	 */
 	protected boolean stop(final String message, boolean stopScheduler) {
 		if (!stopping.compareAndSet(false, true)) {

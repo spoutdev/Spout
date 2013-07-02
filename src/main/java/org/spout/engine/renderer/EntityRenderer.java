@@ -49,7 +49,6 @@ import org.spout.engine.mesh.BaseMesh;
  */
 public class EntityRenderer {
 	private final List<SpoutModelComponent> RENDERERS = new ArrayList<SpoutModelComponent>();
-	private final Map<Model, List<SpoutModelComponent>> RENDERERS_PER_MODEL = new HashMap<Model, List<SpoutModelComponent>>();
 	private int count = 0;
 
 	public void add(SpoutModelComponent renderer) {
@@ -59,15 +58,6 @@ public class EntityRenderer {
 
 	public void remove(SpoutModelComponent renderer) {
 		RENDERERS.remove(renderer);
-		//Cleanup models
-		//TODO Keep the model (not the renderer) cached always?
-		for (final Model model : renderer.getModels()) {
-			final List<SpoutModelComponent> modelRenderers = RENDERERS_PER_MODEL.get(model);
-			modelRenderers.remove(renderer);
-			if (modelRenderers.isEmpty()) {
-				RENDERERS_PER_MODEL.remove(model);
-			}
-		}
 		renderer.setRendered(false);
 		count--;
 	}
@@ -75,45 +65,26 @@ public class EntityRenderer {
 	public void render(float dt) {
 		final Camera camera = ((Client) Spout.getEngine()).getPlayer().getType(Camera.class);
 
-		//Loop through all renderers and add models as needed.
-		for (final SpoutModelComponent renderer : RENDERERS) {
-			final List<Model> models = renderer.getModels();
-			if (models.isEmpty()) {
-				continue;
-			}
-			for (final Model model : models) {
-				List<SpoutModelComponent> modelRenderers = RENDERERS_PER_MODEL.get(model);
-				if (modelRenderers == null) {
-					modelRenderers = new ArrayList<SpoutModelComponent>();
-					RENDERERS_PER_MODEL.put(model, modelRenderers);
-				}
-				if (((ClientTexture) model.getRenderMaterial().getValue("Diffuse")).isLoaded()) {
-					modelRenderers.add(renderer);
-					renderer.init();
-				}
-			}
-		}
-
 		//Call renderers based on models
-		for (Entry<Model, List<SpoutModelComponent>> entry : RENDERERS_PER_MODEL.entrySet()) {
-			final Model model = entry.getKey();
-			final List<SpoutModelComponent> renderers = entry.getValue();
-			final BaseMesh mesh = (BaseMesh) model.getMesh();
-			//Prep mesh for rendering
-			mesh.preDraw();
+		for (SpoutModelComponent renderer : RENDERERS) {
+			for(Model model : renderer.getModels()) {
+				if (((ClientTexture) model.getRenderMaterial().getValue("Diffuse")).isLoaded()) {
+					renderer.init();
+}
+				final BaseMesh mesh = (BaseMesh) model.getMesh();
+				//Prep mesh for rendering
+				mesh.preDraw();
 
-			//Set uniforms
-			model.getRenderMaterial().getShader().setUniform("View", camera.getView());
-			model.getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
+				//Set uniforms
+				model.getRenderMaterial().getShader().setUniform("View", camera.getView());
+				model.getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
 
-			//Render
-			for (SpoutModelComponent renderer : renderers) {
 				renderer.update(model, dt);
 				renderer.draw(model);
+				
+				//Callback after rendering
+				mesh.postDraw();
 			}
-
-			//Callback after rendering
-			mesh.postDraw();
 		}
 	}
 
