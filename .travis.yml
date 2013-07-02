@@ -1,0 +1,13 @@
+language: java
+jdk: oraclejdk7
+
+install: mvn clean -DbuildNumber=${TRAVIS_BUILD_NUMBER}
+after_success:
+  - export PROJECT_ARTIFACT_ID="`sed -n 's|.*<artifactId>\(.*\)</artifactId>.*|\1|p' $TRAVIS_BUILD_DIR/pom.xml | awk '{ print $1; exit }'`" && echo Project artifactId is $PROJECT_ARTIFACT_ID
+  - export PROJECT_NAME="`sed -n 's|.*<name>\(.*\)</name>.*|\1|p' $TRAVIS_BUILD_DIR/pom.xml | awk '{ print $1; exit }'`" && echo Project name is $PROJECT_NAME
+  - export PROJECT_VERSION="`sed -n 's|.*<version>\(.*\)</version>.*|\1|p' $TRAVIS_BUILD_DIR/pom.xml | awk '{ print $1; exit }'`" && echo Project version is $PROJECT_VERSION
+
+notifications:
+  email: false
+  irc: "irc.esper.net#spoutdev"
+  webhooks: http://get.spout.org/hook

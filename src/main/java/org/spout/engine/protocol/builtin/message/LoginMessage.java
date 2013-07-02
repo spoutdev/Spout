@@ -33,26 +33,31 @@ import org.spout.api.util.SpoutToStringStyle;
 
 public class LoginMessage extends SpoutMessage {
 	private final String playerName;
-	private final int protoVersion;
+	private final int extraInt;
 
-	public LoginMessage(String playerName, int protoVersion) {
+	public LoginMessage(String playerName, int extraInt) {
 		this.playerName = playerName;
-		this.protoVersion = protoVersion;
+		this.extraInt = extraInt;
 	}
 
 	public String getPlayerName() {
 		return playerName;
 	}
 
-	public int getProtocolVersion() {
-		return protoVersion;
+	/**
+	 * Client to Server, this is Protocol version
+	 * Server to Client, this is the player Id
+	 * @return
+	 */
+	public int getExtraInt() {
+		return extraInt;
 	}
 
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.append("playerName", playerName)
-				.append("protoVersion", protoVersion)
+				.append("extraInt", extraInt)
 				.toString();
 	}
 
@@ -60,7 +65,7 @@ public class LoginMessage extends SpoutMessage {
 	public int hashCode() {
 		return new HashCodeBuilder(95, 45)
 				.append(playerName)
-				.append(protoVersion)
+				.append(extraInt)
 				.toHashCode();
 	}
 
@@ -70,7 +75,7 @@ public class LoginMessage extends SpoutMessage {
 			final LoginMessage other = (LoginMessage) obj;
 			return new EqualsBuilder()
 					.append(playerName, other.playerName)
-					.append(protoVersion, other.protoVersion)
+					.append(extraInt, other.extraInt)
 					.isEquals();
 		} else {
 			return false;

@@ -29,12 +29,12 @@ package org.spout.engine.protocol.builtin.handler;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.Session;
+import org.spout.api.protocol.ServerSession;
 import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 
 public class PlayerInputMessageHandler extends MessageHandler<PlayerInputMessage> {
 	@Override
-	public void handleServer(Session session, PlayerInputMessage message) {
+	public void handleServer(ServerSession session, PlayerInputMessage message) {
 		if(!session.hasPlayer()) {
 			return;
 		}

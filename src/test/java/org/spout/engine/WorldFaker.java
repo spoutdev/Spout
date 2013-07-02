@@ -24,55 +24,31 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.renderer;
+package org.spout.engine;
 
-import java.nio.Buffer;
-import java.util.Map;
+import java.util.UUID;
 
-import org.spout.api.render.RenderMaterial;
+import org.mockito.Mockito;
+import org.spout.api.Client;
+import org.spout.api.Platform;
+import org.spout.api.Server;
+import org.spout.api.Spout;
 
-@Deprecated
-public class GL11BatchVertexRenderer extends BatchVertexRenderer {
+import org.spout.api.geo.World;
+import org.spout.api.resource.FileSystem;
 
-	public GL11BatchVertexRenderer(int mode) {
-		super(mode);
-		// TODO Auto-generated constructor stub
+@SuppressWarnings("deprecation")
+public class WorldFaker {
+	private final static World worldInstance;
+
+	static {
+		World world = Mockito.mock(World.class);
+		Mockito.when(world.getUID()).thenReturn(EngineFaker.TEST_UUID);
+
+		worldInstance = world;		
 	}
 
-	@Override
-	public void preDraw() {
-		// TODO Auto-generated method stub
-		
+	public static World setupWorld() {
+		return worldInstance;
 	}
-
-	@Override
-	public void postDraw() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected boolean doFlush(boolean force) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	protected void doDraw(RenderMaterial material, int startVert, int endVert) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void doRelease() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void initFlush(Map<Integer, Buffer> buffers) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 }

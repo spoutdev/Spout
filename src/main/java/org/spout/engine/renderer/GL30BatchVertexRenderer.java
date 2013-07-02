@@ -176,5 +176,4 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		}
 		GL30.glDeleteVertexArrays(vao);
 	}
-
 }

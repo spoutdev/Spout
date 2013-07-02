@@ -30,15 +30,18 @@ import java.net.InetSocketAddress;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
+import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringMapEvent;
@@ -101,19 +104,16 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	@Override
-	public void initializeSession(final Session session) {
-		session.setNetworkSynchronizer(new SpoutNetworkSynchronizer(session));
-
-		session.send(false, new StringMapMessage(StringMap.REGISTRATION_MAP, StringMapEvent.Action.SET, StringMap.get(StringMap.REGISTRATION_MAP).getItems()));
-        /*StringMap.get(StringMap.REGISTRATION_MAP).registerListener(new EventableListener<StringMapEvent>() {
-            @Override
-            public void onEvent(StringMapEvent event) {
-                session.send(false, new StringMapMessage(event.getAssociatedObject().getId(), StringMapEvent.Action.ADD, event.getModifiedElements()));
-            }
-        });*/ // Not correct - TODO Fix
-
+	public void initializeServerSession(final ServerSession session) {
+		session.setNetworkSynchronizer(new SpoutServerNetworkSynchronizer(session));
+		//TODO Ensure this is right, very important
 		for (StringMap map : StringMap.getAll()) {
-			session.send(false, new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
+			session.send(new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
 		}
+	}
+
+	@Override
+	public void initializeClientSession(final ClientSession session) {
+		session.setNetworkSynchronizer(new SpoutClientNetworkSynchronizer((Session) session));
 	}
 }

@@ -34,6 +34,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
@@ -48,26 +49,38 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 public class WorldSavingThread extends Thread{
 	private static final WorldSavingThread instance = new WorldSavingThread();
 	private final AtomicBoolean queueRunning = new AtomicBoolean(true);
-	private final LinkedBlockingQueue<Callable<SpoutWorld>> queue = new LinkedBlockingQueue<Callable<SpoutWorld>>();
+	private final LinkedBlockingQueue<Callable<SpoutServerWorld>> queue = new LinkedBlockingQueue<Callable<SpoutServerWorld>>();
 	public WorldSavingThread() {
 		super("World Saving Thread");
 	}
 
 	public static void startThread() {
+		if (Spout.getEngine() instanceof Client) {
+			throw new IllegalStateException("Client mode is not allowed to save the world");
+		}
 		instance.start();
 	}
 
 	public static void saveChunk(SpoutChunk chunk) {
+		if (Spout.getEngine() instanceof Client) {
+			throw new IllegalStateException("Client mode is not allowed to save chunks");
+		}
 		instance.addChunk(chunk);
 	}
 	
 	public void addChunk(SpoutChunk chunk) {
+		if (Spout.getEngine() instanceof Client) {
+			throw new IllegalStateException("Client mode is not allowed to add chunks for saving");
+		}
 		ChunkSaveTask task = new ChunkSaveTask(chunk);
 		instance.queue.add(task);
 		pingBackup();
 	}
 	
 	private void pingBackup() {
+		if (Spout.getEngine() instanceof Client) {
+			throw new IllegalStateException("Client mode is not allowed to poll backup of chunks");
+		}
 		if (instance.queueRunning.compareAndSet(false, true)) {
 			new BackupThread().start();
 		}
@@ -89,7 +102,7 @@ public class WorldSavingThread extends Thread{
 	@Override
 	public void run() {
 		while (!Thread.interrupted()) {
-			Callable<SpoutWorld> task;
+			Callable<SpoutServerWorld> task;
 			try {
 				task = queue.take();
 				task.call();
@@ -106,7 +119,7 @@ public class WorldSavingThread extends Thread{
 		int toSave = queue.size();
 		int saved = 0;
 		int lastTenth = 0;
-		Callable<SpoutWorld> task;
+		Callable<SpoutServerWorld> task;
 		while ((task = queue.poll()) != null) {
 			try {
 				task.call();
@@ -119,7 +132,7 @@ public class WorldSavingThread extends Thread{
 				Spout.getLogger().info("Saved " + tenth + "0% of queued chunks");
 			}
 		}
-		Collection<World> worlds = Spout.getEngine().getWorlds();
+		Collection<? extends World> worlds = Spout.getEngine().getWorlds();
 		for (World w : worlds) {
 			SpoutColumn[] columns = ((SpoutWorld) w).getColumns();
 			for (SpoutColumn c : columns) {
@@ -127,10 +140,10 @@ public class WorldSavingThread extends Thread{
 			}
 		}
 		for (World w : worlds) {
-			((SpoutWorld) w).getRegionFileManager().stopTimeoutThread();
+			((SpoutServerWorld) w).getRegionFileManager().stopTimeoutThread();
 		}
 		for (World w : worlds) {
-			((SpoutWorld) w).getRegionFileManager().closeAll();
+			((SpoutServerWorld) w).getRegionFileManager().closeAll();
 		}
 		
 		if (!queueRunning.compareAndSet(true, false)) {
@@ -143,7 +156,7 @@ public class WorldSavingThread extends Thread{
 		
 	}
 
-	private static class ChunkSaveTask implements Callable<SpoutWorld> {
+	private static class ChunkSaveTask implements Callable<SpoutServerWorld> {
 		final SpoutChunkSnapshot snapshot;
 		final List<DynamicBlockUpdate> blockUpdates;
 		final SpoutChunk chunk;
@@ -154,12 +167,12 @@ public class WorldSavingThread extends Thread{
 		}
 
 		@Override
-		public SpoutWorld call() {
-			SpoutWorld world = chunk.getWorld();
+		public SpoutServerWorld call() {
+			SpoutServerWorld world = (SpoutServerWorld) chunk.getWorld();
 			OutputStream out = world.getChunkOutputStream(snapshot);
 			if (out != null) {
 				try {
-					ChunkFiles.saveChunk(chunk.getWorld(), snapshot, blockUpdates, out);
+					ChunkFiles.saveChunk((SpoutServerWorld) chunk.getWorld(), snapshot, blockUpdates, out);
 				} finally {
 					try {
 						out.close();

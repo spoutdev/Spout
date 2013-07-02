@@ -31,11 +31,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.spout.api.Platform;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 
 import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -193,6 +194,9 @@ public class EntityManager {
 	 * Syncs all entities/observers in this region
 	 */
 	public void syncEntities() {
+		if (!(Spout.getPlatform() == Platform.SERVER)) {
+			throw new UnsupportedOperationException("Must be in server mode to sync entities");
+		}
 		for (Entity ent : getAll()) {
 			//Do not sync entities with null chunks
 			if (ent.getChunk() == null) {
@@ -227,7 +231,7 @@ public class EntityManager {
 				continue;
 			}
 			//Grab the NetworkSynchronizer of the player
-			NetworkSynchronizer network = player.getNetworkSynchronizer();
+			ServerNetworkSynchronizer network = (ServerNetworkSynchronizer) player.getNetworkSynchronizer();
 			//Grab player's view distance
 			int view = player.getViewDistance();
 			/*

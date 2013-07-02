@@ -40,27 +40,17 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
 
-public class GLBatchInstanceRenderer extends BatchVertexRenderer {
-	final int SIZE_FLOAT = 4;
+public class GL40BatchVertexRenderer extends BatchVertexRenderer {
 	int vao;
-	int vbos = -1;
-
-	ArrayList<Integer> assigned = new ArrayList<Integer>();
-	
-	SpoutFloatBuffer buffer = null;
-	//TIntObjectHashMap<GLFloatBuffer > vertexBuffers = new TIntObjectHashMap<GLFloatBuffer>();
 
 	/**
-	 * Batch Renderer using OpenGL 3.0 mode.
+	 * Batch Renderer using OpenGL 4.0 mode.
 	 * @param renderMode Mode to render in
 	 */
-	public GLBatchInstanceRenderer(int renderMode) {
+	public GL40BatchVertexRenderer(int renderMode) {
 		super(renderMode);
 		vao = GL30.glGenVertexArrays();
 		SpoutRenderer.checkGLError();
-		//Util.checkGLError();
-		//GL30.glBindVertexArray(vao); // useless
-		//vertexBuffers.put(0, new VertexBufferImpl("vPosition", 4, 0)); //Auto create the first time
 	}
 
 	@Override
@@ -141,12 +131,8 @@ public class GLBatchInstanceRenderer extends BatchVertexRenderer {
 
 		material.assign();
 
-		//System.out.println("glDrawArrays");
-		// RenderModer, ? , Type of index of instance, ? , ?
 		GL31.glDrawArraysInstanced(renderMode, 0, elements, instances);
 		SpoutRenderer.checkGLError();
-
-		//GL30.glBindVertexArray(0); //Run without
 	}
 
 	@Override
@@ -178,5 +164,4 @@ public class GLBatchInstanceRenderer extends BatchVertexRenderer {
 		}
 		GL30.glDeleteVertexArrays(vao);
 	}
-
 }
