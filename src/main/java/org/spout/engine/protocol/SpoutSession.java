@@ -34,13 +34,17 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import org.jboss.netty.channel.Channel;
+import org.spout.api.Server;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
+import org.spout.api.protocol.ClientNullNetworkSynchronizer;
+import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.NetworkSynchronizer;
-import org.spout.api.protocol.NullNetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.ServerNullNetworkSynchronizer;
+import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
@@ -70,13 +74,17 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	protected final Channel channel;
 	/**
+	 * A queue of incoming and unprocessed messages
+	 */
+	private final Queue<Message> messageQueue = new ArrayDeque<Message>();
+	/**
 	 * A queue of incoming and unprocessed messages from a client
 	 */
-	private final Queue<Message> fromDownMessageQueue = new ArrayDeque<Message>();
+	//private final Queue<Message> fromDownMessageQueue = new ArrayDeque<Message>();
 	/**
 	 * A queue of incoming and unprocessed messages from a server
 	 */
-	private final Queue<Message> fromUpMessageQueue = new ArrayDeque<Message>();
+	//private final Queue<Message> fromUpMessageQueue = new ArrayDeque<Message>();
 	/**
 	 * A queue of outgoing messages that will be sent after the client finishes identification
 	 */
@@ -107,12 +115,12 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	/**
 	 * A network synchronizer that doesn't do anything, used until a real synchronizer is set.
 	 */
-	private final NetworkSynchronizer nullSynchronizer = new NullNetworkSynchronizer(this);
+	private final NetworkSynchronizer nullSynchronizer;
 
 	/**
 	 * The NetworkSynchronizer being used for this session
 	 */
-	private final AtomicReference<NetworkSynchronizer> synchronizer = new AtomicReference<NetworkSynchronizer>(nullSynchronizer);
+	private final AtomicReference<NetworkSynchronizer> synchronizer;
 
 	private final ManagedHashMap dataMap;
 	
@@ -138,6 +146,12 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		isConnected = true;
 		this.dataMap = new ManagedHashMap();
 		this.exceptionHandler = new AtomicReference<UncaughtExceptionHandler>(new DefaultUncaughtExceptionHandler(this));
+		if (engine instanceof Server) {
+			nullSynchronizer = new ServerNullNetworkSynchronizer((ServerSession)this);
+		} else {
+			nullSynchronizer = new ClientNullNetworkSynchronizer((ClientSession) this);
+		}
+		synchronizer = new AtomicReference<NetworkSynchronizer>(nullSynchronizer);
 	}
 
 	/**
@@ -200,7 +214,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 		if (state == State.GAME) {
 			while ((message = sendQueue.poll()) != null) {
-				send(false, true, message);
+				send(message);
 			}
 		}
 		
@@ -215,21 +229,17 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			}
 
 		}
-
-		while ((message = fromDownMessageQueue.poll()) != null) {
-			handleMessage(false, message);
-		}
-		while ((message = fromUpMessageQueue.poll()) != null) {
-			handleMessage(true, message);
+		while ((message = messageQueue.poll()) != null) {
+			handleMessage(message);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void handleMessage(boolean upstream, Message message) {
+	private void handleMessage(Message message) {
 		MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
 		if (handler != null) {
 			try {
-				handler.handle(upstream, this, message);
+				handler.handle(this, message);
 			} catch (Exception e) {
 				exceptionHandler.get().uncaughtException(message, handler, e);
 			}
@@ -237,12 +247,12 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	}
 
 	@Override
-	public void send(boolean upstream, Message message) {
-		send(upstream, false, message);
+	public void send(Message message) {
+		send(false, message);
 	}
 
 	@Override
-	public void send(boolean upstream, boolean force, Message message) {
+	public void send(boolean force, Message message) {
 		if (message == null) {
 			return;
 		}
@@ -266,14 +276,14 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	}
 
 	@Override
-	public void sendAll(boolean upstream, Message... messages) {
-		sendAll(upstream, false, messages);
+	public void sendAll(Message... messages) {
+		sendAll(false, messages);
 	}
 
 	@Override
-	public void sendAll(boolean upstream, boolean force, Message... messages) {
+	public void sendAll(boolean force, Message... messages) {
 		for (Message msg : messages) {
-			send(upstream, force, msg);
+			send(force, msg);
 		}
 	}
 
@@ -301,16 +311,21 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 * @param message The message.
 	 */
 	@Override
-	public void messageReceived(boolean upstream, Message message) {
+	public void messageReceived(Message message) {
 		if (message.isAsync()) {
-			handleMessage(upstream, message);
-		}
-		else if (upstream) {
-			fromUpMessageQueue.add(message);
+			handleMessage(message);
 		} else {
-			fromDownMessageQueue.add(message);
+			messageQueue.add(message);
 		}
 	}
+
+	@Override
+	public void messageReceivedOnAuxChannel(Channel auxChannel, Message message) {
+		// By default, just use the normal messageReceived
+		messageReceived(message);
+	}
+	
+	
 
 	@Override
 	public String getSessionId() {
@@ -345,8 +360,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		return dataMap;
 	}
 
-	@Override
-	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer) {
+	protected void setNetworkSynchronizer(NetworkSynchronizer synchronizer) {
 		if (synchronizer == null && player == null) {
 			this.synchronizer.set(nullSynchronizer);
 		} else if (!this.synchronizer.compareAndSet(nullSynchronizer, synchronizer)) {
@@ -396,6 +410,10 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		} else {
 			throw new IllegalArgumentException("Null uncaught exception handlers are not permitted");
 		}
+	}
+
+	public Channel getChannel() {
+		return channel;
 	}
 
 	public abstract boolean disconnect(boolean kick, boolean stop, String reason);

@@ -61,16 +61,17 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Locale;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.util.access.BanType;
 import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
 import org.spout.engine.SpoutConfiguration;
-import org.spout.engine.SpoutEngine;
+import org.spout.engine.SpoutServer;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.protocol.SpoutSession;
-import org.spout.engine.world.SpoutWorld;
+import org.spout.engine.world.SpoutServerWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicReference<SpoutSession<?>> sessionLive = new AtomicReference<SpoutSession<?>>();
@@ -94,7 +95,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	protected SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
 		this(engine, name, transform, viewDistance, uid, load, (byte[])null, components);
-		this.getDatatable().putAll(dataMap);
+		this.getData().putAll(dataMap);
 	}
 
 	public SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
@@ -150,10 +151,12 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@DelayedWrite
 	public boolean disconnect(boolean async) {
-		((SpoutWorld) getWorld()).removePlayer(this);
+		if (Spout.getPlatform() == Platform.SERVER) {
+			((SpoutServerWorld) getWorld()).removePlayer(this);
+			//save player data on disconnect, probably should do this periodically as well...
+			PlayerFiles.savePlayerData(this, async);
+		}	
 		onlineLive.set(false);
-		//save player data on disconnect, probably should do this periodically as well...
-		PlayerFiles.savePlayerData(this, async);
 		return true;
 	}
 
@@ -172,6 +175,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			setupInitialChunk(newTransform, LoadOption.LOAD_GEN);
 		}
 		sessionLive.set(session);
+		session.setPlayer(this);
 		copySnapshot();
 		return true;
 	}
@@ -188,7 +192,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (msg == null) {
 			return;
 		}
-		session.send(false, msg);
+		session.send(msg);
 	}
 
 	@Override
@@ -356,13 +360,20 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public void teleport(Point loc) {
 		getScene().setPosition(loc);
-		getNetworkSynchronizer().setPositionDirty();
+		setPositionDirty();
 	}
 
 	@Override
 	public void teleport(Transform transform) {
 		getScene().setTransform(transform);
-		getNetworkSynchronizer().setPositionDirty();
+		setPositionDirty();
+	}
+	
+	private void setPositionDirty() {
+		// TODO something for client?
+		if (Spout.getPlatform() == Platform.SERVER) {
+			((ServerNetworkSynchronizer) getNetworkSynchronizer()).setPositionDirty();
+		}
 	}
 
 	@Override
@@ -371,13 +382,16 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			remove();
 		}
 		super.finalizeRun();
-		if (this.isOnline()) {
-			this.getNetworkSynchronizer().finalizeTick();
-		}
+
 		if (isRemoved()) {
-			getNetworkSynchronizer().onRemoved();
-			((SpoutEngine) getEngine()).removePlayer(this);
+			if (getEngine().getPlatform() == Platform.SERVER) {
+				((ServerNetworkSynchronizer) getNetworkSynchronizer()).onRemoved();
+				((SpoutServer) getEngine()).removePlayer(this);
+			}
+			// TODO stop client?
 			sessionLive.set(null);
+		} else if (this.isOnline()) {
+			this.getNetworkSynchronizer().finalizeTick();
 		}
 	}
 

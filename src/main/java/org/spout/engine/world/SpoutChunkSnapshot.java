@@ -57,7 +57,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	 * The parent region that manages this chunk
 	 */
 	private final WeakReference<Region> parentRegion;
-	private final byte worldSkyLightLoss;
 	private final List<EntitySnapshot> entities;
 	private final List<BlockComponentSnapshot> blockComponents;
 	private final int[] palette;
@@ -106,8 +105,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			this.entities = null;
 			this.blockComponents = null;
 		}
-
-		this.worldSkyLightLoss = (byte) (15 - chunk.getWorld().getSkyLight());
 
 		// Cache blocks
 		this.blockIds = blockIds;
@@ -290,6 +287,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		private final Set<Class<? extends BlockComponent>> clazz;
 		private final SerializableMap data;
 
+		@SuppressWarnings("unchecked")
 		private SpoutBlockComponentSnapshot(int x, int y, int z, BlockComponentOwner holder, SerializableMap data) {
 			this.x = x;
 			this.y = y;
@@ -341,7 +339,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			int x = NibbleQuadHashed.key1(index) + chunk.getBlockX();
 			int y = NibbleQuadHashed.key2(index) + chunk.getBlockY();
 			int z = NibbleQuadHashed.key3(index) + chunk.getBlockZ();
-			snapshots.add(new SpoutBlockComponentSnapshot(x, y, z, component, component.getDatatable()));
+			snapshots.add(new SpoutBlockComponentSnapshot(x, y, z, component, component.getData()));
 			return true;
 		}
 	}

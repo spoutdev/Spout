@@ -24,29 +24,26 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.protocol.builtin.handler;
+package org.spout.engine.protocol.builtin;
 
-import java.io.IOException;
-import java.util.logging.Level;
 
-import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
-import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.ClientSession;
-import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
+import org.spout.api.protocol.ClientNetworkSynchronizer;
+import org.spout.api.protocol.EntityProtocol;
+import org.spout.api.protocol.Session;
 
-public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatableMessage> {
-	@Override
-	public void handleClient(ClientSession session, EntityDatatableMessage message) {
-		if(!session.hasPlayer()) {
-			throw new IllegalStateException("Message sent when session has no player");
-		}
+public class SpoutClientNetworkSynchronizer extends ClientNetworkSynchronizer {
+	public SpoutClientNetworkSynchronizer(Session session) {
+		super(session);
+	}
 
-		Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
-		try {
-			entity.getData().deserialize(message.getCompressedData(), true);
-		} catch (IOException e) {
-			Spout.getLogger().log(Level.SEVERE, "Exception deserializing compressed datatable", e);
+	// TODO what is this for?
+	public EntityProtocol getEntityProtocol(Entity entity) {
+		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
+		if (protocol == null) {
+			entity.getNetwork().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
+			protocol = SpoutEntityProtocol.INSTANCE;
 		}
+		return protocol;
 	}
 }

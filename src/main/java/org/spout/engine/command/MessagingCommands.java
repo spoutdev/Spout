@@ -52,7 +52,7 @@ public class MessagingCommands  {
 	public void tell(CommandSource source, CommandArguments args) throws CommandException {
 		String playerName = args.getString(0);
 		String message = args.getJoinedString(1);
-		Player player = engine.getPlayer(playerName, false);
+		Player player = args.getPlayer(0, false);
 		if (player == source) {
 			source.sendMessage("Forever alone.");
 		} else if (player != null) {

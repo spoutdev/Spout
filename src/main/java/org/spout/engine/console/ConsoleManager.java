@@ -38,6 +38,7 @@ import org.spout.api.Engine;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.logging.LoggerOutputStream;
+import org.spout.logging.MessageFormatter;
 import org.spout.logging.file.RotatingFileHandler;
 import org.spout.logging.jline.CommandCallback;
 import org.spout.logging.jline.JLineHandler;
@@ -66,11 +67,11 @@ public final class ConsoleManager {
 		}
 
 		Handler jLineHandler = new JLineHandler(new CommandTask(), Arrays.asList(new Completor[]{new SpoutCommandCompletor(engine)}));
-		//jLineHandler.setFormatter(new ChatLogFormatter(JansiStyleHandler.ID)); TODO: Console styling
+		jLineHandler.setFormatter(new MessageFormatter());
 		logger.addHandler(jLineHandler);
 
 		Handler fileHandler = new RotatingFileHandler(new File("logs"), engine.getLogFile(), engine.debugMode());
-		//fileHandler.setFormatter(new ChatLogFormatter());
+		fileHandler.setFormatter(new MessageFormatter());
 		logger.addHandler(fileHandler);
 
 		System.setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));

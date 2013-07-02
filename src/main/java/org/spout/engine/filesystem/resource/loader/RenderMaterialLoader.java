@@ -40,7 +40,7 @@ import org.spout.api.Spout;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
-import org.spout.api.plugin.CommonClassLoader;
+import org.spout.api.plugin.PluginClassLoader;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.api.render.effect.RenderEffect;
@@ -203,7 +203,7 @@ public class RenderMaterialLoader extends ResourceLoader {
 			String[] renderEffects = (String[])re;
 			for(String effectName : renderEffects) {
 				try {
-					Class<?> effect = CommonClassLoader.findPluginClass(effectName);
+					Class<?> effect = PluginClassLoader.findPluginClass(effectName);
 					if(!RenderEffect.class.isAssignableFrom(effect)) {
 						Spout.log("Error: " + effectName + " Is not a RenderEffect");
 					}

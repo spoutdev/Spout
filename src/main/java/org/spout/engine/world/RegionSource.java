@@ -129,6 +129,7 @@ public class RegionSource implements Iterable<Region> {
 	 * @return region
 	 */
 	@LiveRead
+	// TODO RegionSource no longer generates regions; make this more of a client/server mold
 	public SpoutRegion getRegion(int x, int y, int z, LoadOption loadopt) {
 		if (loadopt != LoadOption.NO_LOAD) {
 			TickStage.checkStage(~TickStage.SNAPSHOT);

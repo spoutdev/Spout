@@ -37,8 +37,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.spout.api.Client;
+import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundManager;
@@ -46,6 +48,7 @@ import org.spout.api.audio.SoundSource;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.Filter;
 import org.spout.api.component.entity.AnimationComponent;
 import org.spout.api.component.entity.InteractComponent;
 import org.spout.api.component.widget.RenderPartComponent;
@@ -59,6 +62,7 @@ import org.spout.api.component.widget.list.ComboBoxComponent;
 import org.spout.api.component.widget.list.ItemListComponent;
 import org.spout.api.command.annotated.Permissible;
 import org.spout.api.command.annotated.Platform;
+import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
@@ -67,6 +71,7 @@ import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.Decorator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.Screen;
@@ -76,13 +81,16 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
-import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.Plugin;
+import org.spout.api.plugin.PluginManager;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
+import org.spout.api.protocol.Session;
 
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.component.entity.SpoutModelComponent;
 import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.world.SpoutChunk;
 
@@ -194,7 +202,7 @@ public class TestCommands {
 		} else {
 			throw new CommandException("Component not found.");
 		}
-		screen.attachWidget(((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin(), widget);
+		screen.attachWidget(((PluginManager) Spout.getPluginManager()).getMetaPlugin(), widget);
 		client.getScreenStack().openScreen(screen);
 	}
 
@@ -523,6 +531,65 @@ public class TestCommands {
 			Spout.getLogger().info(e.getKey().getSimpleName() + " " + e.getValue() + " (" + (0.10 * ((e.getValue() * 1000) / totalDecorator)) + ")");
 		}
 		Spout.getLogger().info("Total " + totalDecorator);
+	}
+
+	@Command(aliases = {"resend"}, usage = "[all|one]", desc = "Resends chunks to players", min = 0, max = 1)
+	public void resendChunks(CommandSource source, CommandArguments args) throws CommandException {
+		if (args.length() > 0) {
+			if (engine.getPlatform() != org.spout.api.Platform.SERVER) {
+				throw new CommandException("This command must be used on the server");
+			}
+			boolean one = false;
+			if (args.getString(0).equalsIgnoreCase("one")) {
+				one = true;
+			}
+			int count = 0;
+			outer:
+			for (Player player : ((Server) engine).getOnlinePlayers()) {
+				ServerNetworkSynchronizer network = (ServerNetworkSynchronizer) player.getNetworkSynchronizer();
+				Set<Chunk> chunks = network.getActiveChunks();
+				for (Chunk c : chunks) {
+					count++;
+					network.sendChunk(c);
+					if (one) {
+						break outer;
+					}
+				}
+			}
+
+			source.sendMessage("Resent " + count + " chunks");
+		} else {
+			throw new CommandException("That's not implemented. Sorry");
+			//player.getNetworkSynchronizer().sendChunk(player.getChunk());
+			//source.sendMessage("Chunk resent")
+		}
+	}
+
+	@Command(aliases = {"testnetwork"}, desc = "Checks that the session is open and connected", min = 0, max = 0)
+	public void testNetwork(CommandSource source, CommandArguments args) throws CommandException {
+		switch (engine.getPlatform()) {
+			case CLIENT:
+				Session session = ((SpoutClient) engine).getSession();
+				if (session.isConnected()) {
+					source.sendMessage("Network is open and connected");
+				} else {
+					source.sendMessage("Network is down. Stopping.");
+				engine.stop();
+				}
+				break;
+			case SERVER:
+				for (Player player : ((Server) engine).getOnlinePlayers()) {
+					player.getSession().send(new CommandMessage(Spout.getCommandManager().getCommand("say"), "Network Works"));
+				}
+				break;
+		}
+	}
+
+	@Command(aliases = "respawn", usage = "", desc = "Forces the client to respawn", max = 0)
+	@Platform(org.spout.api.Platform.SERVER)
+	@Filter(PlayerFilter.class)
+	public void respawn(CommandSource source, CommandArguments args) throws CommandException {
+		((ServerNetworkSynchronizer) ((Player) source).getNetworkSynchronizer()).setRespawned();
 	}
 
 	/**
