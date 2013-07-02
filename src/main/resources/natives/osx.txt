@@ -1,0 +1,3 @@
+libjinput-osx.jnilib
+liblwjgl.jnilib
+openal.dylib

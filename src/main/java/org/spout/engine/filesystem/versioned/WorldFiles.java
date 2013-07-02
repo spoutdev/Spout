@@ -35,8 +35,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Random;
 import java.util.UUID;
-import org.spout.api.Platform;
 
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.generator.WorldGenerator;
@@ -147,7 +147,7 @@ public class WorldFiles {
 		
 		world.setSpawnPoint(t);
 		
-		ManagedHashMap dataMap = world.getDatatable().getBaseMap();
+		ManagedHashMap dataMap = world.getData().getBaseMap();
 		dataMap.clear();
 		try {
 			dataMap.deserialize(extraData);
@@ -195,7 +195,7 @@ public class WorldFiles {
 		map.put(new ByteTag("version", WORLD_VERSION));
 		map.put(new StringTag("generator", world.getGenerator().getName()));
 		map.put(new LongTag("seed", world.getSeed()));
-		map.put(new ByteArrayTag("extra_data", world.getDatatable().serialize()));
+		map.put(new ByteArrayTag("extra_data", world.getData().serialize()));
 		map.put(new LongTag("age", world.getAge()));
 		map.put(new UUIDTag("uuid", world.getUID()));
 		map.put(new TransformTag("spawn_position", world.getSpawnPoint()));

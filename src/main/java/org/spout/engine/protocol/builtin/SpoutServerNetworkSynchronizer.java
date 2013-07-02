@@ -71,7 +71,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 
 	@Override
 	protected void worldChanged(World world) {
-		session.send(new WorldChangeMessage(world, world.getDatatable()));
+		session.send(new WorldChangeMessage(world, world.getData()));
 	}
 
 	@Override

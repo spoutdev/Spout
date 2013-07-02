@@ -120,7 +120,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	/**
 	 * The {@link FileSystem} for the server
 	 */
-	private final FileSystem filesystem;
+	private final ServerFileSystem filesystem;
 	/**
 	 * If the server allows flight.
 	 */
@@ -187,6 +187,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		getEventManager().registerEvents(listener, this);
 		getEventManager().callEvent(new EngineStartEvent());
 		filesystem.postStartup();
+		filesystem.notifyInstalls();
 		WorldSavingThread.startThread();
 		Spout.info("Done Loading, ready for players.");
 	}

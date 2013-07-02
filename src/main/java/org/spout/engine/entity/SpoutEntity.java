@@ -113,7 +113,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	protected SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
 		this(engine, transform, viewDistance, uid, load, (byte[])null, components);
-		this.getDatatable().putAll(dataMap);
+		this.getData().putAll(dataMap);
 	}
 
 	public SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
@@ -152,7 +152,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 		if (dataMap != null) {
 			try {
-				this.getDatatable().deserialize(dataMap);
+				this.getData().deserialize(dataMap);
 			} catch (IOException e) {
 				engine.getLogger().log(Level.SEVERE, "Unable to deserialize entity data", e);
 			}

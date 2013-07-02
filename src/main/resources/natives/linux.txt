@@ -1,0 +1,6 @@
+liblwjgl.so
+liblwjgl64.so
+libopenal.so
+libopenal64.so
+libjinput-linux.so
+libjinput-linux64.so

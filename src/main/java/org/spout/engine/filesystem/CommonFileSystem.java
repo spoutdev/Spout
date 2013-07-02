@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 
@@ -96,20 +97,44 @@ public abstract class CommonFileSystem implements FileSystem {
 		pathResolvers.add(new ZipFilePathResolver(RESOURCES_DIRECTORY.getPath()));
 		pathResolvers.add(new JarFilePathResolver());
 
-		// setup install command
+		initInstallations();
+
+		initialized = true;
+	}
+
+	private void initInstallations() {
 		Spout.getCommandManager().getCommand("install")
 				.setPermission(INSTALLATION_PERMISSION)
-				.setArgumentBounds(2, 2)
+				.setArgumentBounds(1, 2)
 				.setHelp("Replies to an installation request.")
-				.setUsage("<allow|deny> <plugin>")
+				.setUsage("<list|allow|deny> [plugin|all]")
 				.setExecutor(new Executor() {
 					@Override
 					public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
+						// list the requested installations
+						String arg = args.getString(0);
+						if (arg.equalsIgnoreCase("list")) {
+							source.sendMessage("Listing pending installations...");
+							for (Map.Entry<String, URI> e : requestedInstallations.entrySet()) {
+								source.sendMessage(e.getKey() + " from " + e.getValue());
+							}
+							return;
+						}
+
+						// install all pending installations
 						String plugin = args.getString(1);
+						if (plugin.equalsIgnoreCase("all")) {
+							for (String p : requestedInstallations.keySet()) {
+								allowInstallation(source, p);
+							}
+							return;
+						}
+
+						// specified plugin is not pending
 						if (!requestedInstallations.containsKey(plugin))
 							throw new CommandException("There is no install pending for that plugin.");
 
-						String arg = args.getString(0);
+						// allow or disallow the specified plugin
 						if (arg.equalsIgnoreCase("allow")) {
 							allowInstallation(source, plugin);
 							return;
@@ -121,8 +146,6 @@ public abstract class CommonFileSystem implements FileSystem {
 						throw new CommandException("Unknown argument: " + arg);
 					}
 				});
-
-		initialized = true;
 	}
 
 	private void loadFallback(ResourceLoader loader) {
@@ -338,23 +361,29 @@ public abstract class CommonFileSystem implements FileSystem {
 		pathResolvers.remove(pathResolver);
 	}
 
-	protected void allowInstallation(final CommandSource source, final String plugin) {
+	private void allowInstallation(final CommandSource source, final String plugin) {
 		Spout.getScheduler().scheduleAsyncTask(Spout.getEngine(), new Runnable() {
 			@Override
 			public void run() {
 				synchronized (requestedInstallations) {
+
+					JarFile jar = null;
+					InputStream in = null;
+
 					try {
-						// copy opened stream to file in update dir
+						// obtain plugin stream
 						URI uri = requestedInstallations.get(plugin);
-						BufferedInputStream in = new BufferedInputStream(uri.toURL().openStream());
+						in = new BufferedInputStream(uri.toURL().openStream());
 						String path = uri.toString();
 						File file = new File(UPDATES_DIRECTORY, path.substring(path.lastIndexOf("/") + 1));
+
+						// copy to updates
 						source.sendMessage("Downloading " + plugin + " to the updates folder...");
 						FileUtils.copyInputStreamToFile(in, file);
 						source.sendMessage("Done.");
 
 						// check the validity of plugin
-						JarFile jar = new JarFile(file);
+						jar = new JarFile(file);
 						if (jar.getJarEntry("properties.yml") == null && jar.getJarEntry("plugin.yml") == null) {
 							source.sendMessage("The downloaded file has no valid plugin description file, marking file to be deleted.");
 							if (!file.delete()) file.deleteOnExit();
@@ -362,11 +391,24 @@ public abstract class CommonFileSystem implements FileSystem {
 						}
 
 						source.sendMessage(plugin + " has been successfully downloaded to the updates folder, it will be installed on next run.");
-						in.close();
 					} catch (MalformedURLException e) {
 						throw new SpoutRuntimeException("The plugin's URL is invalid", e);
 					} catch (IOException e) {
 						throw new SpoutRuntimeException("Error downloading the plugin", e);
+					} finally {
+						// close the jar
+						try {
+							if (jar != null) jar.close();
+						} catch (IOException e) {
+							Spout.getLogger().log(Level.WARNING, "Error closing JAR file", e);
+						}
+
+						// close the input stream
+						try {
+							if (in != null) in.close();
+						} catch (IOException e) {
+							Spout.getLogger().log(Level.WARNING, "Error closing plugin stream", e);
+						}
 					}
 					requestedInstallations.remove(plugin);
 				}
@@ -374,7 +416,7 @@ public abstract class CommonFileSystem implements FileSystem {
 		});
 	}
 
-	protected void denyInstallation(CommandSource source, String plugin) {
+	private void denyInstallation(CommandSource source, String plugin) {
 		source.sendMessage("Installation of " + plugin + " cancelled.");
 		requestedInstallations.remove(plugin);
 	}
@@ -386,8 +428,6 @@ public abstract class CommonFileSystem implements FileSystem {
 			throw new IllegalArgumentException("Plugin name cannot be null");
 		if (uri == null)
 			throw new IllegalArgumentException("URI cannot be null");
-		if (!uri.toString().endsWith(".jar"))
-			throw new IllegalArgumentException("URI must point to a direct JAR file.");
 		requestedInstallations.put(name, uri);
 	}
 }

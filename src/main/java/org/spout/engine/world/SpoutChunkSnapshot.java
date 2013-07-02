@@ -339,7 +339,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			int x = NibbleQuadHashed.key1(index) + chunk.getBlockX();
 			int y = NibbleQuadHashed.key2(index) + chunk.getBlockY();
 			int z = NibbleQuadHashed.key3(index) + chunk.getBlockZ();
-			snapshots.add(new SpoutBlockComponentSnapshot(x, y, z, component, component.getDatatable()));
+			snapshots.add(new SpoutBlockComponentSnapshot(x, y, z, component, component.getData()));
 			return true;
 		}
 	}
