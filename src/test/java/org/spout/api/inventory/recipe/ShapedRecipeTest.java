@@ -33,6 +33,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.spout.api.EngineFaker;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;

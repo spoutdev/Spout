@@ -32,6 +32,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.spout.api.EngineFaker;
 import org.spout.api.material.Material;
 
 import static org.junit.Assert.assertTrue;

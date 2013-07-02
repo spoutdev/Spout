@@ -49,7 +49,6 @@ import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.UnknownDependencyException;
 import org.spout.api.exception.UnknownSoftDependencyException;
-import org.spout.api.lang.JavaPluginDictionary;
 import org.spout.api.plugin.security.PluginSecurityManager;
 
 public class PluginLoader {
@@ -80,8 +79,11 @@ public class PluginLoader {
 			}
 
 			try {
+				String version = plugin.getDescription().getVersion();
+				Spout.info("Enabling " + plugin.getName() + " v" + version + "...");
 				plugin.enabled = true;
 				plugin.onEnable();
+				Spout.info(plugin.getName() + " v" + version + " enabled.");
 			} catch (Throwable e) {
 				engine.getLogger().log(Level.SEVERE, "An error occured when enabling '" + plugin.getDescription().getFullName() + "': " + e.getMessage(), e);
 			}

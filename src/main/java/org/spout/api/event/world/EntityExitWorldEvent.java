@@ -27,7 +27,6 @@
 package org.spout.api.event.world;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
 import org.spout.api.geo.World;
 

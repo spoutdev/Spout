@@ -26,7 +26,6 @@
  */
 package org.spout.api.scheduler;
 
-import org.spout.api.Spout;
 import org.spout.api.exception.IllegalTickSequenceException;
 
 /**

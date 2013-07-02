@@ -33,6 +33,7 @@ import org.spout.api.inventory.util.CubeIterator;
  * {@link org.spout.api.inventory.Inventory}.
  */
 public class Cube extends Grid {
+	private static final long serialVersionUID = 1L;
 	/**
 	 * The width of the cube
 	 */

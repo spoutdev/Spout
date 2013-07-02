@@ -28,7 +28,6 @@ package org.spout.api.component.world;
 
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
-import org.spout.api.event.entity.EntityChangeWorldEvent;
 import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.event.world.EntityEnterWorldEvent;

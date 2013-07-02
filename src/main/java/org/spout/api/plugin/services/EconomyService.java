@@ -651,6 +651,6 @@ public abstract class EconomyService {
 	 * An exception thrown when the currency being referenced doesn't exist in the implementation.
 	 */
 	public class UnknownCurrencyException extends Exception {
-
+		private static final long serialVersionUID = 1L;
 	}
 }

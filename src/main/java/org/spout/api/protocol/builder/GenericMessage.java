@@ -43,8 +43,6 @@ public abstract class GenericMessage<T extends Message> extends MessageCodec<T> 
 		super(clazz, opcode);
 	}
 
-	private static final long serialVersionUID = 1L;
-	
 	/**
 	 * Gets the field root for this message.  This should be a static final unchanging array.
 	 *
@@ -67,7 +65,7 @@ public abstract class GenericMessage<T extends Message> extends MessageCodec<T> 
 	 */
 	public abstract int[] getFieldLoopup();
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "hiding" })
 	public <T> T get(FieldRef<T> ref) {
 		setupBuffer(ref);
 		

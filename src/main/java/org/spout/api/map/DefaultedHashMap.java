@@ -33,6 +33,8 @@ import java.util.Map;
  * An implementation of {@link DefaultedMap} using a HashMap
  */
 public class DefaultedHashMap<V> extends HashMap<String, V> implements DefaultedMap<V> {
+	private static final long serialVersionUID = 1L;
+
 	public DefaultedHashMap(int initialCapacity, float loadFactor) {
 		super(initialCapacity, loadFactor);
 	}

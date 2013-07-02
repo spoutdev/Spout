@@ -122,6 +122,6 @@ public abstract class EntityComponent extends Component {
 	 * Called when the owner is interacted.
 	 * @param event {@see org.spout.api.event.entity.EntityInteractEvent}
 	 */
-	public void onInteract(final EntityInteractEvent event) {
+	public void onInteract(final EntityInteractEvent<?> event) {
 	}
 }

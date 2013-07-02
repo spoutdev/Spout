@@ -134,7 +134,6 @@ public class RecipeTree {
 		// Get column trim
 		int maxColoumnStart = -1;
 		int minColoumnEnd = 0;
-		outer:
 		for (List<Material> list : materials) {
 			int currentSize = 0;
 			int currentStart = -1;
@@ -176,7 +175,6 @@ public class RecipeTree {
 
 	public boolean addRecipe(ShapedRecipe recipe) {
 		RecipeNode current = root;
-		outer:
 		for (List<Material> list : recipe.getIngredientRows()) {
 			for (int i = 0; i < list.size(); i++) {
 				Material m = list.get(i);

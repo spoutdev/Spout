@@ -28,7 +28,7 @@ package org.spout.api.util.map.concurrent;
 
 import gnu.trove.set.hash.TIntHashSet;
 
-import org.spout.api.material.source.MaterialSource;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 
@@ -94,7 +94,7 @@ public interface AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @param fullState the new state of the Block
 	 */
-	public void setBlock(int x, int y, int z, MaterialSource material);
+	public void setBlock(int x, int y, int z, BlockMaterial material);
 	
 	/**
 	 * Marks the block id at (x, y, z) as dirty.<br>
@@ -127,7 +127,7 @@ public interface AtomicBlockStore {
 	 * @param material the new material
 	 * @return the old full state of the block
 	 */
-	public int getAndSetBlock(int x, int y, int z, MaterialSource material);
+	public int getAndSetBlock(int x, int y, int z, BlockMaterial material);
 
 	/**
 	 * Sets the block id and data for the block at (x, y, z).<br>

@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import org.spout.api.command.CommandManager;
 import org.spout.api.event.EventManager;
+import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.resource.FileSystem;
 import org.spout.api.scheduler.Scheduler;
@@ -39,8 +40,8 @@ import org.spout.api.scheduler.Scheduler;
  * Represents the Spout core, to get singleton {@link Engine} instance
  */
 public final class Spout {
-	private final static Logger logger = Logger.getLogger("Spout");
 	private static Engine instance = null;
+	private static final Logger logger = Logger.getLogger("Spout");
 
 	private Spout() {
 		throw new IllegalStateException("Can not construct Spout instance");
@@ -53,6 +54,37 @@ public final class Spout {
 	 */
 	public static Logger getLogger() {
 		return logger;
+	}
+
+	/**
+	 * Prints the specified object if debug mode is enabled.
+	 *
+	 * @param obj to print
+	 */
+	public static void debug(Object obj) {
+		if (debugMode()) info(obj.toString());
+	}
+
+	/**
+	 * Logs the specified message to print if debug mode is enabled.
+	 *
+	 * @param log message
+	 * @param t to throw
+	 * @see #debugMode()
+	 */
+	public static void debug(String log, Throwable t) {
+		if (debugMode()) info(log, t);
+	}
+
+	/**
+	 * Logs the specified message to print if debug mode is enabled.
+	 *
+	 * @param log message
+	 * @param params of message
+	 * @see #debugMode()
+	 */
+	public static void debug(String log, Object... params) {
+		if (debugMode()) info(log, params);
 	}
 
 	public static void finest(String log, Throwable t) {
@@ -131,6 +163,16 @@ public final class Spout {
 	}
 
 	/**
+	 * Returns the engine's {@link RecipeManager}. This is used for "crafting"
+	 * recipes in plugins.
+	 *
+	 * @return recipe manager
+	 */
+	public static RecipeManager getRecipeManager() {
+		return instance.getRecipeManager();
+	}
+
+	/**
 	 * Returns the game's {@link EventManager} Event listener registration and
 	 * calling is handled through this.
 	 *
@@ -184,7 +226,7 @@ public final class Spout {
 	 * @param arg to log
 	 */
 	public static void log(String arg) {
-		getLogger().info(arg);
+		logger.info(arg);
 	}
 
 	/**

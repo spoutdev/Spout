@@ -154,10 +154,10 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * @param amount to add to current data
 	 * @return whether the data was added
 	 */
-	public boolean addData(int slot, int amount) {
+	public boolean addData(int slot, int data) {
 		ItemStack item = get(slot);
 		if (item != null) {
-			setData(slot, item.getData() + amount);
+			setData(slot, item.getData() + data);
 			return true;
 		}
 		return false;
@@ -373,16 +373,51 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * returned if an ItemStack with that material is found with at least 1
 	 * amount.
 	 * 
-	 * @param o ItemStack whose presence is to be tested in this test
-	 * @return true if specified ItemStack is present 
+	 * @param o ItemStack whose presence is to be tested in this inventory
+	 * @return true if specified Object is present 
 	 */
 	@Override
 	public boolean contains(Object o) {
-		for (ItemStack item : getContents()) {
-			if (item == null) {
+		if (o instanceof Material) {
+			return contains((Material)o);
+		} else if (o instanceof ItemStack) {
+			return contains((ItemStack)o);
+		}
+		return false;
+	}
+
+	/**
+	 * Whether the inventory contains the specified {@link Material}. True,
+	 * if an ItemStack with that material is found with at least 1 amount.
+	 * 
+	 * @param item ItemStack whose presence is to be tested in this inventory
+	 * @return true if specified ItemStack is present 
+	 */
+	public boolean contains(Material material) {
+		for (ItemStack i : getContents()) {
+			if (i == null) {
 				continue;
 			}
-			if (item.equals(o) || item.getMaterial().equals(o)) {
+			if (i.getMaterial().equals(material)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Whether the inventory contains the specified {@link ItemStack}. True,
+	 * if an ItemStack with that material is found with at least 1 amount.
+	 * 
+	 * @param item ItemStack whose presence is to be tested in this inventory
+	 * @return true if specified ItemStack is present 
+	 */
+	public boolean contains(ItemStack item) {
+		for (ItemStack i : getContents()) {
+			if (i == null) {
+				continue;
+			}
+			if (i.equalsIgnoreSize(item)) {
 				return true;
 			}
 		}
@@ -545,7 +580,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 				if (item == null) {
 					continue;
 				}
-				if (item.equals(o) || item.getMaterial().equals(o)) {
+				if (o instanceof ItemStack && ((ItemStack)o).equalsIgnoreSize(item)) {
+					set(i, null);
+				} else if (o instanceof Material && ((Material)o).equals(item.getMaterial())) {
 					set(i, null);
 				}
 			}

@@ -32,6 +32,7 @@ import org.spout.api.material.BlockMaterial;
 
 public final class BasicAir extends BlockMaterial {
 
+	@SuppressWarnings("unchecked")
 	public BasicAir() {
 		super("Air", (short) 0);
 		this.setTransparent().setInvisible();

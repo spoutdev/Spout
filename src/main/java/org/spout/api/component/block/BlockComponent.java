@@ -88,6 +88,6 @@ public abstract class BlockComponent extends Component {
 	 * Called when the owner is interacted.
 	 * @param event the event which was fired, resolved, and now passed on to the components.
 	 */
-	public void onInteract(final EntityInteractEvent event) {
+	public void onInteract(final EntityInteractEvent<?> event) {
 	}
 }

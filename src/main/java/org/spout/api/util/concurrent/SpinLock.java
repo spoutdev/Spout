@@ -32,8 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-import org.spout.api.Spout;
-
 /**
 * A non-reentrant spin lock.<br>
 * <br>
