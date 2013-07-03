@@ -223,6 +223,8 @@ public class Matrix3 implements Matrix, Serializable, Cloneable {
 		return translate(v.getX(), v.getY());
 	}
 
+	// TODO: add double overload
+
 	public Matrix3 translate(float x, float y) {
 		return createTranslation(x, y).mul(this);
 	}
@@ -239,6 +241,8 @@ public class Matrix3 implements Matrix, Serializable, Cloneable {
 		return scale(v.getX(), v.getY(), v.getZ());
 	}
 
+	// TODO: add double overload
+
 	public Matrix3 scale(float x, float y, float z) {
 		return createScaling(x, y, z).mul(this);
 	}
@@ -254,6 +258,8 @@ public class Matrix3 implements Matrix, Serializable, Cloneable {
 	public Vector3 transform(Vector3 v) {
 		return transform(v.getX(), v.getY(), v.getZ());
 	}
+
+	// TODO: add double overload
 
 	public Vector3 transform(float x, float y, float z) {
 		return new Vector3(
@@ -445,6 +451,8 @@ public class Matrix3 implements Matrix, Serializable, Cloneable {
 		return createScaling(v.getX(), v.getY(), v.getZ());
 	}
 
+	// TODO: add double overload
+
 	public static Matrix3 createScaling(float x, float y, float z) {
 		return new Matrix3(
 				x, 0, 0,
@@ -455,6 +463,8 @@ public class Matrix3 implements Matrix, Serializable, Cloneable {
 	public static Matrix3 createTranslation(Vector2 v) {
 		return createTranslation(v.getX(), v.getY());
 	}
+
+	// TODO: add double overload
 
 	public static Matrix3 createTranslation(float x, float y) {
 		return new Matrix3(

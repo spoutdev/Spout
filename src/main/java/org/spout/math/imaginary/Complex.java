@@ -122,6 +122,8 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 		return new Complex(x / a, y / a);
 	}
 
+	// TODO: complex division?
+
 	public float dot(Complex c) {
 		return dot(c.x, c.y);
 	}

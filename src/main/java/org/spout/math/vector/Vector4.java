@@ -52,6 +52,8 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 		this(v, 0, 0);
 	}
 
+	// TODO: add double overloads
+
 	public Vector4(Vector2 v, float z, float w) {
 		this(v.getX(), v.getY(), z, w);
 	}
@@ -59,6 +61,8 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 	public Vector4(Vector3 v) {
 		this(v, 0);
 	}
+
+	// TODO: add double overloads
 
 	public Vector4(Vector3 v, float w) {
 		this(v.getX(), v.getY(), v.getZ(), w);

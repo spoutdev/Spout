@@ -293,6 +293,8 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 		return translate(v.getX(), v.getY(), v.getZ());
 	}
 
+	// TODO: add double overload
+
 	public Matrix4 translate(float x, float y, float z) {
 		return createTranslation(x, y, z).mul(this);
 	}
@@ -309,6 +311,8 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 		return scale(v.getX(), v.getY(), v.getZ(), v.getW());
 	}
 
+	// TODO: add double overload
+
 	public Matrix4 scale(float x, float y, float z, float w) {
 		return createScaling(x, y, z, w).mul(this);
 	}
@@ -324,6 +328,8 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 	public Vector4 transform(Vector4 v) {
 		return transform(v.getX(), v.getY(), v.getZ(), v.getW());
 	}
+
+	// TODO: add double overload
 
 	public Vector4 transform(float x, float y, float z, float w) {
 		return new Vector4(
@@ -562,6 +568,8 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 		return createScaling(v.getX(), v.getY(), v.getZ(), v.getW());
 	}
 
+	// TODO: add double overload
+
 	public static Matrix4 createScaling(float x, float y, float z, float w) {
 		return new Matrix4(
 				x, 0, 0, 0,
@@ -573,6 +581,8 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 	public static Matrix4 createTranslation(Vector3 v) {
 		return createTranslation(v.getX(), v.getY(), v.getZ());
 	}
+
+	// TODO: add double overload
 
 	public static Matrix4 createTranslation(float x, float y, float z) {
 		return new Matrix4(
@@ -627,6 +637,8 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 		return mat.translate(eye.mul(-1));
 	}
 
+	// TODO: add double overload
+
 	/**
 	 * Creates a perspective projection matrix with the given (x) FOV, aspect, near and far planes
 	 *
@@ -641,6 +653,8 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 		final float xMax = yMax * aspect;
 		return createOrthographic(xMax, -xMax, yMax, -yMax, zNear, zFar);
 	}
+
+	// TODO: add double overload
 
 	/**
 	 * Creates an orthographic viewing frustum built from the provided values

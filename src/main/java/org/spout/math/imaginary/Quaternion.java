@@ -148,6 +148,8 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 		return new Quaternion(x / a, y / a, z / a, w / a);
 	}
 
+	// TODO: quaternion division?
+
 	public float dot(Quaternion q) {
 		return dot(q.x, q.y, q.z, q.w);
 	}
@@ -303,10 +305,6 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 		return Quaternion.fromAngleRadAxis(yaw, Vector3.UNIT_Y).
 				mul(Quaternion.fromAngleRadAxis(pitch, Vector3.UNIT_X)).
 				mul(Quaternion.fromAngleRadAxis(roll, Vector3.UNIT_Z));
-	}
-
-	public static Quaternion fromRotationTo(Vector3 from) {
-		return Quaternion.fromRotationTo(from, Vector3.UNIT_Z);
 	}
 
 	public static Quaternion fromRotationTo(Vector3 from, Vector3 to) {

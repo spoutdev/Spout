@@ -227,6 +227,8 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		return translate(v.toArray());
 	}
 
+	// TODO: add double overload
+
 	public MatrixN translate(float... v) {
 		return createTranslation(size(), v).mul(this);
 	}
@@ -234,6 +236,8 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 	public MatrixN scale(VectorN v) {
 		return scale(v.toArray());
 	}
+
+	// TODO: add double overload
 
 	public MatrixN scale(float... v) {
 		return createScaling(size(), v).mul(this);
@@ -250,6 +254,8 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 	public VectorN transform(VectorN v) {
 		return transform(v.toArray());
 	}
+
+	// TODO: add double overload
 
 	public VectorN transform(float... vec) {
 		final int originalSize = vec.length;
@@ -472,6 +478,8 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		return createScaling(size, v.toArray());
 	}
 
+	// TODO: add double overload
+
 	public static MatrixN createScaling(int size, float... vec) {
 		final MatrixN m = new MatrixN(size);
 		vec = adjustSize(vec, size, 1);
@@ -484,6 +492,8 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 	public static MatrixN createTranslation(int size, VectorN v) {
 		return createTranslation(size, v.toArray());
 	}
+
+	// TODO: add double overload
 
 	public static MatrixN createTranslation(int size, float... vec) {
 		final MatrixN m = new MatrixN(size);
@@ -555,6 +565,8 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		return mat.translate(eye.mul(-1).toVectorN());
 	}
 
+	// TODO: add double overload
+
 	/**
 	 * Creates a perspective projection matrix with the given (x) FOV, aspect, near and far planes
 	 *
@@ -570,6 +582,8 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		final float xMax = yMax * aspect;
 		return createOrthographic(size, xMax, -xMax, yMax, -yMax, zNear, zFar);
 	}
+
+	// TODO: add double overload
 
 	/**
 	 * Creates an orthographic viewing frustum built from the provided values

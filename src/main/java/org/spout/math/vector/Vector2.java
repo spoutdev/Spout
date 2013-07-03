@@ -349,13 +349,15 @@ public class Vector2 implements Vector, Comparable<Vector2>, Serializable, Clone
 		return createDirection(random.nextFloat() * (float) TrigMath.TWO_PI);
 	}
 
+	// TODO: add overloads for doubles and degree angles
+
 	/**
 	 * Gets the direction vector of a certain angle.
 	 *
-	 * @param azimuth in radians
+	 * @param angle in radians
 	 * @return the direction vector
 	 */
-	public static Vector2 createDirection(float azimuth) {
-		return new Vector2(TrigMath.cos(azimuth), TrigMath.sin(azimuth));
+	public static Vector2 createDirection(float angle) {
+		return new Vector2(TrigMath.cos(angle), TrigMath.sin(angle));
 	}
 }

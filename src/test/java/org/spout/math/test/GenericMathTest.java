@@ -33,20 +33,18 @@ import static org.junit.Assert.assertEquals;
 import static org.spout.math.GenericMath.floor;
 import static org.spout.math.GenericMath.mean;
 import static org.spout.math.GenericMath.roundUpPow2;
-import static org.spout.math.TestUtils.eps;
+import static org.spout.math.old.TestUtils.eps;
 
-public final class BasicMathTest {
+public final class GenericMathTest {
 	@Test
 	public void testMean() {
-		int[] intTestValues = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-		int intTestResult = 8;
-		double[] doubleTestValues = new double[intTestValues.length];
-		double doubleTestResult = intTestResult + 0.03;
-
+		final int[] intTestValues = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+		final int intTestResult = 8;
+		final double[] doubleTestValues = new double[intTestValues.length];
+		final double doubleTestResult = intTestResult + 0.03;
 		for (int i = 0; i < intTestValues.length; i++) {
 			doubleTestValues[i] = intTestValues[i] + 0.03;
 		}
-
 		assertEquals(intTestResult, mean(intTestValues));
 		assertEquals(doubleTestResult, mean(doubleTestValues), eps);
 	}

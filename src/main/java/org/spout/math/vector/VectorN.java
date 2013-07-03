@@ -61,6 +61,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 		this(v.vec);
 	}
 
+	// TODO: add double overload
+
 	public VectorN(float... v) {
 		vec = v.clone();
 	}
@@ -76,6 +78,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	public int getFloored(int comp) {
 		return GenericMath.floor(get(comp));
 	}
+
+	// TODO: add double overload
 
 	public void set(int comp, float val) {
 		vec[comp] = val;
@@ -95,6 +99,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 		return add(v.vec);
 	}
 
+	// TODO: add double overload
+
 	public VectorN add(float... v) {
 		final int size = Math.min(size(), v.length);
 		final VectorN d = new VectorN(size);
@@ -107,6 +113,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	public VectorN sub(VectorN v) {
 		return sub(v.vec);
 	}
+
+	// TODO: add double overload
 
 	public VectorN sub(float... v) {
 		final int size = Math.min(size(), v.length);
@@ -135,6 +143,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 		return mul(v.vec);
 	}
 
+	// TODO: add double overload
+
 	public VectorN mul(float... v) {
 		final int size = Math.min(size(), v.length);
 		final VectorN d = new VectorN(size);
@@ -162,6 +172,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 		return div(v.vec);
 	}
 
+	// TODO: add double overload
+
 	public VectorN div(float... v) {
 		final int size = Math.min(size(), v.length);
 		final VectorN d = new VectorN(size);
@@ -174,6 +186,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	public float dot(VectorN v) {
 		return dot(v.vec);
 	}
+
+	// TODO: add double overload
 
 	public float dot(float... v) {
 		final int size = Math.min(size(), v.length);
@@ -252,6 +266,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 		return min(v.vec);
 	}
 
+	// TODO: add double overload
+
 	public VectorN min(float... v) {
 		final int size = Math.min(size(), v.length);
 		final VectorN d = new VectorN(size);
@@ -264,6 +280,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	public VectorN max(VectorN v) {
 		return max(v.vec);
 	}
+
+	// TODO: add double overload
 
 	public VectorN max(float... v) {
 		final int size = Math.min(size(), v.length);
@@ -278,6 +296,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 		return distanceSquared(v.vec);
 	}
 
+	// TODO: add double overload
+
 	public float distanceSquared(float... v) {
 		final int size = Math.min(size(), v.length);
 		final float[] d = new float[size];
@@ -290,6 +310,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	public float distance(VectorN v) {
 		return distanceSquared(v.vec);
 	}
+
+	// TODO: add double overload
 
 	public float distance(float... v) {
 		final int size = Math.min(size(), v.length);
@@ -334,13 +356,13 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	@Override
-	public int compareTo(VectorN v) {
-		return (int) (lengthSquared() - v.lengthSquared());
+	public float[] toArray() {
+		return vec.clone();
 	}
 
 	@Override
-	public VectorN clone() {
-		return new VectorN(this);
+	public int compareTo(VectorN v) {
+		return (int) (lengthSquared() - v.lengthSquared());
 	}
 
 	@Override
@@ -360,8 +382,8 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	@Override
-	public float[] toArray() {
-		return vec.clone();
+	public VectorN clone() {
+		return new VectorN(this);
 	}
 
 	@Override

@@ -168,6 +168,8 @@ public class Matrix2 implements Matrix, Serializable, Cloneable {
 				Math.pow(m10, pow), Math.pow(m11, pow));
 	}
 
+	// TODO: add double overload
+
 	public Matrix2 translate(float x) {
 		return createTranslation(x).mul(this);
 	}
@@ -184,6 +186,8 @@ public class Matrix2 implements Matrix, Serializable, Cloneable {
 		return scale(v.getX(), v.getY());
 	}
 
+	// TODO: add double overload
+
 	public Matrix2 scale(float x, float y) {
 		return createScaling(x, y).mul(this);
 	}
@@ -195,6 +199,8 @@ public class Matrix2 implements Matrix, Serializable, Cloneable {
 	public Vector2 transform(Vector2 v) {
 		return transform(v.getX(), v.getY());
 	}
+
+	// TODO: add double overload
 
 	public Vector2 transform(float x, float y) {
 		return new Vector2(
@@ -354,11 +360,15 @@ public class Matrix2 implements Matrix, Serializable, Cloneable {
 		return createScaling(v.getX(), v.getY());
 	}
 
+	// TODO: add double overload
+
 	public static Matrix2 createScaling(float x, float y) {
 		return new Matrix2(
 				x, 0,
 				0, y);
 	}
+
+	// TODO: add double overload
 
 	public static Matrix2 createTranslation(float x) {
 		return new Matrix2(

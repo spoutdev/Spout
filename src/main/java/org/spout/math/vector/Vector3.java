@@ -55,6 +55,8 @@ public class Vector3 implements Vector, Comparable<Vector3>, Serializable, Clone
 		this(v, 0);
 	}
 
+	// TODO: float overload
+
 	public Vector3(Vector2 v, float z) {
 		this(v.getX(), v.getY(), z);
 	}
@@ -375,6 +377,8 @@ public class Vector3 implements Vector, Comparable<Vector3>, Serializable, Clone
 		return createDirection(random.nextFloat() * (float) TrigMath.TWO_PI,
 				random.nextFloat() * (float) TrigMath.TWO_PI);
 	}
+
+	// TODO: add overloads for doubles and degree angles
 
 	/**
 	 * Gets the direction vector of a certain yaw and pitch.
