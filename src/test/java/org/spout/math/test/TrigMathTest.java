@@ -24,10 +24,11 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.math;
+package org.spout.math.test;
 
 import org.junit.Test;
 
+import org.spout.math.TrigMath;
 import org.spout.math.vector.Vector2;
 import org.spout.math.vector.Vector3;
 

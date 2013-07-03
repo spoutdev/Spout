@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.math;
+package org.spout.math.test;
 
 import org.junit.Test;
 
@@ -33,7 +33,6 @@ import static org.junit.Assert.assertEquals;
 import static org.spout.math.GenericMath.floor;
 import static org.spout.math.GenericMath.mean;
 import static org.spout.math.GenericMath.roundUpPow2;
-import static org.spout.math.old.TestUtils.eps;
 
 public final class GenericMathTest {
 	@Test
@@ -46,7 +45,7 @@ public final class GenericMathTest {
 			doubleTestValues[i] = intTestValues[i] + 0.03;
 		}
 		assertEquals(intTestResult, mean(intTestValues));
-		assertEquals(doubleTestResult, mean(doubleTestValues), eps);
+		assertEquals(doubleTestResult, mean(doubleTestValues), 0.01);
 	}
 
 	@Test
