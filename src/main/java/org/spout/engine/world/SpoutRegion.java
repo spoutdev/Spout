@@ -243,12 +243,16 @@ public class SpoutRegion extends Region implements AsyncManager {
 			Arrays.fill(blocks, BlockMaterial.UNGENERATED.getId());
 			return new SpoutChunk(getWorld(), this, getChunkX() + x, getChunkY() + y, getChunkZ() +  z, SpoutChunk.PopulationState.UNTOUCHED, blocks, null, null, true);
 		}
+		
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			// Client should NEVER actually try to load or generate chunks
+			return null;
+		}
 
 		SpoutChunk newChunk = null;
 		ChunkDataForRegion dataForRegion = null;
 
-		//Files never exist on the client
-		boolean fileExists = Spout.getPlatform() == Platform.CLIENT ? false : this.inputStreamExists(x, y, z);
+		boolean fileExists = this.inputStreamExists(x, y, z);
 
 		if (loadopt.loadIfNeeded() && fileExists) {
 			dataForRegion = new ChunkDataForRegion();
@@ -1604,19 +1608,20 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return region.getChunk(x, y, z, loadopt);
 	}
 
-	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData) {
-		x &= CHUNKS.MASK;
-		y &= CHUNKS.MASK;
-		z &= CHUNKS.MASK;
-		SpoutChunk chunk = chunks[x][y][z].get();
+	public SpoutChunk addChunk(int chunkX, int chunkY, int chunkZ, short[] blockIds, short[] blockData) {
+		final int regionChunkX = chunkX & CHUNKS.MASK;
+		final int regionChunkY = chunkY & CHUNKS.MASK;
+		final int regionChunkZ = chunkZ & CHUNKS.MASK;
+		SpoutChunk chunk = chunks[regionChunkX][regionChunkY][regionChunkZ].get();
 		if (chunk != null) {
 			chunk.unload(false);
 			// TODO is this right?
-			chunks[x][y][z].set(null);
+			chunks[regionChunkX][regionChunkY][regionChunkZ].set(null);
 		}
-		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, new ManagedHashMap(), true);
-		setChunk(newChunk, x, y, z, null, true);
+		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, chunkX, chunkY, chunkZ, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, new ManagedHashMap(), true);
+		setChunk(newChunk, regionChunkX, regionChunkY, regionChunkZ, null, false);
 		checkChunkLoaded(newChunk, LoadOption.LOAD_GEN);
+		return newChunk;
 	}
 	
 	@Override

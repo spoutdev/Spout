@@ -52,6 +52,7 @@ public class EntityTransformMessage extends SpoutMessage {
 
 	// Don't use this for tests; transform's position is stored as a Point which is NOT a Vector3 by equals
 	public EntityTransformMessage(int entityId, Transform transform, RepositionManager rm) {
+		System.out.println("Sending player transform " + entityId);
 		this.entityId = entityId;
 		this.worldUid = transform.getPosition().getWorld().getUID();
 		this.pos = rm.convert(transform.getPosition());
