@@ -89,7 +89,11 @@ public abstract class BatchVertexRenderer implements Renderer {
 
 	public static Renderer constructNewBatch(int renderMode) {
 		List<Renderer> list = pool.get(renderMode);
-		if (list != null && !list.isEmpty()) {
+		if (list == null) {
+			// If we're using a pool, it should already be intialized
+			throw new IllegalStateException("Pool uninitialized!");
+		}
+		if (!list.isEmpty()) {
 			Renderer batch = list.remove(0);
 			((BatchVertexRenderer) batch).used++;
 			return batch;
@@ -184,17 +188,21 @@ public abstract class BatchVertexRenderer implements Renderer {
 	public abstract void doRelease();
 
 	public void release() {
+		doRelease();
 		//TODO : Implement for each version to empty display list, vbo, etc...
 		List<Renderer> list = pool.get(renderMode);
 		if (list == null) {
-			list = new LinkedList<Renderer>();
-			pool.put(renderMode, list);
+			// If we're going to use a pool, it should already be initialized
+			throw new IllegalStateException("Unitialized pool!");
 		}
 		list.add(this);
 	}
-
+	/*
+	 * We want this to be overriden to clean up traces GL objects...I think
+	 */
 	@Override
-	public void finalize() {
+	protected void finalize() throws Throwable {
+		super.finalize();
 	}
 
 	protected abstract void initFlush(Map<Integer, Buffer> buffers);

@@ -57,9 +57,8 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	public final static Matrix model = MatrixMath.createIdentity();
 	private final RenderMaterial material;
 
-	private boolean dataSended = false;
-	private boolean generated = false;
-	private boolean closed = false;
+	private boolean dataSent = false;
+	private boolean ready = false;
 
 	private final BufferContainer bufferContainer[] = new BufferContainer[COUNT];
 
@@ -88,45 +87,32 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public boolean update() {
-		if (closed) {
-			throw new IllegalStateException("Already closed");
-		}
-
 		//Send data
-		if(!dataSended){
+		if(!dataSent){
 			renderer.setBufferContainers(bufferContainer);
-			dataSended = true;
+			dataSent = true;
 		}
 
 		//Start to flush
 		if(renderer.flush(false)){
-			generated = true;
+			ready = true;
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
 
 	public void render(RenderMaterial material) {
-		if (closed) {
-			throw new IllegalStateException("Already closed");
-		}
-
 		renderer.draw(material);
 	}
 
 	@Override
-	public void finalize() {
-		if (closed) {
-			throw new IllegalStateException("Already closed");
+	public void finalize() throws Throwable {
+		try {
+			renderer.release();
+		} finally {
+			super.finalize();
 		}
-
-		for(int i = 0; i < bufferContainer.length; i++)
-			bufferContainer[i] = null;
-
-		renderer.release();
-
-		closed = true;
 	}
 
 	@Override
@@ -143,7 +129,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 			count++;
 		
 		this.bufferContainer[getIndex(x, y, z)] = bufferContainer;
-		dataSended = false;
+		dataSent = false;
 	}
 
 	public RenderMaterial getMaterial() {
@@ -172,7 +158,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public boolean isReady() {
-		return generated;
+		return ready;
 	}
 
 	public void preRender() {
