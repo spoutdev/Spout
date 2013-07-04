@@ -198,7 +198,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	 * returning quaternion <code>a'</code> such that <code>a' * a = a * a' = |a|^2</code> where
 	 * <code>|a|^2</code> is squared length of <code>a</code>.
 	 *
-	 * @return the conjugated Quaternion
+	 * @return the conjugated quaternion
 	 * @see org.spout.math.matrix.MatrixN#transpose()
 	 */
 	@Override
@@ -208,12 +208,12 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 
 	/**
 	 * Invert the quaternion <br> Inversion of a quaternion <code>a</code> returns quaternion
-	 * <code>a^-i = a' / |a|^2</code> where <code>a'</code> is {@link #conjugate() conjugation} of
+	 * <code>a^-1 = a' / |a|^2</code> where <code>a'</code> is {@link #conjugate() conjugation} of
 	 * <code>a</code>, and <code>|a|^2</code> is squared length of <code>a</code>. <br> For any
-	 * quaternions <code>a, b, c</code>, such that <code>a * b = c</code> equations <code>a^-i * c =
-	 * b</code> and <code>c * b^-i = a</code> are true.
+	 * quaternions <code>a, b, c</code>, such that <code>a * b = c</code> equations <code>a^-1 * c =
+	 * b</code> and <code>c * b^-1 = a</code> are true.
 	 *
-	 * @return the inverted Quaternion
+	 * @return the inverted quaternion
 	 */
 	@Override
 	public Quaternion invert() {
