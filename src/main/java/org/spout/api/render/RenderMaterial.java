@@ -27,6 +27,7 @@
 package org.spout.api.render;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,6 +40,7 @@ import org.spout.api.render.effect.SnapshotRender;
 
 public abstract class RenderMaterial implements Comparable<RenderMaterial> {
 	
+	public static final Comparator<RenderMaterial> COMPARATOR = new RenderMaterialComparator();
 	private static final AtomicInteger idCounter = new AtomicInteger();
 	
 	private final int id;
@@ -60,36 +62,38 @@ public abstract class RenderMaterial implements Comparable<RenderMaterial> {
 	 */
 	public abstract Shader getShader();
 	/**
-	 * Assigns the current shader and prepairs the material for rendering
+	 * Assigns the current shader and prepares the material for rendering
 	 */
 	public abstract void assign();
 	
 	/**
 	 * Called right before generate a mesh
-	 * @param snapshotRender 
+	 * @param snapshotMesh 
 	 */
 	public abstract void preMesh(SnapshotMesh snapshotMesh);
 
 	/**
 	 * Called right after generate a mesh
-	 * @param snapshotRender 
+	 * 
+	 * @param snapshotMesh 
 	 */
 	public abstract void postMesh(SnapshotMesh snapshotMesh);
 
 	/**
-	 * Called right before rendering
-	 * @param material 
+	 * Called right before rendering. Uniform values are those available during last render
+	 * @param snapshotRender 
 	 */
 	public abstract void preRender(SnapshotRender snapshotRender);
 
 	/**
 	 * Called right after rendering
-	 * @param material 
+	 * @param snapshotRender 
 	 */
 	public abstract void postRender(SnapshotRender snapshotRender);
 
 	/**
 	 * Called right before rendering an entity
+	 * @param snapshotEntity 
 	 */
 	public abstract void preRenderEntity(SnapshotEntity snapshotEntity);
 
@@ -159,4 +163,12 @@ public abstract class RenderMaterial implements Comparable<RenderMaterial> {
 
 	public abstract List<BufferEffect> getBufferEffects();
 
+	public static final class RenderMaterialComparator implements Comparator<RenderMaterial> {
+		@Override
+		public int compare(RenderMaterial o1, RenderMaterial o2) {
+			if (o1 != null) return o1.compareTo(o2);
+			else if (o2 != null) return -1 * o2.compareTo(o1);
+			else return 0;
+		}
+	}
 }
