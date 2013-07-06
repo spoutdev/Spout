@@ -117,7 +117,7 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 		regionFileManager = new RegionFileManager(worldDirectory);
 
 		this.age = new SnapshotableLong(snapshotManager, age);
-		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
+		spawnLocation.set(new Transform(new Point(this, 1, 20, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<SpoutServerWorld>(this);
 		
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);

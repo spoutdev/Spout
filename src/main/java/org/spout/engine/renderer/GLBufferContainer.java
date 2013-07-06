@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GLBufferContainer {
+
 	public int element = 0;
 	int[] verticeIndex;
 	final Map<Integer,Buffer> buffers = new HashMap<Integer,Buffer>();

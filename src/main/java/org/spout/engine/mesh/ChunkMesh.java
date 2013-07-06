@@ -43,6 +43,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.material.block.BlockFaces;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.OrientedMesh;
@@ -54,6 +55,7 @@ import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
+import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
@@ -137,8 +139,7 @@ public class ChunkMesh{
 		}
 	}
 
-	public List<MeshFace> buildBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial,
-			Vector3 position, boolean toRender[], OrientedMesh mesh) {
+	public List<MeshFace> buildBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial, Vector3 position, boolean toRender[], OrientedMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
 		Vector3 model = new Vector3(position.getX(), position.getY(), position.getZ());
 		for(OrientedMeshFace meshFace : mesh){
@@ -193,10 +194,7 @@ public class ChunkMesh{
 
 			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
 
-			if (material.isFaceRendered(face, neighbor)) {
-				toRender[i] = true;
-				fullyOccluded = false;
-			}else{
+			if (!material.isFaceRendered(face, neighbor)) {
 				toRender[i] = false;
 				continue;
 			}
@@ -206,25 +204,25 @@ public class ChunkMesh{
 			if (occlusion.get(face.getOpposite())) {
 				toRender[i] = false;
 				continue;
-			}else{
-				toRender[i] = true;
-				fullyOccluded = false;
 			}
+			toRender[i] = true;
+			fullyOccluded = false;
 		}
 
-		if(fullyOccluded)
+		if(fullyOccluded) {
+			//System.out.println("Fully occluded");
 			return;
+		}
 
 		SnapshotMesh snapshotMesh = new SnapshotMesh(material, chunkSnapshotModel, new Point(position, world), toRender);
 
 		renderMaterial.preMesh(snapshotMesh);
-		List<MeshFace> faces = buildBlock(snapshotMesh.getSnapshotModel(), snapshotMesh.getMaterial(),
-				snapshotMesh.getPosition(), snapshotMesh.getToRender(), (OrientedMesh)snapshotMesh.getMesh());
+		List<MeshFace> faces = buildBlock(snapshotMesh.getSnapshotModel(), snapshotMesh.getMaterial(), snapshotMesh.getPosition(), snapshotMesh.getToRender(), (OrientedMesh)snapshotMesh.getMesh());
 		snapshotMesh.setResult(faces);
 		renderMaterial.postMesh(snapshotMesh);
 		faces = snapshotMesh.getResult();
 
-		if(!faces.isEmpty()){
+		if(!faces.isEmpty()) {
 			BufferContainer container = meshs.get(renderMaterial);
 			TFloatArrayList vertexBuffer, normalBuffer, textureBuffer;
 
@@ -241,7 +239,7 @@ public class ChunkMesh{
 				container.setBuffers(VertexAttributes.Texture0.getLayout(), textureBuffer);
 				
 				meshs.put(renderMaterial, container);
-			}else{
+			} else {
 				 vertexBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Position.getLayout());
 				 normalBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Normal.getLayout());
 				 textureBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Texture0.getLayout());

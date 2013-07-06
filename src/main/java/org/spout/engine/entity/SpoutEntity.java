@@ -87,7 +87,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	private boolean observeChunksFailed = false;
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
 	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
-	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 10);
+	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 5);
 	private volatile boolean remove = false;
 	//Other
 	private final Engine engine;

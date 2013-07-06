@@ -58,7 +58,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			throw new IllegalArgumentException("Unknown biome manager class: " + message.getBiomeManagerClass());
 		}*/
 		if (Spout.debugMode()) {
-			Spout.getLogger().log(Level.INFO, "Recieved Chunk Data: {0}", message.toString());
+			//Spout.getLogger().log(Level.INFO, "Recieved Chunk Data: {0}", message.toString());
 		}/*
 		BiomeManager manager;
 		try {
@@ -73,7 +73,6 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			throw new RuntimeException(e);
 		}
 		manager.deserialize(message.getBiomeData());*/
-		//((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData(), manager);
 		((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData());
 	}
 }
