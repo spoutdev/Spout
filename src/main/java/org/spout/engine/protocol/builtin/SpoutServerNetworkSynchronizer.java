@@ -61,7 +61,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 
 	@Override
 	protected void freeChunk(Point p) {
-		session.send(new ChunkDataMessage(p.getBlockX(), p.getBlockY(), p.getBlockZ()));
+		session.send(new ChunkDataMessage(p.getChunkX(), p.getChunkY(), p.getChunkZ()));
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 		}
 		if (update) {
 			// TODO - might be worth adding force support
-			messages.addAll(protocol.getUpdateMessages(e, liveTransform, getRepositionManager(), false));
+			messages.addAll(protocol.getUpdateMessages(e, liveTransform, getRepositionManager(), true));
 		}
 		for (Message message : messages) {
 			this.session.send(message);

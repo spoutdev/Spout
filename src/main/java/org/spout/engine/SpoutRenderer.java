@@ -78,6 +78,7 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 import org.spout.api.Spout;
+import org.spout.engine.world.SpoutChunk;
 
 public class SpoutRenderer {
 
@@ -121,6 +122,8 @@ public class SpoutRenderer {
 		this.entityRenderer = new EntityRenderer();
 
 		this.ccoverride = ccoverride;
+		
+		worldRenderer = new WorldRenderer();
 	}
 
 	public void initRenderer(Canvas parent) {
@@ -162,8 +165,6 @@ public class SpoutRenderer {
 
 		//Init pool of BatchVertexRenderer
 		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 10000);
-
-		worldRenderer = new WorldRenderer();
 
 		if (useReflexion) {
 			reflected = new ClientRenderTexture(true, false, true);
@@ -303,17 +304,21 @@ public class SpoutRenderer {
 
 		//GUI -> Update debug info
 		if (showDebugInfos) {
+			int id = 0;
 			Point position = client.getPlayer().getScene().getPosition();
-			debugScreen.spoutUpdate(0, "Spout client! Logged as " + client.getPlayer().getDisplayName() + " in world: " + client.getWorld().getName());
-			debugScreen.spoutUpdate(1, "x: " + position.getX() + "y: " + position.getY() + "z: " + position.getZ());
-			debugScreen.spoutUpdate(2, "FPS: " + client.getScheduler().getFps() + " (" + (client.getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal") + ")");
-			debugScreen.spoutUpdate(3, "Chunks Loaded: " + client.getWorld().getNumLoadedChunks());
-			debugScreen.spoutUpdate(4, "Chunks Drawn: " + ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")");
-			debugScreen.spoutUpdate(5, "Occluded Chunks: " + (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")");
-			debugScreen.spoutUpdate(6, "Cull Chunks: " + (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getCulledChunks() + ")");
-			debugScreen.spoutUpdate(7, "Entities: " + entityRenderer.getRenderedEntities());
-			debugScreen.spoutUpdate(8, "Buffer: " + worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch);
-			debugScreen.spoutUpdate(9, "Time: " + worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0);
+			debugScreen.spoutUpdate(id++, "Spout client! Logged as " + client.getPlayer().getDisplayName() + " in world: " + client.getWorld().getName());
+			debugScreen.spoutUpdate(id++, "x: " + position.getX() + "y: " + position.getY() + "z: " + position.getZ());
+			debugScreen.spoutUpdate(id++, "FPS: " + client.getScheduler().getFps() + " (" + (client.getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal") + ")");
+			debugScreen.spoutUpdate(id++, "Chunks Loaded: " + client.getWorld().getNumLoadedChunks());
+			debugScreen.spoutUpdate(id++, "Total Chunks in Renderer: " + worldRenderer.getTotalChunks() + "");
+			debugScreen.spoutUpdate(id++, "Chunks Drawn: " + ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")");
+			debugScreen.spoutUpdate(id++, "Occluded Chunks: " + (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")");
+			debugScreen.spoutUpdate(id++, "Cull Chunks: " + (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getCulledChunks() + ")");
+			debugScreen.spoutUpdate(id++, "Entities: " + entityRenderer.getRenderedEntities());
+			debugScreen.spoutUpdate(id++, "Buffer: " + worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch);
+			debugScreen.spoutUpdate(id++, "Time: " + worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0);
+			debugScreen.spoutUpdate(id++, "Chunk render(): " + SpoutChunk.renderAmount.get());
+			debugScreen.spoutUpdate(id++, "Mesh batch queue size: " + ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer().getBatchWaiting());
 		}
 		
 		for (Screen screen : screenStack.getVisibleScreens()) {

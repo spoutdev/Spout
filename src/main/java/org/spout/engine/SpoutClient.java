@@ -156,7 +156,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 		// Send handshake message first
 		SpoutClientSession get = session.get();
-		getPlayer().getName();
 		get.send(true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().getRemoteAddress()));
 
 		super.start();
@@ -168,6 +167,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		AnnotatedCommandExecutorFactory.create(new RendererCommands(this));
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+
+		getScheduler().startMeshThread();
 		this.renderer = getScheduler().startRenderThread(new Vector2(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f), ccoverride, null);
 		getScheduler().startGuiThread();
 
@@ -215,7 +216,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			session.getProtocol().initializeClientSession(session);
 
 			// TODO this is really unclean
-			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", new Transform().setPosition(new Point(getWorld(), 0, 0, 0)), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
+			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", new Transform().setPosition(new Point(getWorld(), 1, 200, 1)), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 			if (!p.connect(session, p.getScene().getTransform())) {
 				getLogger().log(Level.SEVERE, "Error in calling player connect");
 				return false;
@@ -474,4 +475,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return session.get();
 	}
 
+	@Override
+	public void copySnapshotRun() {
+		super.copySnapshotRun();
+		getPlayer().copySnapshot();
+	}
 }

@@ -771,7 +771,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		boolean created = false;
 		if (player == null) {
 			getLogger().info("First login for " + playerName + ", creating new player data");
-			player = new SpoutPlayer(this, playerName, null, viewDistance);
+			player = new SpoutPlayer(this, playerName, ((SpoutServerWorld) getDefaultWorld()).getSpawnPoint(), viewDistance);
 			created = true;
 		}
 		SpoutPlayer oldPlayer = players.put(playerName, player);

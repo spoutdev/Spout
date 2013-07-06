@@ -68,18 +68,20 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public static Vector3 getBaseFromChunkMesh(ChunkMesh mesh) {
-		Vector3 v = new Vector3(Math.floor((float)mesh.getChunkX() / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X,
-				Math.floor((float)mesh.getChunkY() / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y,
-				Math.floor((float)mesh.getChunkZ() / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
-		return v;
+		int x = (int) (Math.floor((float)mesh.getChunkX() / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X);
+		int y = (int) (Math.floor((float)mesh.getChunkY() / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y);
+		int z = (int) (Math.floor((float)mesh.getChunkZ() / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
+		return new Vector3(x, y, z);
 	}
 
+	// TODO: this wasn't being used correctly, I think
+	/*
 	public static Vector3 getCoordFromChunkMesh(ChunkMesh mesh) {
 		Vector3 v = new Vector3(Math.floor((float)mesh.getChunkX() / ChunkMeshBatchAggregator.SIZE_X),
 				Math.floor((float)mesh.getChunkY() / ChunkMeshBatchAggregator.SIZE_Y),
 				Math.floor((float)mesh.getChunkZ() / ChunkMeshBatchAggregator.SIZE_Z));
-		return v;
-	}
+		return v;	
+	}*/
 
 	public ChunkMeshBatchAggregator(World world, int x, int y, int z, RenderMaterial material) {
 		super(new Point(world, x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS), SIZE.multiply(Chunk.BLOCKS.SIZE));
@@ -128,7 +130,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		else if(bufferContainer != null && this.bufferContainer[index] == null)
 			count++;
 		
-		this.bufferContainer[getIndex(x, y, z)] = bufferContainer;
+		this.bufferContainer[index] = bufferContainer;
 		dataSent = false;
 	}
 
