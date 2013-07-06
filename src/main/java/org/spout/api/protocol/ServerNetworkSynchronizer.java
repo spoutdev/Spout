@@ -217,6 +217,8 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 				Point ep = player.getScene().getPosition();
 				resetChunks();
 				worldChanged(ep.getWorld());
+				// TODO: remove this?
+				sendPosition(ep, player.getScene().getRotation());
 			} else if (!worldChanged) {
 				
 				unsendable.clear();
