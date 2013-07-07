@@ -165,6 +165,12 @@
 			<version>3.0.3</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.spout</groupId>
+			<artifactId>cereal</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 		<!-- Testing only -->
 		<dependency>
 			<groupId>junit</groupId>

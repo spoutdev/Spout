@@ -33,11 +33,11 @@ import org.spout.api.event.Order;
 import org.spout.api.event.Result;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
-import org.spout.api.exception.ConfigurationException;
-import org.spout.api.util.config.Configuration;
-import org.spout.api.util.config.ConfigurationHolder;
-import org.spout.api.util.config.ConfigurationHolderConfiguration;
-import org.spout.api.util.config.yaml.YamlConfiguration;
+import org.spout.cereal.config.Configuration;
+import org.spout.cereal.config.ConfigurationException;
+import org.spout.cereal.config.ConfigurationHolder;
+import org.spout.cereal.config.ConfigurationHolderConfiguration;
+import org.spout.cereal.config.yaml.YamlConfiguration;
 
 import java.io.File;
 import java.util.Collections;

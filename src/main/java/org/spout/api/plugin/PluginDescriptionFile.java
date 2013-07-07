@@ -43,11 +43,11 @@ import java.util.regex.Pattern;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.exception.ConfigurationException;
 import org.spout.api.exception.InvalidDescriptionFileException;
-import org.spout.api.util.config.ConfigurationNode;
-import org.spout.api.util.config.yaml.YamlConfiguration;
 import org.spout.api.util.string.DamerauLevenshteinAlgorithm;
+import org.spout.cereal.config.ConfigurationException;
+import org.spout.cereal.config.ConfigurationNode;
+import org.spout.cereal.config.yaml.YamlConfiguration;
 
 public class PluginDescriptionFile {
 	public static final List<String> RESTRICTED_NAMES = Collections.unmodifiableList(Arrays.asList(

@@ -27,7 +27,7 @@
 package org.spout.api.data;
 
 import org.spout.api.math.GenericMath;
-import org.spout.api.util.config.serialization.Serialization;
+import org.spout.cereal.config.serialization.Serialization;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
