@@ -34,13 +34,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.util.SpoutToStringStyle;
-import org.spout.api.util.config.Configuration;
-import org.spout.api.util.config.annotated.AnnotatedSubclassConfiguration;
-import org.spout.api.util.config.annotated.Setting;
+import org.spout.cereal.config.Configuration;
+import org.spout.cereal.config.annotated.AnnotatedSubclassConfiguration;
+import org.spout.cereal.config.annotated.Setting;
 import org.spout.engine.SpoutServer;
 
 /**

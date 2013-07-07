@@ -26,7 +26,6 @@
  */
 package org.spout.engine.protocol;
 
-import java.util.List;
 import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;

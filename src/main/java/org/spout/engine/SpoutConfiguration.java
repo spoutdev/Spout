@@ -28,11 +28,10 @@ package org.spout.engine;
 
 import java.io.File;
 
-import org.spout.api.exception.ConfigurationException;
-import org.spout.api.util.config.ConfigurationHolder;
-import org.spout.api.util.config.ConfigurationHolderConfiguration;
-import org.spout.api.util.config.yaml.YamlConfiguration;
-
+import org.spout.cereal.config.ConfigurationException;
+import org.spout.cereal.config.ConfigurationHolder;
+import org.spout.cereal.config.ConfigurationHolderConfiguration;
+import org.spout.cereal.config.yaml.YamlConfiguration;
 import org.spout.engine.filesystem.CommonFileSystem;
 
 public class SpoutConfiguration extends ConfigurationHolderConfiguration {
