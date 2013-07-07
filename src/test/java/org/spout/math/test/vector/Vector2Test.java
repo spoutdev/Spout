@@ -28,80 +28,116 @@ package org.spout.math.test.vector;
 
 import org.junit.Test;
 
+import org.spout.math.test.TestUtil;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector4;
+import org.spout.math.vector.VectorN;
+
 public class Vector2Test {
 	@Test
 	public void testDefaultConstructor() {
-
+		Vector2 vector = new Vector2();
+		TestUtil.assertEquals(vector.getX(), 0f);
+		TestUtil.assertEquals(vector.getY(), 0f);
 	}
 
 	@Test
 	public void testCopyVector2Constructor() {
-
+		Vector2 copy = new Vector2(new Vector2(0f, 1f));
+		TestUtil.assertEquals(copy.getX(), 0f);
+		TestUtil.assertEquals(copy.getY(), 1f);
 	}
 
 	@Test
 	public void testCopyVector3Constructor() {
-
+		Vector2 copy = new Vector2(new Vector3(0f, 1f, 2f));
+		TestUtil.assertEquals(copy.getX(), 0f);
+		TestUtil.assertEquals(copy.getY(), 1f);
 	}
 
 	@Test
 	public void testCopyVector4Constructor() {
-
+		Vector2 copy = new Vector2(new Vector4(0f, 1f, 2f, 3f));
+		TestUtil.assertEquals(copy.getX(), 0f);
+		TestUtil.assertEquals(copy.getY(), 1f);
 	}
 
 	@Test
 	public void testCopyVectorNConstructor() {
-
+		Vector2 copy = new Vector2(new VectorN(0f, 1f, 2f, 3f, 4f));
+		TestUtil.assertEquals(copy.getX(), 0f);
+		TestUtil.assertEquals(copy.getY(), 1f);
 	}
 
 	@Test
 	public void testDoubleComponentsConstructor() {
-
+		Vector2 vector = new Vector2(0.5, 1.7);
+		TestUtil.assertEquals(vector.getX(), 0.5);
+		TestUtil.assertEquals(vector.getY(), 1.7);
 	}
 
 	@Test
 	public void testFloatComponentsConstructor() {
-
+		Vector2 vector = new Vector2(0.5f, 1.7f);
+		TestUtil.assertEquals(vector.getX(), 0.5f);
+		TestUtil.assertEquals(vector.getY(), 1.7f);
 	}
 
 	@Test
 	public void testGetters() {
-
+		Vector2 vector = new Vector2(0.5f, 1.7f);
+		TestUtil.assertEquals(vector.getX(), 0.5f);
+		TestUtil.assertEquals(vector.getY(), 1.7f);
 	}
 
 	@Test
 	public void testFloorGetters() {
-
+		Vector2 vector = new Vector2(0.5f, 1.7f);
+		TestUtil.assertEquals(vector.getFloorX(), 0);
+		TestUtil.assertEquals(vector.getFloorY(), 1);
 	}
 
 	@Test
 	public void testVector2Addition() {
-
+		Vector2 vector = new Vector2(0, 1).add(new Vector2(5.5, -0.5));
+		TestUtil.assertEquals(vector.getX(), 5.5);
+		TestUtil.assertEquals(vector.getY(), 0.5);
 	}
 
 	@Test
 	public void testDoubleComponentsAddition() {
-
+		Vector2 vector = new Vector2(0, 1).add(5.5, -0.5);
+		TestUtil.assertEquals(vector.getX(), 5.5);
+		TestUtil.assertEquals(vector.getY(), 0.5);
 	}
 
 	@Test
 	public void testFloatComponentsAddition() {
-
+		Vector2 vector = new Vector2(0, 1).add(5.5f, -0.5f);
+		TestUtil.assertEquals(vector.getX(), 5.5f);
+		TestUtil.assertEquals(vector.getY(), 0.5f);
 	}
 
 	@Test
 	public void testVector2Subtraction() {
-
+		Vector2 vector = new Vector2(10, 5).sub(new Vector2(9, 4.5));
+		TestUtil.assertEquals(vector.getX(), 1);
+		TestUtil.assertEquals(vector.getY(), 0.5);
 	}
 
 	@Test
 	public void testDoubleComponentsSubtraction() {
-
+		Vector2 vector = new Vector2(10, 5).sub(9, 4.5);
+		TestUtil.assertEquals(vector.getX(), 1);
+		TestUtil.assertEquals(vector.getY(), 0.5);
 	}
 
 	@Test
 	public void testFloatComponentsSubtraction() {
-
+		Vector2 vector = new Vector2(10f, 5f).sub(9f, 4.5f);
+		TestUtil.assertEquals(vector.getX(), 1f);
+		TestUtil.assertEquals(vector.getY(), 0.5f);
 	}
 
 	@Test
