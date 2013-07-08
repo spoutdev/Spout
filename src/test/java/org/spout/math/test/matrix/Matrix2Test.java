@@ -26,12 +26,16 @@
  */
 package org.spout.math.test.matrix;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 import org.junit.Test;
 import org.spout.math.matrix.Matrix2;
 import org.spout.math.matrix.Matrix3;
 import org.spout.math.matrix.Matrix4;
 import org.spout.math.matrix.MatrixN;
 import org.spout.math.test.TestUtil;
+import org.spout.math.vector.Vector2;
 
 public class Matrix2Test {
 	@Test
@@ -147,27 +151,32 @@ public class Matrix2Test {
 
 	@Test
 	public void testTranslateFloatDistance() {
-
+		Matrix2 matrix1 = new Matrix2(1.0f, 0.0f, 0.0f, 1.0f).translate(5f);
+		TestUtil.assertEquals(matrix1, 1, 5, 0, 1);
 	}
 
 	@Test
 	public void testScaleDoubleFactor() {
-
+		Matrix2 matrix1 = new Matrix2(1.0f, 0.0f, 0.0f, 1.0f).scale(2.5);
+		TestUtil.assertEquals(matrix1, 2.5f, 0f, 0f, 2.5f);
 	}
 
 	@Test
 	public void testScaleFloatFactor() {
-
+		Matrix2 matrix1 = new Matrix2(1.0f, 0.0f, 0.0f, 1.0f).scale(2.5f);
+		TestUtil.assertEquals(matrix1, 2.5f, 0f, 0f, 2.5f);
 	}
 
 	@Test
 	public void testScaleVector2() {
-
+		Matrix2 matrix1 = new Matrix2(1.0f, 0.0f, 0.0f, 1.0f).scale(new Vector2(2f, 3f));
+		TestUtil.assertEquals(matrix1, 2f, 0f, 0f, 3f);
 	}
 
 	@Test
 	public void testScaleFloatComponents() {
-
+		Matrix2 matrix1 = new Matrix2(1.0f, 0.0f, 0.0f, 1.0f).scale(2f, 3f);
+		TestUtil.assertEquals(matrix1, 2f, 0f, 0f, 3f);
 	}
 
 	@Test
@@ -235,67 +244,80 @@ public class Matrix2Test {
 
 	@Test
 	public void testInvert() {
-
+		Matrix2 matrix = new Matrix2(1f, 2f, 3f, 4f).invert();
+		TestUtil.assertEquals(matrix, -2f, 1f, 1.5f, -0.5f);
 	}
 
 	@Test
 	public void testConvertToMatrix3() {
-
+		Matrix2 matrix = new Matrix2(1f, 2f, 3f, 4f);
+		TestUtil.assertEquals(matrix.toMatrix3(), 1f, 2f, 0f, 3f, 4f, 0f, 0f, 0f, 0f);
 	}
 
 	@Test
 	public void testConvertToMatrix4() {
-
+		Matrix2 matrix = new Matrix2(1f, 2f, 3f, 4f);
+		TestUtil.assertEquals(matrix.toMatrix4(), 1f, 2f, 0f, 0f, 3f, 4f, 0f, 0f, 0f, 0f, 0f , 0f, 0f, 0f, 0f , 0f);
 	}
 
 	@Test
 	public void testConvertToMatrixN() {
-
+		Matrix2 matrix = new Matrix2(1f, 2f, 3f, 4f);
+		TestUtil.assertEquals(matrix.toMatrixN(), 1f, 2f, 3f, 4f);
 	}
 
 	@Test
 	public void testConvertToArrayRowMajorDefault() {
-
+		float[] array = new Matrix2(1f, 2f, 3f, 4f).toArray(true);
+		TestUtil.assertEquals(array, 1f, 3f, 2f, 4f);
 	}
 
 	@Test
 	public void testConvertToArray() {
-
+		float[] array = new Matrix2(1f, 2f, 3f, 4f).toArray();
+		TestUtil.assertEquals(array, 1f, 2f, 3f, 4f);
 	}
 
 	@Test
 	public void testEquals() {
-
+		assertEquals(new Matrix2(1f, 2f, 3f, 4f), new Matrix2(1f, 2f, 3f, 4f));
+		assertNotEquals(new Matrix2(1f, 2f, 3f, 4f), new Matrix2(1f, 2f, 3f, 5f));
 	}
 
 	@Test
 	public void testCloning() {
-
+		Matrix2 matrix = new Matrix2(1f, 2f, 3f, 4f);
+		assertEquals(matrix, matrix.clone());
 	}
 
 	@Test
 	public void testCreateFromScalingDoubleFactor() {
-
+		Matrix2 matrix = Matrix2.createScaling(2.);
+		TestUtil.assertEquals(matrix, 2f, 0f, 0f, 2f);
 	}
 
 	@Test
 	public void testCreateFromScalingFloatFactor() {
-
+		Matrix2 matrix = Matrix2.createScaling(2f);
+		TestUtil.assertEquals(matrix, 2f, 0f, 0f, 2f);
 	}
 
 	@Test
 	public void testCreateFromScalingVector2() {
-
+		Matrix2 matrix = Matrix2.createScaling(new Vector2(2.0, 1.5));
+		TestUtil.assertEquals(matrix, 2f, 0f, 0f, 1.5f);
 	}
 
 	@Test
 	public void testCreateFromScalingFloatComponents() {
-
+		Matrix2 matrix = Matrix2.createScaling(2.0f, 1.5f);
+		TestUtil.assertEquals(matrix, 2f, 0f, 0f, 1.5f);
 	}
 
 	@Test
 	public void testCreateTranslationFromFloatDistance() {
-
+		Matrix2 matrix = Matrix2.createTranslation(5f);
+		TestUtil.assertEquals(matrix, 1f, 5f, 0f, 1f);
 	}
 
 	@Test
