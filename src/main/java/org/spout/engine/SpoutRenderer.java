@@ -78,6 +78,7 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 import org.spout.api.Spout;
+import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.world.SpoutChunk;
 
 public class SpoutRenderer {
@@ -310,14 +311,14 @@ public class SpoutRenderer {
 			debugScreen.spoutUpdate(id++, "x: " + position.getX() + "y: " + position.getY() + "z: " + position.getZ());
 			debugScreen.spoutUpdate(id++, "FPS: " + client.getScheduler().getFps() + " (" + (client.getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal") + ")");
 			debugScreen.spoutUpdate(id++, "Chunks Loaded: " + client.getWorld().getNumLoadedChunks());
-			debugScreen.spoutUpdate(id++, "Total Chunks in Renderer: " + worldRenderer.getTotalChunks() + "");
+			debugScreen.spoutUpdate(id++, "Total ChunkMeshBatchAggregators in Renderer: " + worldRenderer.getTotalChunks() + "");
 			debugScreen.spoutUpdate(id++, "Chunks Drawn: " + ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")");
 			debugScreen.spoutUpdate(id++, "Occluded Chunks: " + (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")");
 			debugScreen.spoutUpdate(id++, "Cull Chunks: " + (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getCulledChunks() + ")");
 			debugScreen.spoutUpdate(id++, "Entities: " + entityRenderer.getRenderedEntities());
 			debugScreen.spoutUpdate(id++, "Buffer: " + worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch);
 			debugScreen.spoutUpdate(id++, "Time: " + worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0);
-			debugScreen.spoutUpdate(id++, "Chunk render(): " + SpoutChunk.renderAmount.get());
+			debugScreen.spoutUpdate(id++, "Meshes generated: " + SpoutChunk.meshesGenerated.get());
 			debugScreen.spoutUpdate(id++, "Mesh batch queue size: " + ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer().getBatchWaiting());
 		}
 		

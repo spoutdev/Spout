@@ -202,6 +202,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 */
 	@Override
 	protected void finalize() throws Throwable {
+		release();
 		super.finalize();
 	}
 
