@@ -97,8 +97,8 @@ public class Vector2Test {
 
 	@Test
 	public void testVector2Addition() {
-		Vector2 vector = new Vector2(0, 1).add(new Vector2(5.5f, -0.5f));
-		TestUtil.assertEquals(vector, 5.5, 0.5);
+		Vector2 vector = new Vector2(0f, 1f).add(new Vector2(5.5f, -0.5f));
+		TestUtil.assertEquals(vector, 5.5f, 0.5f);
 	}
 
 	@Test

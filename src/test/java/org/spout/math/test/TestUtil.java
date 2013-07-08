@@ -34,8 +34,8 @@ import org.spout.math.vector.Vector4;
 import org.spout.math.vector.VectorN;
 
 public class TestUtil {
-	private static final float DEFAULT_EPSILON_FLOAT = 0.001f;
-	private static final double DEFAULT_EPSILON_DOUBLE = 0.001;
+	private static final float DEFAULT_EPSILON_FLOAT = 0.00001f;
+	private static final double DEFAULT_EPSILON_DOUBLE = 0.00001;
 
 	public static void assertEquals(float value, float expected) {
 		Assert.assertEquals(expected, value, DEFAULT_EPSILON_FLOAT);
