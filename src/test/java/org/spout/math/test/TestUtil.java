@@ -28,6 +28,7 @@ package org.spout.math.test;
 
 import org.junit.Assert;
 
+import org.spout.math.imaginary.Complex;
 import org.spout.math.vector.Vector2;
 import org.spout.math.vector.Vector3;
 import org.spout.math.vector.Vector4;
@@ -91,5 +92,15 @@ public class TestUtil {
 		for (int i = 0; i < v.length; i++) {
 			assertEquals(v[i], f[i]);
 		}
+	}
+
+	public static void assertEquals(Complex c, float x, float y) {
+		assertEquals(c.getX(), x);
+		assertEquals(c.getY(), y);
+	}
+
+	public static void assertEquals(Complex c, double x, double y) {
+		assertEquals(c.getX(), x);
+		assertEquals(c.getY(), y);
 	}
 }

@@ -169,7 +169,7 @@ public class Vector2Test {
 
 	@Test
 	public void testFloatFactorDivision() {
-		Vector2 vector = new Vector2(2, 3).div(2f);
+		Vector2 vector = new Vector2(2, 3).div(2);
 		TestUtil.assertEquals(vector, 1, 1.5f);
 	}
 
