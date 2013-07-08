@@ -30,6 +30,7 @@ import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import org.spout.math.TrigMath;
 import org.spout.math.test.TestUtil;
 import org.spout.math.vector.Vector2;
@@ -104,7 +105,7 @@ public class Vector3Test {
 
 	@Test
 	public void testVector3Addition() {
-		Vector3 vector = new Vector3(0, 1f, 1f).add(new Vector3(5.5f, -0.5f, 3.8f));
+		Vector3 vector = new Vector3(0, 1, 1).add(new Vector3(5.5f, -0.5f, 3.8f));
 		TestUtil.assertEquals(vector, 5.5f, 0.5f, 4.8f);
 	}
 
@@ -116,7 +117,7 @@ public class Vector3Test {
 
 	@Test
 	public void testFloatComponentsAddition() {
-		Vector3 vector = new Vector3(0f, 1f, 5f).add(5.5f, -0.5f, 3.8f);
+		Vector3 vector = new Vector3(0, 1, 5).add(5.5f, -0.5f, 3.8f);
 		TestUtil.assertEquals(vector, 5.5f, 0.5f, 8.8f);
 	}
 
@@ -134,7 +135,7 @@ public class Vector3Test {
 
 	@Test
 	public void testFloatComponentsSubtraction() {
-		Vector3 vector = new Vector3(10f, 5f, 1f).sub(new Vector3(9f, 4.5f, 2f));
+		Vector3 vector = new Vector3(10, 5, 1).sub(new Vector3(9, 4.5f, 2));
 		TestUtil.assertEquals(vector, 1f, 0.5f, -1f);
 	}
 
@@ -146,26 +147,26 @@ public class Vector3Test {
 
 	@Test
 	public void testFloatFactorMultiplication() {
-		Vector3 vector = new Vector3(2f, 3f, 4f).mul(1.5f);
-		TestUtil.assertEquals(vector, 3f, 4.5f, 6f);
+		Vector3 vector = new Vector3(2, 3, 4).mul(1.5f);
+		TestUtil.assertEquals(vector, 3, 4.5f, 6);
 	}
 
 	@Test
 	public void testVector3Multiplication() {
 		Vector3 vector = new Vector3(2, 3, 4).mul(new Vector3(1.5f, 2.5f, 3.5f));
-		TestUtil.assertEquals(vector, 3f, 7.5f, 14f);
+		TestUtil.assertEquals(vector, 3, 7.5f, 14);
 	}
 
 	@Test
 	public void testDoubleComponentsMultiplication() {
-		Vector3 vector = new Vector3(2., 3., 4.).mul(2.);
-		TestUtil.assertEquals(vector, 4., 6., 8.);
+		Vector3 vector = new Vector3(2, 3, 4).mul(2d);
+		TestUtil.assertEquals(vector, 4d, 6d, 8d);
 	}
 
 	@Test
 	public void testFloatComponentsMultiplication() {
-		Vector3 vector = new Vector3(2f, 3f, 4f).mul(2f);
-		TestUtil.assertEquals(vector, 4f, 6f, 8f);
+		Vector3 vector = new Vector3(2, 3, 4).mul(2);
+		TestUtil.assertEquals(vector, 4, 6, 8);
 	}
 
 	@Test
@@ -176,8 +177,8 @@ public class Vector3Test {
 
 	@Test
 	public void testFloatFactorDivision() {
-		Vector3 vector = new Vector3(2, 3, 4).div(2f);
-		TestUtil.assertEquals(vector, 1f, 1.5f, 2f);
+		Vector3 vector = new Vector3(2, 3, 4).div(2);
+		TestUtil.assertEquals(vector, 1, 1.5f, 2);
 	}
 
 	@Test
@@ -194,8 +195,8 @@ public class Vector3Test {
 
 	@Test
 	public void testFloatComponentsDivision() {
-		Vector3 vector = new Vector3(2, 6, 16).div(2f, 4f, 8f);
-		TestUtil.assertEquals(vector, 1f, 1.5f, 2f);
+		Vector3 vector = new Vector3(2, 6, 16).div(2, 4, 8);
+		TestUtil.assertEquals(vector, 1, 1.5f, 2);
 	}
 
 	@Test
@@ -206,7 +207,7 @@ public class Vector3Test {
 
 	@Test
 	public void testDoubleComponentsDotProduct() {
-		float f = new Vector3(2, 3, 4).dot(4, 5, 6);
+		float f = new Vector3(2, 3, 4).dot(4d, 5d, 6d);
 		TestUtil.assertEquals(f, 47d);
 	}
 
@@ -219,19 +220,19 @@ public class Vector3Test {
 	@Test
 	public void testVector3Cross() {
 		Vector3 f = new Vector3(2, 3, 4).cross(new Vector3(4, 5, 6.5));
-		TestUtil.assertEquals(f, -0.5, 3, -2.0);
+		TestUtil.assertEquals(f, -0.5, 3, -2d);
 	}
 
 	@Test
 	public void testDoubleComponentsCross() {
 		Vector3 f = new Vector3(2, 3, 4).cross(4, 5, 6.5);
-		TestUtil.assertEquals(f, -0.5, 3, -2.0);
+		TestUtil.assertEquals(f, -0.5, 3, -2d);
 	}
 
 	@Test
 	public void testFloatComponentsCross() {
 		Vector3 f = new Vector3(2, 3, 4).cross(4, 5, 6.5f);
-		TestUtil.assertEquals(f, -0.5f, 3f, -2.0f);
+		TestUtil.assertEquals(f, -0.5f, 3, -2);
 	}
 
 	@Test
@@ -242,7 +243,7 @@ public class Vector3Test {
 
 	@Test
 	public void testRaiseToDoublePower() {
-		Vector3 vector = new Vector3(2, 6, 8).pow(2);
+		Vector3 vector = new Vector3(2, 6, 8).pow(2d);
 		TestUtil.assertEquals(vector, 4d, 36d, 64d);
 	}
 
@@ -266,10 +267,10 @@ public class Vector3Test {
 
 	@Test
 	public void testAbsolute() {
-		Vector3 vector1 = new Vector3(-2.5f, -6.7f, -5500f).abs();
-		TestUtil.assertEquals(vector1, 2.5f, 6.7f, 5500f);
-		Vector3 vector2 = new Vector3(2.5f, 6.7f, 5500f).abs();
-		TestUtil.assertEquals(vector2, 2.5f, 6.7f, 5500f);
+		Vector3 vector1 = new Vector3(-2.5f, -6.7f, -55).abs();
+		TestUtil.assertEquals(vector1, 2.5f, 6.7f, 55);
+		Vector3 vector2 = new Vector3(2.5f, 6.7f, 55).abs();
+		TestUtil.assertEquals(vector2, 2.5f, 6.7f, 55);
 	}
 
 	@Test
@@ -292,14 +293,14 @@ public class Vector3Test {
 
 	@Test
 	public void testFloatComponentsMinimum() {
-		Vector3 vector = new Vector3(2, 6, 10).min(3d, 4d, -5d);
-		TestUtil.assertEquals(vector, 2d, 4d, -5d);
+		Vector3 vector = new Vector3(2, 6, 10).min(3, 4, -5);
+		TestUtil.assertEquals(vector, 2, 4, -5);
 	}
 
 	@Test
 	public void testVector3Maximum() {
-		Vector3 vector = new Vector3(2, 6, 10).max(new Vector3(3d, 4d, -5d));
-		TestUtil.assertEquals(vector, 3d, 6d, 10d);
+		Vector3 vector = new Vector3(2, 6, 10).max(new Vector3(3, 4, -5));
+		TestUtil.assertEquals(vector, 3, 6, 10);
 	}
 
 	@Test
@@ -311,7 +312,7 @@ public class Vector3Test {
 	@Test
 	public void testFloatComponentsMaximum() {
 		Vector3 vector = new Vector3(2, 6, 10).max(3, 4, -5);
-		TestUtil.assertEquals(vector, 3d, 6d, 10d);
+		TestUtil.assertEquals(vector, 3, 6, 10);
 	}
 
 	@Test
@@ -335,7 +336,7 @@ public class Vector3Test {
 	@Test
 	public void testVector3Distance() {
 		float f = new Vector3(0, 2, 4).distance(new Vector3(0, 8, 16));
-		TestUtil.assertEquals(f, 13.416407585144043);
+		TestUtil.assertEquals(f, 13.416407585144043f);
 	}
 
 	@Test
@@ -346,14 +347,14 @@ public class Vector3Test {
 
 	@Test
 	public void testFloatComponentsDistance() {
-		float f = new Vector3(0, 2, 4).distance(0f, 8f, 16f);
+		float f = new Vector3(0, 2, 4).distance(0, 8, 16);
 		TestUtil.assertEquals(f, 13.416407585144043f);
 	}
 
 	@Test
 	public void testLength() {
 		float f = new Vector3(3, 4, 5).length();
-		TestUtil.assertEquals(f, 7.071068);
+		TestUtil.assertEquals(f, 7.071068f);
 	}
 
 	@Test
@@ -365,37 +366,37 @@ public class Vector3Test {
 	@Test
 	public void testNormalize() {
 		Vector3 vector = new Vector3(2, 2, 0).normalize();
-		TestUtil.assertEquals(vector, (float) TrigMath.HALF_SQRT_OF_TWO, (float) TrigMath.HALF_SQRT_OF_TWO, 0f);
+		TestUtil.assertEquals(vector, (float) TrigMath.HALF_SQRT_OF_TWO, (float) TrigMath.HALF_SQRT_OF_TWO, 0);
 	}
 
 	@Test
 	public void testConvertToVector2() {
-		Vector3 vector = new Vector3(1, 2, 3);
-		TestUtil.assertEquals(vector.toVector2(), 1, 2);
+		Vector2 vector = new Vector3(1, 2, 3).toVector2();
+		TestUtil.assertEquals(vector, 1, 2);
 	}
 
 	@Test
 	public void testConvertToVector4DefaultW() {
-		Vector3 vector = new Vector3(1f, 2f, 3f);
-		TestUtil.assertEquals(vector.toVector4(), 1f, 2f, 3f, 0);
+		Vector4 vector = new Vector3(1, 2, 3).toVector4();
+		TestUtil.assertEquals(vector, 1, 2, 3, 0);
 	}
 
 	@Test
 	public void testConvertToVector4FloatW() {
-		Vector3 vector = new Vector3(1f, 2f, 3f);
-		TestUtil.assertEquals(vector.toVector4(), 1f, 2f, 3f, 0);
+		Vector4 vector = new Vector3(1, 2, 3).toVector4(4);
+		TestUtil.assertEquals(vector, 1, 2, 3, 4);
 	}
 
 	@Test
 	public void testConvertToVector4DoubleW() {
-		Vector3 vector = new Vector3(1d, 2d, 3d);
-		TestUtil.assertEquals(vector.toVector4(4), 1d, 2d, 3d, 4d);
+		Vector4 vector = new Vector3(1, 2, 3).toVector4(4d);
+		TestUtil.assertEquals(vector, 1, 2, 3, 4);
 	}
 
 	@Test
 	public void testConvertToVectorN() {
-		Vector3 vector = new Vector3(1d, 2d, 3d);
-		TestUtil.assertEquals(vector.toVectorN(), 1f, 2f, 3f);
+		VectorN vector = new Vector3(1, 2, 3).toVectorN();
+		TestUtil.assertEquals(vector, 1, 2, 3);
 	}
 
 	@Test
@@ -440,14 +441,14 @@ public class Vector3Test {
 		Vector3 vector1 = Vector3.createDirection(0, 0);
 		TestUtil.assertEquals(vector1, 1, 0, 0);
 		Vector3 vector2 = Vector3.createDirection((float) TrigMath.QUARTER_PI, 0);
-		TestUtil.assertEquals(vector2, 0.7071067812, 0, 0.7071067812);
+		TestUtil.assertEquals(vector2, (float) TrigMath.HALF_SQRT_OF_TWO, 0, (float) TrigMath.HALF_SQRT_OF_TWO);
 		Vector3 vector3 = Vector3.createDirection((float) TrigMath.HALF_PI, (float) TrigMath.HALF_PI);
 		TestUtil.assertEquals(vector3, 0, 1, 0);
 		Vector3 vector4 = Vector3.createDirection((float) TrigMath.PI, (float) TrigMath.PI);
-		TestUtil.assertEquals(vector4, 1, 1.22464679914735E-016, -1.22464679914735E-016);
+		TestUtil.assertEquals(vector4, 1, 0, 0);
 		Vector3 vector5 = Vector3.createDirection((float) TrigMath.THREE_PI_HALVES, (float) TrigMath.THREE_PI_HALVES);
-		TestUtil.assertEquals(vector5, 3.37445951098918E-032, -1, 1.83697019872103E-016);
+		TestUtil.assertEquals(vector5, 0, -1, 0);
 		Vector3 vector6 = Vector3.createDirection((float) TrigMath.TWO_PI, (float) TrigMath.TWO_PI);
-		TestUtil.assertEquals(vector6, 1, -2.44929359829471E-016, -2.44929359829471E-016);
+		TestUtil.assertEquals(vector6, 1, 0, 0);
 	}
 }
