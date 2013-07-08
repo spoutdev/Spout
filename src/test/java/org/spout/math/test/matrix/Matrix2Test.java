@@ -80,6 +80,9 @@ public class Matrix2Test {
 	public void testGetter() {
 		Matrix2 matrix = new Matrix2(1.0f, 2.0f, 3.0f, 4.0f);
 		TestUtil.assertEquals(matrix.get(0, 0), 1f);
+		TestUtil.assertEquals(matrix.get(0, 1), 2f);
+		TestUtil.assertEquals(matrix.get(1, 0), 3f);
+		TestUtil.assertEquals(matrix.get(1, 1), 4f);
 	}
 
 	@Test
@@ -197,7 +200,7 @@ public class Matrix2Test {
 	@Test
 	public void testRound() {
 		Matrix2 matrix = new Matrix2(1.1f, 2.5f, 3.9f, -4.8f).round();
-		TestUtil.assertEquals(matrix, 1, 3, 4, -4);
+		TestUtil.assertEquals(matrix, 1, 3, 4, -5);
 	}
 
 	@Test
