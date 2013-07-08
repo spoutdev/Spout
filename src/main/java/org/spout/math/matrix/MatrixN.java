@@ -227,20 +227,16 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		return translate(v.toArray());
 	}
 
-	// TODO: add double overload
-
 	public MatrixN translate(float... v) {
-		return createTranslation(size(), v).mul(this);
+		return createTranslation(v).mul(this);
 	}
 
 	public MatrixN scale(VectorN v) {
 		return scale(v.toArray());
 	}
 
-	// TODO: add double overload
-
 	public MatrixN scale(float... v) {
-		return createScaling(size(), v).mul(this);
+		return createScaling(v).mul(this);
 	}
 
 	public MatrixN rotate(Complex rot) {
@@ -255,12 +251,11 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		return transform(v.toArray());
 	}
 
-	// TODO: add double overload
-
 	public VectorN transform(float... vec) {
-		final int originalSize = vec.length;
 		final int size = size();
-		vec = adjustSize(vec, size, 1);
+		if (size != vec.length) {
+			throw new IllegalArgumentException("Matrix and vector sizes must be the same");
+		}
 		final VectorN d = new VectorN(size);
 		for (int row = 0; row < size; row++) {
 			float dot = 0;
@@ -269,7 +264,7 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 			}
 			d.set(row, dot);
 		}
-		return d.resize(originalSize);
+		return d;
 	}
 
 	@Override
@@ -474,32 +469,28 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		return new MatrixN(this);
 	}
 
-	public static MatrixN createScaling(int size, VectorN v) {
-		return createScaling(size, v.toArray());
+	public static MatrixN createScaling(VectorN v) {
+		return createScaling(v.toArray());
 	}
 
-	// TODO: add double overload
-
-	public static MatrixN createScaling(int size, float... vec) {
+	public static MatrixN createScaling(float... vec) {
+		final int size = vec.length;
 		final MatrixN m = new MatrixN(size);
-		vec = adjustSize(vec, size, 1);
 		for (int rowCol = 0; rowCol < size; rowCol++) {
 			m.set(rowCol, rowCol, vec[rowCol]);
 		}
 		return m;
 	}
 
-	public static MatrixN createTranslation(int size, VectorN v) {
-		return createTranslation(size, v.toArray());
+	public static MatrixN createTranslation(VectorN v) {
+		return createTranslation(v.toArray());
 	}
 
-	// TODO: add double overload
-
-	public static MatrixN createTranslation(int size, float... vec) {
-		final MatrixN m = new MatrixN(size);
-		vec = adjustSize(vec, size - 1, 0);
-		for (int row = 0; row < size - 1; row++) {
-			m.set(row, size - 1, vec[row]);
+	public static MatrixN createTranslation(float... vec) {
+		final int size = vec.length;
+		final MatrixN m = new MatrixN(size + 1);
+		for (int row = 0; row < size; row++) {
+			m.set(row, size, vec[row]);
 		}
 		return m;
 	}
@@ -616,17 +607,6 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		orthographic.set(3, 2, -near2 * far / FmN);
 		orthographic.set(3, 3, 0);
 		return orthographic;
-	}
-
-	private static float[] adjustSize(float[] array, int toSize, float filler) {
-		if (array.length == toSize) {
-			return array;
-		}
-		final float[] d = new float[toSize];
-		final int size = Math.min(array.length, toSize);
-		System.arraycopy(array, 0, d, 0, size);
-		Arrays.fill(d, size, toSize, filler);
-		return d;
 	}
 
 	private static float[][] deepClone(float[][] array) {

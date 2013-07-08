@@ -96,7 +96,10 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	public VectorN add(float... v) {
-		final int size = Math.min(size(), v.length);
+		final int size = size();
+		if (size != v.length) {
+			throw new IllegalArgumentException("Vector sizes must be the same");
+		}
 		final VectorN d = new VectorN(size);
 		for (int comp = 0; comp < size; comp++) {
 			d.vec[comp] = vec[comp] + v[comp];
@@ -109,7 +112,10 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	public VectorN sub(float... v) {
-		final int size = Math.min(size(), v.length);
+		final int size = size();
+		if (size != v.length) {
+			throw new IllegalArgumentException("Vector sizes must be the same");
+		}
 		final VectorN d = new VectorN(size);
 		for (int comp = 0; comp < size; comp++) {
 			d.vec[comp] = vec[comp] - v[comp];
@@ -136,7 +142,10 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	public VectorN mul(float... v) {
-		final int size = Math.min(size(), v.length);
+		final int size = size();
+		if (size != v.length) {
+			throw new IllegalArgumentException("Vector sizes must be the same");
+		}
 		final VectorN d = new VectorN(size);
 		for (int comp = 0; comp < size; comp++) {
 			d.vec[comp] = vec[comp] * v[comp];
@@ -163,7 +172,10 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	public VectorN div(float... v) {
-		final int size = Math.min(size(), v.length);
+		final int size = size();
+		if (size != v.length) {
+			throw new IllegalArgumentException("Vector sizes must be the same");
+		}
 		final VectorN d = new VectorN(size);
 		for (int comp = 0; comp < size; comp++) {
 			d.vec[comp] = vec[comp] / v[comp];
@@ -176,7 +188,10 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	public float dot(float... v) {
-		final int size = Math.min(size(), v.length);
+		final int size = size();
+		if (size != v.length) {
+			throw new IllegalArgumentException("Vector sizes must be the same");
+		}
 		float d = 0;
 		for (int comp = 0; comp < size; comp++) {
 			d += vec[comp] * v[comp];
@@ -253,7 +268,10 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	public VectorN min(float... v) {
-		final int size = Math.min(size(), v.length);
+		final int size = size();
+		if (size != v.length) {
+			throw new IllegalArgumentException("Vector sizes must be the same");
+		}
 		final VectorN d = new VectorN(size);
 		for (int comp = 0; comp < size; comp++) {
 			d.vec[comp] = Math.min(vec[comp], v[comp]);
@@ -266,7 +284,10 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	public VectorN max(float... v) {
-		final int size = Math.min(size(), v.length);
+		final int size = size();
+		if (size != v.length) {
+			throw new IllegalArgumentException("Vector sizes must be the same");
+		}
 		final VectorN d = new VectorN(size);
 		for (int comp = 0; comp < size; comp++) {
 			d.vec[comp] = Math.max(vec[comp], v[comp]);
@@ -279,7 +300,10 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	public float distanceSquared(float... v) {
-		final int size = Math.min(size(), v.length);
+		final int size = size();
+		if (size != v.length) {
+			throw new IllegalArgumentException("Vector sizes must be the same");
+		}
 		final float[] d = new float[size];
 		for (int comp = 0; comp < size; comp++) {
 			d[comp] = vec[comp] - v[comp];
@@ -288,11 +312,14 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 	}
 
 	public float distance(VectorN v) {
-		return distanceSquared(v.vec);
+		return distance(v.vec);
 	}
 
 	public float distance(float... v) {
-		final int size = Math.min(size(), v.length);
+		final int size = size();
+		if (size != v.length) {
+			throw new IllegalArgumentException("Vector sizes must be the same");
+		}
 		final float[] d = new float[size];
 		for (int comp = 0; comp < size; comp++) {
 			d[comp] = vec[comp] - v[comp];
