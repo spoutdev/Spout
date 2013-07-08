@@ -29,6 +29,10 @@ package org.spout.math.test;
 import org.junit.Assert;
 
 import org.spout.math.imaginary.Complex;
+import org.spout.math.matrix.Matrix2;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.matrix.MatrixN;
 import org.spout.math.vector.Vector2;
 import org.spout.math.vector.Vector3;
 import org.spout.math.vector.Vector4;
@@ -102,5 +106,33 @@ public class TestUtil {
 	public static void assertEquals(Complex c, double x, double y) {
 		assertEquals(c.getX(), x);
 		assertEquals(c.getY(), y);
+	}
+
+	public static void assertEquals(Matrix2 matrix, float ...v) {
+		float []array = matrix.toArray();
+		for(int i = 0; i < array.length; i++){
+			assertEquals(array[i], v[i]);
+		}
+	}
+
+	public static void assertEquals(Matrix3 matrix, float ...v) {
+		float []array = matrix.toArray();
+		for(int i = 0; i < array.length; i++){
+			assertEquals(array[i], v[i]);
+		}
+	}
+
+	public static void assertEquals(Matrix4 matrix, float ...v) {
+		float []array = matrix.toArray();
+		for(int i = 0; i < array.length; i++){
+			assertEquals(array[i], v[i]);
+		}
+	}
+
+	public static void assertEquals(MatrixN matrix, float ...v) {
+		float []array = matrix.toArray();
+		for(int i = 0; i < array.length; i++){
+			assertEquals(array[i], v[i]);
+		}
 	}
 }
