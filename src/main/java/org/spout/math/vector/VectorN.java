@@ -61,7 +61,13 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 		this(v.vec);
 	}
 
-	// TODO: add double overload
+	public VectorN(double... v) {
+		vec = new float[v.length];
+		
+		for(int i = 0; i < v.length; i++){
+			vec[i] = (float)v[i];
+		}
+	}
 
 	public VectorN(float... v) {
 		vec = v.clone();
