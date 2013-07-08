@@ -67,12 +67,6 @@ public class VectorNTest {
 	}
 
 	@Test
-	public void testDoubleComponentsConstructor() {
-		VectorN vector = new VectorN(0.0, 1.1, 2.2, 3.3, 4.4, 5.5);
-		TestUtil.assertEquals(vector, 0.0f, 1.1f, 2.2f, 3.3f, 4.4f, 5.5f);
-	}
-
-	@Test
 	public void testFloatComponentsConstructor() {
 		VectorN vector = new VectorN(0.0f, 1.1f, 2.2f, 3.3f, 4.4f, 5.5f);
 		TestUtil.assertEquals(vector, 0.0f, 1.1f, 2.2f, 3.3f, 4.4f, 5.5f);
