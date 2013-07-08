@@ -43,7 +43,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.material.block.BlockFaces;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.OrientedMesh;
@@ -53,15 +52,14 @@ import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.SnapshotMesh;
-import org.spout.api.util.bytebit.ByteBitSet;
+
 import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
-import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
  * Represents a mesh for a chunk.
  */
-public class ChunkMesh{
+public class ChunkMesh {
 
 	private HashMap<RenderMaterial, BufferContainer> meshs = new HashMap<RenderMaterial, BufferContainer>();
 
@@ -119,6 +117,11 @@ public class ChunkMesh{
 			for(BufferEffect effect : entry.getKey().getBufferEffects()){
 				effect.post(chunkModel, entry.getValue());
 			}
+		}
+
+		// If there's nothing to render, get rid of it
+		if (!hasVertices()) {
+			isUnloaded = true;
 		}
 
 		// Free memory
@@ -194,23 +197,16 @@ public class ChunkMesh{
 
 			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
 
-			if (!material.isFaceRendered(face, neighbor)) {
+			if (!material.isFaceRendered(face, neighbor) || neighbor.getOcclusion(material.getData()).get(face.getOpposite())) {
 				toRender[i] = false;
 				continue;
 			}
 
-			ByteBitSet occlusion = neighbor.getOcclusion(material.getData());
-
-			if (occlusion.get(face.getOpposite())) {
-				toRender[i] = false;
-				continue;
-			}
 			toRender[i] = true;
 			fullyOccluded = false;
 		}
 
 		if(fullyOccluded) {
-			//System.out.println("Fully occluded");
 			return;
 		}
 
@@ -304,5 +300,37 @@ public class ChunkMesh{
 	public World getWorld() {
 		return world;
 	}
+
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 61 * hash + this.chunkX;
+		hash = 61 * hash + this.chunkY;
+		hash = 61 * hash + this.chunkZ;
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final ChunkMesh other = (ChunkMesh) obj;
+		if (this.chunkX != other.chunkX) {
+			return false;
+		}
+		if (this.chunkY != other.chunkY) {
+			return false;
+		}
+		if (this.chunkZ != other.chunkZ) {
+			return false;
+		}
+		return true;
+	}
+	
+	
 
 }

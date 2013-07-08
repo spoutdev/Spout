@@ -29,10 +29,13 @@ package org.spout.engine.renderer;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.TreeMultimap;
+import java.util.ArrayList;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
@@ -184,7 +187,9 @@ public class WorldRenderer {
 			return;
 		}
 
-		for (Entry<RenderMaterial, ChunkMeshBatchAggregator> entry : aggregatorPerMaterial.entrySet()) {
+		List<RenderMaterial> toRemoveFromPositions = new ArrayList<>();
+		for (Iterator<Entry<RenderMaterial, ChunkMeshBatchAggregator>> it = aggregatorPerMaterial.entrySet().iterator(); it.hasNext();) {
+			Entry<RenderMaterial, ChunkMeshBatchAggregator> entry = it.next();
 
 			RenderMaterial material = entry.getKey();
 			ChunkMeshBatchAggregator batch = entry.getValue();
@@ -194,16 +199,17 @@ public class WorldRenderer {
 			}
 
 			batch.setSubBatch(null, chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
-
 			if (!batch.isEmpty()) {
 				continue;
 			}
 
 			toUpdate.remove(batch);
-			//Clean chunkRenderers
 			chunkRenderers.remove(material, batch);
-			chunkRenderersByPositions.remove(position.getFloorX(), position.getFloorY(), position.getFloorZ(), material);
+			toRemoveFromPositions.add(material);
+		}
 
+		for (RenderMaterial r : toRemoveFromPositions) {
+			chunkRenderersByPositions.remove(position.getFloorX(), position.getFloorY(), position.getFloorZ(), r);
 		}
 	}
 
@@ -252,7 +258,6 @@ public class WorldRenderer {
 			Vector3 base = ChunkMeshBatchAggregator.getBaseFromChunkMesh(mesh);
 			ChunkMeshBatchAggregator batch = chunkRenderersByPositions.get(base.getFloorX(), base.getFloorY(), base.getFloorZ(), material);
 			if (batch == null) {
-				System.out.println("new batch");
 				batch = new ChunkMeshBatchAggregator(mesh.getWorld(), base.getFloorX(), base.getFloorY(), base.getFloorZ(), material);
 				// Add to chunkRenderer stores
 				chunkRenderers.put(batch.getMaterial(), batch);
