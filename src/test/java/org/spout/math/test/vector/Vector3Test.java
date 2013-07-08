@@ -395,7 +395,7 @@ public class Vector3Test {
 	@Test
 	public void testConvertToVectorN() {
 		Vector3 vector = new Vector3(1d, 2d, 3d);
-		TestUtil.assertEquals(vector.toVectorN(), 1d, 2d, 3d);
+		TestUtil.assertEquals(vector.toVectorN(), 1f, 2f, 3f);
 	}
 
 	@Test

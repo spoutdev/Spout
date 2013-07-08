@@ -374,7 +374,7 @@ public class Vector4Test {
 	@Test
 	public void testConvertToVectorN() {
 		Vector4 vector = new Vector4(1d, 2d, 3d, 4d);
-		TestUtil.assertEquals(vector.toVectorN(), 1d, 2d, 3d, 4d);
+		TestUtil.assertEquals(vector.toVectorN(), 1f, 2f, 3f, 4f);
 	}
 
 	@Test

@@ -26,72 +26,112 @@
  */
 package org.spout.math.test.vector;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
+import org.spout.math.test.TestUtil;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector4;
+import org.spout.math.vector.VectorN;
 
 public class VectorNTest {
 	@Test
 	public void testDefaultConstructor() {
-
+		VectorN vector = new VectorN(0, 1, 2, 3, 4, 5);
+		TestUtil.assertEquals(vector, 0, 1, 2, 3, 4, 5);
 	}
 
 	@Test
 	public void testCopyVector2Constructor() {
-
+		VectorN vector = new VectorN(new Vector2(0, 1));
+		TestUtil.assertEquals(vector, 0, 1);
 	}
 
 	@Test
 	public void testCopyVector3Constructor() {
-
+		VectorN vector = new VectorN(new Vector3(0, 1, 2));
+		TestUtil.assertEquals(vector, 0, 1, 2);
 	}
 
 	@Test
 	public void testCopyVector4Constructor() {
-
+		VectorN vector = new VectorN(new Vector4(0, 1, 2, 3));
+		TestUtil.assertEquals(vector, 0, 1, 2, 3);
 	}
 
 	@Test
 	public void testCopyVectorNConstructor() {
-
+		VectorN vector = new VectorN(new VectorN(0, 1, 2, 3, 4, 5));
+		TestUtil.assertEquals(vector, 0, 1, 2, 3, 4, 5);
 	}
 
 	@Test
 	public void testDoubleComponentsConstructor() {
-
+		VectorN vector = new VectorN(0.0, 1.1, 2.2, 3.3, 4.4, 5.5);
+		TestUtil.assertEquals(vector, 0.0f, 1.1f, 2.2f, 3.3f, 4.4f, 5.5f);
 	}
 
 	@Test
 	public void testFloatComponentsConstructor() {
-
+		VectorN vector = new VectorN(0.0f, 1.1f, 2.2f, 3.3f, 4.4f, 5.5f);
+		TestUtil.assertEquals(vector, 0.0f, 1.1f, 2.2f, 3.3f, 4.4f, 5.5f);
 	}
 
 	@Test
 	public void testSize() {
-
+		VectorN vector = new VectorN(0.0f, 1.1f, 2.2f, 3.3f, 4.4f, 5.5f);
+		assertEquals(vector.size(), 6);
 	}
 
 	@Test
 	public void testGetter() {
-
+		VectorN vector = new VectorN(0.0f, 1.1f, 2.2f, 3.3f, 4.4f, 5.5f);
+		TestUtil.assertEquals(vector.get(0), 0.0f);
+		TestUtil.assertEquals(vector.get(1), 1.1f);
+		TestUtil.assertEquals(vector.get(2), 2.2f);
+		TestUtil.assertEquals(vector.get(3), 3.3f);
+		TestUtil.assertEquals(vector.get(4), 4.4f);
+		TestUtil.assertEquals(vector.get(5), 5.5f);
 	}
 
 	@Test
 	public void testFlooredGetter() {
-
+		VectorN vector = new VectorN(0.0f, 1.1f, 2.2f, 3.3f, 4.4f, 5.5f, -6.6f);
+		TestUtil.assertEquals(vector.getFloored(0), 0f);
+		TestUtil.assertEquals(vector.getFloored(1), 1f);
+		TestUtil.assertEquals(vector.getFloored(2), 2f);
+		TestUtil.assertEquals(vector.getFloored(3), 3f);
+		TestUtil.assertEquals(vector.getFloored(4), 4f);
+		TestUtil.assertEquals(vector.getFloored(5), 5f);
+		TestUtil.assertEquals(vector.getFloored(6), -7f);
 	}
 
 	@Test
 	public void testSetterFloatValue() {
-
+		VectorN vector = new VectorN(0.0f, 1.1f, 2.2f, 3.3f, 4.4f, 5.5f);
+		vector.set(0, 6.6f);
+		TestUtil.assertEquals(vector.get(0), 6.6f);
 	}
 
 	@Test
 	public void testSetZero() {
-
+		VectorN vector = new VectorN(0.0f, 1.1f, 2.2f);
+		vector.setZero();
+		TestUtil.assertEquals(vector.get(0), 0f);
+		TestUtil.assertEquals(vector.get(1), 0f);
+		TestUtil.assertEquals(vector.get(2), 0f);
 	}
 
 	@Test
 	public void testResize() {
-
+		VectorN vector1 = new VectorN(0.0f, 1.1f, 2.2f);
+		VectorN resize1 = vector1.resize(2);
+		TestUtil.assertEquals(resize1.size(), 2);
+		VectorN vector2 = new VectorN(0.0f, 1.1f, 2.2f);
+		VectorN resize2 = vector2.resize(4);
+		TestUtil.assertEquals(resize2.size(), 4);
+		TestUtil.assertEquals(resize2.get(3), 0f);
 	}
 
 	@Test
