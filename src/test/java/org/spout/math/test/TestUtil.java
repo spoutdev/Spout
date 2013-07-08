@@ -87,15 +87,11 @@ public class TestUtil {
 	}
 
 	public static void assertEquals(VectorN v, float... f) {
-		for (int i = 0; i < v.size(); i++) {
-			assertEquals(v.get(i), f[i]);
-		}
+		Assert.assertArrayEquals(f, v.toArray(), DEFAULT_EPSILON_FLOAT);
 	}
 
-	public static void assertEquals(float[] v, float... f) {
-		for (int i = 0; i < v.length; i++) {
-			assertEquals(v[i], f[i]);
-		}
+	public static void assertEquals(float[] a, float... f) {
+		Assert.assertArrayEquals(f, a, DEFAULT_EPSILON_FLOAT);
 	}
 
 	public static void assertEquals(Complex c, float x, float y) {
@@ -108,31 +104,19 @@ public class TestUtil {
 		assertEquals(c.getY(), y);
 	}
 
-	public static void assertEquals(Matrix2 matrix, float ...v) {
-		float []array = matrix.toArray();
-		for(int i = 0; i < array.length; i++){
-			assertEquals(array[i], v[i]);
-		}
+	public static void assertEquals(Matrix2 m, float... f) {
+		Assert.assertArrayEquals(f, m.toArray(), DEFAULT_EPSILON_FLOAT);
 	}
 
-	public static void assertEquals(Matrix3 matrix, float ...v) {
-		float []array = matrix.toArray();
-		for(int i = 0; i < array.length; i++){
-			assertEquals(array[i], v[i]);
-		}
+	public static void assertEquals(Matrix3 m, float... f) {
+		Assert.assertArrayEquals(f, m.toArray(), DEFAULT_EPSILON_FLOAT);
 	}
 
-	public static void assertEquals(Matrix4 matrix, float ...v) {
-		float []array = matrix.toArray();
-		for(int i = 0; i < array.length; i++){
-			assertEquals(array[i], v[i]);
-		}
+	public static void assertEquals(Matrix4 m, float... f) {
+		Assert.assertArrayEquals(f, m.toArray(), DEFAULT_EPSILON_FLOAT);
 	}
 
-	public static void assertEquals(MatrixN matrix, float ...v) {
-		float []array = matrix.toArray();
-		for(int i = 0; i < array.length; i++){
-			assertEquals(array[i], v[i]);
-		}
+	public static void assertEquals(MatrixN m, float... f) {
+		Assert.assertArrayEquals(f, m.toArray(), DEFAULT_EPSILON_FLOAT);
 	}
 }
