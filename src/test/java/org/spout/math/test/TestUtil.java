@@ -87,21 +87,9 @@ public class TestUtil {
 		}
 	}
 
-	public static void assertEquals(VectorN v, double... d) {
-		for (int i = 0; i < v.size(); i++) {
-			assertEquals(v.get(i), d[i]);
-		}
-	}
-
 	public static void assertEquals(float[] v, float... f) {
 		for (int i = 0; i < v.length; i++) {
 			assertEquals(v[i], f[i]);
-		}
-	}
-
-	public static void assertEquals(double[] v, double... d) {
-		for (int i = 0; i < v.length; i++) {
-			assertEquals(v[i], d[i]);
 		}
 	}
 }
