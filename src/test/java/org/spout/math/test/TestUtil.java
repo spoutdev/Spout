@@ -29,6 +29,9 @@ package org.spout.math.test;
 import org.junit.Assert;
 
 import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector4;
+import org.spout.math.vector.VectorN;
 
 public class TestUtil {
 	private static final float DEFAULT_EPSILON_FLOAT = 0.001f;
@@ -50,5 +53,55 @@ public class TestUtil {
 	public static void assertEquals(Vector2 v, double x, double y) {
 		assertEquals(v.getX(), x);
 		assertEquals(v.getY(), y);
+	}
+
+	public static void assertEquals(Vector3 v, float x, float y, float z) {
+		assertEquals(v.getX(), x);
+		assertEquals(v.getY(), y);
+		assertEquals(v.getZ(), z);
+	}
+
+	public static void assertEquals(Vector3 v, double x, double y, double z) {
+		assertEquals(v.getX(), x);
+		assertEquals(v.getY(), y);
+		assertEquals(v.getZ(), z);
+	}
+
+	public static void assertEquals(Vector4 v, float x, float y, float z, float w) {
+		assertEquals(v.getX(), x);
+		assertEquals(v.getY(), y);
+		assertEquals(v.getZ(), z);
+		assertEquals(v.getW(), w);
+	}
+
+	public static void assertEquals(Vector4 v, double x, double y, double z, double w) {
+		assertEquals(v.getX(), x);
+		assertEquals(v.getY(), y);
+		assertEquals(v.getZ(), z);
+		assertEquals(v.getW(), w);
+	}
+
+	public static void assertEquals(VectorN v, float... f) {
+		for (int i = 0; i < v.size(); i++) {
+			assertEquals(v.get(i), f[i]);
+		}
+	}
+
+	public static void assertEquals(VectorN v, double... d) {
+		for (int i = 0; i < v.size(); i++) {
+			assertEquals(v.get(i), d[i]);
+		}
+	}
+
+	public static void assertEquals(float[] v, float... f) {
+		for (int i = 0; i < v.length; i++) {
+			assertEquals(v[i], f[i]);
+		}
+	}
+
+	public static void assertEquals(double[] v, double... d) {
+		for (int i = 0; i < v.length; i++) {
+			assertEquals(v[i], d[i]);
+		}
 	}
 }
