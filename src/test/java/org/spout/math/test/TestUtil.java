@@ -1,17 +1,54 @@
+/*
+ * This file is part of Math.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Math is licensed under the Spout License Version 1.
+ *
+ * Math is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Math is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
 package org.spout.math.test;
 
 import org.junit.Assert;
 
-public class TestUtil {
+import org.spout.math.vector.Vector2;
 
-	private final static float DEFAULT_EPSILON_FLOAT = 0.001f;
-	private final static double DEFAULT_EPSILON_DOUBLE = 0.001;
-	
-	public static void assertEquals(float value1, float value2){
-		Assert.assertEquals(value1, value2, DEFAULT_EPSILON_FLOAT);
+public class TestUtil {
+	private static final float DEFAULT_EPSILON_FLOAT = 0.001f;
+	private static final double DEFAULT_EPSILON_DOUBLE = 0.001;
+
+	public static void assertEquals(float value, float expected) {
+		Assert.assertEquals(expected, value, DEFAULT_EPSILON_FLOAT);
 	}
-	
-	public static void assertEquals(double value1, double value2){
-		Assert.assertEquals(value1, value2, DEFAULT_EPSILON_DOUBLE);
+
+	public static void assertEquals(double value, double expected) {
+		Assert.assertEquals(expected, value, DEFAULT_EPSILON_DOUBLE);
+	}
+
+	public static void assertEquals(Vector2 v, float x, float y) {
+		assertEquals(v.getX(), x);
+		assertEquals(v.getY(), y);
+	}
+
+	public static void assertEquals(Vector2 v, double x, double y) {
+		assertEquals(v.getX(), x);
+		assertEquals(v.getY(), y);
 	}
 }
