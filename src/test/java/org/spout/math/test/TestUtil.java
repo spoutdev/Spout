@@ -34,8 +34,8 @@ import org.spout.math.vector.Vector4;
 import org.spout.math.vector.VectorN;
 
 public class TestUtil {
-	private static final float DEFAULT_EPSILON_FLOAT = 0.001f;
-	private static final double DEFAULT_EPSILON_DOUBLE = 0.001;
+	private static final float DEFAULT_EPSILON_FLOAT = 0.00001f;
+	private static final double DEFAULT_EPSILON_DOUBLE = 0.00001;
 
 	public static void assertEquals(float value, float expected) {
 		Assert.assertEquals(expected, value, DEFAULT_EPSILON_FLOAT);
@@ -88,6 +88,18 @@ public class TestUtil {
 	}
 
 	public static void assertEquals(float[] v, float... f) {
+		for (int i = 0; i < v.length; i++) {
+			assertEquals(v[i], f[i]);
+		}
+	}
+
+	public static void assertEquals(VectorN v, double... f) {
+		for (int i = 0; i < v.size(); i++) {
+			assertEquals(v.get(i), f[i]);
+		}
+	}
+
+	public static void assertEquals(double[] v, double... f) {
 		for (int i = 0; i < v.length; i++) {
 			assertEquals(v[i], f[i]);
 		}
