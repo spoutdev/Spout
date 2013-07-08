@@ -109,15 +109,6 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	@Override
-	public void finalize() throws Throwable {
-		try {
-			renderer.release();
-		} finally {
-			super.finalize();
-		}
-	}
-
-	@Override
 	public String toString() {
 		return "ChunkMeshBatch [base=" + getBase() + ", size=" + getSize() + "]";
 	}
