@@ -363,8 +363,8 @@ public class VectorNTest {
 
 	@Test
 	public void testEquals() {
-		Assert.assertEquals(new VectorN(1, 2, 3), new VectorN(1, 2, 3));
-		Assert.assertNotEquals(new VectorN(1, 2, 3), new VectorN(2, 2, 3));
+		Assert.assertTrue(new VectorN(1, 2, 3).equals(new VectorN(1, 2, 3)));
+		Assert.assertFalse(new VectorN(1, 2, 3).equals(new VectorN(2, 2, 3)));
 	}
 
 	@Test

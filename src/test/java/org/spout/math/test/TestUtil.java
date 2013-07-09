@@ -29,6 +29,7 @@ package org.spout.math.test;
 import org.junit.Assert;
 
 import org.spout.math.imaginary.Complex;
+import org.spout.math.imaginary.Quaternion;
 import org.spout.math.matrix.Matrix2;
 import org.spout.math.matrix.Matrix3;
 import org.spout.math.matrix.Matrix4;
@@ -102,6 +103,13 @@ public class TestUtil {
 	public static void assertEquals(Complex c, double x, double y) {
 		assertEquals(c.getX(), x);
 		assertEquals(c.getY(), y);
+	}
+
+	public static void assertEquals(Quaternion q, float x, float y, float z, float w) {
+		assertEquals(q.getX(), x);
+		assertEquals(q.getY(), y);
+		assertEquals(q.getZ(), z);
+		assertEquals(q.getW(), w);
 	}
 
 	public static void assertEquals(Matrix2 m, float... f) {

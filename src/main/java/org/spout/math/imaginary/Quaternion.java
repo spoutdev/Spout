@@ -328,7 +328,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	public static Quaternion fromAngleDegAxis(double angle, double x, double y, double z) {
-		return fromAngleRadAxis(Math.toDegrees(angle), x, y, z);
+		return fromAngleRadAxis(Math.toRadians(angle), x, y, z);
 	}
 
 	public static Quaternion fromAngleRadAxis(double angle, double x, double y, double z) {

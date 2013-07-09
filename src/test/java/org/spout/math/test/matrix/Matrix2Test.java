@@ -37,7 +37,8 @@ import org.spout.math.test.TestUtil;
 import org.spout.math.vector.Vector2;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class Matrix2Test {
 	@Test
@@ -285,8 +286,8 @@ public class Matrix2Test {
 
 	@Test
 	public void testEquals() {
-		assertEquals(new Matrix2(1, 2, 3, 4), new Matrix2(1, 2, 3, 4));
-		assertNotEquals(new Matrix2(1, 2, 3, 4), new Matrix2(1, 2, 3, 5));
+		assertTrue(new Matrix2(1, 2, 3, 4).equals(new Matrix2(1, 2, 3, 4)));
+		assertFalse(new Matrix2(1, 2, 3, 4).equals(new Matrix2(1, 2, 3, 5)));
 	}
 
 	@Test
