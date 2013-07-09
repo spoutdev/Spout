@@ -26,12 +26,15 @@
  */
 package org.spout.math.test.matrix;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.spout.math.matrix.Matrix2;
 import org.spout.math.matrix.Matrix3;
 import org.spout.math.matrix.Matrix4;
 import org.spout.math.matrix.MatrixN;
 import org.spout.math.test.TestUtil;
+import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector4;
 
 public class Matrix4Test {
 	@Test
@@ -253,47 +256,119 @@ public class Matrix4Test {
 
 	@Test
 	public void testMatrix4Division() {
-
+		// TODO Make Matrix4.div(Matrix4) ?
 	}
 
 	@Test
 	public void testRaiseToFloatPower() {
-
+		Matrix4 matrix = new Matrix4(
+				1f, 2f, 3f, 4f,
+				5f, 6f, 7f, 8f,
+				9f, 10f, 11f, 12f,
+				13f, 14f, 15f, 16f).pow(2f);
+		TestUtil.assertEquals(matrix, 
+				1f, 4f, 9f, 16f,
+				25f, 36f, 49f, 64f,
+				81f, 100f, 121f, 144f,
+				169f, 196f, 225f, 256f);
 	}
 
 	@Test
 	public void testRaiseToDoublePower() {
-
+		Matrix4 matrix = new Matrix4(
+				1f, 2f, 3f, 4f,
+				5f, 6f, 7f, 8f,
+				9f, 10f, 11f, 12f,
+				13f, 14f, 15f, 16f).pow(2d);
+		TestUtil.assertEquals(matrix, 
+				1f, 4f, 9f, 16f,
+				25f, 36f, 49f, 64f,
+				81f, 100f, 121f, 144f,
+				169f, 196f, 225f, 256f);
 	}
 
 	@Test
 	public void testTranslateVector3() {
-
+		Matrix4 matrix = new Matrix4(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).translate(new Vector3(1, 0, 0));
+		TestUtil.assertEquals(matrix,
+				1, 0, 0, 1,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testTranslateFloatComponents() {
-
+		Matrix4 matrix = new Matrix4(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).translate(1f, 0f, 0f);
+		TestUtil.assertEquals(matrix,
+				1, 0, 0, 1,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testScaleDoubleFactor() {
-
+		Matrix4 matrix = new Matrix4(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).scale(2d);
+		TestUtil.assertEquals(matrix,
+				2, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 2, 0,
+				0, 0, 0, 2);
 	}
 
 	@Test
 	public void testScaleFloatFactor() {
-
+		Matrix4 matrix = new Matrix4(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).scale(2f);
+		TestUtil.assertEquals(matrix,
+				2, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 2, 0,
+				0, 0, 0, 2);
 	}
 
 	@Test
 	public void testScaleVector4() {
-
+		Matrix4 matrix = new Matrix4(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).scale(new Vector4(2, 2, 2, 2));
+		TestUtil.assertEquals(matrix,
+				2, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 2, 0,
+				0, 0, 0, 2);
 	}
 
 	@Test
 	public void testScaleFloatComponents() {
-
+		Matrix4 matrix = new Matrix4(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).scale(2f, 2f, 2f, 2f);
+		TestUtil.assertEquals(matrix,
+				2, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 2, 0,
+				0, 0, 0, 2);
 	}
 
 	@Test
@@ -318,112 +393,279 @@ public class Matrix4Test {
 
 	@Test
 	public void testFloor() {
-
+		Matrix4 matrix = new Matrix4(
+				1.1, 2.5, 2.9, 0,
+				-1.1, -2.5, -2.9, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).floor();
+		TestUtil.assertEquals(matrix,
+				1, 2, 2, 0,
+				-2, -3, -3, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testCeiling() {
-
+		Matrix4 matrix = new Matrix4(
+				1.1, 2.5, 2.9, 0,
+				-1.1, -2.5, -2.9, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).ceil();
+		TestUtil.assertEquals(matrix,
+				2, 3, 3, 0,
+				-1, -2, -2, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testRound() {
-
+		Matrix4 matrix = new Matrix4(
+				1.1, 2.5, 2.9, 0,
+				-1.1, -2.5, -2.9, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).round();
+		TestUtil.assertEquals(matrix,
+				1, 3, 3, 0,
+				-1, -2, -3, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testAbsolute() {
-
+		Matrix4 matrix = new Matrix4(
+				1.1, 2.5, 2.9, 0,
+				-1.1, -2.5, -2.9, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).abs();
+		TestUtil.assertEquals(matrix,
+				1.1f, 2.5f, 2.9f, 0,
+				1.1f, 2.5f, 2.9f, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testNegate() {
-
+		Matrix4 matrix = new Matrix4(
+				1.1, 2.5, 2.9, 0,
+				-1.1, -2.5, -2.9, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).negate();
+		TestUtil.assertEquals(matrix,
+				-1.1f, -2.5f, -2.9f, 0,
+				1.1f, 2.5f, 2.9f, 0,
+				0, 0, -1, 0,
+				0, 0, 0, -1);
 	}
 
 	@Test
 	public void testTranspose() {
-
+		Matrix4 matrix = new Matrix4(
+				1, 2, 3, 4,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1).transpose();
+		TestUtil.assertEquals(matrix,
+				1, 0, 0, 0,
+				2, 1, 0, 0,
+				3, 0, 1, 0,
+				4, 0, 0, 1);
 	}
 
 	@Test
 	public void testTrace() {
-
+		float value = new Matrix4(
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4).trace();
+		TestUtil.assertEquals(value, 10);
 	}
 
 	@Test
 	public void testDeterminant() {
-
+		float value = new Matrix4(
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4).determinant();
+		TestUtil.assertEquals(value, 24);
 	}
 
 	@Test
 	public void testInvert() {
-
+		Matrix4 matrix = new Matrix4(
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4).invert();
+		TestUtil.assertEquals(matrix,
+				1, 0, 0, 0,
+				0, 0.5f, 0, 0,
+				0, 0, 0.33333333f, 0,
+				0, 0, 0, 0.25f);
 	}
 
 	@Test
 	public void testConvertToMatrix2() {
-
+		Matrix2 matrix = new Matrix4(
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4).toMatrix2();
+		TestUtil.assertEquals(matrix,
+				1, 0,
+				0, 2);
 	}
 
 	@Test
 	public void testConvertToMatrix3() {
-
+		Matrix3 matrix = new Matrix4(
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4).toMatrix3();
+		TestUtil.assertEquals(matrix,
+				1, 0, 0,
+				0, 2, 0,
+				0, 0, 3);
 	}
 
 	@Test
 	public void testConvertToMatrixN() {
-
+		MatrixN matrix = new Matrix4(
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4).toMatrixN();
+		TestUtil.assertEquals(matrix,
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
 	}
 
 	@Test
 	public void testConvertToArrayRowMajorDefault() {
-
+		float[] array = new Matrix4(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4).toArray(true);
+		TestUtil.assertEquals(array,
+				1, 0, 0, 0,
+				2, 2, 0, 0,
+				3, 0, 3, 0,
+				4, 0, 0, 4);
 	}
 
 	@Test
 	public void testConvertToArray() {
-
+		float[] array = new Matrix4(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4).toArray();
+		TestUtil.assertEquals(array,
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
 	}
 
 	@Test
 	public void testEquals() {
-
+		Assert.assertEquals(new Matrix4(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4), new Matrix4(
+						1, 2, 3, 4,
+						0, 2, 0, 0,
+						0, 0, 3, 0,
+						0, 0, 0, 4));
+		Assert.assertNotEquals(new Matrix4(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4), new Matrix4(
+						1, 2, 3, 4,
+						0, 2, 4, 0,
+						0, 7, 3, 0,
+						0, 0, 0, 4));
 	}
 
 	@Test
 	public void testCloning() {
-
+		Matrix4 matrix = new Matrix4(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		Assert.assertEquals(matrix, matrix.clone());
 	}
 
 	@Test
 	public void testCreateFromScalingDoubleFactor() {
-
+		Matrix4 matrix = Matrix4.createScaling(2d);
+		TestUtil.assertEquals(matrix,
+				2, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 2, 0,
+				0, 0, 0, 2);
 	}
 
 	@Test
 	public void testCreateFromScalingFloatFactor() {
-
+		Matrix4 matrix = Matrix4.createScaling(2f);
+		TestUtil.assertEquals(matrix,
+				2, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 2, 0,
+				0, 0, 0, 2);
 	}
 
 	@Test
 	public void testCreateFromScalingVector4() {
-
+		Matrix4 matrix = Matrix4.createScaling(new Vector4(1, 2, 3, 4));
+		TestUtil.assertEquals(matrix,
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
 	}
 
 	@Test
 	public void testCreateFromScalingFloatComponents() {
-
+		Matrix4 matrix = Matrix4.createScaling(1f, 2f, 3f, 4f);
+		TestUtil.assertEquals(matrix,
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
 	}
 
 	@Test
 	public void testCreateTranslationVector3() {
-
+		Matrix4 matrix = Matrix4.createTranslation(new Vector3(1, 2, 3));
+		TestUtil.assertEquals(matrix,
+				1, 0, 0, 1,
+				0, 1, 0, 2,
+				0, 0, 1, 3,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testCreateTranslationFloatComponents() {
-
+		Matrix4 matrix = Matrix4.createTranslation(1f, 2f, 3f);
+		TestUtil.assertEquals(matrix,
+				1, 0, 0, 1,
+				0, 1, 0, 2,
+				0, 0, 1, 3,
+				0, 0, 0, 1);
 	}
 
 	@Test
