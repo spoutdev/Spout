@@ -27,81 +27,228 @@
 package org.spout.math.test.matrix;
 
 import org.junit.Test;
+import org.spout.math.matrix.Matrix2;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.matrix.MatrixN;
+import org.spout.math.test.TestUtil;
 
 public class Matrix4Test {
 	@Test
 	public void testDefaultConstructor() {
-
+		Matrix4 matrix = new Matrix4();
+		TestUtil.assertEquals(matrix, 
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testCopyMatrix2Constructor() {
-
+		Matrix4 matrix = new Matrix4(new Matrix2());
+		TestUtil.assertEquals(matrix, 
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 0, 0,
+				0, 0, 0, 0);
 	}
 
 	@Test
 	public void testCopyMatrix3Constructor() {
-
+		Matrix4 matrix = new Matrix4(new Matrix3());
+		TestUtil.assertEquals(matrix, 
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 0);
 	}
 
 	@Test
 	public void testCopyMatrix4Constructor() {
-
+		Matrix4 matrix = new Matrix4(new Matrix4(
+				1, 2, 3, 4,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1));
+		TestUtil.assertEquals(matrix, 
+				1, 2, 3, 4,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testCopyMatrixNConstructor() {
-
+		Matrix4 matrix = new Matrix4(new MatrixN(4));
+		TestUtil.assertEquals(matrix, 
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testDoubleComponentsConstructor() {
-
+		Matrix4 matrix = new Matrix4(
+				1d, 2d, 3d, 4d,
+				0d, 1d, 0d, 0d,
+				0d, 0d, 1d, 0d,
+				0d, 0d, 0d, 1d);
+		TestUtil.assertEquals(matrix, 
+				1, 2, 3, 4,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testFloatComponentsConstructor() {
-
+		Matrix4 matrix = new Matrix4(
+				1f, 2f, 3f, 4f,
+				0f, 1f, 0f, 0f,
+				0f, 0f, 1f, 0f,
+				0f, 0f, 0f, 1f);
+		TestUtil.assertEquals(matrix, 
+				1, 2, 3, 4,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testGetter() {
-
+		Matrix4 matrix = new Matrix4(
+				1f, 2f, 3f, 4f,
+				0f, 1f, 0f, 0f,
+				0f, 0f, 1f, 0f,
+				0f, 0f, 0f, 1f);
+		TestUtil.assertEquals(matrix.get(0, 0), 1);
+		TestUtil.assertEquals(matrix.get(0, 1), 2);
+		TestUtil.assertEquals(matrix.get(0, 2), 3);
+		TestUtil.assertEquals(matrix.get(0, 3), 4);
+		TestUtil.assertEquals(matrix.get(1, 0), 0);
+		TestUtil.assertEquals(matrix.get(1, 1), 1);
+		TestUtil.assertEquals(matrix.get(1, 2), 0);
+		TestUtil.assertEquals(matrix.get(1, 3), 0);
+		TestUtil.assertEquals(matrix.get(2, 0), 0);
+		TestUtil.assertEquals(matrix.get(2, 1), 0);
+		TestUtil.assertEquals(matrix.get(2, 2), 1);
+		TestUtil.assertEquals(matrix.get(2, 3), 0);
+		TestUtil.assertEquals(matrix.get(3, 0), 0);
+		TestUtil.assertEquals(matrix.get(3, 1), 0);
+		TestUtil.assertEquals(matrix.get(3, 2), 0);
+		TestUtil.assertEquals(matrix.get(3, 3), 1);
 	}
 
 	@Test
 	public void testMatrix4Addition() {
-
+		Matrix4 matrix = new Matrix4(
+				1f, 2f, 3f, 4f,
+				5f, 6f, 7f, 8f,
+				9f, 10f, 11f, 12f,
+				13f, 14f, 15f, 16f).add(new Matrix4(
+						1f, 1f, 1f, 1f,
+						1f, 1f, 1f, 1f,
+						1f, 1f, 1f, 1f,
+						1f, 1f, 1f, 1f));
+		TestUtil.assertEquals(matrix, 
+				2f, 3f, 4f, 5f,
+				6f, 7f, 8f, 9f, 
+				10f, 11f, 12f, 13f, 
+				14f, 15f, 16f, 17f);
 	}
 
 	@Test
 	public void testMatrix4Subtraction() {
-
+		Matrix4 matrix = new Matrix4(
+				1f, 2f, 3f, 4f,
+				5f, 6f, 7f, 8f,
+				9f, 10f, 11f, 12f,
+				13f, 14f, 15f, 16f).sub(new Matrix4(
+						1f, 1f, 1f, 1f,
+						1f, 1f, 1f, 1f,
+						1f, 1f, 1f, 1f,
+						1f, 1f, 1f, 1f));
+		TestUtil.assertEquals(matrix, 
+				0f, 1f, 2f, 3f, 
+				4f, 5f, 6f, 7f,
+				8f, 9f, 10f, 11f,
+				12f, 13f, 14f, 15f);
 	}
 
 	@Test
 	public void testFloatFactorMultiplication() {
-
+		Matrix4 matrix = new Matrix4(
+				1f, 2f, 3f, 4f,
+				5f, 6f, 7f, 8f,
+				9f, 10f, 11f, 12f,
+				13f, 14f, 15f, 16f).mul(2f);
+		TestUtil.assertEquals(matrix, 
+				2f, 4f, 6f, 8f,
+				10f, 12f, 14f, 16f,
+				18f, 20f, 22f, 24f,
+				26f, 28f, 30f, 32f);
 	}
 
 	@Test
 	public void testDoubleFactorMultiplication() {
-
+		Matrix4 matrix = new Matrix4(
+				1f, 2f, 3f, 4f,
+				5f, 6f, 7f, 8f,
+				9f, 10f, 11f, 12f,
+				13f, 14f, 15f, 16f).mul(2d);
+		TestUtil.assertEquals(matrix, 
+				2f, 4f, 6f, 8f,
+				10f, 12f, 14f, 16f,
+				18f, 20f, 22f, 24f,
+				26f, 28f, 30f, 32f);
 	}
 
 	@Test
 	public void testMatrix4Multiplication() {
-
+		Matrix4 matrix = new Matrix4(
+				1f, 2f, 3f, 4f,
+				5f, 6f, 7f, 8f,
+				9f, 10f, 11f, 12f,
+				13f, 14f, 15f, 16f).mul(new Matrix4(
+						1f, 0f, 0f, 0f,
+						0f, 1f, 0f, 0f,
+						0f, 0f, 1f, 0f,
+						0f, 0f, 0f, 1f));
+		TestUtil.assertEquals(matrix, 
+				1f, 2f, 3f, 4f,
+				5f, 6f, 7f, 8f,
+				9f, 10f, 11f, 12f,
+				13f, 14f, 15f, 16f);
 	}
 
 	@Test
 	public void testFloatFactorDivision() {
-
+		Matrix4 matrix = new Matrix4(
+				1f, 2f, 3f, 4f,
+				5f, 6f, 7f, 8f,
+				9f, 10f, 11f, 12f,
+				13f, 14f, 15f, 16f).div(0.5f);
+		TestUtil.assertEquals(matrix, 
+				2f, 4f, 6f, 8f,
+				10f, 12f, 14f, 16f,
+				18f, 20f, 22f, 24f,
+				26f, 28f, 30f, 32f);
 	}
 
 	@Test
 	public void testDoubleFactorDivision() {
-
+		Matrix4 matrix = new Matrix4(
+				1f, 2f, 3f, 4f,
+				5f, 6f, 7f, 8f,
+				9f, 10f, 11f, 12f,
+				13f, 14f, 15f, 16f).div(0.5);
+		TestUtil.assertEquals(matrix, 
+				2f, 4f, 6f, 8f,
+				10f, 12f, 14f, 16f,
+				18f, 20f, 22f, 24f,
+				26f, 28f, 30f, 32f);
 	}
 
 	@Test
