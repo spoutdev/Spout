@@ -26,10 +26,11 @@
  */
 package org.spout.math.test.matrix;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
+import org.junit.Assert;
 import org.junit.Test;
+
+import org.spout.math.imaginary.Complex;
+import org.spout.math.imaginary.Quaternion;
 import org.spout.math.matrix.Matrix2;
 import org.spout.math.matrix.Matrix3;
 import org.spout.math.matrix.Matrix4;
@@ -77,7 +78,7 @@ public class Matrix3Test {
 
 	@Test
 	public void testFloatComponentsConstructor() {
-		Matrix3 matrix = new Matrix3(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f);
+		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
 		TestUtil.assertEquals(matrix, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 	}
 
@@ -103,13 +104,13 @@ public class Matrix3Test {
 
 	@Test
 	public void testMatrix3Subtraction() {
-		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).sub(new Matrix3(0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5));
-		TestUtil.assertEquals(matrix, 0.5f, 1f, 1.5f, 2f, 2.5f, 3f, 3.5f, 4f, 4.5f);
+		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).sub(new Matrix3(0.5f, 1, 1.5f, 2, 2.5f, 3, 3.5f, 4, 4.5f));
+		TestUtil.assertEquals(matrix, 0.5f, 1, 1.5f, 2, 2.5f, 3, 3.5f, 4, 4.5f);
 	}
 
 	@Test
 	public void testFloatFactorMultiplication() {
-		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).mul(2f);
+		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).mul(2);
 		TestUtil.assertEquals(matrix, 2, 4, 6, 8, 10, 12, 14, 16, 18);
 	}
 
@@ -121,31 +122,31 @@ public class Matrix3Test {
 
 	@Test
 	public void testMatrix3Multiplication() {
-		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).mul(new Matrix3());
+		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).mul(new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1));
 		TestUtil.assertEquals(matrix, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 	}
 
 	@Test
 	public void testFloatFactorDivision() {
-		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).div(2f);
-		TestUtil.assertEquals(matrix, 0.5f, 1f, 1.5f, 2f, 2.5f, 3f, 3.5f, 4f, 4.5f);
+		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).div(2);
+		TestUtil.assertEquals(matrix, 0.5f, 1, 1.5f, 2, 2.5f, 3, 3.5f, 4, 4.5f);
 	}
 
 	@Test
 	public void testDoubleFactorDivision() {
 		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).div(2d);
-		TestUtil.assertEquals(matrix, 0.5f, 1f, 1.5f, 2f, 2.5f, 3f, 3.5f, 4f, 4.5f);
+		TestUtil.assertEquals(matrix, 0.5f, 1, 1.5f, 2, 2.5f, 3, 3.5f, 4, 4.5f);
 	}
 
 	@Test
 	public void testMatrix3Division() {
-		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).div(new Matrix3());
+		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).div(new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1));
 		TestUtil.assertEquals(matrix, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 	}
 
 	@Test
 	public void testRaiseToFloatPower() {
-		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).pow(2f);
+		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).pow(2);
 		TestUtil.assertEquals(matrix, 1, 4, 9, 16, 25, 36, 49, 64, 81);
 	}
 
@@ -163,13 +164,13 @@ public class Matrix3Test {
 
 	@Test
 	public void testTranslateFloatComponents() {
-		Matrix3 matrix = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).translate(1f, 0f);
+		Matrix3 matrix = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).translate(1, 0);
 		TestUtil.assertEquals(matrix, 1, 0, 1, 0, 1, 0, 0, 0, 1);
 	}
 
 	@Test
 	public void testScaleFloatFactor() {
-		Matrix3 matrix = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).scale(2f);
+		Matrix3 matrix = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).scale(2);
 		TestUtil.assertEquals(matrix, 2, 0, 0, 0, 2, 0, 0, 0, 2);
 	}
 
@@ -187,48 +188,52 @@ public class Matrix3Test {
 
 	@Test
 	public void testRotateComplex() {
-
+		Matrix3 matrix = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).rotate(new Complex(2, 3));
+		TestUtil.assertEquals(matrix, 0.5547002f, -0.8320503f, 0, 0.8320503f, 0.5547002f, 0, 0, 0, 1);
 	}
 
 	@Test
 	public void testRotateQuaternion() {
-
+		Matrix3 matrix = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).rotate(new Quaternion(4, 3, 2, 0));
+		TestUtil.assertEquals(matrix, 0.103448f, 0.827586f, 0.551724f, 0.827586f, -0.37931f, 0.413793f, 0.551724f, 0.413793f, -0.724138f);
 	}
 
 	@Test
 	public void testTransformVector3() {
-		Vector3 vector = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).transform(new Vector3(1, 0, 0));
-		TestUtil.assertEquals(vector, 1, 0, 0);
+		Vector3 vector = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).scale(2, 3, 1).translate(4, 5).transform(new Vector3(3, 2, 1));
+		TestUtil.assertEquals(vector, 10, 11, 1);
 	}
 
 	@Test
 	public void testTransformFloatComponents() {
-		Vector3 vector = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).transform(1, 0, 0);
-		TestUtil.assertEquals(vector, 1, 0, 0);
+		Vector3 vector = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).scale(2, 3, 1).translate(4, 5).transform(3, 2, 1);
+		TestUtil.assertEquals(vector, 10, 11, 1);
 	}
 
 	@Test
 	public void testFloor() {
-		Matrix3 matrix = new Matrix3(1.1, 2.9, 3.5, -1.1, -2.5, -3.9, 0, 0, 0).floor();
-		TestUtil.assertEquals(matrix, 1, 2, 3, -2, -3, -4, 0, 0, 0);
+		Matrix3 matrix = new Matrix3(1.1f, 2.9f, 3.5f, -1.1f, -2.5f, -3.9f, -4.2f, 1.4f, 8.6f).floor();
+		TestUtil.assertEquals(matrix, 1, 2, 3, -2, -3, -4, -5, 1, 8);
 	}
 
 	@Test
 	public void testCeiling() {
-		Matrix3 matrix = new Matrix3(1.1, 2.9, 3.5, -1.1, -2.5, -3.9, 0, 0, 0).ceil();
-		TestUtil.assertEquals(matrix, 2, 3, 4, -1, -2, -3, 0, 0, 0);
+		Matrix3 matrix = new Matrix3(1.1f, 2.9f, 3.5f, -1.1f, -2.5f, -3.9f, -4.2f, 1.4f, 8.6f).ceil();
+		TestUtil.assertEquals(matrix, 2, 3, 4, -1, -2, -3, -4, 2, 9);
 	}
 
 	@Test
 	public void testRound() {
-		Matrix3 matrix = new Matrix3(1.1, 2.9, 3.5, -1.1, -2.5, -3.9, 0, 0, 0).round();
-		TestUtil.assertEquals(matrix, 1, 3, 4, -1, -2, -4, 0, 0, 0);
+		Matrix3 matrix = new Matrix3(1.1f, 2.9f, 3.5f, -1.1f, -2.5f, -3.9f, -4.2f, 1.4f, 8.6f).round();
+		TestUtil.assertEquals(matrix, 1, 3, 4, -1, -2, -4, -4, 1, 9);
 	}
 
 	@Test
 	public void testAbsolute() {
-		Matrix3 matrix = new Matrix3(-1, 1, -1, 1, -1, 1, -1, 1, -1).abs();
-		TestUtil.assertEquals(matrix, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+		Matrix3 matrix1 = new Matrix3(-1, -1, -1, -1, -1, -1, -1, -1, -1).abs();
+		TestUtil.assertEquals(matrix1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+		Matrix3 matrix2 = new Matrix3(1, 1, 1, 1, 1, 1, 1, 1, 1).abs();
+		TestUtil.assertEquals(matrix2, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 	}
 
 	@Test
@@ -245,20 +250,20 @@ public class Matrix3Test {
 
 	@Test
 	public void testTrace() {
-		float value = new Matrix3(0, 1, 2, 3, 4, 5, 6, 7, 8).trace();
-		TestUtil.assertEquals(value, 12);
+		float f = new Matrix3(0, 1, 2, 3, 4, 5, 6, 7, 8).trace();
+		TestUtil.assertEquals(f, 12);
 	}
 
 	@Test
 	public void testDeterminant() {
-		float value = new Matrix3(0, 1, 2, 3, 4, 5, 6, 7, 8).determinant();
-		TestUtil.assertEquals(value, 0);
+		float f = new Matrix3(0, 1, 2, 3, 4, 5, 6, 7, 8).determinant();
+		TestUtil.assertEquals(f, 0);
 	}
 
 	@Test
 	public void testInvert() {
 		Matrix3 matrix1 = new Matrix3(0, 1, 2, 3, 4, 5, 6, 7, 8).invert();
-		assertEquals(matrix1, null);
+		Assert.assertEquals(matrix1, null);
 		Matrix3 matrix2 = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).invert();
 		TestUtil.assertEquals(matrix2, 1, 0, 0, 0, 1, 0, 0, 0, 1);
 		Matrix3 matrix3 = new Matrix3(1, 1, 0, 0, 1, 0, 0, 0, 1).invert();
@@ -297,13 +302,14 @@ public class Matrix3Test {
 
 	@Test
 	public void testEquals() {
-		assertEquals(new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9), new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9));
-		assertNotEquals(new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9), new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 0));
+		Assert.assertTrue(new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).equals(new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+		Assert.assertFalse(new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).equals(new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 0)));
 	}
 
 	@Test
 	public void testCloning() {
-		assertEquals(new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9), new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9));
+		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+		Assert.assertEquals(matrix, matrix.clone());
 	}
 
 	@Test
@@ -314,7 +320,7 @@ public class Matrix3Test {
 
 	@Test
 	public void testCreateFromScalingFloatFactor() {
-		Matrix3 matrix = Matrix3.createScaling(2f);
+		Matrix3 matrix = Matrix3.createScaling(2);
 		TestUtil.assertEquals(matrix, 2, 0, 0, 0, 2, 0, 0, 0, 2);
 	}
 
@@ -326,7 +332,7 @@ public class Matrix3Test {
 
 	@Test
 	public void testCreateFromScalingFloatComponents() {
-		Matrix3 matrix = Matrix3.createScaling(1f, 2f, 3f);
+		Matrix3 matrix = Matrix3.createScaling(1, 2, 3);
 		TestUtil.assertEquals(matrix, 1, 0, 0, 0, 2, 0, 0, 0, 3);
 	}
 
@@ -340,19 +346,21 @@ public class Matrix3Test {
 
 	@Test
 	public void testCreateTranslationFloatComponents() {
-		Matrix3 matrix1 = Matrix3.createTranslation(1f, 0f);
+		Matrix3 matrix1 = Matrix3.createTranslation(1, 0);
 		TestUtil.assertEquals(matrix1, 1, 0, 1, 0, 1, 0, 0, 0, 1);
-		Matrix3 matrix2 = Matrix3.createTranslation(0f, 1f);
+		Matrix3 matrix2 = Matrix3.createTranslation(0, 1);
 		TestUtil.assertEquals(matrix2, 1, 0, 0, 0, 1, 1, 0, 0, 1);
 	}
 
 	@Test
 	public void testCreateRotationFromComplex() {
-
+		Matrix3 matrix = Matrix3.createRotation(new Complex(2, 3));
+		TestUtil.assertEquals(matrix, 0.5547002f, -0.8320503f, 0, 0.8320503f, 0.5547002f, 0, 0, 0, 1);
 	}
 
 	@Test
 	public void testCreateRotationFromQuaternion() {
-
+		Matrix3 matrix = Matrix3.createRotation(new Quaternion(4, 3, 2, 0));
+		TestUtil.assertEquals(matrix, 0.103448f, 0.827586f, 0.551724f, 0.827586f, -0.37931f, 0.413793f, 0.551724f, 0.413793f, -0.724138f);
 	}
 }

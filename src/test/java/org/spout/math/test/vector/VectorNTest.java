@@ -369,7 +369,7 @@ public class VectorNTest {
 
 	@Test
 	public void testCloning() {
-		VectorN vector = new VectorN(1, 2, 3).clone();
-		TestUtil.assertEquals(vector, 1, 2, 3);
+		VectorN vector = new VectorN(1, 2, 3);
+		Assert.assertEquals(vector, vector.clone());
 	}
 }

@@ -26,6 +26,7 @@
  */
 package org.spout.math.test.matrix;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import org.spout.math.imaginary.Complex;
@@ -35,10 +36,6 @@ import org.spout.math.matrix.Matrix4;
 import org.spout.math.matrix.MatrixN;
 import org.spout.math.test.TestUtil;
 import org.spout.math.vector.Vector2;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class Matrix2Test {
 	@Test
@@ -286,14 +283,14 @@ public class Matrix2Test {
 
 	@Test
 	public void testEquals() {
-		assertTrue(new Matrix2(1, 2, 3, 4).equals(new Matrix2(1, 2, 3, 4)));
-		assertFalse(new Matrix2(1, 2, 3, 4).equals(new Matrix2(1, 2, 3, 5)));
+		Assert.assertTrue(new Matrix2(1, 2, 3, 4).equals(new Matrix2(1, 2, 3, 4)));
+		Assert.assertFalse(new Matrix2(1, 2, 3, 4).equals(new Matrix2(1, 2, 3, 5)));
 	}
 
 	@Test
 	public void testCloning() {
 		Matrix2 matrix = new Matrix2(1, 2, 3, 4);
-		assertEquals(matrix, matrix.clone());
+		Assert.assertEquals(matrix, matrix.clone());
 	}
 
 	@Test
@@ -328,7 +325,7 @@ public class Matrix2Test {
 
 	@Test
 	public void testCreateRotationFromComplex() {
-		Matrix2 matrix = Matrix2.createRotation(new Complex(0, 1));
-		TestUtil.assertEquals(matrix, 0, -1, 1, 0);
+		Matrix2 matrix = Matrix2.createRotation(new Complex(2, 3));
+		TestUtil.assertEquals(matrix, 0.5547002f, -0.8320503f, 0.8320503f, 0.5547002f);
 	}
 }

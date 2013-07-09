@@ -228,8 +228,8 @@ public class ComplexTest {
 
 	@Test
 	public void testCloning() {
-		Complex complex = new Complex(3, 2).clone();
-		TestUtil.assertEquals(complex, 3, 2);
+		Complex complex = new Complex(3, 2);
+		Assert.assertEquals(complex, complex.clone());
 	}
 
 	@Test

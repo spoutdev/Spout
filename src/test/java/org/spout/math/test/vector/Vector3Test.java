@@ -423,8 +423,8 @@ public class Vector3Test {
 
 	@Test
 	public void testCloning() {
-		Vector3 vector = new Vector3(3, 2, 5).clone();
-		TestUtil.assertEquals(vector, 3, 2, 5);
+		Vector3 vector = new Vector3(3, 2, 5);
+		Assert.assertEquals(vector, vector.clone());
 	}
 
 	@Test

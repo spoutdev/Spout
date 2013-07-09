@@ -409,8 +409,8 @@ public class Vector2Test {
 
 	@Test
 	public void testCloning() {
-		Vector2 vector = new Vector2(3, 2).clone();
-		TestUtil.assertEquals(vector, 3, 2);
+		Vector2 vector = new Vector2(3, 2);
+		Assert.assertEquals(vector, vector.clone());
 	}
 
 	@Test

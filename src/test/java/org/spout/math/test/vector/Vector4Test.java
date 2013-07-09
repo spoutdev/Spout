@@ -401,7 +401,7 @@ public class Vector4Test {
 
 	@Test
 	public void testCloning() {
-		Vector4 vector = new Vector4(3, 2, 5, 6).clone();
-		TestUtil.assertEquals(vector, 3, 2, 5, 6);
+		Vector4 vector = new Vector4(3, 2, 5, 6);
+		Assert.assertEquals(vector, vector.clone());
 	}
 }

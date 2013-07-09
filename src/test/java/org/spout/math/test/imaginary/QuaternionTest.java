@@ -238,8 +238,8 @@ public class QuaternionTest {
 
 	@Test
 	public void testCloning() {
-		Quaternion vector = new Quaternion(3, 2, 5, 6).clone();
-		TestUtil.assertEquals(vector, 3, 2, 5, 6);
+		Quaternion quaternion = new Quaternion(3, 2, 5, 6);
+		Assert.assertEquals(quaternion, quaternion.clone());
 	}
 
 	@Test
