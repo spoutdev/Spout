@@ -44,7 +44,7 @@ public class ComplexTest {
 	@Test
 	public void testDoubleComponentsConstructor() {
 		Complex complex = new Complex(2d, 3d);
-		TestUtil.assertEquals(complex, 2d, 3d);
+		TestUtil.assertEquals(complex, 2, 3);
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class ComplexTest {
 	@Test
 	public void testDoubleComponentsAddition() {
 		Complex complex = new Complex(0, 1).add(5.5, -0.5);
-		TestUtil.assertEquals(complex, 5.5, 0.5);
+		TestUtil.assertEquals(complex, 5.5f, 0.5f);
 	}
 
 	@Test
@@ -87,13 +87,13 @@ public class ComplexTest {
 	@Test
 	public void testComplexSubtraction() {
 		Complex complex = new Complex(10, 5).sub(new Complex(9f, 4.5f));
-		TestUtil.assertEquals(complex, 1, 0.5);
+		TestUtil.assertEquals(complex, 1, 0.5f);
 	}
 
 	@Test
 	public void testDoubleComponentsSubtraction() {
 		Complex complex = new Complex(10, 5).sub(9, 4.5);
-		TestUtil.assertEquals(complex, 1, 0.5);
+		TestUtil.assertEquals(complex, 1, 0.5f);
 	}
 
 	@Test
@@ -105,7 +105,7 @@ public class ComplexTest {
 	@Test
 	public void testDoubleFactorMultiplication() {
 		Complex complex = new Complex(2, 3).mul(1.5);
-		TestUtil.assertEquals(complex, 3, 4.5);
+		TestUtil.assertEquals(complex, 3, 4.5f);
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class ComplexTest {
 	@Test
 	public void testDoubleComponentsMultiplication() {
 		Complex complex = new Complex(2, 3).mul(6d, 9d);
-		TestUtil.assertEquals(complex, -15d, 36d);
+		TestUtil.assertEquals(complex, -15, 36);
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class ComplexTest {
 	@Test
 	public void testDoubleFactorDivision() {
 		Complex complex = new Complex(2, 3).div(2d);
-		TestUtil.assertEquals(complex, 1, 1.5);
+		TestUtil.assertEquals(complex, 1, 1.5f);
 	}
 
 	@Test
@@ -153,7 +153,7 @@ public class ComplexTest {
 	@Test
 	public void testDoubleComponentsDotProduct() {
 		float f = new Complex(2, 3).dot(4d, 5d);
-		TestUtil.assertEquals(f, 23d);
+		TestUtil.assertEquals(f, 23);
 	}
 
 	@Test

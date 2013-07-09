@@ -72,7 +72,7 @@ public class Vector2Test {
 	@Test
 	public void testDoubleComponentsConstructor() {
 		Vector2 vector = new Vector2(0.5, 1.7);
-		TestUtil.assertEquals(vector, 0.5, 1.7);
+		TestUtil.assertEquals(vector, 0.5f, 1.7f);
 	}
 
 	@Test
@@ -104,7 +104,7 @@ public class Vector2Test {
 	@Test
 	public void testDoubleComponentsAddition() {
 		Vector2 vector = new Vector2(0, 1).add(5.5, -0.5);
-		TestUtil.assertEquals(vector, 5.5, 0.5);
+		TestUtil.assertEquals(vector, 5.5f, 0.5f);
 	}
 
 	@Test
@@ -116,13 +116,13 @@ public class Vector2Test {
 	@Test
 	public void testVector2Subtraction() {
 		Vector2 vector = new Vector2(10, 5).sub(new Vector2(9f, 4.5f));
-		TestUtil.assertEquals(vector, 1, 0.5);
+		TestUtil.assertEquals(vector, 1, 0.5f);
 	}
 
 	@Test
 	public void testDoubleComponentsSubtraction() {
 		Vector2 vector = new Vector2(10, 5).sub(9, 4.5);
-		TestUtil.assertEquals(vector, 1, 0.5);
+		TestUtil.assertEquals(vector, 1, 0.5f);
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class Vector2Test {
 	@Test
 	public void testDoubleFactorMultiplication() {
 		Vector2 vector = new Vector2(2, 3).mul(1.5);
-		TestUtil.assertEquals(vector, 3, 4.5);
+		TestUtil.assertEquals(vector, 3, 4.5f);
 	}
 
 	@Test
@@ -152,7 +152,7 @@ public class Vector2Test {
 	@Test
 	public void testDoubleComponentsMultiplication() {
 		Vector2 vector = new Vector2(2, 3).mul(1.5, 2.5);
-		TestUtil.assertEquals(vector, 3, 7.5);
+		TestUtil.assertEquals(vector, 3, 7.5f);
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public class Vector2Test {
 	@Test
 	public void testDoubleFactorDivision() {
 		Vector2 vector = new Vector2(2, 3).div(2d);
-		TestUtil.assertEquals(vector, 1, 1.5);
+		TestUtil.assertEquals(vector, 1, 1.5f);
 	}
 
 	@Test
@@ -182,7 +182,7 @@ public class Vector2Test {
 	@Test
 	public void testDoubleComponentsDivision() {
 		Vector2 vector = new Vector2(2, 6).div(2d, 4d);
-		TestUtil.assertEquals(vector, 1, 1.5);
+		TestUtil.assertEquals(vector, 1, 1.5f);
 	}
 
 	@Test
@@ -200,7 +200,7 @@ public class Vector2Test {
 	@Test
 	public void testDoubleComponentsDotProduct() {
 		float f = new Vector2(2, 3).dot(4d, 5d);
-		TestUtil.assertEquals(f, 23d);
+		TestUtil.assertEquals(f, 23);
 	}
 
 	@Test
@@ -218,7 +218,7 @@ public class Vector2Test {
 	@Test
 	public void testRaiseToDoublePower() {
 		Vector2 vector = new Vector2(2, 6).pow(2d);
-		TestUtil.assertEquals(vector, 4d, 36d);
+		TestUtil.assertEquals(vector, 4, 36);
 	}
 
 	@Test
@@ -262,7 +262,7 @@ public class Vector2Test {
 	@Test
 	public void testDoubleComponentsMinimum() {
 		Vector2 vector = new Vector2(2, 6).min(3d, 4d);
-		TestUtil.assertEquals(vector, 2d, 4d);
+		TestUtil.assertEquals(vector, 2, 4);
 	}
 
 	@Test
@@ -280,7 +280,7 @@ public class Vector2Test {
 	@Test
 	public void testDoubleComponentsMaximum() {
 		Vector2 vector = new Vector2(2, 6).max(3d, 4d);
-		TestUtil.assertEquals(vector, 3d, 6d);
+		TestUtil.assertEquals(vector, 3, 6);
 	}
 
 	@Test
@@ -298,7 +298,7 @@ public class Vector2Test {
 	@Test
 	public void testDoubleComponentsDistanceSquared() {
 		float f = new Vector2(2, 3).distanceSquared(4d, 5d);
-		TestUtil.assertEquals(f, 8d);
+		TestUtil.assertEquals(f, 8);
 	}
 
 	@Test
@@ -316,7 +316,7 @@ public class Vector2Test {
 	@Test
 	public void testDoubleComponentsDistance() {
 		float f = new Vector2(4, 6).distance(7d, 2d);
-		TestUtil.assertEquals(f, 5d);
+		TestUtil.assertEquals(f, 5);
 	}
 
 	@Test
@@ -358,7 +358,7 @@ public class Vector2Test {
 	@Test
 	public void testConvertToVector3DoubleZ() {
 		Vector3 vector = new Vector2(1, 2).toVector3(3d);
-		TestUtil.assertEquals(vector, 1d, 2d, 3d);
+		TestUtil.assertEquals(vector, 1, 2, 3);
 	}
 
 	@Test
@@ -376,7 +376,7 @@ public class Vector2Test {
 	@Test
 	public void testConvertToVector4DoubleZW() {
 		Vector4 vector = new Vector2(1, 2).toVector4(3d, 4d);
-		TestUtil.assertEquals(vector, 1d, 2d, 3d, 4d);
+		TestUtil.assertEquals(vector, 1, 2, 3, 4);
 	}
 
 	@Test

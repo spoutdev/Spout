@@ -82,7 +82,7 @@ public class Vector4Test {
 	@Test
 	public void testDoubleComponentsConstructor() {
 		Vector4 vector = new Vector4(0.5, 1.7, 3.8, 5.5);
-		TestUtil.assertEquals(vector, 0.5, 1.7, 3.8, 5.5);
+		TestUtil.assertEquals(vector, 0.5f, 1.7f, 3.8f, 5.5f);
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class Vector4Test {
 	@Test
 	public void testDoubleComponentsAddition() {
 		Vector4 vector = new Vector4(0, 1, 1, 1).add(5.5, -0.5, 3.8, 5.5);
-		TestUtil.assertEquals(vector, 5.5, 0.5, 4.8, 6.5);
+		TestUtil.assertEquals(vector, 5.5f, 0.5f, 4.8f, 6.5f);
 	}
 
 	@Test
@@ -130,13 +130,13 @@ public class Vector4Test {
 	@Test
 	public void testVector4Subtraction() {
 		Vector4 vector = new Vector4(10, 5, 1, 1).sub(new Vector4(9, 4.5, 2, 1));
-		TestUtil.assertEquals(vector, 1, 0.5, -1, 0);
+		TestUtil.assertEquals(vector, 1, 0.5f, -1, 0);
 	}
 
 	@Test
 	public void testDoubleComponentsSubtraction() {
 		Vector4 vector = new Vector4(10, 5, 1, 1).sub(9, 4.5, 2, 1);
-		TestUtil.assertEquals(vector, 1, 0.5, -1, 0);
+		TestUtil.assertEquals(vector, 1, 0.5f, -1, 0);
 	}
 
 	@Test
@@ -148,7 +148,7 @@ public class Vector4Test {
 	@Test
 	public void testDoubleFactorMultiplication() {
 		Vector4 vector = new Vector4(2, 3, 4, 5).mul(1.5);
-		TestUtil.assertEquals(vector, 3, 4.5, 6, 7.5);
+		TestUtil.assertEquals(vector, 3, 4.5f, 6, 7.5f);
 	}
 
 	@Test
@@ -166,7 +166,7 @@ public class Vector4Test {
 	@Test
 	public void testDoubleComponentsMultiplication() {
 		Vector4 vector = new Vector4(2, 3, 4, 5).mul(2d);
-		TestUtil.assertEquals(vector, 4d, 6d, 8d, 10d);
+		TestUtil.assertEquals(vector, 4, 6, 8, 10);
 	}
 
 	@Test
@@ -178,7 +178,7 @@ public class Vector4Test {
 	@Test
 	public void testDoubleFactorDivision() {
 		Vector4 vector = new Vector4(2, 3, 4, 5).div(2d);
-		TestUtil.assertEquals(vector, 1, 1.5, 2, 2.5);
+		TestUtil.assertEquals(vector, 1, 1.5f, 2, 2.5f);
 	}
 
 	@Test
@@ -196,7 +196,7 @@ public class Vector4Test {
 	@Test
 	public void testDoubleComponentsDivision() {
 		Vector4 vector = new Vector4(2, 6, 16, 18).div(2d, 4d, 8d, 9d);
-		TestUtil.assertEquals(vector, 1, 1.5, 2, 2);
+		TestUtil.assertEquals(vector, 1, 1.5f, 2, 2);
 	}
 
 	@Test
@@ -214,7 +214,7 @@ public class Vector4Test {
 	@Test
 	public void testDoubleComponentsDotProduct() {
 		float f = new Vector4(2, 3, 4, 5).dot(6d, 7d, 8d, 9d);
-		TestUtil.assertEquals(f, 110d);
+		TestUtil.assertEquals(f, 110);
 	}
 
 	@Test
@@ -232,7 +232,7 @@ public class Vector4Test {
 	@Test
 	public void testRaiseToDoublePower() {
 		Vector4 vector = new Vector4(2, 6, 8, 5.5f).pow(2d);
-		TestUtil.assertEquals(vector, 4, 36, 64, 30.25);
+		TestUtil.assertEquals(vector, 4, 36, 64, 30.25f);
 	}
 
 	@Test
@@ -276,7 +276,7 @@ public class Vector4Test {
 	@Test
 	public void testDoubleComponentsMinimum() {
 		Vector4 vector = new Vector4(2, 6, -1, 0).min(3, 4, 10, -1.1);
-		TestUtil.assertEquals(vector, 2, 4, -1, -1.1);
+		TestUtil.assertEquals(vector, 2, 4, -1, -1.1f);
 	}
 
 	@Test
@@ -312,7 +312,7 @@ public class Vector4Test {
 	@Test
 	public void testDoubleComponentsDistanceSquared() {
 		float f = new Vector4(2, 3, 4, 1).distanceSquared(5d, 6d, 7d, 1d);
-		TestUtil.assertEquals(f, 27d);
+		TestUtil.assertEquals(f, 27);
 	}
 
 	@Test
@@ -324,25 +324,25 @@ public class Vector4Test {
 	@Test
 	public void testVector4Distance() {
 		float f = new Vector4(0, 2, 4, 8).distance(new Vector4(0, 8, 16, 8));
-		TestUtil.assertEquals(f, 13.416407585144043);
+		TestUtil.assertEquals(f, 13.4164075851f);
 	}
 
 	@Test
 	public void testDoubleComponentsDistance() {
 		float f = new Vector4(0, 2, 4, 8).distance(new Vector4(0d, 8d, 16d, 8d));
-		TestUtil.assertEquals(f, 13.416407585144043);
+		TestUtil.assertEquals(f, 13.4164075851f);
 	}
 
 	@Test
 	public void testFloatComponentsDistance() {
 		float f = new Vector4(0, 2, 4, 8).distance(new Vector4(0, 8, 16, 8));
-		TestUtil.assertEquals(f, 13.416407585144043f);
+		TestUtil.assertEquals(f, 13.4164075851f);
 	}
 
 	@Test
 	public void testLength() {
 		float f = new Vector4(3, 4, 5, 6).length();
-		TestUtil.assertEquals(f, 9.273618698120117f);
+		TestUtil.assertEquals(f, 9.2736186981f);
 	}
 
 	@Test

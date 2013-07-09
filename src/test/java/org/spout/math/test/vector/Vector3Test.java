@@ -78,7 +78,7 @@ public class Vector3Test {
 	@Test
 	public void testDoubleComponentsConstructor() {
 		Vector3 vector = new Vector3(0.5, 1.7, 3.8);
-		TestUtil.assertEquals(vector, 0.5, 1.7, 3.8);
+		TestUtil.assertEquals(vector, 0.5f, 1.7f, 3.8f);
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class Vector3Test {
 	@Test
 	public void testDoubleComponentsAddition() {
 		Vector3 vector = new Vector3(0, 1, 5).add(5.5, -0.5, 3.8);
-		TestUtil.assertEquals(vector, 5.5, 0.5, 8.8);
+		TestUtil.assertEquals(vector, 5.5f, 0.5f, 8.8f);
 	}
 
 	@Test
@@ -124,13 +124,13 @@ public class Vector3Test {
 	@Test
 	public void testVector3Subtraction() {
 		Vector3 vector = new Vector3(10, 5, 1).sub(new Vector3(9, 4.5, 2));
-		TestUtil.assertEquals(vector, 1, 0.5, -1);
+		TestUtil.assertEquals(vector, 1, 0.5f, -1);
 	}
 
 	@Test
 	public void testDoubleComponentsSubtraction() {
 		Vector3 vector = new Vector3(10, 5, 1).sub(new Vector3(9, 4.5, 2));
-		TestUtil.assertEquals(vector, 1, 0.5, -1);
+		TestUtil.assertEquals(vector, 1, 0.5f, -1);
 	}
 
 	@Test
@@ -142,7 +142,7 @@ public class Vector3Test {
 	@Test
 	public void testDoubleFactorMultiplication() {
 		Vector3 vector = new Vector3(2, 3, 4).mul(1.5);
-		TestUtil.assertEquals(vector, 3, 4.5, 6);
+		TestUtil.assertEquals(vector, 3, 4.5f, 6);
 	}
 
 	@Test
@@ -160,7 +160,7 @@ public class Vector3Test {
 	@Test
 	public void testDoubleComponentsMultiplication() {
 		Vector3 vector = new Vector3(2, 3, 4).mul(2d);
-		TestUtil.assertEquals(vector, 4d, 6d, 8d);
+		TestUtil.assertEquals(vector, 4, 6, 8);
 	}
 
 	@Test
@@ -172,7 +172,7 @@ public class Vector3Test {
 	@Test
 	public void testDoubleFactorDivision() {
 		Vector3 vector = new Vector3(2, 3, 4).div(2d);
-		TestUtil.assertEquals(vector, 1, 1.5, 2);
+		TestUtil.assertEquals(vector, 1, 1.5f, 2);
 	}
 
 	@Test
@@ -190,7 +190,7 @@ public class Vector3Test {
 	@Test
 	public void testDoubleComponentsDivision() {
 		Vector3 vector = new Vector3(2, 6, 16).div(2d, 4d, 8d);
-		TestUtil.assertEquals(vector, 1, 1.5, 2);
+		TestUtil.assertEquals(vector, 1, 1.5f, 2);
 	}
 
 	@Test
@@ -208,7 +208,7 @@ public class Vector3Test {
 	@Test
 	public void testDoubleComponentsDotProduct() {
 		float f = new Vector3(2, 3, 4).dot(4d, 5d, 6d);
-		TestUtil.assertEquals(f, 47d);
+		TestUtil.assertEquals(f, 47);
 	}
 
 	@Test
@@ -220,13 +220,13 @@ public class Vector3Test {
 	@Test
 	public void testVector3Cross() {
 		Vector3 f = new Vector3(2, 3, 4).cross(new Vector3(4, 5, 6.5));
-		TestUtil.assertEquals(f, -0.5, 3, -2d);
+		TestUtil.assertEquals(f, -0.5f, 3, -2);
 	}
 
 	@Test
 	public void testDoubleComponentsCross() {
 		Vector3 f = new Vector3(2, 3, 4).cross(4, 5, 6.5);
-		TestUtil.assertEquals(f, -0.5, 3, -2d);
+		TestUtil.assertEquals(f, -0.5f, 3, -2);
 	}
 
 	@Test
@@ -244,7 +244,7 @@ public class Vector3Test {
 	@Test
 	public void testRaiseToDoublePower() {
 		Vector3 vector = new Vector3(2, 6, 8).pow(2d);
-		TestUtil.assertEquals(vector, 4d, 36d, 64d);
+		TestUtil.assertEquals(vector, 4, 36, 64);
 	}
 
 	@Test
@@ -288,7 +288,7 @@ public class Vector3Test {
 	@Test
 	public void testDoubleComponentsMinimum() {
 		Vector3 vector = new Vector3(2, 6, 10).min(3d, 4d, -5d);
-		TestUtil.assertEquals(vector, 2d, 4d, -5d);
+		TestUtil.assertEquals(vector, 2, 4, -5);
 	}
 
 	@Test
@@ -306,7 +306,7 @@ public class Vector3Test {
 	@Test
 	public void testDoubleComponentsMaximum() {
 		Vector3 vector = new Vector3(2, 6, 10).max(3d, 4d, -5d);
-		TestUtil.assertEquals(vector, 3d, 6d, 10d);
+		TestUtil.assertEquals(vector, 3, 6, 10);
 	}
 
 	@Test
@@ -324,7 +324,7 @@ public class Vector3Test {
 	@Test
 	public void testDoubleComponentsDistanceSquared() {
 		float f = new Vector3(2, 3, 4).distanceSquared(5d, 6d, 7d);
-		TestUtil.assertEquals(f, 27d);
+		TestUtil.assertEquals(f, 27);
 	}
 
 	@Test
@@ -336,19 +336,19 @@ public class Vector3Test {
 	@Test
 	public void testVector3Distance() {
 		float f = new Vector3(0, 2, 4).distance(new Vector3(0, 8, 16));
-		TestUtil.assertEquals(f, 13.416407585144043f);
+		TestUtil.assertEquals(f, 13.4164075851f);
 	}
 
 	@Test
 	public void testDoubleComponentsDistance() {
 		float f = new Vector3(0, 2, 4).distance(0d, 8d, 16d);
-		TestUtil.assertEquals(f, 13.416407585144043);
+		TestUtil.assertEquals(f, 13.4164075851f);
 	}
 
 	@Test
 	public void testFloatComponentsDistance() {
 		float f = new Vector3(0, 2, 4).distance(0, 8, 16);
-		TestUtil.assertEquals(f, 13.416407585144043f);
+		TestUtil.assertEquals(f, 13.4164075851f);
 	}
 
 	@Test

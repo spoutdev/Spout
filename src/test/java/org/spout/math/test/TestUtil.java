@@ -40,15 +40,10 @@ import org.spout.math.vector.Vector4;
 import org.spout.math.vector.VectorN;
 
 public class TestUtil {
-	private static final float DEFAULT_EPSILON_FLOAT = 0.00001f;
-	private static final double DEFAULT_EPSILON_DOUBLE = 0.00001;
+	private static final float EPSILON = 0.00001f;
 
 	public static void assertEquals(float value, float expected) {
-		Assert.assertEquals(expected, value, DEFAULT_EPSILON_FLOAT);
-	}
-
-	public static void assertEquals(double value, double expected) {
-		Assert.assertEquals(expected, value, DEFAULT_EPSILON_DOUBLE);
+		Assert.assertEquals(expected, value, EPSILON);
 	}
 
 	public static void assertEquals(Vector2 v, float x, float y) {
@@ -56,18 +51,7 @@ public class TestUtil {
 		assertEquals(v.getY(), y);
 	}
 
-	public static void assertEquals(Vector2 v, double x, double y) {
-		assertEquals(v.getX(), x);
-		assertEquals(v.getY(), y);
-	}
-
 	public static void assertEquals(Vector3 v, float x, float y, float z) {
-		assertEquals(v.getX(), x);
-		assertEquals(v.getY(), y);
-		assertEquals(v.getZ(), z);
-	}
-
-	public static void assertEquals(Vector3 v, double x, double y, double z) {
 		assertEquals(v.getX(), x);
 		assertEquals(v.getY(), y);
 		assertEquals(v.getZ(), z);
@@ -80,27 +64,15 @@ public class TestUtil {
 		assertEquals(v.getW(), w);
 	}
 
-	public static void assertEquals(Vector4 v, double x, double y, double z, double w) {
-		assertEquals(v.getX(), x);
-		assertEquals(v.getY(), y);
-		assertEquals(v.getZ(), z);
-		assertEquals(v.getW(), w);
-	}
-
 	public static void assertEquals(VectorN v, float... f) {
-		Assert.assertArrayEquals(f, v.toArray(), DEFAULT_EPSILON_FLOAT);
+		Assert.assertArrayEquals(f, v.toArray(), EPSILON);
 	}
 
 	public static void assertEquals(float[] a, float... f) {
-		Assert.assertArrayEquals(f, a, DEFAULT_EPSILON_FLOAT);
+		Assert.assertArrayEquals(f, a, EPSILON);
 	}
 
 	public static void assertEquals(Complex c, float x, float y) {
-		assertEquals(c.getX(), x);
-		assertEquals(c.getY(), y);
-	}
-
-	public static void assertEquals(Complex c, double x, double y) {
 		assertEquals(c.getX(), x);
 		assertEquals(c.getY(), y);
 	}
@@ -113,18 +85,18 @@ public class TestUtil {
 	}
 
 	public static void assertEquals(Matrix2 m, float... f) {
-		Assert.assertArrayEquals(f, m.toArray(), DEFAULT_EPSILON_FLOAT);
+		Assert.assertArrayEquals(f, m.toArray(), EPSILON);
 	}
 
 	public static void assertEquals(Matrix3 m, float... f) {
-		Assert.assertArrayEquals(f, m.toArray(), DEFAULT_EPSILON_FLOAT);
+		Assert.assertArrayEquals(f, m.toArray(), EPSILON);
 	}
 
 	public static void assertEquals(Matrix4 m, float... f) {
-		Assert.assertArrayEquals(f, m.toArray(), DEFAULT_EPSILON_FLOAT);
+		Assert.assertArrayEquals(f, m.toArray(), EPSILON);
 	}
 
 	public static void assertEquals(MatrixN m, float... f) {
-		Assert.assertArrayEquals(f, m.toArray(), DEFAULT_EPSILON_FLOAT);
+		Assert.assertArrayEquals(f, m.toArray(), EPSILON);
 	}
 }

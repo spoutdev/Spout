@@ -155,7 +155,7 @@ public class QuaternionTest {
 	@Test
 	public void testDoubleComponentsDotProduct() {
 		float f = new Quaternion(2, 3, 4, 5).dot(6d, 7d, 8d, 9d);
-		TestUtil.assertEquals(f, 110d);
+		TestUtil.assertEquals(f, 110);
 	}
 
 	@Test
