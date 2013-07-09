@@ -30,17 +30,20 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
 import org.spout.api.geo.World;
+import org.spout.api.protocol.ClientNetworkSynchronizer;
+import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.engine.SpoutClient;
+import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.world.SpoutWorld;
 
 /**
  * Handle client-specific session tasks
  */
-public class SpoutClientSession extends SpoutSession<SpoutClient> {
+public class SpoutClientSession extends SpoutSession<SpoutClient> implements ClientSession {
 	private final AtomicReference<SpoutWorld> activeWorld = new AtomicReference<SpoutWorld>();
 	/**
 	 * Creates a new session.
@@ -50,14 +53,6 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> {
 	 */
 	public SpoutClientSession(SpoutClient engine, Channel channel, Protocol bootstrapProtocol) {
 		super(engine, channel, bootstrapProtocol);
-	}
-
-	@Override
-	public void send(boolean upstream, boolean force, Message message) {
-		if (!upstream) {
-			getEngine().getLogger().warning("Attempt made to send packet to client");
-		}
-		super.send(upstream, force, message);
 	}
 
 	@Override
@@ -97,4 +92,30 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> {
 	public PortBinding getActiveAddress() {
 		return new PortBindingImpl(getProtocol(), channel.getRemoteAddress());
 	}
+
+	@Override
+	public SpoutClientPlayer getPlayer() {
+		return (SpoutClientPlayer) super.getPlayer();
+	}
+
+	@Override
+	public void setPlayer(SpoutPlayer player) {
+		if (!(player instanceof SpoutClientPlayer)) {
+			// Force player to be a SpoutClientPlayer
+			throw new IllegalArgumentException("Player in SpoutClientSession MUST be a SpoutClientPlayer");
+		}
+		super.setPlayer(player);
+	}
+
+	@Override
+	public void setNetworkSynchronizer(ClientNetworkSynchronizer synchronizer) {
+		super.setNetworkSynchronizer(synchronizer);
+	}
+
+	@Override
+	public ClientNetworkSynchronizer getNetworkSynchronizer() {
+		return (ClientNetworkSynchronizer) super.getNetworkSynchronizer();
+	}
+	
+	
 }

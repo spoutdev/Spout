@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.util.Random;
 import java.util.UUID;
 
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.generator.WorldGenerator;
@@ -48,7 +49,6 @@ import org.spout.api.util.sanitation.SafeCast;
 
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.CommonFileSystem;
-import org.spout.engine.world.SpoutWorld;
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
@@ -59,20 +59,24 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
+import org.spout.engine.SpoutServer;
+import org.spout.engine.world.SpoutServerWorld;
 
 public class WorldFiles {
 
 	public static final byte WORLD_VERSION = 2;
 	
-	public static SpoutWorld loadWorld(SpoutEngine engine, WorldGenerator generator, String name) {
-		
+	public static SpoutServerWorld loadWorld(SpoutServer engine, WorldGenerator generator, String name) {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Unable to load world in client mode");
+		}
 		File worldDir = new File(CommonFileSystem.WORLDS_DIRECTORY, name);
 		
 		worldDir.mkdirs();
 		
 		File worldFile = new File(worldDir, "world.dat");
 
-		SpoutWorld world = null;
+		SpoutServerWorld world = null;
 		
 		File itemMapFile = new File(worldDir, "materials.dat");
 		BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
@@ -105,7 +109,7 @@ public class WorldFiles {
 		} catch (FileNotFoundException ioe) {
 			Spout.info("Generating new world named [{0}]", name);
 
-			world = new SpoutWorld(name, engine, new Random().nextLong(), 0L, generator, UUID.randomUUID(), itemMap, lightingMap);
+			world = new SpoutServerWorld(name, engine, new Random().nextLong(), 0L, generator, UUID.randomUUID(), itemMap, lightingMap);
 			world.save();
 
 		} catch (IOException ioe) {
@@ -114,7 +118,7 @@ public class WorldFiles {
 		return world;
 	}
 
-	private static SpoutWorld loadWorldImpl(String name, CompoundMap map, WorldGenerator generator, StringMap itemMap, StringMap lightingMap) {
+	private static SpoutServerWorld loadWorldImpl(String name, CompoundMap map, WorldGenerator generator, StringMap itemMap, StringMap lightingMap) {
 
 		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
 
@@ -137,7 +141,7 @@ public class WorldFiles {
 			Spout.severe("World was saved last with the generator: " + generatorName + " but is being loaded with: " + generator.getName() + " THIS MAY CAUSE WORLD CORRUPTION!");
 		}
 		
-		SpoutWorld world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, uuid, itemMap, lightingMap);
+		SpoutServerWorld world = new SpoutServerWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, uuid, itemMap, lightingMap);
 		
 		Transform t = TransformTag.getValue(world, map.get("spawn_position"));
 		
@@ -154,7 +158,7 @@ public class WorldFiles {
 		return world;
 	}
 	
-	public static void saveWorld(SpoutWorld world) {
+	public static void saveWorld(SpoutServerWorld world) {
 		
 		File worldDir = new File(CommonFileSystem.WORLDS_DIRECTORY, world.getName());
 		
@@ -184,7 +188,7 @@ public class WorldFiles {
 		}
 	}
 	
-	private static CompoundMap saveWorldImpl(SpoutWorld world) {
+	private static CompoundMap saveWorldImpl(SpoutServerWorld world) {
 		
 		CompoundMap map = new CompoundMap();
 		

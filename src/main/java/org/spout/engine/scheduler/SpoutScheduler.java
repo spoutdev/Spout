@@ -28,8 +28,13 @@ package org.spout.engine.scheduler;
 
 import java.awt.Canvas;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -61,6 +66,7 @@ import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutRenderer;
+import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.protocol.NetworkSendThreadPool;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.util.thread.AsyncManager;
@@ -76,6 +82,8 @@ import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.world.RegionGenerator;
+import static org.spout.engine.world.SpoutChunk.meshesGenerated;
+import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
  * A class which handles scheduling for the engine {@link SpoutTask}s.<br>
@@ -158,6 +166,8 @@ public final class SpoutScheduler implements Scheduler {
 	private final Thread mainThread;
 	private final RenderThread renderThread;
 	private final GUIThread guiThread;
+	private static final int MESH_THREADS = 4; // TODO make this changeable
+	private final Set<MeshGeneratorThread> meshThread;
 	private final SpoutTaskManager taskManager;
 	private SpoutParallelTaskManager parallelTaskManager = null;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
@@ -190,9 +200,14 @@ public final class SpoutScheduler implements Scheduler {
 		if (engine instanceof SpoutClient) {
 			renderThread = new RenderThread();
 			guiThread = new GUIThread();
+			meshThread = new HashSet<>();
+			for (int i = 0; i <= MESH_THREADS; i++) {
+				meshThread.add(new MeshGeneratorThread());
+			}
 		} else {
 			renderThread = null;
 			guiThread = null;
+			meshThread = null;
 		}
 
 		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 1, new MarkedNamedThreadFactory("SpoutScheduler - async manager executor service", true));
@@ -496,6 +511,44 @@ public final class SpoutScheduler implements Scheduler {
 				lastTick = now;
 				nextTick += targetPeriod;
 			}
+		}
+	}
+
+	private static final Deque<SpoutChunkSnapshotModel> models = new ConcurrentLinkedDeque<SpoutChunkSnapshotModel>();;
+
+	public class MeshGeneratorThread extends Thread {
+
+		@Override
+		public void run() {
+			while (!shutdown) {
+				SpoutChunkSnapshotModel poll = models.poll();
+				if (poll == null) {
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException ex) {
+						continue;
+					}
+					continue;
+				}
+				ChunkMesh mesh = new ChunkMesh(poll);
+				mesh.update();
+				((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer().addMeshToBatchQueue(mesh);
+				meshesGenerated.getAndIncrement();
+			}
+		}
+	}
+
+	public static void addToQueue(SpoutChunkSnapshotModel model) {
+		models.remove(model);
+		models.add(model);
+	}
+
+	public void startMeshThread() {
+		for (MeshGeneratorThread t : meshThread) {
+			if (t.isAlive()) {
+				throw new IllegalStateException("Attempt was made to start a mesh thread twice");
+			}
+			t.start();
 		}
 	}
 

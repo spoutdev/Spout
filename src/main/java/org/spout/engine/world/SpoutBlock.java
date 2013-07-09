@@ -52,7 +52,7 @@ import org.spout.api.util.StringUtil;
 
 public class SpoutBlock implements Block {
 	private final int x, y, z;
-	private final WeakReference<SpoutWorld> world;
+	private final WeakReference<? extends SpoutWorld> world;
 	private final AtomicReference<WeakReference<SpoutChunk>> chunk;
 
 	public SpoutBlock(SpoutWorld world, int x, int y, int z) {

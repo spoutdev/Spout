@@ -43,7 +43,7 @@ import org.spout.engine.renderer.BatchVertexRenderer;
  * Represents a group of chunk meshes to be rendered.
  */
 public class ChunkMeshBatchAggregator extends Cuboid {
-
+	private boolean queued = false;
 	public final static int SIZE_X = 1;
 	public final static int SIZE_Y = 8;
 	public final static int SIZE_Z = 1;
@@ -57,49 +57,31 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	public final static Matrix model = MatrixMath.createIdentity();
 	private final RenderMaterial material;
 
-	private boolean dataSended = false;
-	private boolean flushing = false;
-	private boolean generated = false;
-	private boolean closed = false;
-	
-	//Debug
-	private long time;
+	private boolean dataSent = false;
+	private boolean ready = false;
 
 	private final BufferContainer bufferContainer[] = new BufferContainer[COUNT];
 
 	private int getIndex(int x, int y, int z){
 		int index = (x - getBase().getChunkX()) * SIZE_Y * SIZE_Z + (y - getBase().getChunkY()) * SIZE_Z + (z - getBase().getChunkZ());
-		
-		//Debug
-		/*System.out.println("Index : " + x + "/"+ y + "/"+ z + " -> " +
-				getBase().getChunkX() + "/" + getBase().getChunkY() + "/" + getBase().getChunkZ() + " -> "+
-				index);*/
-
-		
 		return index;
 	}
 
 	public static Vector3 getBaseFromChunkMesh(ChunkMesh mesh) {
-		Vector3 v = new Vector3(Math.floor((float)mesh.getChunkX() / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X,
-				Math.floor((float)mesh.getChunkY() / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y,
-				Math.floor((float)mesh.getChunkZ() / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
-
-		//Debug
-		//System.out.println("Base : " + mesh.getChunkX() + "/"+ mesh.getChunkY() + "/"+ mesh.getChunkZ() + " -> " + v.getFloorX() + "/" + v.getFloorY() + "/" + v.getFloorZ() + "/");
-
-		return v;
+		int x = (int) (Math.floor((float)mesh.getChunkX() / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X);
+		int y = (int) (Math.floor((float)mesh.getChunkY() / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y);
+		int z = (int) (Math.floor((float)mesh.getChunkZ() / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
+		return new Vector3(x, y, z);
 	}
 
+	// TODO: this wasn't being used correctly, I think
+	/*
 	public static Vector3 getCoordFromChunkMesh(ChunkMesh mesh) {
 		Vector3 v = new Vector3(Math.floor((float)mesh.getChunkX() / ChunkMeshBatchAggregator.SIZE_X),
 				Math.floor((float)mesh.getChunkY() / ChunkMeshBatchAggregator.SIZE_Y),
 				Math.floor((float)mesh.getChunkZ() / ChunkMeshBatchAggregator.SIZE_Z));
-
-		//Debug
-		//System.out.println("Coord : " + mesh.getChunkX() + "/"+ mesh.getChunkY() + "/"+ mesh.getChunkZ() + " -> " + v.getFloorX() + "/" + v.getFloorY() + "/" + v.getFloorZ() + "/");
-
-		return v;
-	}
+		return v;	
+	}*/
 
 	public ChunkMeshBatchAggregator(World world, int x, int y, int z, RenderMaterial material) {
 		super(new Point(world, x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS), SIZE.multiply(Chunk.BLOCKS.SIZE));
@@ -107,61 +89,23 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public boolean update() {
-		//long start = System.nanoTime();
-		if (closed) {
-			throw new IllegalStateException("Already closed");
-		}
-
 		//Send data
-		if(!dataSended){
+		if(!dataSent){
 			renderer.setBufferContainers(bufferContainer);
-			dataSended = true;
+			dataSent = true;
 		}
 
 		//Start to flush
 		if(renderer.flush(false)){
-			generated = true;
-			flushing = false;
+			ready = true;
 			return true;
-		}else{
-			flushing = true;
+		} else {
 			return false;
 		}
-		
-		//DEBUG
-		/*int vertices = 0;
-		for(BufferContainer buffer : bufferContainer)
-			if(buffer != null)
-				vertices += buffer.element;
-
-		System.out.println("BENCHMARK " + (System.nanoTime() - start) + "\t" + count + "\t" + vertices);*/
-		
 	}
 
 	public void render(RenderMaterial material) {
-		if (closed) {
-			throw new IllegalStateException("Already closed");
-		}
-
 		renderer.draw(material);
-	}
-
-	public boolean isClosed() {
-		return closed;
-	}
-
-	@Override
-	public void finalize() {
-		if (closed) {
-			throw new IllegalStateException("Already closed");
-		}
-
-		for(int i = 0; i < bufferContainer.length; i++)
-			bufferContainer[i] = null;
-
-		renderer.release();
-
-		closed = true;
 	}
 
 	@Override
@@ -177,8 +121,8 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		else if(bufferContainer != null && this.bufferContainer[index] == null)
 			count++;
 		
-		this.bufferContainer[getIndex(x, y, z)] = bufferContainer;
-		dataSended = false;
+		this.bufferContainer[index] = bufferContainer;
+		dataSent = false;
 	}
 
 	public RenderMaterial getMaterial() {
@@ -197,16 +141,6 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	public boolean equals(Object obj) {
 		return obj == this;
 	}
-
-	public void setTime(long time) {
-		this.time = time;
-	}
-
-	public long getTime() {
-		return time;
-	}
-
-	private boolean queued = false;
 	
 	public void setQueued(boolean queued) {
 		this.queued = queued;
@@ -217,7 +151,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public boolean isReady() {
-		return generated;
+		return ready;
 	}
 
 	public void preRender() {

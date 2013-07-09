@@ -93,7 +93,7 @@ public class DebugScreen extends Screen implements DebugHud {
 	private final Map<Plugin, Widget> messages = new HashMap<Plugin, Widget>();
 
 	public DebugScreen() {
-		plugin = ((PluginManager) Spout.getPluginManager()).getMetaPlugin();
+		plugin = Spout.getPluginManager().getMetaPlugin();
 		init();
 	}
 

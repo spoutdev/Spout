@@ -39,8 +39,6 @@ import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
 
 public class GL20BatchVertexRenderer extends BatchVertexRenderer {
-	//final int SIZE_FLOAT = 4;
-	
 	/**
 	 * Batch Renderer using OpenGL 2.0 mode.
 	 * @param renderMode Mode to render in

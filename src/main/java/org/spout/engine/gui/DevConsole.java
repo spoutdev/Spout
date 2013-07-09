@@ -58,7 +58,7 @@ public class DevConsole extends Screen {
 	private float scroll = 0;
 
 	public DevConsole(Font font) {
-		this.plugin = ((PluginManager) Spout.getPluginManager()).getMetaPlugin();
+		this.plugin = Spout.getPluginManager().getMetaPlugin();
 		this.font = font;
 		init();
 	}

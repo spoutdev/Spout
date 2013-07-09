@@ -29,8 +29,8 @@ package org.spout.engine.world;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -56,16 +55,11 @@ import org.spout.api.event.chunk.ChunkPopulateEvent;
 import org.spout.api.event.chunk.ChunkUnloadEvent;
 import org.spout.api.event.chunk.ChunkUpdatedEvent;
 import org.spout.api.generator.biome.Biome;
-import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.AreaChunkAccess;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.ChunkSnapshot;
-import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
-import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
-import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
@@ -73,17 +67,14 @@ import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
-import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
-import org.spout.api.protocol.NetworkSynchronizer;
-import org.spout.api.render.RenderMaterial;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
-import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
@@ -94,12 +85,9 @@ import org.spout.api.util.cuboid.LocalRegionChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.LocalRegionChunkHeightMapBufferWrapper;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
-import org.spout.api.util.map.TByteTripleObjectHashMap;
-import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
-import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
@@ -107,8 +95,6 @@ import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.versioned.ChunkFiles;
-import org.spout.engine.mesh.ChunkMesh;
-import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.util.thread.AsyncManager;
@@ -132,10 +118,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 */
 	private static final int POPULATE_PER_TICK = 20;
 	/**
-	 * How many ticks to delay sending the entire chunk after lighting calculation has completed
-	 */
-	public static final int LIGHT_SEND_TICK_DELAY = 10;
-	/**
 	 * The source of this region
 	 */
 	private final RegionSource source;
@@ -154,15 +136,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 	private final Queue<SpoutChunkSnapshotFuture> snapshotQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotFuture>();
 	
 	protected SetQueue<SpoutChunk> unloadQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
-	public static final byte POPULATE_CHUNK_MARGIN = 1;
 	/**
 	 * The sequence number for executing inter-region physics and dynamic updates
 	 */
 	private final int updateSequence;
-	/**
-	 * The chunks that received a lighting change and need an update
-	 */
-	private final TByteTripleHashSet lightDirtyChunks = new TByteTripleHashSet();
 	/**
 	 * A queue of chunks that need to be populated
 	 */
@@ -170,7 +147,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	protected final SetQueue<SpoutChunk> populationPriorityQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final RegionGenerator generator;
 	private final SpoutTaskManager taskManager;
-	private final List<Thread> meshThread;
 	private final SpoutScheduler scheduler;
 	private final LinkedHashMap<SpoutPlayer, TByteTripleHashSet> observers = new LinkedHashMap<SpoutPlayer, TByteTripleHashSet>();
 	protected final SetQueue<SpoutChunk> chunkObserversDirtyQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
@@ -181,11 +157,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 	protected final SetQueue<SpoutColumn> dirtyColumnQueue;
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
-	private boolean renderQueueEnabled = false;
-
-	private final TByteTripleObjectHashMap<SpoutChunkSnapshotModel> renderChunkQueued = new TByteTripleObjectHashMap<SpoutChunkSnapshotModel>();
-	private final ConcurrentSkipListSet<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentSkipListSet<SpoutChunkSnapshotModel>();
-
+	private int lightingUpdates = 0;
+	private ImmutableHeightMapBuffer heightMapBuffer = null;
+	private ImmutableCuboidBlockMaterialBuffer blockMaterialBuffer = null;
+	private ChunkCuboidLightBufferWrapper<?>[] lightBuffers = null;
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
 
 	@SuppressWarnings("unchecked")
@@ -199,16 +174,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		int yy = GenericMath.mod(getY(), 3);
 		int zz = GenericMath.mod(getZ(), 3);
 		updateSequence = (xx * 9) + (yy * 3) + zz;
-
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			meshThread = new ArrayList<Thread>();
-			for(int i = 0; i < 1; i++ ){//TODO : Make a option to choice the number of thread to make mesh
-				meshThread.add(new MeshGeneratorThread());
-			}
-		} else {
-			meshThread = null;
-		}
-
 		dynamicBlockTree = new DynamicBlockUpdateTree(this);
 
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
@@ -232,27 +197,15 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 		}
 
-		generator = new RegionGenerator(this, 4);
-
-		this.chunkStore = world.getRegionFile(getX(), getY(), getZ());
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			this.generator = null;
+			this.chunkStore = null;
+		} else {
+			this.generator = new RegionGenerator(this, 4);
+			this.chunkStore = ((SpoutServerWorld) world).getRegionFile(getX(), getY(), getZ());
+		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), null, this, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
-	}
-
-	public void startMeshGeneratorThread() {
-		if (meshThread != null) {
-			for(Thread thread : meshThread){
-				thread.start();
-			}
-		}
-	}
-
-	public void stopMeshGeneratorThread() {
-		if (meshThread != null) {
-			for(Thread thread : meshThread){
-				thread.interrupt();
-			}
-		}
 	}
 
 	@Override
@@ -283,6 +236,19 @@ public class SpoutRegion extends Region implements AsyncManager {
 		if (chunk != null) {
 			checkChunkLoaded(chunk, loadopt);
 			return chunk;
+		}
+
+		if (Spout.getPlatform() == Platform.CLIENT && (loadopt.loadIfNeeded() || loadopt.generateIfNeeded())) {
+			short[] blocks = new short[16 * 16 * 16];
+			Arrays.fill(blocks, BlockMaterial.UNGENERATED.getId());
+			SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getChunkX() + x, getChunkY() + y, getChunkZ() +  z, SpoutChunk.PopulationState.UNTOUCHED, blocks, null, null, true);
+			chunks[x][y][z].set(newChunk);
+			return newChunk;
+		}
+		
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			// Client should NEVER actually try to load or generate chunks
+			return null;
 		}
 
 		SpoutChunk newChunk = null;
@@ -340,25 +306,25 @@ public class SpoutRegion extends Region implements AsyncManager {
 	public SpoutChunk getChunkFromBlock(int x, int y, int z, LoadOption loadopt) {
 		return this.getChunk(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS, loadopt);
 	}
-	
-	
+
 	private void generateColumn(int x, int z) {
 		generator.generateColumn(x, z);
 	}
-	
+
 	// Method should only be called from the region generator
 	protected boolean setChunkIfNotGeneratedWithoutLock(SpoutChunk newChunk, int x, int y, int z) {
 		int cx = newChunk.getX();
 		int cy = newChunk.getY();
 		int cz = newChunk.getZ();
-		boolean exists = this.inputStreamExists(cx, cy, cz);
+		//Files never exist on the client
+		boolean exists = Spout.getPlatform() == Platform.CLIENT ? false : this.inputStreamExists(cx, cy, cz);
 		if (exists) {
 			return false;
 		}
 		// chunk has not been generated
 		return setChunk(newChunk, x, y, z, null, true) == newChunk;
 	}
-	
+
 	private SpoutChunk setChunk(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated) {
 		final AtomicReference<SpoutChunk> chunkReference = chunks[x][y][z];
 		while (true) {
@@ -399,50 +365,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 	}
 
-	private void addToRenderQueue(SpoutChunkSnapshotModel model){
-		SpoutChunkSnapshotModel previous;
-		synchronized (renderChunkQueued) {
-			previous = renderChunkQueued.put((byte) model.getX(), (byte) model.getY(), (byte) model.getZ(), model);
-			if(previous != null){
-				boolean removed = renderChunkQueue.remove(previous);
-				model.addDirty(previous, removed);
-				if (model.isUnload() && model.isFirst()) {
-					if (renderChunkQueued.remove((byte) model.getX(), (byte) model.getY(), (byte) model.getZ()) != model) {
-						throw new IllegalStateException("Removed model does not match put model");
-					} else {
-						return;
-					}
-				}
-			}
-		}
-
-		renderChunkQueue.add(model);
-
-		synchronized (renderChunkQueued) {
-			renderChunkQueued.notify();
-		}
-	}
-
-	private SpoutChunkSnapshotModel removeFromRenderQueue() throws InterruptedException {
-		SpoutChunkSnapshotModel model = renderChunkQueue.pollFirst();
-		if (model == null) {
-			synchronized (renderChunkQueued) {
-				while (model == null) {
-					model = renderChunkQueue.pollFirst();
-					if (model == null) {
-						renderChunkQueued.wait();
-					}
-				}
-			}
-		}
-		synchronized (renderChunkQueued) {
-			if (renderChunkQueued.get((byte) model.getX(), (byte) model.getY(), (byte) model.getZ()) == model) {
-				renderChunkQueued.remove((byte) model.getX(), (byte) model.getY(), (byte) model.getZ());
-			}
-		}
-		return model;
-	}
-
 	/**
 	 * Removes a chunk from the region and indicates if the region is empty
 	 * @param c the chunk to remove
@@ -468,9 +390,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 
 			currentChunk.setUnloaded();
-			if (renderQueueEnabled && currentChunk.isInViewDistance()) {
-				addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true, System.currentTimeMillis()));
-			}
 
 			int cx = c.getX() & CHUNKS.MASK;
 			int cy = c.getY() & CHUNKS.MASK;
@@ -799,8 +718,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 					// a - acceleration
 
 					final Vector3 movement = prevVelocity.multiply(dt).add(acceleration.multiply(dt * dt).divide(2));
+					//final Point position = scene.getTransformLive().getPosition();
 					Point newPosition = scene.getTransformLive().getPosition().add(movement);
 					final BoundingBox volume = scene.getVolume();
+					//final BoundingBox oldVolume = volume.clone().offset(position);
 					BoundingBox worldVolume = volume.clone().offset(newPosition);
 					final int bx = newPosition.getBlockX();
 					final int by = newPosition.getBlockY();
@@ -965,7 +886,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			if (chunk != null) {
 				chunk.compressIfRequired();
 				boolean doUnload;
-				if (doUnload = chunk.isReapable(worldAge)) {
+				if (doUnload = chunk.isReapable()) {
 					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
 						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
 						if (event.isCancelled()) {
@@ -986,7 +907,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	private void syncChunkToPlayer(SpoutChunk chunk, Player player) {
 		if (player.isOnline()) {
-			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
+			ServerNetworkSynchronizer synchronizer = (ServerNetworkSynchronizer) player.getNetworkSynchronizer();
 			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
 				for (int i = 0; true; i++) {
 					Vector3 block = chunk.getDirtyBlock(i);
@@ -1030,76 +951,20 @@ public class SpoutRegion extends Region implements AsyncManager {
 		Spout.getEventManager().callDelayedEvent(evt);
 	}
 
-	private WorldRenderer renderer = null;
-	private static final int RENDER_QUEUE_LIMIT = 500;
-
-	private WorldRenderer getRenderer(){
-		if(renderer == null && ((SpoutClient) Spout.getEngine()).getRenderer() != null)
-			renderer = ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer();
-		return renderer;
-	}
-
 	@Override
 	public void preSnapshotRun() {
 		entityManager.preSnapshotRun();
-
-		Point playerPosition = null;
-		int renderLimit = Spout.getPlatform() == Platform.CLIENT && getRenderer() != null ?
-				RENDER_QUEUE_LIMIT - (getRenderer().getBatchWaiting() + renderChunkQueue.size()) :
-					0;
-
-		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			SpoutWorld world = this.getWorld();
-
-			boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
-			boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
-			boolean unloadRenderQueue = !worldRenderQueueEnabled && renderQueueEnabled;
-
-			SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getPlayer();
-			if (player == null) {
-				playerPosition = null;
-			} else {
-				playerPosition = player.getScene().getPosition();
-			}
-
-			if (firstRenderQueueTick && player != null) {
-				for( SpoutChunk c : player.getObservingChunks()){
-					c.setRenderDirty(true);
-				}
-				renderQueueEnabled = worldRenderQueueEnabled;
-			}
-
-			if(unloadRenderQueue){
-				for(SpoutChunk c : rended.toArray(new SpoutChunk[rended.size()])){
-					addUpdateToRenderQueue(playerPosition, c, false, false, false);
-
-				}
-			}
-		}
 		
 		SpoutChunk spoutChunk;
 
 		List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
-
+		
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
-
-			if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
-				if(spoutChunk.isInViewDistance() || (spoutChunk.isRendered() && spoutChunk.leftViewDistance())){
-					if(renderLimit > 0 ){
-						addUpdateToRenderQueue(playerPosition, spoutChunk, spoutChunk.isBlockDirty(), spoutChunk.isLightDirty(), false);
-						renderLimit--;
-					}else{
-						renderLater.add(spoutChunk);
-					}
-				}else{
-					spoutChunk.setRenderDirty(false);
-					spoutChunk.viewDistanceCopy();
-				}
-			}
-
 			if (spoutChunk.isDirty()) {
-				for (Player entity : spoutChunk.getObservingPlayers()) {
-					syncChunkToPlayer(spoutChunk, entity);
+				if (Spout.getPlatform() == Platform.SERVER) {
+					for (Player entity : spoutChunk.getObservingPlayers()) {
+						syncChunkToPlayer(spoutChunk, entity);
+					}
 				}
 				processChunkUpdatedEvent(spoutChunk);
 
@@ -1109,18 +974,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 		}
 
-		for(SpoutChunk c : renderLater){
-			c.setRenderDirty(true);
-		}
-
 		SpoutChunkSnapshotFuture snapshotFuture;
 		while ((snapshotFuture = snapshotQueue.poll()) != null) {
 			snapshotFuture.run();
 		}
-
-		renderSnapshotCacheBoth.clear();
-		renderSnapshotCacheLight.clear();
-		renderSnapshotCacheBlock.clear();
 
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
@@ -1132,136 +989,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 				}
 			}
 		}
-
-		entityManager.syncEntities();
-	}
-
-
-	/*public ConcurrentSkipListSet<SpoutChunkSnapshotModel> getRenderChunkQueue() {
-		return this.renderChunkQueue;
-	}*/
-
-	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheBoth = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
-	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheLight = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
-	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheBlock = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
-
-	private void addUpdateToRenderQueue(Point p, SpoutChunk c, boolean block, boolean light, boolean force) {
-		int bx = c.getX() - 1;
-		int by = c.getY() - 1;
-		int bz = c.getZ() - 1;
-
-		if (c.isInViewDistance()) {
-			int distance;
-			if (p == null) {
-				distance = 0;
-			} else {
-				distance = (int) p.getManhattanDistance(c.getBase());
-			}
-			int ox = bx - getChunkX();
-			int oy = by - getChunkY();
-			int oz = bz - getChunkZ();
-			ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
-			for (int x = 0; x < 3; x++) {
-				for (int y = 0; y < 3; y++) {
-					for (int z = 0; z < 3; z++) {
-						//if (x == 1 || y == 1 || z == 1) { //Need for light
-						ChunkSnapshot snapshot = getRenderSnapshot(c, ox + x, oy + y, oz + z);
-						if (snapshot == null) {
-							//System.out.println("skip");
-							return;
-						}
-						chunks[x][y][z] = snapshot;
-						//}
-					}
-				}
-			}
-			boolean first = c.enteredViewDistance();
-			final HashSet<RenderMaterial> updatedRenderMaterials;
-
-			if (first || c.isDirtyOverflow() || force || c.isLightDirty()) {
-				updatedRenderMaterials = null;
-			} else {
-				updatedRenderMaterials = new HashSet<RenderMaterial>();
-				int dirtyBlocks = c.getDirtyBlocks();
-				for (int i = 0; i < dirtyBlocks; i++) {
-					addMaterialToSet(updatedRenderMaterials, c.getDirtyOldState(i));
-					addMaterialToSet(updatedRenderMaterials, c.getDirtyNewState(i));
-				}
-				int size = BLOCKS.SIZE;
-				for (int i = 0; i < dirtyBlocks; i++) {
-					Vector3 blockPos = c.getDirtyBlock(i);
-					BlockMaterial material = c.getBlockMaterial(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ());
-					ByteBitSet occlusion = material.getOcclusion(material.getData());
-					for(BlockFace face : BlockFace.values()){ 
-						if (face.equals(BlockFace.THIS)) {
-							continue;
-						}
-						if (occlusion.get(face)) {
-							continue;
-						}
-						Vector3 neighborPos = blockPos.add(face.getOffset());
-						int nx = neighborPos.getFloorX();
-						int ny = neighborPos.getFloorX();
-						int nz = neighborPos.getFloorX();
-						if (nx >= 0 && ny >= 0 && nz >= 0 && nx < size && ny < size && nz < size) {
-							int state = c.getBlockFullState(nx, ny, nz);
-							addMaterialToSet(updatedRenderMaterials, state);
-							//addSubMeshToSet(updatedSubMeshes, neighborPos);
-						}
-					}
-				}
-			}
-			c.setRendered(true);
-			addRendedChunk(c);
-			c.setRenderDirty(false);
-			addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, first, System.currentTimeMillis()));
-		} else {
-			if (c.leftViewDistance()) {
-				c.setRendered(false);
-				removeRendedChunk(c);
-				c.setRenderDirty(false);
-				addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),bx + 1, by + 1, bz + 1, true, System.currentTimeMillis()));
-			}
-		}
-		c.viewDistanceCopy();
-	}
-
-	private Set<SpoutChunk> rended = new HashSet<SpoutChunk>();
-
-	public void addRendedChunk(SpoutChunk chunk){
-		rended.add(chunk);
-	}
-
-	public void removeRendedChunk(SpoutChunk chunk){
-		rended.remove(chunk);
-	}
-
-	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {
-		BlockMaterial material = MaterialRegistry.get(blockState);
-		set.add(material.getModel().getRenderMaterial());
-	}
-
-	/*private static void addSubMeshToSet(Set<Vector3> set, Vector3 dirtyBlock) {
-		set.add(ChunkMesh.getChunkSubMesh(dirtyBlock.getFloorX(), dirtyBlock.getFloorY(), dirtyBlock.getFloorZ()));
-	}*/
-
-	private ChunkSnapshot getRenderSnapshot(SpoutChunk cRef, int cx, int cy, int cz) {
-		SpoutChunkSnapshot snapshot = renderSnapshotCacheBoth.get(cx, cy, cz);
-		if (snapshot != null) {
-			return snapshot;
-		}
-
-		SpoutChunk c = getLocalChunk(cx, cy, cz, LoadOption.NO_LOAD);
-
-		if (c == null) {
-			//Spout.getLogger().info("Getting " + cx + ", " + cy + ", " + cz + ": base = " + cRef.getBase().toBlockString() + " region base " + getBase().toBlockString());
-			return null;
-		} else {
-			snapshot = c.getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
-			if (snapshot != null) {
-				renderSnapshotCacheBoth.put(cx, cy, cz, snapshot);
-			}
-			return snapshot;
+		if (Spout.getPlatform() == Platform.SERVER) {
+			entityManager.syncEntities();
 		}
 	}
 
@@ -1335,12 +1064,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 		}
 	}
-
-	private int lightingUpdates = 0;
-
-	private ImmutableHeightMapBuffer heightMapBuffer = null;
-	private ImmutableCuboidBlockMaterialBuffer blockMaterialBuffer = null;
-	private ChunkCuboidLightBufferWrapper<?>[] lightBuffers = null;
 	
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -1556,10 +1279,16 @@ public class SpoutRegion extends Region implements AsyncManager {
 	}
 
 	public boolean inputStreamExists(int x, int y, int z) {
+		if (chunkStore == null) {
+			throw new IllegalStateException("Client does not have chunk store");
+		}
 		return chunkStore.inputStreamExists(getChunkKey(x, y, z));
 	}
 
 	public boolean attemptClose() {
+		if (chunkStore == null) {
+			return true;
+		}
 		return chunkStore.attemptClose();
 	}
 
@@ -1571,6 +1300,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 * @return the DataInputStream
 	 */
 	public InputStream getChunkInputStream(int x, int y, int z) {
+		if (chunkStore == null) {
+			throw new IllegalStateException("Client does not have chunk store");
+		}
 		return chunkStore.getBlockInputStream(getChunkKey(x, y, z));
 	}
 
@@ -1666,12 +1398,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 	}
 
-	public void reportChunkLightDirty(int x, int y, int z) {
-		synchronized (lightDirtyChunks) {
-			lightDirtyChunks.add(x & CHUNKS.MASK, y & CHUNKS.MASK, z & CHUNKS.MASK);
-		}
-	}
-
 	@Override
 	public Biome getBiome(int x, int y, int z) {
 		return this.getWorld().getBiome(x, y, z);
@@ -1726,6 +1452,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 * @return true if exists, false if doesn't exist
 	 */
 	public static boolean regionFileExists(World world, int x, int y, int z) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			return false;
+		}
 		File worldDirectory = world.getDirectory();
 		File regionDirectory = new File(worldDirectory, "region");
 		File regionFile = new File(regionDirectory, "reg" + x + "_" + y + "_" + z + ".spr");
@@ -1881,85 +1610,20 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return region.getChunk(x, y, z, loadopt);
 	}
 
-	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, BiomeManager biomes) {
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
-		SpoutChunk chunk = chunks[x >> Region.CHUNKS.BITS][y >> Region.CHUNKS.BITS][z >> Region.CHUNKS.BITS].get();
+	public SpoutChunk addChunk(int chunkX, int chunkY, int chunkZ, short[] blockIds, short[] blockData) {
+		final int regionChunkX = chunkX & CHUNKS.MASK;
+		final int regionChunkY = chunkY & CHUNKS.MASK;
+		final int regionChunkZ = chunkZ & CHUNKS.MASK;
+		SpoutChunk chunk = chunks[regionChunkX][regionChunkY][regionChunkZ].get();
 		if (chunk != null) {
 			chunk.unload(false);
+			// TODO is this right?
+			chunks[regionChunkX][regionChunkY][regionChunkZ].set(null);
 		}
-		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, new ManagedHashMap(), true);
-		setChunk(newChunk, x, y, z, null, true);
+		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, chunkX, chunkY, chunkZ, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, new ManagedHashMap(), true);
+		setChunk(newChunk, regionChunkX, regionChunkY, regionChunkZ, null, false);
 		checkChunkLoaded(newChunk, LoadOption.LOAD_GEN);
-	}
-
-	private class MeshGeneratorThread extends Thread {
-
-		private WorldRenderer renderer = null;
-
-		public MeshGeneratorThread() {
-			super(SpoutRegion.this.toString() + " Mesh Generation Thread");
-			this.setDaemon(true);
-		}
-
-		@Override
-		public void run() {
-			//Sleep while the renderer doesn't exist
-			while(((SpoutClient) Spout.getEngine()).getRenderer() == null){
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException ie) {
-					return;
-				}
-			}
-			
-			while (renderer == null) {
-				renderer = ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer();
-				if (renderer == null) {
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException ie) {
-						return;
-					}
-				}
-			}
-			while (!Thread.interrupted()) {
-				try {
-					SpoutChunkSnapshotModel model;
-					while( ( model = removeFromRenderQueue() ) != null){
-						handle(model);
-					}
-				} catch (InterruptedException ie) {
-					break;
-				}
-			}
-			SpoutChunkSnapshotModel model;
-			boolean done = false;
-			while (!done) {
-				try {
-					model = removeFromRenderQueue();
-					if (model != null) {
-						handle(model);
-					} else {
-						done = true;
-					}
-				} catch (InterruptedException e) {
-				}
-			}
-		}
-
-		private void handle(SpoutChunkSnapshotModel model) {
-			ChunkMesh mesh = new ChunkMesh(model);
-
-			mesh.update();
-			
-			//Debug
-			//System.out.println("Generate ChunkMesh take " + (System.currentTimeMillis() - mesh.getTime()) + " (in queue : " + renderChunkQueue.size() +")");
-			
-			renderer.addMeshToBatchQueue(mesh);
-		}
-
+		return newChunk;
 	}
 	
 	@Override
@@ -2102,7 +1766,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public void queueChunkForGeneration(Vector3 chunk) {
-		getRegionGenerator().touchChunk(chunk.getFloorX(), chunk.getFloorY(), chunk.getFloorZ());
+		RegionGenerator generator = getRegionGenerator();
+		if (generator != null) {
+			generator.touchChunk(chunk.getFloorX(), chunk.getFloorY(), chunk.getFloorZ());
+		}
 	}
 
 	@Override

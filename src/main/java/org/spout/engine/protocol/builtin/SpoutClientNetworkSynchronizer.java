@@ -24,33 +24,26 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.protocol.builtin.handler;
+package org.spout.engine.protocol.builtin;
 
-import org.spout.api.event.player.ClientPlayerConnectedEvent;
-import org.spout.api.event.player.PlayerConnectEvent;
-import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.ClientSession;
-import org.spout.api.protocol.ServerSession;
+
+import org.spout.api.entity.Entity;
+import org.spout.api.protocol.ClientNetworkSynchronizer;
+import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Session;
-import org.spout.engine.protocol.builtin.message.LoginMessage;
-import org.spout.engine.protocol.builtin.SpoutProtocol;
 
-public class LoginMessageHandler extends MessageHandler<LoginMessage> {
-
-	@Override
-	public void handleServer(ServerSession session, LoginMessage message) {
-		session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName()));
-		session.setState(Session.State.GAME);
-		if (session.hasPlayer()) {
-			session.send(new LoginMessage("", session.getPlayer().getId()));
-		}
+public class SpoutClientNetworkSynchronizer extends ClientNetworkSynchronizer {
+	public SpoutClientNetworkSynchronizer(Session session) {
+		super(session);
 	}
 
-	@Override
-	public void handleClient(ClientSession session, LoginMessage message) {
-		System.out.println("Player ID Received: " + message.getExtraInt());
-		session.getDataMap().put(SpoutProtocol.PLAYER_ENTITY_ID, message.getExtraInt());
-		session.setState(Session.State.GAME);
-		session.getEngine().getEventManager().callEvent(new ClientPlayerConnectedEvent(session, message.getExtraInt()));
+	// TODO what is this for?
+	public EntityProtocol getEntityProtocol(Entity entity) {
+		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
+		if (protocol == null) {
+			entity.getNetwork().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
+			protocol = SpoutEntityProtocol.INSTANCE;
+		}
+		return protocol;
 	}
 }

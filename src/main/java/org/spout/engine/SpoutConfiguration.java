@@ -62,6 +62,7 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder RECV_SPIKE_CHANCE = new ConfigurationHolder(0F, "debug", "recv-spikes-per-second");
 	public static final ConfigurationHolder DEBUG_SHADERS = new ConfigurationHolder(false, "debug", "debug-shaders");
 	public static final ConfigurationHolder SIMULATE_DYNAMICS = new ConfigurationHolder(true, "debug", "simulate-dynamics");
+	public static final ConfigurationHolder CREATE_FALLBACK_WORLD = new ConfigurationHolder(true, "debug", "create-fallback-world");
 
 	public SpoutConfiguration() {
 		super(new YamlConfiguration(new File(CommonFileSystem.CONFIG_DIRECTORY, "spout.yml")));

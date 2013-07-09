@@ -52,6 +52,14 @@ public class SpoutApplication {
 	public boolean ccoverride = false;
 	@Parameter(names = {"--path"}, description = "Override path for the client")
 	public String path = null;
+	@Parameter(names = {"--protocol"}, description = "Server to connect to")
+	public String protocol = null;
+	@Parameter(names = {"--server"}, description = "Server to connect to")
+	public String server = null;
+	@Parameter(names = {"--port"}, description = "Server to connect to")
+	public int port = -1;
+	@Parameter(names = {"--user"}, description = "User to connect as")
+	public String user = null;
 
 	public static void main(String[] args) {
 		try {

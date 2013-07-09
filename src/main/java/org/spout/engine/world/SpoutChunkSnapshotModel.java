@@ -217,13 +217,43 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		}
 	}
 	
-	@Override
+	/*@Override
 	public boolean equals(Object o) {
 		if (o == this) {
-			return true;
+		return true;
 		} else {
-			return id == ((SpoutChunkSnapshotModel) o).id;
+		return id == ((SpoutChunkSnapshotModel) o).id;
 		}
+	}*/
+
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 67 * hash + this.cx;
+		hash = 67 * hash + this.cy;
+		hash = 67 * hash + this.cz;
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final SpoutChunkSnapshotModel other = (SpoutChunkSnapshotModel) obj;
+		if (this.cx != other.cx) {
+			return false;
+		}
+		if (this.cy != other.cy) {
+			return false;
+		}
+		if (this.cz != other.cz) {
+			return false;
+		}
+		return true;
 	}
 
 	public void addDirty(SpoutChunkSnapshotModel oldModel, boolean oldRemoved){

@@ -28,6 +28,7 @@ package org.spout.engine.protocol.builtin;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.spout.api.entity.Entity;
@@ -40,54 +41,46 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
-import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
-public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
-	public SpoutNetworkSynchronizer(Session session) {
+public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
+	public SpoutServerNetworkSynchronizer(Session session) {
 		super(session, 3);
 	}
 
 	@Override
-	public Collection<Chunk> sendChunk(Chunk c) {
-		session.send(false, new ChunkDataMessage(c.getSnapshot()));
-		return null; //TODO Why does this return null?
+	public Collection<Chunk> doSendChunk(Chunk c) {
+		session.send(new ChunkDataMessage(c.getSnapshot()));
+		return Collections.singleton(c);
 	}
 
 	@Override
 	protected void freeChunk(Point p) {
-		session.send(false, new ChunkDataMessage(p.getBlockX(), p.getBlockY(), p.getBlockZ()));
+		session.send(new ChunkDataMessage(p.getChunkX(), p.getChunkY(), p.getChunkZ()));
 	}
 
 	@Override
 	protected void sendPosition(Point p, Quaternion rot) {
-		session.send(false, new EntityTransformMessage(player.getId(), new Transform(p, rot, Vector3.ONE), getRepositionManager()));
+		session.send(new EntityTransformMessage(player.getId(), new Transform(p, rot, Vector3.ONE), getRepositionManager()));
 	}
 
 	@Override
 	protected void worldChanged(World world) {
-		session.send(false, new WorldChangeMessage(world, world.getData()));
+		session.send(new WorldChangeMessage(world, world.getData()));
 	}
 
 	@Override
 	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
-		session.send(false, new BlockUpdateMessage(chunk.getBlock(x, y, z)));
-	}
-
-	private EntityProtocol getEntityProtocol(Entity entity) {
-		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
-		if (protocol == null) {
-			entity.getNetwork().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
-			protocol = SpoutEntityProtocol.INSTANCE;
-		}
-		return protocol;
+		session.send(new BlockUpdateMessage(chunk.getBlock(x, y, z)));
 	}
 
 	@Override
+	// TODO move to ServerNetworkSynchronizer?
 	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
 		super.syncEntity(e, liveTransform, spawn, destroy, update);
 		EntityProtocol protocol = getEntityProtocol(e);
@@ -100,10 +93,19 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 		}
 		if (update) {
 			// TODO - might be worth adding force support
-			messages.addAll(protocol.getUpdateMessages(e, liveTransform, getRepositionManager(), false));
+			messages.addAll(protocol.getUpdateMessages(e, liveTransform, getRepositionManager(), true));
 		}
 		for (Message message : messages) {
-			this.session.send(false, message);
+			this.session.send(message);
 		}
+	}
+
+	private EntityProtocol getEntityProtocol(Entity entity) {
+		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
+		if (protocol == null) {
+			entity.getNetwork().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
+			protocol = SpoutEntityProtocol.INSTANCE;
+		}
+		return protocol;
 	}
 }

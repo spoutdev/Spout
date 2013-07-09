@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import gnu.trove.procedure.TShortObjectProcedure;
+import org.spout.api.Platform;
 
 import org.spout.api.Spout;
 import org.spout.api.component.BlockComponentOwner;
@@ -53,11 +54,13 @@ import org.spout.api.util.sanitation.SafeCast;
 import org.spout.api.util.typechecker.TypeChecker;
 
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.SpoutServer;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutChunk.PopulationState;
 import org.spout.engine.world.SpoutChunkSnapshot;
 import org.spout.engine.world.SpoutRegion;
+import org.spout.engine.world.SpoutServerWorld;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.nbt.ByteArrayTag;
@@ -79,6 +82,9 @@ public class ChunkFiles {
 	private static final TypeChecker<List<? extends CompoundTag>> checkerListCompoundTag = TypeChecker.tList(CompoundTag.class);
 	
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, ChunkDataForRegion dataForRegion) {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Unable to load chunk in client mode");
+		}
 		SpoutChunk chunk = null;
 		NBTInputStream is = null;
 
@@ -138,7 +144,9 @@ public class ChunkFiles {
 	}
 	
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, ChunkDataForRegion dataForRegion, CompoundMap map, int version) throws IOException {
-		
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Unable to load chunk in client mode");
+		}
 		SpoutChunk chunk = null;
 		
 		int cx = r.getChunkX() + x;
@@ -146,8 +154,8 @@ public class ChunkFiles {
 		int cz = r.getChunkZ() + z;
 
 		//Convert world block ids to engine material ids
-		SpoutWorld world = r.getWorld();
-		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
+		SpoutServerWorld world = (SpoutServerWorld) r.getWorld();
+		StringMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
 		StringMap itemMap = world.getItemMap();
 
 		byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extraData")), null);
@@ -182,7 +190,7 @@ public class ChunkFiles {
 		List<? extends CompoundTag> componentsList = checkerListCompoundTag.checkTag(map.get("block_components"), null);
 		
 		CompoundMap lightingMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("light_buffers")), null, CompoundMap.class);
-		StringMap worldMap = r.getWorld().getLightingMap();
+		StringMap worldMap = ((SpoutServerWorld) r.getWorld()).getLightingMap();
 		List<LightingManager<?>> lightingManagers = new ArrayList<LightingManager<?>>();
 		List<byte[]> lightingData = new ArrayList<byte[]>();
 		loadLightingBuffers(lightingManagers, lightingData, lightingMap, worldMap);
@@ -204,11 +212,14 @@ public class ChunkFiles {
 		return chunk;
 	}
 	
-	public static void saveChunk(SpoutWorld world, SpoutChunkSnapshot snapshot, List<DynamicBlockUpdate> blockUpdates, OutputStream dos) {
+	public static void saveChunk(SpoutServerWorld world, SpoutChunkSnapshot snapshot, List<DynamicBlockUpdate> blockUpdates, OutputStream dos) {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Unable to save chunk in client mode");
+		}
 		CompoundMap chunkTags = new CompoundMap();
 
 		//Switch block ids from engine material ids to world specific ids
-		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
+		StringMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
 		StringMap itemMap = world.getItemMap();
 		
 		StringMap lightingMap = world.getItemMap();
@@ -388,7 +399,7 @@ public class ChunkFiles {
 	}
 	
 	private static CompoundTag saveLightingBuffers(StringMap worldLighting, CuboidLightBuffer[] buffers) {
-		StringMap globalLighting = ((SpoutEngine) Spout.getEngine()).getEngineLightingMap();
+		StringMap globalLighting = ((SpoutServer) Spout.getEngine()).getEngineLightingMap();
 		
 		CompoundMap map = new CompoundMap();
 
@@ -413,7 +424,7 @@ public class ChunkFiles {
 			return;
 		}
 		
-		StringMap globalLighting = ((SpoutEngine) Spout.getEngine()).getEngineLightingMap();
+		StringMap globalLighting = ((SpoutServer) Spout.getEngine()).getEngineLightingMap();
 		
 		for (Tag<?> t : map) {
 			if (t instanceof CompoundTag) {

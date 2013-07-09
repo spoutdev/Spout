@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+import org.spout.api.Platform;
 
 import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeManager;
@@ -44,7 +45,9 @@ import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.sanitation.SafeCast;
 
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.SpoutServer;
 import org.spout.engine.world.SpoutColumn;
+import org.spout.engine.world.SpoutServerWorld;
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
@@ -61,6 +64,9 @@ public class ColumnFiles {
 	public static final int COLUMN_VERSION = 2;
 	
 	public static void readColumn(InputStream in, SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks) {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Unable to read column in client mode");
+		}
 		if (in == null) {
 			initColumn(column, lowestY, highestY, topmostBlocks);
 			return;
@@ -105,7 +111,9 @@ public class ColumnFiles {
 	}
 	
 	private static void loadColumn(SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks, CompoundMap map) {
-			
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Unable to load column in client mode");
+		}	
 		int[] heights = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("heights")), null);
 				
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
@@ -118,8 +126,8 @@ public class ColumnFiles {
 		highestY.set(SafeCast.toInt(NBTMapper.toTagValue(map.get("highest_y")), Integer.MAX_VALUE));
 
 		//Save heightmap
-		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
-		StringMap itemMap = column.getWorld().getItemMap();
+		StringMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
+		StringMap itemMap = ((SpoutServerWorld) column.getWorld()).getItemMap();
 		boolean warning = false;
 		byte[] validMaterial = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("valid_material")), null);
 		int[] topmostMaterial = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("topmost_material")), null);
@@ -209,7 +217,9 @@ public class ColumnFiles {
 	}
 	
 	private static CompoundMap saveColumn(SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks) {
-		
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Unable to save column in client mode");
+		}
 		CompoundMap map = new CompoundMap();
 		
 		map.put(new ByteTag("version", (byte) COLUMN_VERSION));
@@ -231,9 +241,9 @@ public class ColumnFiles {
 		byte[] validMaterial = new byte[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
 		int[] topmostMaterial = new int[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
 		
-		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
+		StringMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
 		StringMap itemMap;
-		itemMap = column.getWorld().getItemMap();
+		itemMap = ((SpoutServerWorld) column.getWorld()).getItemMap();
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
 			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
 				int key = NibblePairHashed.intKey(x, z);

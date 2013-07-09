@@ -32,19 +32,21 @@ import java.util.logging.Level;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.geo.ClientWorld;
+import org.spout.api.geo.World;
 import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.Session;
+import org.spout.api.protocol.ClientSession;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
+import org.spout.engine.world.SpoutClientWorld;
 
 public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 	@Override
-	public void handleClient(Session session, ChunkDataMessage message) {
+	public void handleClient(ClientSession session, ChunkDataMessage message) {
 		if(!session.hasPlayer()) {
-			return;
+			throw new IllegalStateException("Message sent when session has no player");
 		}
 
-		ClientWorld world = (ClientWorld) session.getEngine().getDefaultWorld();
+		World world = session.getEngine().getDefaultWorld();
+		/*
 		Class<? extends BiomeManager> managerClass;
 		try {
 			Class<?> testClass = Class.forName(message.getBiomeManagerClass());
@@ -54,10 +56,10 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			managerClass = testClass.asSubclass(BiomeManager.class);
 		} catch (ClassNotFoundException e) {
 			throw new IllegalArgumentException("Unknown biome manager class: " + message.getBiomeManagerClass());
-		}
+		}*/
 		if (Spout.debugMode()) {
-			Spout.getLogger().log(Level.INFO, "Recieved Chunk Data: {0}", message.toString());
-		}
+			//Spout.getLogger().log(Level.INFO, "Recieved Chunk Data: {0}", message.toString());
+		}/*
 		BiomeManager manager;
 		try {
 			manager = managerClass.getConstructor(int.class, int.class, int.class).newInstance(message.getX(), message.getY(), message.getZ());
@@ -70,7 +72,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
-		manager.deserialize(message.getBiomeData());
-		world.addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData(), manager);
+		manager.deserialize(message.getBiomeData());*/
+		((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData());
 	}
 }
