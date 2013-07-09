@@ -30,6 +30,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import org.spout.api.Platform;
+import org.spout.api.Server;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Region;
@@ -72,8 +74,10 @@ public abstract class MaterialRegistry {
 		if (setup) {
 			throw new IllegalStateException("Can not setup material registry twice!");
 		}
-
-		File serverItemMap = new File(new File(Spout.getEngine().getWorldFolder(), "worlds"), "materials.dat");
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Cannot setup MaterialRegistry in Client mode!");
+		}
+		File serverItemMap = new File(new File(((Server) Spout.getEngine()).getWorldFolder(), "worlds"), "materials.dat");
 		store.setFile(serverItemMap);
 		if (serverItemMap.exists()) {
 			store.load();

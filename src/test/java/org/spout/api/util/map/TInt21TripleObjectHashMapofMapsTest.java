@@ -24,19 +24,41 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.protocol.proxy;
+package org.spout.api.util.map;
 
-import org.spout.api.protocol.Message;
+import org.junit.Test;
 
-public interface ConnectionInfoMessage extends Message {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-	/**
-	 * Gets updated ConnectionInfo for the connection, based on this Message
-	 *
-	 * @param upstream true if the message is from a server
-	 * @param info the previous ConnectionInfo for this connection, or null if none
-	 * @return the updated ConnectionInfo
-	 */
-	public ConnectionInfo getConnectionInfo(ConnectionInfo info);
+public class TInt21TripleObjectHashMapofMapsTest {
 
+	@Test
+	public void test() {
+		TInt21TripleObjectHashMapOfMaps<String, Object> map = new TInt21TripleObjectHashMapOfMaps<String, Object>();
+		assertTrue(map.isEmpty());
+		map.put(0, 0, 0, "One", "One-Value");
+		map.put(0, 0, 0, "Two", "Two-Value");
+		assertSame(1, map.size());
+		assertSame(2, map.get(0, 0, 0).size());
+		assertEquals("One-Value", map.get(0, 0, 0, "One"));
+		assertEquals("Two-Value", map.get(0, 0, 0, "Two"));
+		
+		map.put(1, 1, 1, "Three", "Three-Value");
+		assertSame(2, map.size());
+		assertSame(1, map.get(1, 1, 1).size());
+		assertEquals("Three-Value", map.get(1, 1, 1, "Three"));
+		assertEquals(null, map.get(1, 1, 1, "Four"));
+		
+		map.remove(0, 0, 0, "Two");
+		assertSame(2, map.size());
+		assertSame(1, map.get(0, 0, 0).size());
+		assertEquals("One-Value", map.get(0, 0, 0, "One"));
+		assertEquals(null, map.get(1, 1, 1, "Two"));
+		
+		map.remove(0, 0, 0, "One");
+		assertSame(1, map.size());
+		assertSame(null, map.get(0, 0, 0));
+	}
 }

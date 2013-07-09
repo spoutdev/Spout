@@ -24,30 +24,14 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.geo;
-
-import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.geo.cuboid.ChunkSnapshot;
+package org.spout.api.protocol;
 
 /**
- * A variant of World that has client-specific functions
+ * An implementation of ServerNetworkSynchronizer that doesn't do anything
+ * used for when a ServerNetworkSynchronizer has not been set
  */
-public interface ClientWorld extends World {
-	/**
-	 * Adds a chunk to the world from a chunk snapshot
-	 * @param c The snapshot
-	 */
-	public void addChunk(ChunkSnapshot c);
-
-	/**
-	 * Load a chunk from its raw data
-	 *
-	 * @param x The chunk's x coordinate
-	 * @param y The chunk's y coordinate
-	 * @param z The chunk's z coordinate
-	 * @param blockIds The block ids for the chunk
-	 * @param blockData The block data for the chunk
-	 * @param biomes The biome data
-	 */
-	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, BiomeManager biomes);
+public class ServerNullNetworkSynchronizer extends ServerNetworkSynchronizer {
+	public ServerNullNetworkSynchronizer(Session session) {
+		super(session, 0);
+	}
 }

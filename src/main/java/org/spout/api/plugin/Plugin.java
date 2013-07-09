@@ -35,6 +35,7 @@ import org.spout.api.Engine;
 import org.spout.api.exception.SpoutRuntimeException;
 import org.spout.api.lang.JavaPluginDictionary;
 import org.spout.api.lang.PluginDictionary;
+import org.spout.api.protocol.Protocol;
 import org.spout.api.util.Named;
 
 public abstract class Plugin implements Named {

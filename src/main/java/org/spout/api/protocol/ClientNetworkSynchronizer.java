@@ -24,19 +24,10 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.protocol.proxy;
+package org.spout.api.protocol;
 
-import org.spout.api.protocol.Message;
-
-public interface ConnectionInfoMessage extends Message {
-
-	/**
-	 * Gets updated ConnectionInfo for the connection, based on this Message
-	 *
-	 * @param upstream true if the message is from a server
-	 * @param info the previous ConnectionInfo for this connection, or null if none
-	 * @return the updated ConnectionInfo
-	 */
-	public ConnectionInfo getConnectionInfo(ConnectionInfo info);
-
+public abstract class ClientNetworkSynchronizer extends NetworkSynchronizer {
+	public ClientNetworkSynchronizer(Session session) {
+		super(session);
+	}
 }

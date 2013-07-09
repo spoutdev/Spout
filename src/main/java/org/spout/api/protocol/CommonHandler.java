@@ -36,6 +36,9 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.spout.api.Engine;
+import org.spout.api.Platform;
+import org.spout.api.Server;
+import org.spout.api.Spout;
 
 /**
  * A {@link SimpleChannelUpstreamHandler} which processes incoming network events.
@@ -55,7 +58,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	/**
 	 * Indicates if it is an upstream channel pipeline
 	 */
-	private final boolean upstream;
+	private final boolean onClient;
 
 	private final CommonDecoder decoder;
 	private final CommonEncoder encoder;
@@ -66,9 +69,13 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	 * @param engine The engine.
 	 * @param upstream If the connections are going to the server
 	 */
-	public CommonHandler(Engine engine, CommonEncoder encoder, CommonDecoder decoder, boolean upstream) {
+	public CommonHandler(Engine engine, CommonEncoder encoder, CommonDecoder decoder) {
 		this.engine = engine;
-		this.upstream = upstream;
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			this.onClient = true;
+		} else {
+			this.onClient = false;
+		}
 		this.encoder = encoder;
 		this.decoder = decoder;
 	}
@@ -79,19 +86,22 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 
 		// ctx.getPipeline().addBefore("2", "messagePrinter", new MessagePrintingHandler());
 
-		if (!upstream) {
+		if (onClient) {
+			// Client
+			engine.getLogger().info("Upstream channel connected: " + c + ".");
+		} else {
+			// Server
 			try {
-				engine.getChannelGroup().add(c);
+				Server server = (Server) engine;
+				server.getChannelGroup().add(c);
 				Session session = engine.newSession(c);
-				engine.getSessionRegistry().add(session);
+				server.getSessionRegistry().add(session);
 				setSession(session);
 				ctx.setAttachment(session);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				throw new RuntimeException("Exception thrown when connecting", ex);
 			}
-		} else {
-			engine.getLogger().info("Upstream channel connected: " + c + ".");
 		}
 	}
 
@@ -99,11 +109,15 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
 		try {
 			Channel c = e.getChannel();
-			engine.getChannelGroup().remove(c);
-
 			Session session = this.session.get();
+
+			if (!onClient) {
+				Server server = (Server) engine;
+				server.getChannelGroup().remove(c);
+				server.getSessionRegistry().remove(session);
+			}
+
 			if (session.isPrimary(c)) {
-				engine.getSessionRegistry().remove(session);
 				session.dispose();
 			}
 		} catch (Exception ex) {
@@ -115,21 +129,28 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
 		Session session = this.session.get();
-		session.messageReceived(upstream, (Message) e.getMessage());
+		if (session.isPrimary(ctx.getChannel())) {
+			session.messageReceived((Message) e.getMessage());
+		} else {
+			session.messageReceivedOnAuxChannel(ctx.getChannel(), (Message) e.getMessage());
+		}
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
 		Channel c = e.getChannel();
 		if (c.isOpen()) {
-			engine.getChannelGroup().remove(c);
-
 			Session session = this.session.get();
-			if (session != null) {
-				engine.getSessionRegistry().remove(session);
-				session.dispose();
+
+			if (!onClient) {
+				Server server = (Server) engine;
+				server.getChannelGroup().remove(c);
+				server.getSessionRegistry().remove(session);
 			}
 
+			if (session.isPrimary(c)) {
+				session.dispose();
+			}
 			engine.getLogger().log(Level.WARNING, "Exception caught, closing channel: " + c + "...", e.getCause());
 			c.close();
 		}

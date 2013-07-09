@@ -67,7 +67,7 @@ public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial SOLID_SKYBLUE = new BasicSolid("SolidSkyBlue", SpoutModels.SOLID_SKYBLUE);
 
 	public static final BlockMaterial UNBREAKABLE = new BlockMaterial("Unbreakable").setHardness(100.f);
-	public static final BlockMaterial UNGENERATED = new BlockMaterial("Ungenerated").setHardness(100.f).setOpaque();
+	public static final BlockMaterial UNGENERATED = new BlockMaterial("Ungenerated").setHardness(100.f).setInvisible();
 	public static final BlockMaterial SKYBOX = new BasicSkyBox();
 	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
 	

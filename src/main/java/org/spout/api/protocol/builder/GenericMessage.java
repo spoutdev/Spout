@@ -30,6 +30,8 @@ import java.io.IOException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.spout.api.Platform;
+import org.spout.api.Spout;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 
@@ -118,14 +120,14 @@ public abstract class GenericMessage<T extends Message> extends MessageCodec<T> 
 	}
 	
 	@Override
-	public ChannelBuffer encode(boolean upstream, T message) throws IOException {
+	public ChannelBuffer encode(T message) throws IOException {
 		return this.buffer;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public T decode(boolean upstream, ChannelBuffer b) throws IOException {
-		CompoundMessageField root = upstream ? getToClientFieldRoot() : getToServerFieldRoot();
+	public T decode(ChannelBuffer b) throws IOException {
+		CompoundMessageField root = Spout.getPlatform() == Platform.CLIENT ? getToClientFieldRoot() : getToServerFieldRoot();
 		int start = b.readerIndex();
 		int fieldCount = root.getSubFieldCount();
 		int[] indexArray = new int[fieldCount];

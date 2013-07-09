@@ -24,19 +24,27 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.protocol.proxy;
+package org.spout.api.protocol;
 
-import org.spout.api.protocol.Message;
-
-public interface ConnectionInfoMessage extends Message {
+/**
+ * Represents a connection to server.<br/>
+ * Controls the state, protocol and channels of a connection to a server.
+ */
+public interface ClientSession extends Session {
 
 	/**
-	 * Gets updated ConnectionInfo for the connection, based on this Message
+	 * Sets the ServerNetworkSynchronizer associated with this player.<br>
+	 * <br>
+	 * This can only be called once per player login.
 	 *
-	 * @param upstream true if the message is from a server
-	 * @param info the previous ConnectionInfo for this connection, or null if none
-	 * @return the updated ConnectionInfo
+	 * @param synchronizer the synchronizer
 	 */
-	public ConnectionInfo getConnectionInfo(ConnectionInfo info);
+	public void setNetworkSynchronizer(ClientNetworkSynchronizer synchronizer);
 
+	/**
+	 * Gets the ServerNetworkSynchronizer associated with this player.<br>
+	 *
+	 * @return the synchronizer
+	 */
+	public ClientNetworkSynchronizer getNetworkSynchronizer();
 }

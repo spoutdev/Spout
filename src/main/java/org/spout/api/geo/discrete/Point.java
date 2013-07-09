@@ -343,7 +343,7 @@ public class Point extends Vector3 implements WorldSource {
 		float y = in.readFloat();
 		float z = in.readFloat();
 		String world = in.readUTF();
-		World w = Spout.getEngine().getWorld(world);
+		World w = Spout.getEngine().getWorld(world, true);
 		try {
 			Field field;
 			

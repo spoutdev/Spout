@@ -26,30 +26,25 @@
  */
 package org.spout.api.protocol;
 
-import org.spout.api.inventory.Inventory;
-import org.spout.api.inventory.ItemStack;
-
 /**
- * An implementation of NetworkSynchronizer that doesn't do anything
- * used for when a NetworkSynchronizer has not been set
+ * Represents a connection to the cleint.<br/>
+ * Controls the state, protocol and channels of a connection to the client.
  */
-public class NullNetworkSynchronizer extends NetworkSynchronizer {
-	public NullNetworkSynchronizer(Session session) {
-		super(session, 0);
-	}
+public interface ServerSession extends Session {
 
-	public void onSlotSet(Inventory inventory, int slot, ItemStack item) {
-	}
+	/**
+	 * Sets the ServerNetworkSynchronizer associated with this player.<br>
+	 * <br>
+	 * This can only be called once per player login.
+	 *
+	 * @param synchronizer the synchronizer
+	 */
+	public void setNetworkSynchronizer(ServerNetworkSynchronizer synchronizer);
 
-	public void updateAll(Inventory inventory, ItemStack[] slots) {
-	}
-
-	@Override
-	public void finalizeTick() {
-	}
-
-	@Override
-	public void preSnapshot() {
-	}
-
+	/**
+	 * Gets the ServerNetworkSynchronizer associated with this player.<br>
+	 *
+	 * @return the synchronizer
+	 */
+	public ServerNetworkSynchronizer getNetworkSynchronizer();
 }

@@ -28,22 +28,22 @@ package org.spout.api.event.player;
 
 import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
-import org.spout.api.protocol.Session;
+import org.spout.api.protocol.ServerSession;
 
 /**
  * Called when a player connects to the server.
  */
 public class PlayerConnectEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
-	private final Session session;
+	private final ServerSession session;
 	private final String playerName;
 	private final int viewDistance;
 
-	public PlayerConnectEvent(Session session, String playerName) {
+	public PlayerConnectEvent(ServerSession session, String playerName) {
 		this(session, playerName, -1);
 	}
 
-	public PlayerConnectEvent(Session session, String playerName, int viewDistance) {
+	public PlayerConnectEvent(ServerSession session, String playerName, int viewDistance) {
 		this.session = session;
 		this.playerName = playerName;
 		this.viewDistance = viewDistance;
@@ -53,7 +53,7 @@ public class PlayerConnectEvent extends Event {
 	 * The player's session
 	 * @return the session
 	 */
-	public Session getSession() {
+	public ServerSession getSession() {
 		return session;
 	}
 

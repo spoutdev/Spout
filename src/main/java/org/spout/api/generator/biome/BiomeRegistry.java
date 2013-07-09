@@ -28,6 +28,8 @@ package org.spout.api.generator.biome;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
+import org.spout.api.Platform;
+import org.spout.api.Server;
 
 import org.spout.api.Spout;
 import org.spout.api.io.store.simple.BinaryFileStore;
@@ -54,8 +56,10 @@ public final class BiomeRegistry {
 		if (setup) {
 			throw new IllegalStateException("Can not setup biome registry twice!");
 		}
-
-		File biomeStoreFile = new File(new File(Spout.getEngine().getWorldFolder(), "worlds"), "biomes.dat");
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Cannot setup BiomeRegistry in Client mode!");
+		}
+		File biomeStoreFile = new File(new File(((Server)Spout.getEngine()).getWorldFolder(), "worlds"), "biomes.dat");
 		store.setFile(biomeStoreFile);
 		if (biomeStoreFile.exists()) {
 			store.load();

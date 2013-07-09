@@ -29,6 +29,9 @@ package org.spout.api.command;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.spout.api.Client;
+import org.spout.api.Platform;
+import org.spout.api.Server;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Player;
@@ -269,7 +272,15 @@ public class CommandArguments {
 	}
 
 	private Player getPlayer0(int index, boolean exact) {
-		return Spout.getEngine().getPlayer(getString0(index), exact);
+		if (Spout.getPlatform() == Platform.SERVER) {
+			return ((Server) Spout.getEngine()).getPlayer(getString0(index), exact);
+		} else {
+			if (exact && ((Client) Spout.getEngine()).getPlayer().getName().equals(getString0(index))) {
+				return ((Client) Spout.getEngine()).getPlayer();
+			}
+			// TODO fix this please
+			throw new UnsupportedOperationException("Can't match player on client");
+		}
 	}
 
 	/**

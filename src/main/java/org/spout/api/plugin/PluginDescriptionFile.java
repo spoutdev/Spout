@@ -70,6 +70,7 @@ public class PluginDescriptionFile {
 	private final ConfigurationProperty<List<String>> softdepends = new RegexListProperty("softdepends", "softdepend(s)?", false);
 	private final ConfigurationProperty<Locale> codedLocale = new LocaleProperty("codedlocale", Locale.ENGLISH);
 	private final ConfigurationProperty<Map<String, String>> components = new DataProperty("components");
+	private final ConfigurationProperty<List<String>> protocols = new RegexListProperty("protools", "protocol(s)?", false);
 
 	public PluginDescriptionFile(String name, String version, String main, String platform) {
 		this.name.setValue(name);
@@ -310,6 +311,10 @@ public class PluginDescriptionFile {
 
 	public Map<String, String> getComponentRemapping() {
 		return Collections.unmodifiableMap(components.getValue());
+	}
+
+	public List<String> getProtocols() {
+		return Collections.unmodifiableList(protocols.getValue());
 	}
 
 	private static interface ConfigurationProperty<T> {

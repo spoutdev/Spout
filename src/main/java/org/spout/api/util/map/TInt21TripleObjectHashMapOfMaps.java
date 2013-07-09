@@ -24,19 +24,43 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.protocol.proxy;
+package org.spout.api.util.map;
 
-import org.spout.api.protocol.Message;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface ConnectionInfoMessage extends Message {
-
-	/**
-	 * Gets updated ConnectionInfo for the connection, based on this Message
-	 *
-	 * @param upstream true if the message is from a server
-	 * @param info the previous ConnectionInfo for this connection, or null if none
-	 * @return the updated ConnectionInfo
-	 */
-	public ConnectionInfo getConnectionInfo(ConnectionInfo info);
-
+/**
+ * A sub-class of TInt21TripleObjectHashMap that provides methods that support the cleanup of unused keys 
+ * and simplistic value manipulation in a map-of-maps system.
+ */
+public class TInt21TripleObjectHashMapOfMaps<K, V> extends TInt21TripleObjectHashMap<Map<K, V>> {
+	
+	public V put(int x, int y, int z, K key, V value) {
+		Map<K, V> get = super.get(x, y, z);
+		if (get == null) {
+			get = new HashMap<K, V>();
+			super.put(x, y, z, get);
+		}
+		return get.put(key, value);
+	}
+	
+	public V get(int x, int y, int z, K key) {
+		Map<K, V> get = super.get(x, y, z);
+		if (get == null) {
+			return null;	
+		}
+		return get.get(key);
+	}
+	
+	public V remove(int x, int y, int z, K key) {
+		Map<K, V> get = super.get(x, y, z);
+		if (get == null) {
+			return null;	
+		}
+		V remove = get.remove(key);
+		if (get.isEmpty()) {
+			super.remove(x, y, z);
+		}
+		return remove;
+	}
 }
