@@ -68,10 +68,6 @@ public class TestUtil {
 		Assert.assertArrayEquals(f, v.toArray(), EPSILON);
 	}
 
-	public static void assertEquals(float[] a, float... f) {
-		Assert.assertArrayEquals(f, a, EPSILON);
-	}
-
 	public static void assertEquals(Complex c, float x, float y) {
 		assertEquals(c.getX(), x);
 		assertEquals(c.getY(), y);
@@ -84,19 +80,52 @@ public class TestUtil {
 		assertEquals(q.getW(), w);
 	}
 
-	public static void assertEquals(Matrix2 m, float... f) {
-		Assert.assertArrayEquals(f, m.toArray(), EPSILON);
+	public static void assertEquals(Matrix2 m, float m00, float m01, float m10, float m11) {
+		assertEquals(m.get(0, 0), m00);
+		assertEquals(m.get(0, 1), m01);
+		assertEquals(m.get(1, 0), m10);
+		assertEquals(m.get(1, 1), m11);
 	}
 
-	public static void assertEquals(Matrix3 m, float... f) {
-		Assert.assertArrayEquals(f, m.toArray(), EPSILON);
+	public static void assertEquals(Matrix3 m, float m00, float m01, float m02, float m10, float m11,
+									float m12, float m20, float m21, float m22) {
+		assertEquals(m.get(0, 0), m00);
+		assertEquals(m.get(0, 1), m01);
+		assertEquals(m.get(0, 2), m02);
+		assertEquals(m.get(1, 0), m10);
+		assertEquals(m.get(1, 1), m11);
+		assertEquals(m.get(1, 2), m12);
+		assertEquals(m.get(2, 0), m20);
+		assertEquals(m.get(2, 1), m21);
+		assertEquals(m.get(2, 2), m22);
 	}
 
-	public static void assertEquals(Matrix4 m, float... f) {
-		Assert.assertArrayEquals(f, m.toArray(), EPSILON);
+	public static void assertEquals(Matrix4 m, float m00, float m01, float m02, float m03, float m10,
+									float m11, float m12, float m13, float m20, float m21, float m22,
+									float m23, float m30, float m31, float m32, float m33) {
+		assertEquals(m.get(0, 0), m00);
+		assertEquals(m.get(0, 1), m01);
+		assertEquals(m.get(0, 2), m02);
+		assertEquals(m.get(0, 3), m03);
+		assertEquals(m.get(1, 0), m10);
+		assertEquals(m.get(1, 1), m11);
+		assertEquals(m.get(1, 2), m12);
+		assertEquals(m.get(1, 3), m13);
+		assertEquals(m.get(2, 0), m20);
+		assertEquals(m.get(2, 1), m21);
+		assertEquals(m.get(2, 2), m22);
+		assertEquals(m.get(2, 3), m23);
+		assertEquals(m.get(3, 0), m30);
+		assertEquals(m.get(3, 1), m31);
+		assertEquals(m.get(3, 2), m32);
+		assertEquals(m.get(3, 3), m33);
 	}
 
 	public static void assertEquals(MatrixN m, float... f) {
 		Assert.assertArrayEquals(f, m.toArray(), EPSILON);
+	}
+
+	public static void assertEquals(float[] a, float... f) {
+		Assert.assertArrayEquals(f, a, EPSILON);
 	}
 }
