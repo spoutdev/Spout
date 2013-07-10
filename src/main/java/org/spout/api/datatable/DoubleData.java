@@ -43,7 +43,7 @@ class DoubleData extends AbstractData {
 	}
 
 	@Override
-	public void set(Object value) {
+	public void set(Serializable value) {
 		throw new IllegalArgumentException("This is an double value, use set(double)");
 	}
 
@@ -52,7 +52,7 @@ class DoubleData extends AbstractData {
 	}
 
 	@Override
-	public Serializable get() {
+	public Double get() {
 		return data.get();
 	}
 
@@ -64,16 +64,6 @@ class DoubleData extends AbstractData {
 	@Override
 	public void decompress(byte[] compressed) {
 		set(Double.longBitsToDouble(LongData.decompressRaw(compressed)));
-	}
-
-	@Override
-	public byte getObjectTypeId() {
-		return 7;
-	}
-
-	@Override
-	public AbstractData newInstance(int key) {
-		return new DoubleData(key);
 	}
 
 	@Override

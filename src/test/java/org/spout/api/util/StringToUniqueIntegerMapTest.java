@@ -43,14 +43,14 @@ import org.spout.api.io.store.simple.FlatFileStore;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.io.store.simple.SimpleStore;
 
-public class StringMapTest {
-	private StringMap serverMap;
+public class StringToUniqueIntegerMapTest {
+	private StringToUniqueIntegerMap serverMap;
 	private SimpleStore<Integer> serverStore;
 
-	private StringMap world1Map;
+	private StringToUniqueIntegerMap world1Map;
 	private SimpleStore<Integer> world1Store;
 
-	private StringMap world2Map;
+	private StringToUniqueIntegerMap world2Map;
 	private SimpleStore<Integer> world2Store;
 
 	private File world1File = new File("world1.dat");
@@ -72,7 +72,7 @@ public class StringMapTest {
 		world2File.delete();
 
 		serverStore = new MemoryStore<Integer>();
-		serverMap = new StringMap(null, serverStore, minValue, maxValue, "serverMap");
+		serverMap = new StringToUniqueIntegerMap(null, serverStore, minValue, maxValue, "serverMap");
 
 		readWorldFiles();
 	}
@@ -194,7 +194,7 @@ public class StringMapTest {
 		assertTrue("Wrong key for registered id", world1Map.getString(10).equals("some.block.name3"));
 	}
 
-	private void checkWorldToServer(int numKeys, String prefix, StringMap map) {
+	private void checkWorldToServer(int numKeys, String prefix, StringToUniqueIntegerMap map) {
 		for (int i = 0; i < numKeys; i++) {
 			String key = prefix + i;
 			Integer worldId = map.register(key);
@@ -206,7 +206,7 @@ public class StringMapTest {
 		}
 	}
 
-	private void checkServerToWorld(int numKeys, String prefix, StringMap map) {
+	private void checkServerToWorld(int numKeys, String prefix, StringToUniqueIntegerMap map) {
 		for (int i = 0; i < numKeys; i++) {
 			String key = prefix + i;
 			Integer serverId = registerWithServerMap(key);
@@ -221,11 +221,11 @@ public class StringMapTest {
 	private void readWorldFiles() {
 		world1Store = new FlatFileStore<Integer>(world1File, Integer.class);
 		world1Store.load();
-		world1Map = new StringMap(serverMap, world1Store, minValue, maxValue, "world1");
+		world1Map = new StringToUniqueIntegerMap(serverMap, world1Store, minValue, maxValue, "world1");
 
 		world2Store = new FlatFileStore<Integer>(world2File, Integer.class);
 		world2Store.load();
-		world2Map = new StringMap(serverMap, world2Store, minValue, maxValue, "world2");
+		world2Map = new StringToUniqueIntegerMap(serverMap, world2Store, minValue, maxValue, "world2");
 	}
 
 	private void fillServerMap() {

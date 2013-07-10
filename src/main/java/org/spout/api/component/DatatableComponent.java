@@ -36,30 +36,19 @@ import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.map.DefaultedKey;
 
-public final class DatatableComponent extends Component implements SerializableMap {
-	private final ManagedHashMap dataMap;
-
-	public DatatableComponent(ManagedHashMap data) {
-		this.dataMap = data;
-	}
-
-	public DatatableComponent(byte[] data) {
-		this.dataMap = new ManagedHashMap();
-		if (data != null && data.length > 0) {
-			try {
-				this.dataMap.deserialize(data);
-			} catch (IOException e) {
-				throw new RuntimeException("Invalid DatatableComponent byte array", e);
-			}
-		}
-	}
+public class DatatableComponent extends Component implements SerializableMap {
+	private final SerializableMap dataMap;
 
 	public DatatableComponent() {
-		this((byte[]) null);
+		this.dataMap = newMap();
 	}
 
-	public ManagedHashMap getBaseMap() {
+	public final SerializableMap getBaseMap() {
 		return dataMap;
+	}
+	
+	public SerializableMap newMap() {
+		return new ManagedHashMap();
 	}
 
 	@Override

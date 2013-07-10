@@ -26,6 +26,7 @@
  */
 package org.spout.api.datatable;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class ShortData extends AbstractData {
@@ -42,7 +43,7 @@ class ShortData extends AbstractData {
 	}
 
 	@Override
-	public void set(Object value) {
+	public void set(Serializable value) {
 		throw new IllegalArgumentException("This is an short value, use set(short)");
 	}
 
@@ -77,16 +78,6 @@ class ShortData extends AbstractData {
 		x |= (compressed[0] & 0xFF) << 8;
 		x |= (compressed[1] & 0xFF) << 0;
 		return x;
-	}
-
-	@Override
-	public byte getObjectTypeId() {
-		return 8;
-	}
-
-	@Override
-	public AbstractData newInstance(int key) {
-		return new ShortData(key);
 	}
 
 	@Override

@@ -45,7 +45,7 @@ class BooleanData extends AbstractData {
 	}
 
 	@Override
-	public void set(Object value) {
+	public void set(Serializable value) {
 		throw new IllegalArgumentException("This is an boolean value, use set(string,bool)");
 	}
 
@@ -69,16 +69,6 @@ class BooleanData extends AbstractData {
 			throw new IllegalArgumentException("DatatableBools should be represented by a byte array of length 1");
 		}
 		set(compressed[0] != 0);
-	}
-
-	@Override
-	public byte getObjectTypeId() {
-		return 1;
-	}
-
-	@Override
-	public AbstractData newInstance(int key) {
-		return new BooleanData(key);
 	}
 
 	@Override

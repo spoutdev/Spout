@@ -29,16 +29,13 @@ package org.spout.api.datatable;
 import java.io.Serializable;
 
 class NullData extends AbstractData {
-	public NullData() {
-		this(0);
-	}
 
 	public NullData(int key) {
 		super(key);
 	}
 
 	@Override
-	public void set(Object value) {
+	public void set(Serializable value) {
 		throw new RuntimeException("This value doesn't exist!");
 	}
 
@@ -67,16 +64,6 @@ class NullData extends AbstractData {
 		if (compressed != null && compressed.length != 0) {
 			throw new IllegalArgumentException("DatatableNil objects can only be represented by null or zero length arrays");
 		}
-	}
-
-	@Override
-	public byte getObjectTypeId() {
-		return 0;
-	}
-
-	@Override
-	public AbstractData newInstance(int key) {
-		return new NullData(key);
 	}
 
 	@Override

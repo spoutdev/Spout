@@ -36,9 +36,11 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.map.DefaultedKey;
+import org.spout.api.util.StringToUniqueIntegerMap;
 
 /**
  * Manages a string keyed, serializable object hashmap that can be serialized easily
@@ -46,9 +48,19 @@ import org.spout.api.map.DefaultedKey;
  * and network transfers.
  */
 public class ManagedHashMap implements SerializableMap {
+	// This doesn't need to be persisted across restarts
+	private static final AtomicInteger nonSyncingNextId = new AtomicInteger();
 	final GenericDatatableMap map;
 	public ManagedHashMap() {
 		this.map = new GenericDatatableMap();
+	}
+
+	public ManagedHashMap(boolean sync) {
+		if (sync) {
+			this.map = new GenericDatatableMap();
+		} else {
+			this.map = new GenericDatatableMap(new StringToUniqueIntegerMap(ManagedHashMap.class.getName() + nonSyncingNextId.getAndIncrement()));
+		}
 	}
 
 	@Override

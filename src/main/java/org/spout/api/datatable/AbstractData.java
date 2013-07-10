@@ -37,68 +37,23 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.util.VarInt;
 
-abstract class AbstractData{
+public abstract class AbstractData {
 	public static final byte PERSIST = 0x1;
 	public static final byte SYNC = 0x2;
 
 	protected final AtomicInteger keyID;
 	protected final AtomicInteger flags;
-	protected final AtomicReference<Serializable> data;
 	protected final AtomicBoolean dirty;
 	protected final AtomicReference<byte[]> compressed;
 
-	private static AbstractData[] newInstanceArray = new AbstractData[10];
-
-	public AbstractData() {
-		this(0);
-	}
-
 	public AbstractData(int key) {
-		this(key, null);
-	}
-
-	public AbstractData(int key, Serializable dat) {
 		keyID = new AtomicInteger(key);
-		data = new AtomicReference<Serializable>(dat);
 		flags = new AtomicInteger((PERSIST | SYNC));
 		dirty = new AtomicBoolean(false);
 		compressed = new AtomicReference<byte[]>(null);
 	}
 
-	static {
-		register(new NullData(0));
-		register(new BooleanData(0));
-		register(new IntegerData(0));
-		register(new FloatData(0));
-		register(new SerializableData(0));
-		register(new LongData(0));
-		register(new StringData(0));
-		register(new DoubleData(0));
-		register(new ShortData(0));
-		register(new ByteData(0));
-	}
-
-	private static void register(AbstractData o) {
-		int id = o.getObjectTypeId();
-		if (newInstanceArray[id] != null) {
-			throw new IllegalStateException("Attempt made to register " + o.getClass().getSimpleName() + " but the id is already in use by " + newInstanceArray[id].getClass().getSimpleName());
-		}
-		newInstanceArray[id] = o;
-	}
-
-	public static AbstractData newInstance(int id, int key) {
-		if (id < 0 || id > newInstanceArray.length || newInstanceArray[id] == null) {
-			throw new IllegalArgumentException("Datatable object id of " + id + " has no corresponding type");
-		}
-		return newInstanceArray[id].newInstance(key);
-	}
-
-	public void set(Object value) {
-		if (value != null && !(value instanceof Serializable)) {
-			throw new IllegalArgumentException("Unsupported Metadata type");
-		}
-		data.set((Serializable) value);
-	}
+	public abstract void set(Serializable value);
 
 	public void setKey(int key) {
 		keyID.set(key);
@@ -142,22 +97,16 @@ abstract class AbstractData{
 		} while (!this.flags.compareAndSet(oldValue, newValue));
 	}
 
-	public Serializable get() {
-		return data.get();
-	}
+	public abstract Serializable get();
 
 	public abstract int fixedLength();
-
-	public abstract byte getObjectTypeId();
-
-	public abstract AbstractData newInstance(int key);
 
 	public abstract byte[] compress();
 
 	public abstract void decompress(byte[] compressed);
 
 	public void output(OutputStream out) throws IOException {
-		out.write(getObjectTypeId());
+		out.write(DataRegistry.getId(this));
 		VarInt.writeInt(out, hashCode());
 		byte[] compressed = compress();
 		int expectedLength = fixedLength();
@@ -177,7 +126,8 @@ abstract class AbstractData{
 			throw new EOFException("InputStream did not contain a DatatableObject");
 		}
 		int key = VarInt.readInt(in);
-		AbstractData obj = newInstance(typeId, key);
+		
+		AbstractData obj = DataRegistry.getData(typeId).newInstance(key);
 		int expectedLength = obj.fixedLength();
 		if (expectedLength == -1) {
 			expectedLength = VarInt.readInt(in);

@@ -43,7 +43,7 @@ class IntegerData extends AbstractData {
 	}
 
 	@Override
-	public void set(Object value) {
+	public void set(Serializable value) {
 		throw new IllegalArgumentException("This is an int value, use set(int)");
 	}
 
@@ -82,16 +82,6 @@ class IntegerData extends AbstractData {
 		x |= (compressed[2] & 0xFF) << 8;
 		x |= (compressed[3] & 0xFF) << 0;
 		return x;
-	}
-
-	@Override
-	public byte getObjectTypeId() {
-		return 3;
-	}
-
-	@Override
-	public AbstractData newInstance(int key) {
-		return new IntegerData(key);
 	}
 
 	@Override

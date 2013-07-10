@@ -43,7 +43,7 @@ class FloatData extends AbstractData {
 	}
 
 	@Override
-	public void set(Object value) {
+	public void set(Serializable value) {
 		throw new IllegalArgumentException("This is an float value, use set(float)");
 	}
 
@@ -64,16 +64,6 @@ class FloatData extends AbstractData {
 	@Override
 	public void decompress(byte[] compressed) {
 		set(Float.intBitsToFloat(IntegerData.decompressRaw(compressed)));
-	}
-
-	@Override
-	public byte getObjectTypeId() {
-		return 2;
-	}
-
-	@Override
-	public AbstractData newInstance(int key) {
-		return new FloatData(key);
 	}
 
 	@Override

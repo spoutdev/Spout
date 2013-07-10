@@ -26,6 +26,7 @@
  */
 package org.spout.api.datatable;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class ByteData extends AbstractData {
@@ -42,7 +43,7 @@ class ByteData extends AbstractData {
 	}
 
 	@Override
-	public void set(Object value) {
+	public void set(Serializable value) {
 		throw new IllegalArgumentException("This is an byte value, use set(byte)");
 	}
 
@@ -75,16 +76,6 @@ class ByteData extends AbstractData {
 		byte x = 0;
 		x |= (compressed[0] & 0xFF) << 0;
 		return x;
-	}
-
-	@Override
-	public byte getObjectTypeId() {
-		return 9;
-	}
-
-	@Override
-	public AbstractData newInstance(int key) {
-		return new ByteData(key);
 	}
 
 	@Override

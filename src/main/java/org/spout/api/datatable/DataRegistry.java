@@ -26,52 +26,39 @@
  */
 package org.spout.api.datatable;
 
-import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class StringData extends AbstractData {
+import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.util.StringToUniqueIntegerMap;
 
-	private final AtomicReference<String> data = new AtomicReference<String>("");
-
-	public StringData(int key) {
-		super(key);
+public class DataRegistry {
+	private static final StringToUniqueIntegerMap idMap = new StringToUniqueIntegerMap(null, new MemoryStore<Integer>(), 0, 256, DataRegistry.class.getName());// AbstractData class name -> ID
+	private static final Map<Integer, DataType<?>> datas = new ConcurrentHashMap<Integer, DataType<?>>();
+	
+	static {
+		DataType.init();
 	}
 
-	public StringData(int key, String value) {
-		super(key);
-		data.set(value);
-	}
-
-	@Override
-	public void set(Serializable value) {
-		if (value instanceof String) {
-			set((String)value);
-			return;
+	public static <T extends AbstractData> DataType<T> register(DataType<T> o) {
+		if (idMap.getValue(o.getDataType().getName()) != null) {
+			throw new IllegalStateException("Attempt made to register an AbstractData twice.");
 		}
-		throw new IllegalArgumentException("This is an String value, use set(String)");
+		int id = idMap.register(o.getDataType().getName());
+		datas.put(id, o);
+		return o;
 	}
-
-	public void set(String value) {
-		data.set(value);
+	
+	public static Integer getId(AbstractData o) {
+		String name = o.getClass().getName();
+		return idMap.getValue(name);
 	}
-
-	@Override
-	public Serializable get() {
-		return data.get();
-	}
-
-	@Override
-	public byte[] compress() {
-		return data.get().getBytes();
-	}
-
-	@Override
-	public void decompress(byte[] compressed) {
-		set(new String(compressed));
-	}
-
-	@Override
-	public int fixedLength() {
-		return -1;
+	
+	public static DataType<?> getData(int id) {
+		DataType<?> get = datas.get(id);
+		if (get == null) {
+			throw new IllegalStateException("Tried to get the AbstractData of an unknown Id");
+		}
+		return get;
 	}
 }

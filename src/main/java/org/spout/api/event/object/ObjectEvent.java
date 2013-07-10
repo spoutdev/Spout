@@ -27,14 +27,14 @@
 package org.spout.api.event.object;
 
 @SuppressWarnings("rawtypes")
-public class ObjectEvent<EventableType extends Eventable> {
-	private final EventableType associatedObject;
+public class ObjectEvent<T> {
+	private final T associatedObject;
 
-	public ObjectEvent(EventableType associatedObject) {
+	public ObjectEvent(T associatedObject) {
 		this.associatedObject = associatedObject;
 	}
 
-	public EventableType getAssociatedObject() {
+	public T getAssociatedObject() {
 		return associatedObject;
 	}
 }

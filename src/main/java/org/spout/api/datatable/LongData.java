@@ -43,7 +43,7 @@ class LongData extends AbstractData {
 	}
 
 	@Override
-	public void set(Object value) {
+	public void set(Serializable value) {
 		throw new IllegalArgumentException("This is an long value, use set(long)");
 	}
 
@@ -90,16 +90,6 @@ class LongData extends AbstractData {
 		x |= (compressed[6] & 0xFFL) << 8;
 		x |= (compressed[7] & 0xFFL) << 0;
 		return x;
-	}
-
-	@Override
-	public byte getObjectTypeId() {
-		return 5;
-	}
-
-	@Override
-	public AbstractData newInstance(int key) {
-		return new LongData(key);
 	}
 
 	@Override

@@ -26,19 +26,15 @@
  */
 package org.spout.api.util;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.spout.api.event.object.EventableBase;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.io.store.simple.SimpleStore;
 
@@ -50,12 +46,8 @@ import org.spout.api.io.store.simple.SimpleStore;
  *
  * Conversions to and from parent/child maps are cached
  */
-public class StringMap extends EventableBase<StringMapEvent, StringMap> {
-    public static final byte REGISTRATION_MAP = -1;
-	private static final StringMap STRING_MAP_REGISTRATION = new StringMap(REGISTRATION_MAP); // This is a special case
-	private static final ConcurrentMap<String, WeakReference<StringMap>> REGISTERED_MAPS = new ConcurrentHashMap<String, WeakReference<StringMap>>();
-	private final StringMap parent;
-	private final SimpleStore<Integer> store;
+public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
+	private final StringToUniqueIntegerMap parent;
 
 	private final AtomicIntegerArray thisToParentMap;
 	private final AtomicIntegerArray parentToThisMap;
@@ -64,47 +56,12 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 	private final int maxId;
 	private AtomicInteger nextId;
 
-	private final int id;
-
-	public static StringMap get(int id) {
-		if (id == REGISTRATION_MAP) {
-			return STRING_MAP_REGISTRATION;
-		}
-		String name = STRING_MAP_REGISTRATION.getString(id);
-		if (name != null) {
-			WeakReference<StringMap> ref =  REGISTERED_MAPS.get(name);
-			if (ref != null) {
-				StringMap map = ref.get();
-				if (map == null) {
-					REGISTERED_MAPS.remove(name);
-				}
-				return map;
-			}
-		}
-		return null;
+	public StringToUniqueIntegerMap(String name) {
+		this(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, name);
 	}
 
-	public static Collection<StringMap> getAll() {
-		Collection<WeakReference<StringMap>> rawMaps = REGISTERED_MAPS.values();
-		List<StringMap> maps = new ArrayList<StringMap>(rawMaps.size());
-		for (WeakReference<StringMap> ref : rawMaps) {
-			StringMap map = ref.get();
-			if (map != null) {
-				maps.add(map);
-			}
-		}
-		return maps;
-	}
-
-	private StringMap(int id) {
-		this.id = id;
-		this.parent = null;
-		this.store = new MemoryStore<Integer>();
-		this.minId = 0;
-		this.maxId = Integer.MAX_VALUE;
-		this.thisToParentMap = null;
-		this.parentToThisMap = null;
-		nextId = new AtomicInteger(minId);
+	public StringToUniqueIntegerMap(String name, int maxId) {
+		this(null, new MemoryStore<Integer>(), 0, maxId, name);
 	}
 
 	/**
@@ -112,11 +69,11 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 	 * @param store the store to store ids
 	 * @param minId the lowest valid id for dynamic allocation (ids below this are assumed to be reserved)
 	 * @param maxId the highest valid id + 1
-	 * @param name The name of this StringMap
+	 * @param name The name of this StringToUniqueIntegerMap
 	 */
-	public StringMap(StringMap parent, SimpleStore<Integer> store, int minId, int maxId, String name) {
+	public StringToUniqueIntegerMap(StringToUniqueIntegerMap parent, SimpleStore<Integer> store, int minId, int maxId, String name) {
+		super(store, name);
 		this.parent = parent;
-		this.store = store;
 		if (this.parent != null) {
 			thisToParentMap = new AtomicIntegerArray(maxId);
 			parentToThisMap = new AtomicIntegerArray(maxId);
@@ -131,12 +88,6 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 		this.minId = minId;
 		this.maxId = maxId;
 		nextId = new AtomicInteger(minId);
-		this.id = STRING_MAP_REGISTRATION.register(name);
-		REGISTERED_MAPS.put(name, new WeakReference<StringMap>(this));
-	}
-
-	public int getId() {
-		return id;
 	}
 
 	/**
@@ -159,7 +110,7 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 	 * @param localId to convert
 	 * @return returns the foreign id, or 0 on failure
 	 */
-	public int convertTo(StringMap other, int localId) {
+	public int convertTo(StringToUniqueIntegerMap other, int localId) {
 		if (other == null) {
 			throw new IllegalStateException("Other map is null");
 		}
@@ -216,8 +167,7 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 	 * @param other the other map
 	 * @return returns the local id, or 0 on failure
 	 */
-
-	public int convertFrom(StringMap other, int foreignId) {
+	public int convertFrom(StringToUniqueIntegerMap other, int foreignId) {
 		return other.convertTo(this, foreignId);
 	}
 
@@ -230,7 +180,6 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 	 * @param key the key to be added
 	 * @return returns the local id, or 0 on failure
 	 */
-
 	public int register(String key) {
 		Integer id = store.get(key);
 		if (id != null) {
@@ -265,7 +214,6 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 	 * @return true if the key/id pair was successfully registered
 	 * @exception IllegalArgumentException if the id >= minId
 	 */
-
 	public boolean register(String key, int id) {
 		if (id >= this.minId) {
 			throw new IllegalArgumentException("Hardcoded ids must be below the minimum id value");
@@ -280,7 +228,8 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 	 * @param value
 	 * @return the String or null if no match
 	 */
-	public String getString(int value) {
+	@Override
+	public String getString(Integer value) {
 		return store.reverseGet(value);
 	}
 
@@ -289,7 +238,8 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 	 * @param key The key
 	 * @return The int or null if no match
 	 */
-	public Integer getInteger(String key) {
+	@Override
+	public Integer getValue(String key) {
 		return store.get(key);
 	}
 
@@ -298,6 +248,7 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 	 *
 	 * @return returns true if the map saves correctly
 	 */
+	@Override
 	public boolean save() {
 		return store.save();
 	}
@@ -308,27 +259,12 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 	 *
 	 * @return returns a Collection containing all the keys
 	 */
+	@Override
 	public Collection<String> getKeys() {
 		return store.getKeys();
 	}
 
-	public void handleUpdate(StringMapEvent message) {
-		switch (message.getAction()) {
-			case SET:
-				clear();
-			case ADD:
-				for (Pair<Integer, String> pair : message.getModifiedElements()) {
-					store.set(pair.getValue(), pair.getKey());
-				}
-				break;
-			case REMOVE:
-				for (Pair<Integer, String> pair : message.getModifiedElements()) {
-					store.remove(pair.getValue());
-				}
-				break;
-		}
-	}
-
+	@Override
 	public List<Pair<Integer, String>> getItems() {
 		List<Pair<Integer, String>> items = new ArrayList<Pair<Integer, String>>();
 		for (Map.Entry<String, Integer> entry : store.getEntrySet()) {
@@ -337,6 +273,7 @@ public class StringMap extends EventableBase<StringMapEvent, StringMap> {
 		return items;
 	}
 
+	@Override
 	public void clear() {
 		while (this.nextId.getAndSet(minId) != minId) {
 			if (this.parent != null) {

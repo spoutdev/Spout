@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * Event called when modifications occur on a StringMap
  */
-public class StringMapEvent extends ObjectEvent<StringMap> {
+public class SyncedMapEvent extends ObjectEvent<SyncedStringMap> {
     public static enum Action {
         ADD, SET, REMOVE,
     }
@@ -43,7 +43,7 @@ public class StringMapEvent extends ObjectEvent<StringMap> {
     private final Action action;
     private final List<Pair<Integer, String>> modifiedElements;
 
-    public StringMapEvent(StringMap map, Action action, List<Pair<Integer, String>> modifiedElements) {
+    public SyncedMapEvent(SyncedStringMap map, Action action, List<Pair<Integer, String>> modifiedElements) {
         super(map);
         this.action = action;
         this.modifiedElements = Collections.unmodifiableList(modifiedElements);

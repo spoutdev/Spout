@@ -36,7 +36,7 @@ import org.spout.api.Server;
 
 import org.spout.api.Spout;
 import org.spout.api.io.store.simple.BinaryFileStore;
-import org.spout.api.util.StringMap;
+import org.spout.api.util.StringToUniqueIntegerMap;
 
 public class LightingRegistry {
 
@@ -47,7 +47,7 @@ public class LightingRegistry {
 	private final static AtomicReference<LightingManager<?>[]> managerArray = new AtomicReference<LightingManager<?>[]>();
 	private static boolean setup = false;
 	private final static BinaryFileStore store = new BinaryFileStore();
-	private final static StringMap lightingRegistry = new StringMap(null, store, 1, Short.MAX_VALUE, LightingManager.class.getName());
+	private final static StringToUniqueIntegerMap lightingRegistry = new StringToUniqueIntegerMap(null, store, 1, Short.MAX_VALUE, LightingManager.class.getName());
 	
 	static {
 		for (int i = 0; i < lightingLookup.length; i++) {
@@ -61,9 +61,9 @@ public class LightingRegistry {
 	 * 
 	 * Can throw an {@link IllegalStateException} if the material registry has already been setup.
 	 * 
-	 * @return StringMap of registered materials
+	 * @return StringToUniqueIntegerMap of registered materials
 	 */
-	public static StringMap setupRegistry() {
+	public static StringToUniqueIntegerMap setupRegistry() {
 		if (setup) {
 			throw new IllegalStateException("Can not setup material registry twice!");
 		}

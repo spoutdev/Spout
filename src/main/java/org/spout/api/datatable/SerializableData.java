@@ -34,6 +34,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.apache.commons.io.IOUtils;
@@ -42,17 +43,20 @@ import org.spout.api.plugin.PluginClassLoader;
 
 public class SerializableData extends AbstractData {
 
+	protected final AtomicReference<Serializable> data = new AtomicReference<Serializable>();
+
 	public SerializableData(int key) {
 		super(key);
 	}
 
 	public SerializableData(int key, Serializable data) {
-		super(key, data);
+		super(key);
+		this.data.set(data);
 	}
 
 	@Override
 	public byte[] compress() {
-		Serializable value = super.get();
+		Serializable value = data.get();
 		if (value instanceof ByteArrayWrapper) {
 			return ((ByteArrayWrapper) value).getArray();
 		}
@@ -62,7 +66,7 @@ public class SerializableData extends AbstractData {
 		try {
 			ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
 
-			objOut.writeObject(super.get());
+			objOut.writeObject(value);
 			objOut.flush();
 			objOut.close();
 		} catch (IOException e) {
@@ -77,15 +81,20 @@ public class SerializableData extends AbstractData {
 
 	@Override
 	public void decompress(byte[] compressed) {
-		super.set(new ByteArrayWrapper(compressed));
+		data.set(new ByteArrayWrapper(compressed));
+	}
+
+	@Override
+	public void set(Serializable value) {
+		data.set(value);
 	}
 
 	@Override
 	public Serializable get() {
 		while (true) {
-			Serializable s = super.get();
+			Serializable s = data.get();
 			if (!(s instanceof ByteArrayWrapper)) {
-				return super.get();
+				return s;
 			}
 			try {
 				ByteArrayWrapper w = (ByteArrayWrapper) s;
@@ -110,18 +119,8 @@ public class SerializableData extends AbstractData {
 		}
 	}
 
-	@Override
-	public byte getObjectTypeId() {
-		return 4;
-	}
-
-	@Override
-	public AbstractData newInstance(int key) {
-		return new SerializableData(key);
-	}
-
 	public boolean isUnknownClass() {
-		Serializable s = super.get();
+		Serializable s = data.get();
 		if (s == null) {
 			return false;
 		}

@@ -32,7 +32,7 @@ import org.spout.api.util.thread.annotation.Threadsafe;
  * Base interface for an object that can accept listeners for a specified event
  * @param <T> The type of event allowed
  */
-public interface Eventable<T extends ObjectEvent<U>, U extends Eventable<T, U>> {
+public interface Eventable<T extends ObjectEvent<?>> {
 	/**
 	 * Add a listener for the type of event this {@link Eventable} covers.
 	 * @param listener The listener to register.

@@ -48,6 +48,10 @@ public class BaseComponentOwner implements ComponentOwner {
 		data = add(DatatableComponent.class);
 	}
 
+	public BaseComponentOwner(Class<? extends DatatableComponent> component) {
+		data = add(component);
+	}
+
 	/**
 	 * For use de-serializing a list of components all at once,
 	 * without having to worry about dependencies

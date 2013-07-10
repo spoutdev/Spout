@@ -33,7 +33,7 @@ import org.spout.api.Server;
 
 import org.spout.api.Spout;
 import org.spout.api.io.store.simple.BinaryFileStore;
-import org.spout.api.util.StringMap;
+import org.spout.api.util.StringToUniqueIntegerMap;
 
 public final class BiomeRegistry {
 	private final static int MAX_BIOMES = 256;
@@ -41,7 +41,7 @@ public final class BiomeRegistry {
 	private final static AtomicReference<Biome>[] biomes = new AtomicReference[MAX_BIOMES];
 	private static boolean setup = false;
 	private final static BinaryFileStore store = new BinaryFileStore();
-	private final static StringMap biomeRegistry = new StringMap(null, store, 1, MAX_BIOMES, Biome.class.getName());
+	private final static StringToUniqueIntegerMap biomeRegistry = new StringToUniqueIntegerMap(null, store, 1, MAX_BIOMES, Biome.class.getName());
 
 	static {
 		for (int i = 0; i < biomes.length; i++) {
@@ -52,7 +52,7 @@ public final class BiomeRegistry {
 	/**
 	 * Sets up the biome registry for the first use
 	 */
-	public static StringMap setupRegistry() {
+	public static StringToUniqueIntegerMap setupRegistry() {
 		if (setup) {
 			throw new IllegalStateException("Can not setup biome registry twice!");
 		}

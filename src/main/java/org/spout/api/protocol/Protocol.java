@@ -42,12 +42,12 @@ import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.exception.UnknownPacketException;
 import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.util.StringMap;
+import org.spout.api.util.StringToUniqueIntegerMap;
 
 public abstract class Protocol {
 	private static final ConcurrentHashMap<String, Protocol> map = new ConcurrentHashMap<String, Protocol>();
 
-	private final StringMap dynamicPacketLookup;
+	private final StringToUniqueIntegerMap dynamicPacketLookup;
 	private final CodecLookupService codecLookup;
 	private final HandlerLookupService handlerLookup;
 	private final String name;
@@ -58,7 +58,7 @@ public abstract class Protocol {
 		this.handlerLookup = handlerLookup;
 		this.defaultPort = defaultPort;
 		this.name = name;
-		this.dynamicPacketLookup = new StringMap(null, new MemoryStore<Integer>(), Integer.MAX_VALUE, Integer.MAX_VALUE, this.name + "ProtocolDynamicPackets");
+		this.dynamicPacketLookup = new StringToUniqueIntegerMap(null, new MemoryStore<Integer>(), Integer.MAX_VALUE, Integer.MAX_VALUE, this.name + "ProtocolDynamicPackets");
 	}
 
 	/**

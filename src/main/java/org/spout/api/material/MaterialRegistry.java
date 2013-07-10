@@ -30,16 +30,17 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
-import org.spout.api.Platform;
 import org.spout.api.Server;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.io.store.simple.BinaryFileStore;
+import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.GenericMath;
-import org.spout.api.util.StringMap;
+import org.spout.api.util.StringToUniqueIntegerMap;
+import org.spout.api.util.SyncedStringMap;
 
 /**
  * Handles all registered materials on the server statically.
@@ -51,8 +52,7 @@ public abstract class MaterialRegistry {
 	@SuppressWarnings("unchecked")
 	private final static AtomicReference<Material[]>[] materialLookup = new AtomicReference[MAX_SIZE];
 	private static boolean setup = false;
-	private final static BinaryFileStore store = new BinaryFileStore();
-	private final static StringMap materialRegistry = new StringMap(null, store, 1, Short.MAX_VALUE, Material.class.getName());
+	private static SyncedStringMap materialRegistry  = new SyncedStringMap(null, new MemoryStore<Integer>(), 1, Short.MAX_VALUE, Material.class.getName());
 	private final static Material[] NULL_MATERIAL_ARRAY = new Material[] {null};
 
 	static {
@@ -68,22 +68,37 @@ public abstract class MaterialRegistry {
 	 * 
 	 * Can throw an {@link IllegalStateException} if the material registry has already been setup.
 	 * 
-	 * @return StringMap of registered materials
+	 * @return StringToUniqueIntegerMap of registered materials
 	 */
-	public static StringMap setupRegistry() {
+	public static SyncedStringMap setupRegistry() {
 		if (setup) {
 			throw new IllegalStateException("Can not setup material registry twice!");
 		}
-		if (Spout.getPlatform() != Platform.SERVER) {
-			throw new UnsupportedOperationException("Cannot setup MaterialRegistry in Client mode!");
+		switch (Spout.getPlatform()) {
+			case PROXY:
+			case SERVER:
+				setupServer();
+				break;
+			case CLIENT:
+				setupClient();
+				break;
 		}
+
+		setup = true;
+		return materialRegistry;
+	}
+
+	private static void setupServer() {
 		File serverItemMap = new File(new File(((Server) Spout.getEngine()).getWorldFolder(), "worlds"), "materials.dat");
-		store.setFile(serverItemMap);
+		BinaryFileStore store = new BinaryFileStore(serverItemMap);
+		materialRegistry = SyncedStringMap.create(null, store, 1, Short.MAX_VALUE, Material.class.getName());
 		if (serverItemMap.exists()) {
 			store.load();
 		}
-		setup = true;
-		return materialRegistry;
+	}
+	
+	private static void setupClient() {
+		materialRegistry = SyncedStringMap.create(null, new MemoryStore<Integer>(), 1, Short.MAX_VALUE, Material.class.getName());
 	}
 
 	/**

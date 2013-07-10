@@ -32,6 +32,7 @@ import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.BeforeClass;
 
 import org.spout.api.EngineFaker;
 import org.spout.api.inventory.util.InventoryIterator;
@@ -42,6 +43,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import org.spout.api.material.MaterialRegistry;
 
 public class InventoryTest extends EngineFaker {
 	private final Material[] mats = {BlockMaterial.AIR, BlockMaterial.SOLID, BlockMaterial.UNBREAKABLE};
