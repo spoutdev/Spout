@@ -29,13 +29,18 @@ package org.spout.engine.protocol.builtin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.spout.api.Platform;
+import org.spout.api.Server;
+import org.spout.api.Spout;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
+import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
 
@@ -50,7 +55,9 @@ public class SpoutEntityProtocol implements EntityProtocol {
 
 	@Override
 	public List<Message> getSpawnMessages(Entity entity, RepositionManager rm) {
-		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getWorld().getUID(), entity.getScene().getTransform(), rm));
+		return Arrays.<Message>asList(
+			new AddEntityMessage(entity.getId(), entity.getWorld().getUID(), entity.getScene().getTransform(), rm),
+			new EntityDatatableMessage(entity.getId(), entity.getData()));
 	}
 
 	@Override
@@ -64,7 +71,10 @@ public class SpoutEntityProtocol implements EntityProtocol {
 		if (force || entity.getScene().isTransformDirty()) {
 			messages.add(new EntityTransformMessage(entity.getId(), liveTransform, rm));
 		}
-		//TODO Need to send datatable here if dirty...I believe
+		if (entity.getData().isDirty()) {
+			messages.add(new EntityDatatableMessage(entity.getId(), entity.getData()));
+			entity.getData().onSend();
+		}
 		return messages;
 	}
 }

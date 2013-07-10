@@ -217,9 +217,9 @@ public class EntityManager {
 
 	private void syncEntity(Entity ent, Set<? extends Entity> observers, boolean forceDestroy) {
 		for (Entity observer : observers) {
-			//Don't sync ourselves to ourselves :p
+			//Don't sync ourselves to ourselves :p - NO! DO SYNC TO OURSELVES!
 			if (ent == observer) {
-				continue;
+			//	continue;
 			}
 			//Non-players have no synchronizer, ignore
 			if (!(observer instanceof Player)) {

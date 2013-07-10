@@ -26,6 +26,7 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
+import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
@@ -37,7 +38,9 @@ public class RemoveEntityMessageHandler extends MessageHandler<RemoveEntityMessa
 		if(!session.hasPlayer()) {
 			return;
 		}
-
+		if (message.getEntityId() == session.getPlayer().getId()) {
+			Spout.getEngine().stop("Server removed the player entity, This is not correct. Fix this. Now.");
+		}
 		Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
 		if (entity != null) {
 			entity.remove();

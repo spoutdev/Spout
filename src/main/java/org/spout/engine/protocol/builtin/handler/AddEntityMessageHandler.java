@@ -41,8 +41,10 @@ public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 		RepositionManager rmInverse = session.getNetworkSynchronizer().getRepositionManager().getInverse();
 		Entity entity;
 		//Spawning a player
-		if (message.getEntityId() == session.getDataMap().get(SpoutProtocol.PLAYER_ENTITY_ID)) {
+		if (message.getEntityId() == session.getPlayer().getId()) {
 			entity = session.getPlayer();
+			entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
+			return;
 		} else {
 			entity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()));
 		}

@@ -41,9 +41,16 @@ public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatabl
 		if(!session.hasPlayer()) {
 			throw new IllegalStateException("Message sent when session has no player");
 		}
-
-		Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
+		Entity entity;
+		if (message.getEntityId() == session.getPlayer().getId()) {
+			entity = session.getPlayer();
+		} else {
+			entity = session.getEngine().getDefaultWorld().getEntity(message.getEntityId());
+		}
+		// TODO: why doesn't this work!?
+		//Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
 		try {
+			System.out.println("Received datatable message for " + entity.toString());
 			entity.getData().deserialize(message.getCompressedData(), true);
 		} catch (IOException e) {
 			Spout.getLogger().log(Level.SEVERE, "Exception deserializing compressed datatable", e);

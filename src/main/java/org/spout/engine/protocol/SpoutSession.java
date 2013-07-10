@@ -121,8 +121,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 * The NetworkSynchronizer being used for this session
 	 */
 	private final AtomicReference<NetworkSynchronizer> synchronizer;
-
-	private final ManagedHashMap dataMap;
 	
 	/**
 	 * 
@@ -144,7 +142,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		this.channel = channel;
 		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
 		isConnected = true;
-		this.dataMap = new ManagedHashMap();
 		this.exceptionHandler = new AtomicReference<UncaughtExceptionHandler>(new DefaultUncaughtExceptionHandler(this));
 		if (engine instanceof Server) {
 			nullSynchronizer = new ServerNullNetworkSynchronizer((ServerSession)this);
@@ -353,11 +350,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	@Override
 	public boolean isConnected() {
 		return channel.isOpen();
-	}
-
-	@Override
-	public SerializableMap getDataMap() {
-		return dataMap;
 	}
 
 	protected void setNetworkSynchronizer(NetworkSynchronizer synchronizer) {

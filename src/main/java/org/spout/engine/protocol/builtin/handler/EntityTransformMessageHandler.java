@@ -30,7 +30,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.reposition.RepositionManager;
-import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 
 public class EntityTransformMessageHandler extends MessageHandler<EntityTransformMessage> {
@@ -38,15 +37,12 @@ public class EntityTransformMessageHandler extends MessageHandler<EntityTransfor
 	public void handleClient(ClientSession session, EntityTransformMessage message) {
 		RepositionManager rmInverse = session.getNetworkSynchronizer().getRepositionManager().getInverse();
 
-		System.out.println("Received Entity Transform " + message.getEntityId());
 		Entity entity;
-		if (message.getEntityId() == session.getDataMap().get(SpoutProtocol.PLAYER_ENTITY_ID)) {
-			System.out.println("Received Player Transform");
+		if (message.getEntityId() == session.getPlayer().getId()) {
 			entity = session.getPlayer();
 		} else {
 			entity = session.getEngine().getDefaultWorld().getEntity(message.getEntityId());
 		}
-		System.out.println("(" +message.getTransform().getPosition().getX() + ", " + message.getTransform().getPosition().getY() + ", " + message.getTransform().getPosition().getZ() + ")");
 		if (entity != null) {
 			entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
 		}
