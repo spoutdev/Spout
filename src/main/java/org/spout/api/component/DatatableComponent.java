@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
@@ -38,12 +39,14 @@ import org.spout.api.map.DefaultedKey;
 
 public class DatatableComponent extends Component implements SerializableMap {
 	private final SerializableMap dataMap;
+	private final AtomicBoolean dirty = new AtomicBoolean(true);
 
 	public DatatableComponent() {
 		this.dataMap = newMap();
 	}
 
 	public final SerializableMap getBaseMap() {
+		dirty.set(true);
 		return dataMap;
 	}
 	
@@ -58,26 +61,31 @@ public class DatatableComponent extends Component implements SerializableMap {
 
 	@Override
 	public <T extends Serializable> T put(DefaultedKey<T> key, T value) {
+		dirty.set(true);
 		return dataMap.put(key, value);
 	}
 
 	@Override
 	public <T extends Serializable> T putIfAbsent(DefaultedKey<T> key, T value) {
+		dirty.set(true);
 		return dataMap.putIfAbsent(key, value);
 	}
 
 	@Override
 	public Serializable get(Object key) {
+		dirty.set(true);
 		return dataMap.get(key);
 	}
 
 	@Override
 	public <T extends Serializable> T get(DefaultedKey<T> key) {
+		dirty.set(true);
 		return dataMap.get(key);
 	}
 
 	@Override
 	public <T extends Serializable> T get(Object key, T defaultValue) {
+		dirty.set(true);
 		return dataMap.get(key, defaultValue);
 	}
 
@@ -103,16 +111,19 @@ public class DatatableComponent extends Component implements SerializableMap {
 
 	@Override
 	public Serializable remove(Object key) {
+		dirty.set(true);
 		return this.dataMap.remove(key);
 	}
 
 	@Override
 	public void putAll(Map<? extends String, ? extends Serializable> m) {
+		dirty.set(true);
 		this.dataMap.putAll(m);
 	}
 
 	@Override
 	public void clear() {
+		dirty.set(true);
 		this.dataMap.clear();
 	}
 
@@ -123,21 +134,25 @@ public class DatatableComponent extends Component implements SerializableMap {
 
 	@Override
 	public Collection<Serializable> values() {
+		dirty.set(true);
 		return this.dataMap.values();
 	}
 
 	@Override
 	public Set<java.util.Map.Entry<String, Serializable>> entrySet() {
+		dirty.set(true);
 		return this.dataMap.entrySet();
 	}
 
 	@Override
 	public Serializable put(String key, Serializable value) {
+		dirty.set(true);
 		return this.dataMap.put(key, value);
 	}
 
 	@Override
 	public Serializable putIfAbsent(String key, Serializable value) {
+		dirty.set(true);
 		return this.dataMap.put(key, value);
 	}
 
@@ -163,6 +178,15 @@ public class DatatableComponent extends Component implements SerializableMap {
 
 	@Override
 	public <T> T get(String key, Class<T> clazz) {
+		dirty.set(true);
 		return dataMap.<T>get(key, clazz);
+	}
+	
+	public boolean isDirty() {
+		return dirty.get();
+	}
+	
+	public void onSend() {
+		dirty.set(false);
 	}
 }

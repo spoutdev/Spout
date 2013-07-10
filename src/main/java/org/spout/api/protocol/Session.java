@@ -214,13 +214,6 @@ public interface Session {
 	 */
 	public boolean isConnected();
 
-	/**
-	 * Gets a map of data attached to this session.
-	 *
-	 * @return data map
-	 */
-	public SerializableMap getDataMap();
-
 	public interface UncaughtExceptionHandler {
 		/**
 		 * Called when an exception occurs during session handling
