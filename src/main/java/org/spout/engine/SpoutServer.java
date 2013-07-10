@@ -102,15 +102,13 @@ import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
 import org.spout.api.lighting.LightingRegistry;
-import org.spout.api.material.MaterialRegistry;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.SessionRegistry;
-import org.spout.api.util.StringMap;
+import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.filesystem.versioned.WorldFiles;
-import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.protocol.SpoutSessionRegistry;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.engine.world.SpoutServerWorld;
@@ -144,9 +142,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private final Object jmdnsSync = new Object();
 	private JmDNS jmdns = null;
 	private final SessionTask sesionTask = new SessionTask();
-	private StringMap engineItemMap = null;
-	private StringMap engineBiomeMap = null;
-	private StringMap engineLightingMap = null;
+	private StringToUniqueIntegerMap engineBiomeMap = null;
+	private StringToUniqueIntegerMap engineLightingMap = null;
 
 	public SpoutServer() {
 		this.filesystem = new ServerFileSystem();
@@ -158,8 +155,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	protected void start(boolean checkWorlds, Listener listener) {
-		//Setup the Material Registry
-		engineItemMap = MaterialRegistry.setupRegistry();
 		//Setup the Biome Registry
 		engineBiomeMap = BiomeRegistry.setupRegistry();
 		//Setup the Lighting Registry
@@ -568,30 +563,22 @@ public class SpoutServer extends SpoutEngine implements Server {
 			getLogger().info("<<< Bonjour service shutdown completed.");
 		}
 	}
-	
+
 	@Override
 	public void startTickRun(int stage, long delta) {
 		switch (stage) {
 			case 0:
-				engineItemMap.save();
+				getEngineItemMap().save();
 				engineBiomeMap.save();
 				break;
 		}
 	}
 
 	/**
-	 * Gets the item map used across all worlds on the engine
-	 * @return engine map
-	 */
-	public StringMap getEngineItemMap() {
-		return engineItemMap;
-	}
-
-	/**
 	 * Gets the lighting map used across all worlds on the engine
 	 * @return engine map
 	 */
-	public StringMap getEngineLightingMap() {
+	public StringToUniqueIntegerMap getEngineLightingMap() {
 		return engineLightingMap;
 	}
 
@@ -599,7 +586,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * Gets the biome map used accorss all worlds on the engine
 	 * @return biome map
 	 */
-	public StringMap getBiomeMap() {
+	public StringToUniqueIntegerMap getBiomeMap() {
 		return engineBiomeMap;
 	}
 

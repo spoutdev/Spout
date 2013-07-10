@@ -40,7 +40,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFullState;
-import org.spout.api.util.StringMap;
+import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.sanitation.SafeCast;
 
@@ -126,8 +126,8 @@ public class ColumnFiles {
 		highestY.set(SafeCast.toInt(NBTMapper.toTagValue(map.get("highest_y")), Integer.MAX_VALUE));
 
 		//Save heightmap
-		StringMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
-		StringMap itemMap = ((SpoutServerWorld) column.getWorld()).getItemMap();
+		StringToUniqueIntegerMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
+		StringToUniqueIntegerMap itemMap = ((SpoutServerWorld) column.getWorld()).getItemMap();
 		boolean warning = false;
 		byte[] validMaterial = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("valid_material")), null);
 		int[] topmostMaterial = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("topmost_material")), null);
@@ -241,8 +241,8 @@ public class ColumnFiles {
 		byte[] validMaterial = new byte[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
 		int[] topmostMaterial = new int[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
 		
-		StringMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
-		StringMap itemMap;
+		StringToUniqueIntegerMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
+		StringToUniqueIntegerMap itemMap;
 		itemMap = ((SpoutServerWorld) column.getWorld()).getItemMap();
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
 			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {

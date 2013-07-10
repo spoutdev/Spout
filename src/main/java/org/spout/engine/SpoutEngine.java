@@ -53,6 +53,8 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.inventory.recipe.SimpleRecipeManager;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.MaterialRegistry;
 import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.Plugin;
@@ -62,6 +64,8 @@ import org.spout.api.plugin.services.ServiceManager;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
+import org.spout.api.util.StringToUniqueIntegerMap;
+import org.spout.api.util.SyncedStringMap;
 
 import org.spout.cereal.config.ConfigurationException;
 
@@ -114,6 +118,8 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	private SpoutApplication arguments;
 	protected MemoryReclamationThread reclamation = null;
 	private DefaultPermissions defaultPerms;
+	
+	private SyncedStringMap engineItemMap = null;
 
 	public SpoutEngine() {
 		logFile = "log-%D.txt";
@@ -167,6 +173,9 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		}
 
 		scheduler.scheduleSyncRepeatingTask(this, getSessionTask(), 50, 50, TaskPriority.CRITICAL);
+		
+		//Setup the Material Registry
+		engineItemMap = MaterialRegistry.setupRegistry();
 
 		// Register commands
 		Object exe;
@@ -466,5 +475,13 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	@Override
 	public CommandManager getCommandManager() {
 		return cmdManager;
+	}
+
+	/**
+	 * Gets the item map used across all worlds on the engine
+	 * @return engine map
+	 */
+	public StringToUniqueIntegerMap getEngineItemMap() {
+		return engineItemMap;
 	}
 }

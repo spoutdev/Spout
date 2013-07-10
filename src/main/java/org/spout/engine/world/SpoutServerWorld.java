@@ -51,7 +51,7 @@ import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TaskManager;
-import org.spout.api.util.StringMap;
+import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.map.WeakValueHashMap;
@@ -74,11 +74,11 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 	/**
 	 * String item map, used to convert local id's to the server id
 	 */
-	private final StringMap itemMap;
+	private final StringToUniqueIntegerMap itemMap;
 	/**
 	 * String lighting map, used to covert local id's to the server id
 	 */
-	private final StringMap lightingMap;
+	private final StringToUniqueIntegerMap lightingMap;
 	/**
 	 * A set of all players currently connected to this world
 	 */
@@ -105,7 +105,7 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<Long, SetQueue<SpoutColumn>>();
 
 	// TODO set up number of stages ?
-	public SpoutServerWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, StringMap lightingMap) {
+	public SpoutServerWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringToUniqueIntegerMap itemMap, StringToUniqueIntegerMap lightingMap) {
 		super(name, engine, seed, age, generator, uid);
 
 		this.itemMap = itemMap;
@@ -261,11 +261,11 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 		return regionFileManager.getChunkOutputStream(c);
 	}
 
-	public StringMap getItemMap() {
+	public StringToUniqueIntegerMap getItemMap() {
 		return itemMap;
 	}
 
-	public StringMap getLightingMap() {
+	public StringToUniqueIntegerMap getLightingMap() {
 		return lightingMap;
 	}
 	

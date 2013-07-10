@@ -28,16 +28,17 @@ package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
-import org.spout.api.util.StringMapEvent;
-import org.spout.engine.protocol.builtin.message.StringMapMessage;
-import org.spout.api.util.StringMap;
+import org.spout.api.util.SyncedMapEvent;
+import org.spout.api.util.SyncedMapRegistry;
+import org.spout.api.util.SyncedStringMap;
+import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 
-public class StringMapMessageHandler extends MessageHandler<StringMapMessage> {
+public class StringMapMessageHandler extends MessageHandler<SyncedMapMessage> {
 	@Override
-	public void handleClient(ClientSession session, StringMapMessage message) {
-		StringMap map = StringMap.get(message.getMap());
+	public void handleClient(ClientSession session, SyncedMapMessage message) {
+		SyncedStringMap map = SyncedMapRegistry.get(message.getMap());
 		if (map != null) {
-			map.handleUpdate(new StringMapEvent(map, message.getAction(), message.getElements()));
+			map.handleUpdate(new SyncedMapEvent(map, message.getAction(), message.getElements()));
 		}
 	}
 }

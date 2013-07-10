@@ -39,7 +39,7 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.reposition.NullRepositionManager;
-import org.spout.api.util.StringMapEvent;
+import org.spout.api.util.SyncedMapEvent;
 import org.spout.engine.EngineFaker;
 import org.spout.engine.WorldFaker;
 import org.spout.engine.protocol.builtin.SpoutCodecLookupService;
@@ -54,7 +54,7 @@ import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
-import org.spout.engine.protocol.builtin.message.StringMapMessage;
+import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 
@@ -92,7 +92,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 		new LoginMessage("Spouty", 0),
 		new PlayerInputMessage((short) 0, (short) 0, (short) 0),
 		new RemoveEntityMessage(0),
-		new StringMapMessage(0, StringMapEvent.Action.ADD, new ArrayList<Pair<Integer, String>>()),
+		new SyncedMapMessage(0, SyncedMapEvent.Action.ADD, new ArrayList<Pair<Integer, String>>()),
 		new WorldChangeMessage("world", EngineFaker.TEST_UUID, TEST_SERIALIZED_DATA)
 	};
 

@@ -35,15 +35,15 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.ChannelBufferUtils;
-import org.spout.engine.protocol.builtin.message.StringMapMessage;
+import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 
-public class StringMapCodec extends MessageCodec<StringMapMessage> {
+public class StringMapCodec extends MessageCodec<SyncedMapMessage> {
 	public StringMapCodec() {
-		super(StringMapMessage.class, 0x01);
+		super(SyncedMapMessage.class, 0x01);
 	}
 
 	@Override
-	public ChannelBuffer encode(StringMapMessage message) {
+	public ChannelBuffer encode(SyncedMapMessage message) {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		buffer.writeInt(message.getMap());
 		buffer.writeByte(message.getAction().ordinal());
@@ -56,7 +56,7 @@ public class StringMapCodec extends MessageCodec<StringMapMessage> {
 	}
 
 	@Override
-	public StringMapMessage decode(ChannelBuffer buffer) {
+	public SyncedMapMessage decode(ChannelBuffer buffer) {
 		final int map = buffer.readInt();
 		final byte action = buffer.readByte();
 		final int elementCount = buffer.readInt();
@@ -66,6 +66,6 @@ public class StringMapCodec extends MessageCodec<StringMapMessage> {
 			final String value = ChannelBufferUtils.readString(buffer);
 			elements.add(new ImmutablePair<Integer, String>(key, value));
 		}
-		return new StringMapMessage(map, action, elements);
+		return new SyncedMapMessage(map, action, elements);
 	}
 }

@@ -39,12 +39,13 @@ import java.util.UUID;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.datatable.ManagedHashMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.nbt.TransformTag;
 import org.spout.api.io.nbt.UUIDTag;
 import org.spout.api.io.store.simple.BinaryFileStore;
-import org.spout.api.util.StringMap;
+import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.sanitation.SafeCast;
 
 import org.spout.engine.SpoutEngine;
@@ -82,13 +83,13 @@ public class WorldFiles {
 		BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
 		itemStore.load();
 		
-		StringMap itemMap = new StringMap(engine.getEngineItemMap(), itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
+		StringToUniqueIntegerMap itemMap = new StringToUniqueIntegerMap(engine.getEngineItemMap(), itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
 		
 		File lightingMapFile = new File(worldDir, "lighting.dat");
 		BinaryFileStore lightingStore = new BinaryFileStore(lightingMapFile);
 		lightingStore.load();
 		
-		StringMap lightingMap = new StringMap(engine.getEngineLightingMap(), itemStore, 0, Short.MAX_VALUE, name + "lightingMap");
+		StringToUniqueIntegerMap lightingMap = new StringToUniqueIntegerMap(engine.getEngineLightingMap(), itemStore, 0, Short.MAX_VALUE, name + "lightingMap");
 		
 		try {
 			InputStream is = new FileInputStream(worldFile);
@@ -118,7 +119,7 @@ public class WorldFiles {
 		return world;
 	}
 
-	private static SpoutServerWorld loadWorldImpl(String name, CompoundMap map, WorldGenerator generator, StringMap itemMap, StringMap lightingMap) {
+	private static SpoutServerWorld loadWorldImpl(String name, CompoundMap map, WorldGenerator generator, StringToUniqueIntegerMap itemMap, StringToUniqueIntegerMap lightingMap) {
 
 		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
 
@@ -147,7 +148,7 @@ public class WorldFiles {
 		
 		world.setSpawnPoint(t);
 		
-		ManagedHashMap dataMap = world.getData().getBaseMap();
+		SerializableMap dataMap = world.getData().getBaseMap();
 		dataMap.clear();
 		try {
 			dataMap.deserialize(extraData);

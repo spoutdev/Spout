@@ -45,7 +45,7 @@ import org.spout.api.lighting.FakeLightingManager;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.material.block.BlockFullState;
-import org.spout.api.util.StringMap;
+import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.ByteTripleHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
@@ -155,8 +155,8 @@ public class ChunkFiles {
 
 		//Convert world block ids to engine material ids
 		SpoutServerWorld world = (SpoutServerWorld) r.getWorld();
-		StringMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
-		StringMap itemMap = world.getItemMap();
+		StringToUniqueIntegerMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
+		StringToUniqueIntegerMap itemMap = world.getItemMap();
 
 		byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extraData")), null);
 
@@ -190,7 +190,7 @@ public class ChunkFiles {
 		List<? extends CompoundTag> componentsList = checkerListCompoundTag.checkTag(map.get("block_components"), null);
 		
 		CompoundMap lightingMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("light_buffers")), null, CompoundMap.class);
-		StringMap worldMap = ((SpoutServerWorld) r.getWorld()).getLightingMap();
+		StringToUniqueIntegerMap worldMap = ((SpoutServerWorld) r.getWorld()).getLightingMap();
 		List<LightingManager<?>> lightingManagers = new ArrayList<LightingManager<?>>();
 		List<byte[]> lightingData = new ArrayList<byte[]>();
 		loadLightingBuffers(lightingManagers, lightingData, lightingMap, worldMap);
@@ -219,10 +219,10 @@ public class ChunkFiles {
 		CompoundMap chunkTags = new CompoundMap();
 
 		//Switch block ids from engine material ids to world specific ids
-		StringMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
-		StringMap itemMap = world.getItemMap();
+		StringToUniqueIntegerMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
+		StringToUniqueIntegerMap itemMap = world.getItemMap();
 		
-		StringMap lightingMap = world.getItemMap();
+		StringToUniqueIntegerMap lightingMap = world.getItemMap();
 
 		int[] palette = snapshot.getPalette();
 		int[] packetBlockArray = snapshot.getPackedBlockArray();
@@ -264,7 +264,7 @@ public class ChunkFiles {
 		world.getLightingMap().save();
 	}
 	
-	private static void convertArray(int[] fullState, StringMap from, StringMap to) {
+	private static void convertArray(int[] fullState, StringToUniqueIntegerMap from, StringToUniqueIntegerMap to) {
 		for (int i = 0; i < fullState.length; i++) {
 			short newId = (short) from.convertTo(to, BlockFullState.getId(fullState[i]));
 			short oldData = BlockFullState.getData(fullState[i]);
@@ -398,8 +398,8 @@ public class ChunkFiles {
 		}
 	}
 	
-	private static CompoundTag saveLightingBuffers(StringMap worldLighting, CuboidLightBuffer[] buffers) {
-		StringMap globalLighting = ((SpoutServer) Spout.getEngine()).getEngineLightingMap();
+	private static CompoundTag saveLightingBuffers(StringToUniqueIntegerMap worldLighting, CuboidLightBuffer[] buffers) {
+		StringToUniqueIntegerMap globalLighting = ((SpoutServer) Spout.getEngine()).getEngineLightingMap();
 		
 		CompoundMap map = new CompoundMap();
 
@@ -419,12 +419,12 @@ public class ChunkFiles {
 		return new CompoundTag("lighting_" + worldId, map);
 	}
 	
-	private static void loadLightingBuffers(List<LightingManager<?>> managers, List<byte[]> lightData, CompoundMap map, StringMap worldLighting) {
+	private static void loadLightingBuffers(List<LightingManager<?>> managers, List<byte[]> lightData, CompoundMap map, StringToUniqueIntegerMap worldLighting) {
 		if (map == null) {
 			return;
 		}
 		
-		StringMap globalLighting = ((SpoutServer) Spout.getEngine()).getEngineLightingMap();
+		StringToUniqueIntegerMap globalLighting = ((SpoutServer) Spout.getEngine()).getEngineLightingMap();
 		
 		for (Tag<?> t : map) {
 			if (t instanceof CompoundTag) {
@@ -434,7 +434,7 @@ public class ChunkFiles {
 		}
 	}
 	
-	private static void loadLightingBuffer(List<LightingManager<?>> managers, List<byte[]> lightData, CompoundTag tag, StringMap globalLighting, StringMap worldLighting) {
+	private static void loadLightingBuffer(List<LightingManager<?>> managers, List<byte[]> lightData, CompoundTag tag, StringToUniqueIntegerMap globalLighting, StringToUniqueIntegerMap worldLighting) {
 		final CompoundMap map = tag.getValue();
 		int worldId = SafeCast.toInt(NBTMapper.toTagValue(map.get("manager_id")), -1);
 		if (worldId == -1) {

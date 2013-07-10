@@ -35,6 +35,7 @@ import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.command.CommandArguments;
+import org.spout.api.event.object.EventableListener;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.protocol.ClientSession;
@@ -43,11 +44,12 @@ import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
-import org.spout.api.util.StringMap;
-import org.spout.api.util.StringMapEvent;
+import org.spout.api.util.SyncedMapEvent;
+import org.spout.api.util.SyncedMapRegistry;
+import org.spout.api.util.SyncedStringMap;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
-import org.spout.engine.protocol.builtin.message.StringMapMessage;
+import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 
 /**
  * The protocol used in SpoutClient
@@ -107,8 +109,15 @@ public class SpoutProtocol extends Protocol {
 	public void initializeServerSession(final ServerSession session) {
 		session.setNetworkSynchronizer(new SpoutServerNetworkSynchronizer(session));
 		//TODO Ensure this is right, very important
-		for (StringMap map : StringMap.getAll()) {
-			session.send(new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
+		SyncedMapRegistry.getRegistrationMap().registerListener(new EventableListener<SyncedMapEvent>() {
+			@Override
+			public void onEvent(SyncedMapEvent event) {
+				session.send(new SyncedMapMessage(event.getAssociatedObject().getId(), SyncedMapEvent.Action.ADD, event.getModifiedElements()));
+			}
+		});
+		session.send(new SyncedMapMessage(SyncedMapRegistry.REGISTRATION_MAP, SyncedMapEvent.Action.SET, SyncedMapRegistry.getRegistrationMap().getItems()));
+		for (SyncedStringMap map : SyncedMapRegistry.getAll()) {
+			session.send(new SyncedMapMessage(map.getId(), SyncedMapEvent.Action.SET, map.getItems()));
 		}
 	}
 

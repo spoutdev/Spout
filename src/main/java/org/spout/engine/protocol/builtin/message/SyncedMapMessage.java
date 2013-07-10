@@ -34,24 +34,24 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spout.api.util.SpoutToStringStyle;
-import org.spout.api.util.StringMapEvent;
+import org.spout.api.util.SyncedMapEvent;
 
-public class StringMapMessage extends SpoutMessage {
+public class SyncedMapMessage extends SpoutMessage {
 	private final int map;
-	private final StringMapEvent.Action action;
+	private final SyncedMapEvent.Action action;
 	private final List<Pair<Integer, String>> elements;
 
-	public StringMapMessage(int map, StringMapEvent.Action action, List<Pair<Integer, String>> elements) {
+	public SyncedMapMessage(int map, SyncedMapEvent.Action action, List<Pair<Integer, String>> elements) {
 		this.map = map;
 		this.action = action;
 		this.elements = Collections.unmodifiableList(elements);
 	}
 
-	public StringMapMessage(int map, int action, List<Pair<Integer, String>> elements) {
-		if (action < 0 || action >= StringMapEvent.Action.values().length) {
+	public SyncedMapMessage(int map, int action, List<Pair<Integer, String>> elements) {
+		if (action < 0 || action >= SyncedMapEvent.Action.values().length) {
 			throw new IllegalArgumentException("Unknown action ID " + action);
 		}
-		this.action = StringMapEvent.Action.values()[action];
+		this.action = SyncedMapEvent.Action.values()[action];
 		this.map = map;
 		this.elements = Collections.unmodifiableList(elements);
 	}
@@ -60,7 +60,7 @@ public class StringMapMessage extends SpoutMessage {
 		return map;
 	}
 
-	public StringMapEvent.Action getAction() {
+	public SyncedMapEvent.Action getAction() {
 		return action;
 	}
 
@@ -88,8 +88,8 @@ public class StringMapMessage extends SpoutMessage {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof StringMapMessage) {
-			final StringMapMessage other = (StringMapMessage) obj;
+		if (obj instanceof SyncedMapMessage) {
+			final SyncedMapMessage other = (SyncedMapMessage) obj;
 			return new EqualsBuilder()
 					.append(map, other.map)
 					.append(action, other.action)

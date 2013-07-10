@@ -168,8 +168,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
-		getScheduler().startMeshThread();
 		this.renderer = getScheduler().startRenderThread(new Vector2(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f), ccoverride, null);
+		getScheduler().startMeshThread();
 		getScheduler().startGuiThread();
 
 		//TODO Maybe a better way of alerting plugins the client is done?

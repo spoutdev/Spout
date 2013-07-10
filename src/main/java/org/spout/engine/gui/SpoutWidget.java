@@ -32,7 +32,10 @@ import java.util.List;
 
 import org.spout.api.component.BaseComponentOwner;
 import org.spout.api.component.Component;
+import org.spout.api.component.DatatableComponent;
 import org.spout.api.component.widget.ControlComponent;
+import org.spout.api.datatable.ManagedHashMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.geo.discrete.Transform2D;
@@ -55,6 +58,18 @@ public class SpoutWidget extends BaseComponentOwner implements Widget {
 	private Screen screen = null;
 	private Rectangle hitBox = Rectangle.ZERO;
 	private Transform2D transform = new Transform2D();
+
+	public SpoutWidget() {
+		super(NonSyncingDatatableComponent.class);
+	}
+
+	public static class NonSyncingDatatableComponent extends DatatableComponent {
+		@Override
+		public SerializableMap newMap() {
+			return new ManagedHashMap(false);
+		}
+
+	}
 
 	@Override
 	public List<RenderPartPack> getRenderPartPacks() {

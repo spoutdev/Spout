@@ -40,7 +40,7 @@ import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
-import org.spout.engine.protocol.builtin.message.StringMapMessage;
+import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 import org.spout.engine.protocol.builtin.handler.AddEntityMessageHandler;
 import org.spout.engine.protocol.builtin.handler.BlockUpdateMessageHandler;
@@ -59,7 +59,7 @@ public class SpoutHandlerLookupService extends HandlerLookupService {
 	public SpoutHandlerLookupService() {
 		try {
 			bind(LoginMessage.class, LoginMessageHandler.class);
-			bind(StringMapMessage.class, StringMapMessageHandler.class);
+			bind(SyncedMapMessage.class, StringMapMessageHandler.class);
 			bind(WorldChangeMessage.class, WorldChangeMessageHandler.class);
 			bind(CommandMessage.class, CommandMessageHandler.class);
 			bind(AddEntityMessage.class, AddEntityMessageHandler.class);
