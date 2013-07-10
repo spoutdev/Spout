@@ -26,10 +26,9 @@
  */
 package org.spout.math.test.matrix;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Assert;
 import org.junit.Test;
+
 import org.spout.math.matrix.Matrix2;
 import org.spout.math.matrix.Matrix3;
 import org.spout.math.matrix.Matrix4;
@@ -37,57 +36,63 @@ import org.spout.math.matrix.MatrixN;
 import org.spout.math.test.TestUtil;
 import org.spout.math.vector.VectorN;
 
+import static org.junit.Assert.assertEquals;
+
 public class MatrixNTest {
 	@Test
 	public void testSizeConstructor() {
-		MatrixN matrix  = new MatrixN(4);
+		MatrixN matrix = new MatrixN(4);
 		assertEquals(matrix.size(), 4);
 	}
 
 	@Test
 	public void testCopyMatrix2Constructor() {
-		MatrixN matrix  = new MatrixN(new Matrix2(1, 0, 0, 1));
-		TestUtil.assertEquals(matrix, 1, 0, 0, 1);
+		MatrixN matrix = new MatrixN(new Matrix2(1, 2, 3, 4));
+		TestUtil.assertEquals(matrix, 1, 2, 3, 4);
 	}
 
 	@Test
 	public void testCopyMatrix3Constructor() {
-		MatrixN matrix  = new MatrixN(new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1));
-		TestUtil.assertEquals(matrix, 1, 0, 0, 0, 1, 0, 0, 0, 1);
+		MatrixN matrix = new MatrixN(new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9));
+		TestUtil.assertEquals(matrix, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 	}
 
 	@Test
 	public void testCopyMatrix4Constructor() {
-		MatrixN matrix  = new MatrixN(new Matrix4(
-				1, 0, 0, 0, 
-				0, 1, 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1));
+		MatrixN matrix = new MatrixN(new Matrix4(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16));
 		TestUtil.assertEquals(matrix,
-				1, 0, 0, 0, 
-				0, 1, 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1);
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
 	}
 
 	@Test
 	public void testCopyMatrixNConstructor() {
-		MatrixN matrix  = new MatrixN(new MatrixN(4));
+		MatrixN matrix = new MatrixN(new MatrixN(4));
 		TestUtil.assertEquals(matrix,
-				1, 0, 0, 0, 
+				1, 0, 0, 0,
 				0, 1, 0, 0,
 				0, 0, 1, 0,
 				0, 0, 0, 1);
 	}
 
 	@Test
-	public void testDoubleComponentsConstructor() {
-
-	}
-
-	@Test
 	public void testFloatComponentsConstructor() {
-
+		MatrixN matrix = new MatrixN(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		TestUtil.assertEquals(matrix,
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
 	}
 
 	@Test
@@ -120,22 +125,22 @@ public class MatrixNTest {
 	@Test
 	public void testSetterFloatValue() {
 		MatrixN matrix = new MatrixN(4);
-		matrix.set(0, 0, 1f);
-		matrix.set(0, 1, 2f);
-		matrix.set(0, 2, 3f);
-		matrix.set(0, 3, 4f);
-		matrix.set(1, 0, 5f);
-		matrix.set(1, 1, 6f);
-		matrix.set(1, 2, 7f);
-		matrix.set(1, 3, 8f);
-		matrix.set(2, 0, 9f);
-		matrix.set(2, 1, 10f);
-		matrix.set(2, 2, 11f);
-		matrix.set(2, 3, 12f);
-		matrix.set(3, 0, 13f);
-		matrix.set(3, 1, 14f);
-		matrix.set(3, 2, 15f);
-		matrix.set(3, 3, 16f);
+		matrix.set(0, 0, 1);
+		matrix.set(0, 1, 2);
+		matrix.set(0, 2, 3);
+		matrix.set(0, 3, 4);
+		matrix.set(1, 0, 5);
+		matrix.set(1, 1, 6);
+		matrix.set(1, 2, 7);
+		matrix.set(1, 3, 8);
+		matrix.set(2, 0, 9);
+		matrix.set(2, 1, 10);
+		matrix.set(2, 2, 11);
+		matrix.set(2, 3, 12);
+		matrix.set(3, 0, 13);
+		matrix.set(3, 1, 14);
+		matrix.set(3, 2, 15);
+		matrix.set(3, 3, 16);
 		TestUtil.assertEquals(matrix.get(0, 0), 1);
 		TestUtil.assertEquals(matrix.get(0, 1), 2);
 		TestUtil.assertEquals(matrix.get(0, 2), 3);
@@ -196,7 +201,7 @@ public class MatrixNTest {
 		MatrixN matrix = new MatrixN(4);
 		matrix.setIdentity();
 		TestUtil.assertEquals(matrix,
-				1, 0, 0, 0, 
+				1, 0, 0, 0,
 				0, 1, 0, 0,
 				0, 0, 1, 0,
 				0, 0, 0, 1);
@@ -207,7 +212,7 @@ public class MatrixNTest {
 		MatrixN matrix = new MatrixN(4);
 		matrix.setZero();
 		TestUtil.assertEquals(matrix,
-				0, 0, 0, 0, 
+				0, 0, 0, 0,
 				0, 0, 0, 0,
 				0, 0, 0, 0,
 				0, 0, 0, 0);
@@ -228,7 +233,7 @@ public class MatrixNTest {
 	public void testMatrixNAddition() {
 		MatrixN matrix = new MatrixN(4).add(new MatrixN(4));
 		TestUtil.assertEquals(matrix,
-				2, 0, 0, 0, 
+				2, 0, 0, 0,
 				0, 2, 0, 0,
 				0, 0, 2, 0,
 				0, 0, 0, 2);
@@ -238,7 +243,7 @@ public class MatrixNTest {
 	public void testMatrixNSubtraction() {
 		MatrixN matrix = new MatrixN(4).sub(new MatrixN(4));
 		TestUtil.assertEquals(matrix,
-				0, 0, 0, 0, 
+				0, 0, 0, 0,
 				0, 0, 0, 0,
 				0, 0, 0, 0,
 				0, 0, 0, 0);
@@ -246,9 +251,9 @@ public class MatrixNTest {
 
 	@Test
 	public void testFloatFactorMultiplication() {
-		MatrixN matrix = new MatrixN(4).mul(2f);
+		MatrixN matrix = new MatrixN(4).mul(2);
 		TestUtil.assertEquals(matrix,
-				2, 0, 0, 0, 
+				2, 0, 0, 0,
 				0, 2, 0, 0,
 				0, 0, 2, 0,
 				0, 0, 0, 2);
@@ -258,7 +263,7 @@ public class MatrixNTest {
 	public void testDoubleFactorMultiplication() {
 		MatrixN matrix = new MatrixN(4).mul(2d);
 		TestUtil.assertEquals(matrix,
-				2, 0, 0, 0, 
+				2, 0, 0, 0,
 				0, 2, 0, 0,
 				0, 0, 2, 0,
 				0, 0, 0, 2);
@@ -266,14 +271,19 @@ public class MatrixNTest {
 
 	@Test
 	public void testMatrixNMultiplication() {
-
+		MatrixN matrix = new MatrixN(4).mul(new MatrixN(4));
+		TestUtil.assertEquals(matrix,
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testFloatFactorDivision() {
 		MatrixN matrix = new MatrixN(4).div(0.5f);
 		TestUtil.assertEquals(matrix,
-				2, 0, 0, 0, 
+				2, 0, 0, 0,
 				0, 2, 0, 0,
 				0, 0, 2, 0,
 				0, 0, 0, 2);
@@ -283,7 +293,7 @@ public class MatrixNTest {
 	public void testDoubleFactorDivision() {
 		MatrixN matrix = new MatrixN(4).div(0.5d);
 		TestUtil.assertEquals(matrix,
-				2, 0, 0, 0, 
+				2, 0, 0, 0,
 				0, 2, 0, 0,
 				0, 0, 2, 0,
 				0, 0, 0, 2);
@@ -291,75 +301,80 @@ public class MatrixNTest {
 
 	@Test
 	public void testMatrixNDivision() {
-
+		MatrixN matrix = new MatrixN(4).div(new MatrixN(4));
+		TestUtil.assertEquals(matrix,
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testRaiseToFloatPower() {
 		MatrixN matrix = new MatrixN(new Matrix4(
-				1f, 2f, 3f, 4f,
-				5f, 6f, 7f, 8f,
-				9f, 10f, 11f, 12f,
-				13f, 14f, 15f, 16f)).pow(2f);
-		TestUtil.assertEquals(matrix, 
-				1f, 4f, 9f, 16f,
-				25f, 36f, 49f, 64f,
-				81f, 100f, 121f, 144f,
-				169f, 196f, 225f, 256f);
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16)).pow(2);
+		TestUtil.assertEquals(matrix,
+				1, 4, 9, 16,
+				25, 36, 49, 64,
+				81, 100, 121, 144,
+				169, 196, 225, 256);
 	}
 
 	@Test
 	public void testRaiseToDoublePower() {
 		MatrixN matrix = new MatrixN(new Matrix4(
-				1f, 2f, 3f, 4f,
-				5f, 6f, 7f, 8f,
-				9f, 10f, 11f, 12f,
-				13f, 14f, 15f, 16f)).pow(2d);
-		TestUtil.assertEquals(matrix, 
-				1f, 4f, 9f, 16f,
-				25f, 36f, 49f, 64f,
-				81f, 100f, 121f, 144f,
-				169f, 196f, 225f, 256f);
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16)).pow(2d);
+		TestUtil.assertEquals(matrix,
+				1, 4, 9, 16,
+				25, 36, 49, 64,
+				81, 100, 121, 144,
+				169, 196, 225, 256);
 	}
 
 	@Test
 	public void testTranslateVectorN() {
-		MatrixN matrix = new MatrixN(4).translate(new VectorN(1f, 0f, 0f));
+		MatrixN matrix = new MatrixN(4).translate(new VectorN(2, 3, 4));
 		TestUtil.assertEquals(matrix,
-				1, 0, 0, 1,
-				0, 1, 0, 0,
-				0, 0, 1, 0,
+				1, 0, 0, 2,
+				0, 1, 0, 3,
+				0, 0, 1, 4,
 				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testTranslateFloatComponents() {
-		MatrixN matrix = new MatrixN(4).translate(1f, 0f, 0f);
+		MatrixN matrix = new MatrixN(4).translate(2, 3, 4);
 		TestUtil.assertEquals(matrix,
-				1, 0, 0, 1,
-				0, 1, 0, 0,
-				0, 0, 1, 0,
+				1, 0, 0, 2,
+				0, 1, 0, 3,
+				0, 0, 1, 4,
 				0, 0, 0, 1);
 	}
 
 	@Test
 	public void testScaleVectorN() {
-		MatrixN matrix = new MatrixN(4).scale(new VectorN(2f, 2f, 2f, 2f));
+		MatrixN matrix = new MatrixN(4).scale(new VectorN(2, 3, 4, 5));
 		TestUtil.assertEquals(matrix,
 				2, 0, 0, 0,
-				0, 2, 0, 0,
-				0, 0, 2, 0,
-				0, 0, 0, 2);
+				0, 3, 0, 0,
+				0, 0, 4, 0,
+				0, 0, 0, 5);
 	}
 
 	@Test
 	public void testScaleFloatComponents() {
-		MatrixN matrix = new MatrixN(4).scale(2f, 2f, 2f, 2f);
+		MatrixN matrix = new MatrixN(4).scale(2, 3, 4, 5);
 		TestUtil.assertEquals(matrix,
 				2, 0, 0, 0,
-				0, 2, 0, 0,
-				0, 0, 2, 0,
-				0, 0, 0, 2);
+				0, 3, 0, 0,
+				0, 0, 4, 0,
+				0, 0, 0, 5);
 	}
 
 	@Test
@@ -562,19 +577,19 @@ public class MatrixNTest {
 				0, 2, 0, 0,
 				0, 0, 3, 0,
 				0, 0, 0, 4).toMatrixN(), new Matrix4(
-						1, 2, 3, 4,
-						0, 2, 0, 0,
-						0, 0, 3, 0,
-						0, 0, 0, 4).toMatrixN());
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4).toMatrixN());
 		Assert.assertNotEquals(new Matrix4(
 				1, 2, 3, 4,
 				0, 2, 0, 0,
 				0, 0, 3, 0,
 				0, 0, 0, 4).toMatrixN(), new Matrix4(
-						1, 2, 3, 4,
-						0, 2, 4, 0,
-						0, 7, 3, 0,
-						0, 0, 0, 4).toMatrixN());
+				1, 2, 3, 4,
+				0, 2, 4, 0,
+				0, 7, 3, 0,
+				0, 0, 0, 4).toMatrixN());
 	}
 
 	@Test

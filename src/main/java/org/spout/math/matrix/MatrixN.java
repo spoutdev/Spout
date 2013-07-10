@@ -75,6 +75,24 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		};
 	}
 
+	public MatrixN(float... m) {
+		if (m.length < 4) {
+			throw new IllegalArgumentException("Minimum matrix size is 2");
+		}
+		final int size = (int) Math.ceil(Math.sqrt(m.length));
+		mat = new float[size][size];
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
+				final int index = col + row * size;
+				if (index < m.length) {
+					mat[row][col] = m[index];
+				} else {
+					mat[row][col] = 0;
+				}
+			}
+		}
+	}
+
 	public MatrixN(MatrixN m) {
 		mat = deepClone(m.mat);
 	}
