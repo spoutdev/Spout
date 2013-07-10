@@ -276,6 +276,10 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 				m30 / a, m31 / a, m32 / a, m33 / a);
 	}
 
+	public Matrix4 div(Matrix4 m) {
+		return mul(m.invert());
+	}
+
 	public Matrix4 pow(double pow) {
 		return pow((float) pow);
 	}
@@ -626,15 +630,14 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 	 */
 	public static Matrix4 createLookAt(Vector3 eye, Vector3 at, Vector3 up) {
 		final Vector3 f = at.sub(eye).normalize();
-		up = up.normalize();
 		final Vector3 s = f.cross(up).normalize();
-		final Vector3 u = s.cross(f).normalize();
+		final Vector3 u = s.cross(f);
 		final Matrix4 mat = new Matrix4(
 				s.getX(), s.getY(), s.getZ(), 0,
 				u.getX(), u.getY(), u.getZ(), 0,
 				-f.getX(), -f.getY(), -f.getZ(), 0,
 				0, 0, 0, 1);
-		return mat.translate(eye.mul(-1));
+		return mat.translate(eye.negate());
 	}
 
 	// TODO: add double overload
