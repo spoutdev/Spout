@@ -62,26 +62,46 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 
 	private final BufferContainer bufferContainer[] = new BufferContainer[COUNT];
 
+	/** Gets the linear position of a local 3D coord */
 	private int getIndex(int x, int y, int z){
-		int index = (x - getBase().getChunkX()) * SIZE_Y * SIZE_Z + (y - getBase().getChunkY()) * SIZE_Z + (z - getBase().getChunkZ());
+		if (x > SIZE_X || x < 1) {
+			throw new IllegalArgumentException("x must be between 1 (inclusive) and SIZE_X (" + SIZE_X + ") (inclusive). It was " + x);
+		}
+		if (y > SIZE_Y || y < 1) {
+			throw new IllegalArgumentException("x must be between 1 (inclusive) and SIZE_Y (" + SIZE_Y + ") (inclusive). It was " + y);
+		}
+		if (z > SIZE_Z || z < 1) {
+			throw new IllegalArgumentException("x must be between 1 (inclusive) and SIZE_Z (" + SIZE_Z + ") (inclusive). It was " + z);
+		}
+		int index = (x - 1) * SIZE_Y * SIZE_Z + (y - 1) * SIZE_Z + (z - 1);
 		return index;
 	}
 
+	/** Gets the base of a chunk mesh, which is the coord of the ChunkMeshBatchAggregator */
 	public static Vector3 getBaseFromChunkMesh(ChunkMesh mesh) {
-		int x = (int) (Math.floor((float)mesh.getChunkX() / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X);
-		int y = (int) (Math.floor((float)mesh.getChunkY() / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y);
-		int z = (int) (Math.floor((float)mesh.getChunkZ() / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
+		int localX = (mesh.getChunkX() >= 0 ? mesh.getChunkX() + 1 : Math.abs(mesh.getChunkX())) - 1;
+		int localY = (mesh.getChunkY() >= 0 ? mesh.getChunkY() + 1 : Math.abs(mesh.getChunkY())) - 1;
+		int localZ = (mesh.getChunkZ() >= 0 ? mesh.getChunkZ() + 1 : Math.abs(mesh.getChunkZ())) - 1;
+		int x = (int) (Math.floor((float)localX / SIZE_X) * SIZE_X);
+		int y = (int) (Math.floor((float)localY / SIZE_Y) * SIZE_Y);
+		int z = (int) (Math.floor((float)localZ / SIZE_Z) * SIZE_Z);
+		x = (mesh.getChunkX() >= 0 ? x : (-1 * x) - 1);
+		y = (mesh.getChunkY() >= 0 ? y : (-1 * y) - 1);
+		z = (mesh.getChunkZ() >= 0 ? z : (-1 * z) - 1);
 		return new Vector3(x, y, z);
 	}
 
-	// TODO: this wasn't being used correctly, I think
-	/*
-	public static Vector3 getCoordFromChunkMesh(ChunkMesh mesh) {
-		Vector3 v = new Vector3(Math.floor((float)mesh.getChunkX() / ChunkMeshBatchAggregator.SIZE_X),
-				Math.floor((float)mesh.getChunkY() / ChunkMeshBatchAggregator.SIZE_Y),
-				Math.floor((float)mesh.getChunkZ() / ChunkMeshBatchAggregator.SIZE_Z));
-		return v;	
-	}*/
+	/** Returns the local position of a ChunkMesh with a ChunkMeshBatchAggregator */
+	public static Vector3 getLocalCoordFromChunkMesh(ChunkMesh mesh) {
+		int localX = (mesh.getChunkX() >= 0 ? mesh.getChunkX() + 1 : Math.abs(mesh.getChunkX())) - 1;
+		int localY = (mesh.getChunkY() >= 0 ? mesh.getChunkY() + 1 : Math.abs(mesh.getChunkY())) - 1;
+		int localZ = (mesh.getChunkZ() >= 0 ? mesh.getChunkZ() + 1 : Math.abs(mesh.getChunkZ())) - 1;
+		int x = localX % SIZE_X + 1;
+		int y = localY % SIZE_Y + 1;
+		int z = localZ % SIZE_Z + 1;
+
+		return new Vector3(x, y, z);
+	}
 
 	public ChunkMeshBatchAggregator(World world, int x, int y, int z, RenderMaterial material) {
 		super(new Point(world, x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS), SIZE.multiply(Chunk.BLOCKS.SIZE));

@@ -197,8 +197,8 @@ public class WorldRenderer {
 			if (batch.getWorld() != world) {
 				continue;
 			}
-
-			batch.setSubBatch(null, chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
+			Vector3 local = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(chunkMesh);
+			batch.setSubBatch(null, local.getFloorX(), local.getFloorY(), local.getFloorZ());
 			if (!batch.isEmpty()) {
 				continue;
 			}
@@ -255,6 +255,7 @@ public class WorldRenderer {
 		}
 
 		private void addMeshToBatch(ChunkMesh mesh, RenderMaterial material, BufferContainer batchVertex) {
+			// In chunk coords
 			Vector3 base = ChunkMeshBatchAggregator.getBaseFromChunkMesh(mesh);
 			ChunkMeshBatchAggregator batch = chunkRenderersByPositions.get(base.getFloorX(), base.getFloorY(), base.getFloorZ(), material);
 			if (batch == null) {
@@ -263,8 +264,9 @@ public class WorldRenderer {
 				chunkRenderers.put(batch.getMaterial(), batch);
 				chunkRenderersByPositions.put(base.getFloorX(), base.getFloorY(), base.getFloorZ(), batch.getMaterial(), batch);
 			}
+			Vector3 localCoord = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(mesh);
 
-			batch.setSubBatch(batchVertex, mesh.getChunkX(), mesh.getChunkY(), mesh.getChunkZ());
+			batch.setSubBatch(batchVertex, localCoord.getFloorX(), localCoord.getFloorY(), localCoord.getFloorZ());
 
 			if (!batch.isQueued()) {
 				addedBatch++;

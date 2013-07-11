@@ -212,9 +212,9 @@ public class SpoutRenderer {
 		final SpoutSceneComponent scene = (SpoutSceneComponent) client.getPlayer().getScene();
 		scene.interpolateRender(dt);
 
-		//Pull input each frame
+		// Pull input each frame
 		client.getInputManager().pollInput(client.getPlayer());
-		//Call InputExecutor registred by plugin
+		// Call InputExecutor registred by plugin
 		client.getInputManager().execute(dt);
 
 		final Camera camera = client.getPlayer().getType(Camera.class);

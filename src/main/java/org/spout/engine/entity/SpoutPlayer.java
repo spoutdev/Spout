@@ -59,6 +59,8 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Locale;
+import org.spout.api.math.QuaternionMath;
+import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
@@ -69,6 +71,7 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutServer;
+import org.spout.engine.component.entity.FallbackInput;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutServerWorld;
@@ -104,6 +107,9 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		displayName.set(name);
 		hashcode = name.hashCode();
 		this.setObserver(true);
+		if (Spout.getPlatform() == Platform.SERVER) {
+			add(FallbackInput.class);
+		}
 	}
 
 	@Override

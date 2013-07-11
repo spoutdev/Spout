@@ -62,6 +62,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.Region;
+import static org.spout.api.geo.cuboid.Region.CHUNKS;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.lighting.LightingManager;
@@ -1624,6 +1625,19 @@ public class SpoutRegion extends Region implements AsyncManager {
 		setChunk(newChunk, regionChunkX, regionChunkY, regionChunkZ, null, false);
 		checkChunkLoaded(newChunk, LoadOption.LOAD_GEN);
 		return newChunk;
+	}
+	
+	public void removeChunk(int chunkX, int chunkY, int chunkZ) {
+		final int regionChunkX = chunkX & CHUNKS.MASK;
+		final int regionChunkY = chunkY & CHUNKS.MASK;
+		final int regionChunkZ = chunkZ & CHUNKS.MASK;
+		SpoutChunk chunk = chunks[regionChunkX][regionChunkY][regionChunkZ].get();
+		if (chunk != null) {
+			chunk.unload(false);
+			// TODO is this right?
+			((SpoutScheduler) Spout.getScheduler()).addToQueue(new SpoutChunkSnapshotModel(chunk.getWorld(), chunkX, chunkY, chunkZ, true, System.currentTimeMillis()));
+			chunks[regionChunkX][regionChunkY][regionChunkZ].set(null);
+		}
 	}
 	
 	@Override

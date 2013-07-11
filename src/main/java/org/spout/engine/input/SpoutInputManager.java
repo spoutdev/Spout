@@ -54,6 +54,7 @@ import org.spout.api.math.Vector3;
 
 import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
+import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 
 public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
@@ -274,16 +275,14 @@ public class SpoutInputManager implements InputManager {
 
 	private void executeBindings(Set<Binding> bindings, Player player, boolean pressed) {
 		String arg = pressed ? "+" : "-";
-		//Queue up sync bindings first
-		for (Binding binding : bindings) {
-			if (!binding.isAsync()) {
-				player.getEngine().getScheduler().scheduleSyncDelayedTask(null, new BindingTask(player, binding.getCommand(), arg));
-			}
-		}
-		//Execute async bindings
+		// Do bindings
 		for (Binding binding : bindings) {
 			if (binding.isAsync()) {
+				// Execute async
 				player.processCommand(binding.getCommand(), arg);
+			} else {
+				// Queue sync
+				player.getEngine().getScheduler().scheduleSyncDelayedTask(null, new BindingTask(player, binding.getCommand(), arg));
 			}
 		}
 	}
@@ -318,6 +317,9 @@ public class SpoutInputManager implements InputManager {
 			SpoutSceneComponent sc = (SpoutSceneComponent) ((Client)Spout.getEngine()).getPlayer().getScene();
 			executor.execute(dt, sc.getLiveTransform());
 		}
+		Player player = ((Client) Spout.getEngine()).getPlayer();
+		PlayerInputState input = player.input();
+		player.getSession().send(new PlayerInputMessage(input.getUserCommands(), (short) input.pitch(), (short) input.yaw()));
 	}
 
 	@Override
@@ -331,10 +333,10 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	public void onClientStart() {
-		if (inputExecutors.size() == 0) {
-			Spout.warn("No input executor found, using fallback input");
-			addInputExecutor(new FallbackInputExecutor());
-		}
+		//if (inputExecutors.size() == 0) {
+		//	Spout.warn("No input executor found, using fallback input");
+		//	addInputExecutor(new FallbackInputExecutor());
+		//}
 	}
 
 	private static class FallbackInputExecutor implements InputExecutor{

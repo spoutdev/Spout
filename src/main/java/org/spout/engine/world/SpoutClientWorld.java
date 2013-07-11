@@ -65,6 +65,10 @@ public class SpoutClientWorld extends SpoutWorld {
 	public void addChunk(int chunkX, int chunkY, int chunkZ, short[] blockIds, short[] blockData) {
 		getRegionFromBlock(chunkX, chunkY, chunkZ, LoadOption.LOAD_GEN).addChunk(chunkX, chunkY, chunkZ, blockIds, blockData).render();
 	}
+	
+	public void removeChunk(int chunkX, int chunkY, int chunkZ) {
+		getRegionFromBlock(chunkX, chunkY, chunkZ, LoadOption.LOAD_GEN).removeChunk(chunkX, chunkY, chunkZ);
+	}
 
 	@Override
 	public void unload(boolean save) {
