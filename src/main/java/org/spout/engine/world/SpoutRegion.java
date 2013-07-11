@@ -506,23 +506,25 @@ public class SpoutRegion extends Region implements AsyncManager {
 		boolean empty = false;
 		Cube cube;
 		while ((cube = saveMarkedQueue.poll()) != null) {
-			if (cube == this) {
-				for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-					for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-						for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-							SpoutChunk c = getChunk(dx, dy, dz, LoadOption.NO_LOAD);
-							if (processChunkSaveUnload(c)) {
-								empty = true;
+			if (Spout.getPlatform() == Platform.SERVER) {
+				if (cube == this) {
+					for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+						for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
+							for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+								SpoutChunk c = getChunk(dx, dy, dz, LoadOption.NO_LOAD);
+								if (processChunkSaveUnload(c)) {
+									empty = true;
+								}
 							}
 						}
 					}
+					// No point in checking any others, since all processed
+					saveMarkedQueue.clear();
+					break;
 				}
-				// No point in checking any others, since all processed
-				saveMarkedQueue.clear();
-				break;
-			}
 
-			empty |= processChunkSaveUnload((SpoutChunk) cube);
+				empty |= processChunkSaveUnload((SpoutChunk) cube);
+			}
 		}
 
 		SpoutChunk c;
@@ -841,11 +843,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 		switch (stage) {
 			case 0: {
 				taskManager.heartbeat(delta);
-				updateAutosave();
 				updateBlockComponents(dt);
 				updateEntities(dt);
-				updatePopulation();
-				unloadChunks();
+				if (Spout.getPlatform() == Platform.SERVER) {
+					updateAutosave();
+					updatePopulation();
+					unloadChunks();
+				}
 				break;
 			}
 			case 1: {
@@ -872,33 +876,35 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public void finalizeRun() {
-		long worldAge = getWorld().getAge();
-		for (int reap = 0; reap < SpoutConfiguration.REAP_CHUNKS_PER_TICK.getInt(); reap++) {
-			if (++reapX >= CHUNKS.SIZE) {
-				reapX = 0;
-				if (++reapY >= CHUNKS.SIZE) {
-					reapY = 0;
-					if (++reapZ >= CHUNKS.SIZE) {
-						reapZ = 0;
-					}
-				}
-			}
-			SpoutChunk chunk = chunks[reapX][reapY][reapZ].get();
-			if (chunk != null) {
-				chunk.compressIfRequired();
-				boolean doUnload;
-				if (doUnload = chunk.isReapable()) {
-					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
-						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
-						if (event.isCancelled()) {
-							doUnload = false;
+		if (Spout.getPlatform() == Platform.SERVER) {
+			long worldAge = getWorld().getAge();
+			for (int reap = 0; reap < SpoutConfiguration.REAP_CHUNKS_PER_TICK.getInt(); reap++) {
+				if (++reapX >= CHUNKS.SIZE) {
+					reapX = 0;
+					if (++reapY >= CHUNKS.SIZE) {
+						reapY = 0;
+						if (++reapZ >= CHUNKS.SIZE) {
+							reapZ = 0;
 						}
 					}
 				}
-				if (doUnload) {
-					chunk.unload(true);
-				} else if (!chunk.isPopulated()) {
-					chunk.queueForPopulation(false);
+				SpoutChunk chunk = chunks[reapX][reapY][reapZ].get();
+				if (chunk != null) {
+					chunk.compressIfRequired();
+					boolean doUnload;
+					if (doUnload = chunk.isReapable()) {
+						if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
+							ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
+							if (event.isCancelled()) {
+								doUnload = false;
+							}
+						}
+					}
+					if (doUnload) {
+						chunk.unload(true);
+					} else if (!chunk.isPopulated()) {
+						chunk.queueForPopulation(false);
+					}
 				}
 			}
 		}
@@ -957,8 +963,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		entityManager.preSnapshotRun();
 		
 		SpoutChunk spoutChunk;
-
-		List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
 		
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 			if (spoutChunk.isDirty()) {
@@ -966,11 +970,12 @@ public class SpoutRegion extends Region implements AsyncManager {
 					for (Player entity : spoutChunk.getObservingPlayers()) {
 						syncChunkToPlayer(spoutChunk, entity);
 					}
-				}
-				processChunkUpdatedEvent(spoutChunk);
 
-				spoutChunk.resetDirtyArrays();
-				spoutChunk.setLightDirty(false);
+					processChunkUpdatedEvent(spoutChunk);
+
+					spoutChunk.resetDirtyArrays();
+					spoutChunk.setLightDirty(false);
+				}
 
 			}
 		}
