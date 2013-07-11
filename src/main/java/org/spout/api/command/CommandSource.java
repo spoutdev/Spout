@@ -49,8 +49,8 @@ public interface CommandSource extends PermissionsSubject {
 	public void sendCommand(String command, String... args);
 
 	/**
-	 * Executes the specified command on the current platform. This does not
-	 * require a connection.
+	 * Executes the specified command on the current platform. This command
+	 * has come from either the client or a local command source.
 	 *
 	 * @param command to execute
 	 * @param args to execute

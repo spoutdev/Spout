@@ -46,9 +46,7 @@ import org.spout.api.util.SpoutToStringStyle;
  * Represents a command sent by a {@link CommandSource}.
  */
 public final class Command implements Named {
-	private static int UNUSED_ID = -1;
 	private final String name;
-	private final int id;
 	private final List<String> aliases = new ArrayList<String>();
 	private final Set<Command> children = new HashSet<Command>();
 	private String help, usage, permission;
@@ -58,7 +56,6 @@ public final class Command implements Named {
 
 	protected Command(String name, String... names) {
 		this.name = name;
-		id = ++UNUSED_ID;
 		aliases.addAll(Arrays.asList(names));
 		aliases.add(name);
 	}
@@ -72,8 +69,8 @@ public final class Command implements Named {
 	 * {@link Executor#execute(CommandSource, Command, CommandArguments)}
 	 * throws a CommandException.
 	 */
-	public void execute(CommandSource source, String... args) throws CommandException {
-		execute(source, new CommandArguments(args));
+	public void process(CommandSource source, String... args) throws CommandException {
+		process(source, new CommandArguments(args));
 	}
 
 	/**
@@ -85,33 +82,22 @@ public final class Command implements Named {
 	 * {@link Executor#execute(CommandSource, Command, CommandArguments)}
 	 * throws a CommandException.
 	 */
-	public void execute(CommandSource source, CommandArguments args) throws CommandException {
+	public void process(CommandSource source, CommandArguments args) throws CommandException {
 		if (permission != null && !source.hasPermission(permission)) {
 			throw new CommandException("You do not have permission to execute this command.");
 		}
 
 		// check argument count
-		int len = args.length();
-		if (len < minArgs) {
-			source.sendMessage("Not enough arguments. (minimum " + minArgs + ")");
-			throw new CommandException(getUsage());
-		} else if (maxArgs >= 0 && len > maxArgs) { // -1 signifies infinite arguments
-			source.sendMessage("Too many arguments. (maximum " + maxArgs + ")");
-			throw new CommandException(getUsage());
-		}
+		verifyArgs(source, args);
 
 		// execute a child if applicable
 		if (args.length() > 0) {
-			String childRoot = args.getString(0);
 			List<String> childArgs = new ArrayList<String>(args.get());
 			childArgs.remove(0);
-			for (Command child : children) {
-				for (String alias : child.getAliases()) {
-					if (alias.equalsIgnoreCase(childRoot)) {
-						child.execute(source, new CommandArguments(childArgs));
-						return;
-					}
-				}
+			Command child = getChild(args.getString(0), false);
+			if (child != null) {
+				child.process(source, new CommandArguments(childArgs));
+				return;
 			}
 		}
 
@@ -125,6 +111,17 @@ public final class Command implements Named {
 			throw new CommandException("Command exists but has no set executor.");
 		}
 		executor.execute(source, this, args);
+	}
+
+	private void verifyArgs(CommandSource source, CommandArguments args) throws CommandException {
+		int len = args.length();
+		if (len < minArgs) {
+			source.sendMessage("Not enough arguments. (minimum " + minArgs + ")");
+			throw new CommandException(getUsage());
+		} else if (maxArgs >= 0 && len > maxArgs) { // -1 signifies infinite arguments
+			source.sendMessage("Too many arguments. (maximum " + maxArgs + ")");
+			throw new CommandException(getUsage());
+		}
 	}
 
 	/**
@@ -356,15 +353,6 @@ public final class Command implements Named {
 		return this;
 	}
 
-	/**
-	 * Returns this command's unique identifier.
-	 *
-	 * @return identifier
-	 */
-	public int getId() {
-		return id;
-	}
-
 	@Override
 	public String getName() {
 		return name;
@@ -378,7 +366,6 @@ public final class Command implements Named {
 
 		Command other = (Command) obj;
 		return new EqualsBuilder()
-				.append(id, other.id)
 				.append(name, other.name)
 				.build();
 	}
@@ -386,7 +373,6 @@ public final class Command implements Named {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(SpoutToStringStyle.INSTANCE)
-				.append("id", id)
 				.append("name", name)
 				.build();
 	}
@@ -395,7 +381,6 @@ public final class Command implements Named {
 	public int hashCode() {
 		return new HashCodeBuilder()
 				.append(name)
-				.append(id)
 				.build();
 	}
 }

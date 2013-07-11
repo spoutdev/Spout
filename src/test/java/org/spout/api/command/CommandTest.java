@@ -53,17 +53,17 @@ public class CommandTest {
 
 		// execute with success
 		try {
-			cmd.execute(testSource, "foo");
-			cmd.execute(testSource, "foo", "bar");
+			cmd.process(testSource, "foo");
+			cmd.process(testSource, "foo", "bar");
 		} catch (CommandException e) {
 			unexpectedException(e);
 		}
 
 		// execute with failure
 		try {
-			cmd.execute(testSource, "foo", "bar", "baz");
+			cmd.process(testSource, "foo", "bar", "baz");
 			expectedException();
-			cmd.execute(testSource);
+			cmd.process(testSource);
 			expectedException();
 		} catch (CommandException ignored) {
 		}
@@ -134,7 +134,7 @@ public class CommandTest {
 			}
 
 			try {
-				cmd.execute(this, args);
+				cmd.process(this, args);
 			} catch (CommandException e) {
 				sendMessage(e.getMessage());
 			}

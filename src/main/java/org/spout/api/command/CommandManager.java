@@ -80,20 +80,4 @@ public final class CommandManager {
 	public Command getCommand(String cmd) {
 		return getCommand(cmd, true);
 	}
-
-	/**
-	 * Returns the command with the specified identifier and returns null if
-	 * non-existent.
-	 *
-	 * @param id to get
-	 * @return command with specified id
-	 */
-	public Command getCommand(int id) {
-		for (Command c : commands) {
-			if (c.getId() == id) {
-				return c;
-			}
-		}
-		return null;
-	}
 }
