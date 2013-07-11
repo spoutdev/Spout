@@ -136,6 +136,9 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 
 	public MatrixN resize(int size) {
 		final MatrixN d = new MatrixN(size);
+		for (int rowCol = size(); rowCol < size; rowCol++) {
+			d.set(rowCol, rowCol, 0);
+		}
 		size = Math.min(size, size());
 		for (int row = 0; row < size; row++) {
 			System.arraycopy(mat[row], 0, d.mat[row], 0, size);
