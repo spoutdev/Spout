@@ -50,6 +50,7 @@ import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.UnknownDependencyException;
 import org.spout.api.exception.UnknownSoftDependencyException;
 import org.spout.api.plugin.security.PluginSecurityManager;
+import org.spout.api.protocol.Protocol;
 
 public class PluginLoader {
 	public static final String YAML_SPOUT = "properties.yml";
@@ -158,15 +159,21 @@ public class PluginLoader {
 				loader.addURL(file.toURI().toURL());
 				Class<?> main = Class.forName(desc.getMain(), true, loader);
 				Class<? extends Plugin> plugin = main.asSubclass(Plugin.class);
-	
+
 				boolean locked = manager.lock(key);
-	
+
 				Constructor<? extends Plugin> constructor = plugin.getConstructor();
-	
+
 				result = constructor.newInstance();
-	
+
 				result.initialize(this, engine, desc, dataFolder, file, loader);
-	
+
+				for (String protocolString : desc.getProtocols()) {
+					Class<? extends Protocol> protocol = Class.forName(protocolString, true, loader).asSubclass(Protocol.class);
+					Constructor<? extends Protocol> pConstructor = protocol.getConstructor();
+					Protocol.registerProtocol(pConstructor.newInstance());
+				}
+				
 				if (!locked) {
 					manager.unlock(key);
 				}
