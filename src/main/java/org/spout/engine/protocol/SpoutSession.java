@@ -132,6 +132,8 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	private final AtomicReference<UncaughtExceptionHandler> exceptionHandler;
 
+	private final SerializableMap dataMap = new ManagedHashMap(false);
+
 	/**
 	 * Creates a new session.
 	 * @param engine  The server this session belongs to.
@@ -409,4 +411,9 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	}
 
 	public abstract boolean disconnect(boolean kick, boolean stop, String reason);
+
+	@Override
+	public SerializableMap getDataMap() {
+		return dataMap;
+	}
 }
