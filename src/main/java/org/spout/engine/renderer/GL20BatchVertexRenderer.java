@@ -131,16 +131,4 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 			flushingBuffer = null;
 		}
 	}
-
-	@Override
-	public void finalize() {
-		if(currentBuffer != null){
-			currentBuffer.release();
-			currentBuffer = null;
-		}
-		if(flushingBuffer != null){
-			flushingBuffer.release();
-			flushingBuffer = null;
-		}
-	}
 }

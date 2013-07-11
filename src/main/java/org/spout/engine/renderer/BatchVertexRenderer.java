@@ -199,9 +199,10 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 	/*
 	 * We want this to be overriden to clean up traces GL objects...I think
+	 * Subclasses should use doRelease
 	 */
 	@Override
-	protected void finalize() throws Throwable {
+	protected final void finalize() throws Throwable {
 		release();
 		super.finalize();
 	}
