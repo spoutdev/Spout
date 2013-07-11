@@ -165,7 +165,7 @@ public class SpoutRenderer {
 		SpoutRenderer.checkGLError();
 
 		//Init pool of BatchVertexRenderer
-		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 10000);
+		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 500);
 
 		if (useReflexion) {
 			reflected = new ClientRenderTexture(true, false, true);

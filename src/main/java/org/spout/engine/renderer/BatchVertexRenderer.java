@@ -187,6 +187,8 @@ public abstract class BatchVertexRenderer implements Renderer {
 
 	public abstract void doRelease();
 
+	public abstract void doDelete();
+
 	public void release() {
 		doRelease();
 		//TODO : Implement for each version to empty display list, vbo, etc...
@@ -203,7 +205,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 */
 	@Override
 	protected final void finalize() throws Throwable {
-		release();
+		doDelete();
 		super.finalize();
 	}
 
