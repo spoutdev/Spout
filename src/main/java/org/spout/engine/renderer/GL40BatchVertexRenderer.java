@@ -150,6 +150,11 @@ public class GL40BatchVertexRenderer extends BatchVertexRenderer {
 			flushingBuffer.release();
 			flushingBuffer = null;
 		}
+	}
+
+	@Override
+	public void doDelete(){
+		doRelease();
 		GL30.glDeleteVertexArrays(vao);
 	}
 }

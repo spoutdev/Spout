@@ -181,5 +181,9 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	public void postRender() {
 		renderer.postDraw();
 	}
+
+	public void clear() {
+		renderer.release();
+	}
 	
 }
