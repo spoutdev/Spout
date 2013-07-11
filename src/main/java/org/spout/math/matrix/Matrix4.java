@@ -417,15 +417,14 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 			return null;
 		}
 		return new Matrix4(
-				det3(m11, m21, m31, m12, m22, m32, m13, m23, m33) / det, -det3(m10, m20, m30, m12, m22, m32, m13, m23, m33) / det,
-				det3(m10, m20, m30, m11, m21, m31, m13, m23, m33) / det, -det3(m10, m20, m30, m11, m21, m31, m12, m22, m32) / det,
-				-det3(m01, m21, m31, m02, m22, m32, m03, m23, m33) / det, det3(m00, m20, m30, m02, m22, m32, m03, m23, m33) / det,
-				-det3(m00, m20, m30, m01, m21, m31, m03, m23, m33) / det, det3(m00, m20, m30, m01, m21, m31, m02, m22, m32) / det,
-				det3(m01, m11, m31, m02, m12, m32, m03, m13, m33) / det, -det3(m00, m10, m30, m02, m12, m32, m03, m13, m33) / det,
-				det3(m00, m10, m30, m01, m11, m31, m03, m13, m33) / det, -det3(m00, m10, m30, m01, m11, m31, m02, m12, m32) / det,
-				-det3(m01, m11, m21, m02, m12, m22, m03, m13, m23) / det, det3(m00, m10, m20, m02, m12, m22, m03, m13, m23) / det,
-				-det3(m00, m10, m30, m01, m11, m31, m02, m12, m32) / det, det3(m00, m10, m20, m01, m11, m21, m02, m12, m22) / det
-		);
+				det3(m11, m21, m31, m12, m22, m32, m13, m23, m33) / det, -det3(m01, m21, m31, m02, m22, m32, m03, m23, m33) / det,
+				det3(m01, m11, m31, m02, m12, m32, m03, m13, m33) / det, -det3(m01, m11, m21, m02, m12, m22, m03, m13, m23) / det,
+				-det3(m10, m20, m30, m12, m22, m32, m13, m23, m33) / det, det3(m00, m20, m30, m02, m22, m32, m03, m23, m33) / det,
+				-det3(m00, m10, m30, m02, m12, m32, m03, m13, m33) / det, det3(m00, m10, m20, m02, m12, m22, m03, m13, m23) / det,
+				det3(m10, m20, m30, m11, m21, m31, m13, m23, m33) / det, -det3(m00, m20, m30, m01, m21, m31, m03, m23, m33) / det,
+				det3(m00, m10, m30, m01, m11, m31, m03, m13, m33) / det, -det3(m00, m10, m20, m01, m11, m21, m03, m13, m23) / det,
+				-det3(m10, m20, m30, m11, m21, m31, m12, m22, m32) / det, det3(m00, m20, m30, m01, m21, m31, m02, m22, m32) / det,
+				-det3(m00, m10, m30, m01, m11, m31, m02, m12, m32) / det, det3(m00, m10, m20, m01, m11, m21, m02, m12, m22) / det);
 	}
 
 	public Matrix2 toMatrix2() {
