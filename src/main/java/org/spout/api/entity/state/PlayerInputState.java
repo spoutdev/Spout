@@ -70,7 +70,7 @@ public class PlayerInputState {
 		}
 	}
 
-	public static final PlayerInputState DEFAULT_STATE = new PlayerInputState((short) 0, (byte) 0, (byte) 0);
+	public static final PlayerInputState DEFAULT_STATE = new PlayerInputState((short) 0, (short) 0, (short) 0);
 	private final short userCommands;
 	private final float pitch;
 	private final float yaw;
@@ -175,5 +175,9 @@ public class PlayerInputState {
 			}
 		}
 		return flags;
+	}
+
+	public short getUserCommands() {
+		return userCommands;
 	}
 }
