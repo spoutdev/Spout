@@ -209,7 +209,8 @@ public class WorldRenderer {
 		}
 
 		for (RenderMaterial r : toRemoveFromPositions) {
-			chunkRenderersByPositions.remove(position.getFloorX(), position.getFloorY(), position.getFloorZ(), r);
+			ChunkMeshBatchAggregator batch = chunkRenderersByPositions.remove(position.getFloorX(), position.getFloorY(), position.getFloorZ(), r);
+			batch.clear();
 		}
 	}
 

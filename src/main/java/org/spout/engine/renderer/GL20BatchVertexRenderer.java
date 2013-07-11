@@ -131,4 +131,9 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 			flushingBuffer = null;
 		}
 	}
+
+	@Override
+	public void doDelete(){
+		doRelease();
+	}
 }

@@ -42,6 +42,11 @@ public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
+	public void doDelete() {
+
+	}
+
+	@Override
 	public void preDraw() {
 		// TODO Auto-generated method stub
 		

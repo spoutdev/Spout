@@ -41,7 +41,7 @@ import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
 
 public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	final int SIZE_FLOAT = 4;
-	int vao;
+	int vao = -1;
 	int vbos = -1;
 
 	SpoutFloatBuffer buffer = null;
@@ -55,14 +55,22 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		super(renderMode);
 		vao = GL30.glGenVertexArrays();
 		SpoutRenderer.checkGLError();
-		//Util.checkGLError();
+
+		if(vao <= 0){
+			throw new IllegalStateException("Fait to generate VAO");
+		}
+
 		// TODO errors! fix please!
-		GL30.glBindVertexArray(vao); // useless
+		// GL30.glBindVertexArray(vao); // useless
 		//vertexBuffers.put(0, new VertexBufferImpl("vPosition", 4, 0)); //Auto create the first time
 	}
 
 	@Override
 	protected void initFlush(Map<Integer,Buffer> buffers){
+		if(vao == -1){
+			throw new IllegalStateException("Cant init a released VAO");
+		}
+
 		int size = 0;
 		int []layouts = new int[buffers.size()];
 		int []elements = new int[buffers.size()];
@@ -98,6 +106,10 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 
 	@Override
 	protected boolean doFlush(boolean force) {
+		if(vao == -1){
+			throw new IllegalStateException("Cant flush a released VAO");
+		}
+
 		if(flushingBuffer.flush(force)){
 			GL30.glBindVertexArray(vao);
 			SpoutRenderer.checkGLError();
@@ -136,6 +148,10 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	 */
 	@Override
 	public void doDraw(RenderMaterial material, int startVert, int endVert) {
+		if(vao == -1){
+			throw new IllegalStateException("Cant draw a released VAO");
+		}
+
 		GL30.glBindVertexArray(vao);
 		SpoutRenderer.checkGLError();
 
@@ -163,6 +179,16 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			flushingBuffer.release();
 			flushingBuffer = null;
 		}
-		GL30.glDeleteVertexArrays(vao);
+	}
+
+	@Override
+	public void doDelete(){
+		doRelease();
+		
+		if(vao != -1){
+			GL30.glDeleteVertexArrays(vao);
+			SpoutRenderer.checkGLError();
+			vao = -1;
+		}
 	}
 }
