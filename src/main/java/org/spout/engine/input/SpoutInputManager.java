@@ -53,6 +53,7 @@ import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
 
 import org.spout.engine.component.entity.SpoutSceneComponent;
+import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 
 public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
@@ -215,6 +216,9 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	private void onMouseClicked(Player player, int button, boolean pressed, int x, int y) {
+		//TODO Just testing
+		player.getSession().send(new ClickRequestMessage(x, y, ClickRequestMessage.Action.LEFT));
+
 		PlayerClickEvent event = Spout.getEventManager().callEvent(new PlayerClickEvent(player, button, pressed, new IntVector2(x, y)));
 		if (event.isCancelled()) {
 			return;

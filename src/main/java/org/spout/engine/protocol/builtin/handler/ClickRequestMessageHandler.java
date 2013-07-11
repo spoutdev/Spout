@@ -24,33 +24,31 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.protocol.builtin.codec;
+package org.spout.engine.protocol.builtin.handler;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.spout.api.protocol.MessageCodec;
-import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
+import org.spout.api.protocol.ClientSession;
+import org.spout.api.protocol.MessageHandler;
+import org.spout.api.protocol.ServerSession;
+import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
+import org.spout.engine.protocol.builtin.message.ClickResponseMessage;
 
-public class PlayerInputCodec extends MessageCodec<PlayerInputMessage> {
-	public PlayerInputCodec() {
-		super(PlayerInputMessage.class, 0x0D);
+/**
+ * Handles a ClickRequest sent by the Client. This is sent when the Client clicks anywhere on a screen that steals
+ * mouse (the game screen being the only exception).
+ */
+public class ClickRequestMessageHandler extends MessageHandler<ClickRequestMessage> {
+	@Override
+	public void handleServer(ServerSession session, ClickRequestMessage message) {
+		if (session.getPlayer() == null) {
+			throw new IllegalArgumentException("The session does not have a player!");
+		}
+		System.out.println("Client sent server a click request: " + message);
+		session.send(new ClickResponseMessage(message.getX(), message.getY(), ClickResponseMessage.Response.ALLOW));
+		//TODO ServerWidget framework
 	}
 
 	@Override
-	public ChannelBuffer encode(PlayerInputMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(6);
-
-		buffer.writeShort(message.getInputFlags());
-		buffer.writeShort(message.getMouseDx());
-		buffer.writeShort(message.getMouseDy());
-		return buffer;
-	}
-
-	@Override
-	public PlayerInputMessage decode(ChannelBuffer buffer) {
-		final short inputFlags = buffer.readShort();
-		final short mouseDx = buffer.readShort();
-		final short mouseDy = buffer.readShort();
-		return new PlayerInputMessage(inputFlags, mouseDx, mouseDy);
+	public void handleClient(ClientSession session, ClickRequestMessage message) {
+		session.disconnect(true, "Client cannot recieve click request from server");
 	}
 }

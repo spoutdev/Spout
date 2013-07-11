@@ -31,21 +31,23 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class ClickMessage extends SpoutMessage {
-	public enum Action {
-		LEFT, RIGHT, CENTER,
-	}
-
+public class ClickRequestMessage extends SpoutMessage {
 	private final Action clickType;
+	private final int x;
+	private final int y;
 
-	public ClickMessage(Action clickType) {
+	public ClickRequestMessage(int x, int y, Action clickType) {
+		this.x = x;
+		this.y = y;
 		this.clickType = clickType;
 	}
 
-	public ClickMessage(int clickType) {
+	public ClickRequestMessage(int x, int y, int clickType) {
 		if (clickType < 0 || clickType >= Action.values().length) {
 			throw new IllegalArgumentException("Unknown action ID " + clickType);
 		}
+		this.x = x;
+		this.y = y;
 		this.clickType = Action.values()[clickType];
 	}
 
@@ -53,9 +55,19 @@ public class ClickMessage extends SpoutMessage {
 		return clickType;
 	}
 
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
+				.append("x", x)
+				.append("y", y)
 				.append("clickType", clickType)
 				.toString();
 	}
@@ -63,19 +75,27 @@ public class ClickMessage extends SpoutMessage {
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(87, 53)
+				.append(x)
+				.append(y)
 				.append(clickType)
 				.toHashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof ClickMessage) {
-			final ClickMessage other = (ClickMessage) obj;
+		if (obj instanceof ClickRequestMessage) {
+			final ClickRequestMessage other = (ClickRequestMessage) obj;
 			return new EqualsBuilder()
+					.append(x, other.x)
+					.append(y, other.y)
 					.append(clickType, other.clickType)
 					.isEquals();
 		} else {
 			return false;
 		}
+	}
+
+	public enum Action {
+		LEFT, RIGHT, CENTER,
 	}
 }

@@ -28,29 +28,30 @@ package org.spout.engine.protocol.builtin.codec;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.spout.api.protocol.MessageCodec;
-import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 
-public class PlayerInputCodec extends MessageCodec<PlayerInputMessage> {
-	public PlayerInputCodec() {
-		super(PlayerInputMessage.class, 0x0D);
+import org.spout.api.protocol.MessageCodec;
+
+import org.spout.engine.protocol.builtin.message.ClickResponseMessage;
+
+public class ClickResponseCodec extends MessageCodec<ClickResponseMessage> {
+	public ClickResponseCodec() {
+		super(ClickResponseMessage.class, 0x0C);
 	}
 
 	@Override
-	public ChannelBuffer encode(PlayerInputMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(6);
-
-		buffer.writeShort(message.getInputFlags());
-		buffer.writeShort(message.getMouseDx());
-		buffer.writeShort(message.getMouseDy());
+	public ChannelBuffer encode(ClickResponseMessage message) {
+		ChannelBuffer buffer = ChannelBuffers.buffer(3);
+		buffer.writeByte(message.getX());
+		buffer.writeByte(message.getY());
+		buffer.writeByte(message.getResponse().ordinal());
 		return buffer;
 	}
 
 	@Override
-	public PlayerInputMessage decode(ChannelBuffer buffer) {
-		final short inputFlags = buffer.readShort();
-		final short mouseDx = buffer.readShort();
-		final short mouseDy = buffer.readShort();
-		return new PlayerInputMessage(inputFlags, mouseDx, mouseDy);
+	public ClickResponseMessage decode(ChannelBuffer buffer) {
+		byte x = buffer.readByte();
+		byte y = buffer.readByte();
+		byte response = buffer.readByte();
+		return new ClickResponseMessage(x, y, response);
 	}
 }

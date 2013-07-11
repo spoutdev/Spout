@@ -46,7 +46,8 @@ import org.spout.engine.protocol.builtin.SpoutCodecLookupService;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
-import org.spout.engine.protocol.builtin.message.ClickMessage;
+import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
+import org.spout.engine.protocol.builtin.message.ClickResponseMessage;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
@@ -56,8 +57,6 @@ import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
 import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
-
-
 
 public class SpoutProtocolTest extends BaseProtocolTest {
 	static {
@@ -80,7 +79,8 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 		new AddEntityMessage(0, EngineFaker.TEST_UUID, TEST_TRANSFORM, new NullRepositionManager()),
 		new BlockUpdateMessage(0, 0, 0, (short) 0, (short) 0),
 		new ChunkDataMessage(0, 0, 0, chunkData, chunkData, null, null),
-		new ClickMessage(ClickMessage.Action.LEFT),
+		new ClickRequestMessage(0, 0, ClickRequestMessage.Action.LEFT),
+		new ClickResponseMessage(0, 0, ClickResponseMessage.Response.ALLOW),
 		new CommandMessage(0, "hi"),
 		new CuboidBlockUpdateMessage(Vector3.ZERO, Vector3.UP, new short[0], new short[0], new byte[0], new byte[0]),
 		new EntityDatatableMessage(0, TEST_SERIALIZED_DATA),

@@ -24,15 +24,32 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.protocol.builtin.handler;
+package org.spout.engine.protocol.builtin.codec;
 
-import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.ServerSession;
-import org.spout.engine.protocol.builtin.message.ClickMessage;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.spout.api.protocol.MessageCodec;
+import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 
-public class ClickMessageHandler extends MessageHandler<ClickMessage> {
+public class ClickRequestCodec extends MessageCodec<ClickRequestMessage> {
+	public ClickRequestCodec() {
+		super(ClickRequestMessage.class, 0x0B);
+	}
+
 	@Override
-	public void handleServer(ServerSession session, ClickMessage message) {
+	public ChannelBuffer encode(ClickRequestMessage message) {
+		ChannelBuffer buffer = ChannelBuffers.buffer(3);
+		buffer.writeByte(message.getX());
+		buffer.writeByte(message.getY());
+		buffer.writeByte(message.getClickType().ordinal());
+		return buffer;
+	}
 
+	@Override
+	public ClickRequestMessage decode(ChannelBuffer buffer) {
+		final byte x = buffer.readByte();
+		final byte y = buffer.readByte();
+		final byte action = buffer.readByte();
+		return new ClickRequestMessage(x, y, action);
 	}
 }

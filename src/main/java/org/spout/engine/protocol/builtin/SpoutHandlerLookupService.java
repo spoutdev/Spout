@@ -28,11 +28,14 @@ package org.spout.engine.protocol.builtin;
 
 import org.spout.api.protocol.HandlerLookupService;
 
+import org.spout.engine.protocol.builtin.handler.ClickRequestMessageHandler;
+import org.spout.engine.protocol.builtin.handler.ClickResponseMessageHandler;
 import org.spout.engine.protocol.builtin.handler.EntityTransformMessageHandler;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
-import org.spout.engine.protocol.builtin.message.ClickMessage;
+import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
+import org.spout.engine.protocol.builtin.message.ClickResponseMessage;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
@@ -45,7 +48,6 @@ import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 import org.spout.engine.protocol.builtin.handler.AddEntityMessageHandler;
 import org.spout.engine.protocol.builtin.handler.BlockUpdateMessageHandler;
 import org.spout.engine.protocol.builtin.handler.ChunkDataMessageHandler;
-import org.spout.engine.protocol.builtin.handler.ClickMessageHandler;
 import org.spout.engine.protocol.builtin.handler.CommandMessageHandler;
 import org.spout.engine.protocol.builtin.handler.CuboidBlockUpdateMessageHandler;
 import org.spout.engine.protocol.builtin.handler.EntityDatatableMessageHandler;
@@ -69,7 +71,8 @@ public class SpoutHandlerLookupService extends HandlerLookupService {
 			bind(ChunkDataMessage.class, ChunkDataMessageHandler.class);
 			bind(BlockUpdateMessage.class, BlockUpdateMessageHandler.class);
 			bind(CuboidBlockUpdateMessage.class, CuboidBlockUpdateMessageHandler.class);
-			bind(ClickMessage.class, ClickMessageHandler.class);
+			bind(ClickRequestMessage.class, ClickRequestMessageHandler.class);
+			bind(ClickResponseMessage.class, ClickResponseMessageHandler.class);
 			bind(PlayerInputMessage.class, PlayerInputMessageHandler.class);
 		} catch (Exception e) {
 			throw new ExceptionInInitializerError(e);

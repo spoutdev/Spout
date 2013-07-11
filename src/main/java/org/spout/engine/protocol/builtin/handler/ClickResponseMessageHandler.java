@@ -24,28 +24,26 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.protocol.builtin.codec;
+package org.spout.engine.protocol.builtin.handler;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.spout.api.protocol.MessageCodec;
-import org.spout.engine.protocol.builtin.message.ClickMessage;
+import org.spout.api.protocol.ClientSession;
+import org.spout.api.protocol.MessageHandler;
+import org.spout.api.protocol.ServerSession;
 
-public class ClickCodec extends MessageCodec<ClickMessage> {
-	public ClickCodec() {
-		super(ClickMessage.class, 0x0B);
+import org.spout.engine.protocol.builtin.message.ClickResponseMessage;
+
+public class ClickResponseMessageHandler extends MessageHandler<ClickResponseMessage> {
+	@Override
+	public void handleServer(ServerSession session, ClickResponseMessage message) {
+		throw new IllegalStateException("Server does not recieve click response messages!");
 	}
 
 	@Override
-	public ChannelBuffer encode(ClickMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(1);
-		buffer.writeByte(message.getClickType().ordinal());
-		return buffer;
-	}
+	public void handleClient(ClientSession session, ClickResponseMessage message) {
+		if (session.getPlayer() == null) {
+			throw new IllegalStateException("The client session has no player!");
+		}
 
-	@Override
-	public ClickMessage decode(ChannelBuffer buffer) {
-		byte type = buffer.readByte();
-		return new ClickMessage(type);
+		System.out.println("Server sent client a click response: " + message);
 	}
 }
