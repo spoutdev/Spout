@@ -71,7 +71,7 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutServer;
-import org.spout.engine.component.entity.FallbackInput;
+import org.spout.engine.component.entity.MovementValidator;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutServerWorld;
@@ -108,7 +108,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		hashcode = name.hashCode();
 		this.setObserver(true);
 		if (Spout.getPlatform() == Platform.SERVER) {
-			add(FallbackInput.class);
+			add(MovementValidator.class);
 		}
 	}
 

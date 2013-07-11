@@ -54,6 +54,7 @@ import org.spout.api.math.Vector3;
 
 import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
+import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 
 public class SpoutInputManager implements InputManager {
@@ -313,11 +314,13 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	public void execute(float dt){
+		SpoutSceneComponent sc = (SpoutSceneComponent) ((Client)Spout.getEngine()).getPlayer().getScene();
 		for(InputExecutor executor : inputExecutors){
-			SpoutSceneComponent sc = (SpoutSceneComponent) ((Client)Spout.getEngine()).getPlayer().getScene();
 			executor.execute(dt, sc.getLiveTransform());
 		}
 		Player player = ((Client) Spout.getEngine()).getPlayer();
+		// TODO: move this to NetworkSynchronizer?
+		player.getSession().send(new EntityTransformMessage(player.getId(), sc.getLiveTransform(), player.getSession().getNetworkSynchronizer().getRepositionManager()));
 		PlayerInputState input = player.input();
 		player.getSession().send(new PlayerInputMessage(input.getUserCommands(), (short) input.pitch(), (short) input.yaw()));
 	}
@@ -333,10 +336,10 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	public void onClientStart() {
-		//if (inputExecutors.size() == 0) {
-		//	Spout.warn("No input executor found, using fallback input");
-		//	addInputExecutor(new FallbackInputExecutor());
-		//}
+		if (inputExecutors.isEmpty()) {
+			Spout.warn("No input executor found, using fallback input");
+			addInputExecutor(new FallbackInputExecutor());
+		}
 	}
 
 	private static class FallbackInputExecutor implements InputExecutor{

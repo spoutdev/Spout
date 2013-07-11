@@ -27,9 +27,12 @@
 package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
+import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.reposition.RepositionManager;
+import org.spout.engine.component.entity.MovementValidator;
 import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 
 public class EntityTransformMessageHandler extends MessageHandler<EntityTransformMessage> {
@@ -45,6 +48,21 @@ public class EntityTransformMessageHandler extends MessageHandler<EntityTransfor
 		}
 		if (entity != null) {
 			entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
+		}
+	}
+
+	@Override
+	public void handleServer(ServerSession session, EntityTransformMessage message) {
+		RepositionManager rmInverse = session.getNetworkSynchronizer().getRepositionManager().getInverse();
+
+		Player entity;
+		if (message.getEntityId() == session.getPlayer().getId()) {
+			entity = session.getPlayer();
+		} else {
+			throw new IllegalStateException("Server can not receive non-player transforms.");
+		}
+		if (entity != null) {
+			entity.getSession().getDataMap().put(MovementValidator.RECEIVED_TRANSFORM, rmInverse.convert(message.getTransform()));
 		}
 	}
 }

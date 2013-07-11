@@ -317,8 +317,6 @@ public class SpoutRenderer {
 			debugScreen.spoutUpdate(id++, "Cull Chunks: " + (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getCulledChunks() + ")");
 			debugScreen.spoutUpdate(id++, "Entities: " + entityRenderer.getRenderedEntities());
 			debugScreen.spoutUpdate(id++, "Buffer: " + worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch);
-			debugScreen.spoutUpdate(id++, "Time: " + worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0);
-			debugScreen.spoutUpdate(id++, "Meshes generated: " + SpoutChunk.meshesGenerated.get());
 			debugScreen.spoutUpdate(id++, "Mesh batch queue size: " + ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer().getBatchWaiting());
 		}
 		
