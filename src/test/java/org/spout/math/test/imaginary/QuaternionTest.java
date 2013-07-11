@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import org.spout.math.TrigMath;
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.matrix.Matrix3;
 import org.spout.math.test.TestUtil;
 import org.spout.math.vector.Vector3;
 
@@ -370,5 +371,11 @@ public class QuaternionTest {
 		TestUtil.assertEquals(quaternion2, 0, (float) TrigMath.HALF_SQRT_OF_TWO, 0, (float) TrigMath.HALF_SQRT_OF_TWO);
 		Quaternion quaternion3 = Quaternion.fromAngleRadAxis((float) TrigMath.HALF_PI, 0, 0, 1);
 		TestUtil.assertEquals(quaternion3, 0, 0, (float) TrigMath.HALF_SQRT_OF_TWO, (float) TrigMath.HALF_SQRT_OF_TWO);
+	}
+
+	public void testCreateFromRotationMatrix3() {
+		final Quaternion quaternion = Quaternion.fromAngleDegAxis(45, 1, 1, -1);
+		final Matrix3 matrix = Matrix3.createRotation(quaternion);
+		Assert.assertEquals(quaternion, Quaternion.fromRotationMatrix(matrix));
 	}
 }

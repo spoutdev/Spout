@@ -344,4 +344,53 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 		final double q = TrigMath.sin(halfAngle) / Math.sqrt(x * x + y * y + z * z);
 		return new Quaternion(x * q, y * q, z * q, TrigMath.cos(halfAngle));
 	}
+
+	public static Quaternion fromRotationMatrix(Matrix3 matrix) {
+		final float trace = matrix.trace();
+		if (trace < 0) {
+			if (matrix.get(1, 1) > matrix.get(0, 0)) {
+				if (matrix.get(2, 2) > matrix.get(1, 1)) {
+					final float r = (float) Math.sqrt(matrix.get(2, 2) - matrix.get(0, 0) - matrix.get(1, 1) + 1);
+					final float s = 0.5f / r;
+					return new Quaternion(
+							(matrix.get(2, 0) + matrix.get(0, 2)) * s,
+							(matrix.get(1, 2) + matrix.get(2, 1)) * s,
+							0.5f * r,
+							(matrix.get(1, 0) - matrix.get(0, 1)) * s);
+				} else {
+					final float r = (float) Math.sqrt(matrix.get(1, 1) - matrix.get(2, 2) - matrix.get(0, 0) + 1);
+					final float s = 0.5f / r;
+					return new Quaternion(
+							(matrix.get(0, 1) + matrix.get(1, 0)) * s,
+							0.5f * r,
+							(matrix.get(1, 2) + matrix.get(2, 1)) * s,
+							(matrix.get(0, 2) - matrix.get(2, 0)) * s);
+				}
+			} else if (matrix.get(2, 2) > matrix.get(0, 0)) {
+				final float r = (float) Math.sqrt(matrix.get(2, 2) - matrix.get(0, 0) - matrix.get(1, 1) + 1);
+				final float s = 0.5f / r;
+				return new Quaternion(
+						(matrix.get(2, 0) + matrix.get(0, 2)) * s,
+						(matrix.get(1, 2) + matrix.get(2, 1)) * s,
+						0.5f * r,
+						(matrix.get(1, 0) - matrix.get(0, 1)) * s);
+			} else {
+				final float r = (float) Math.sqrt(matrix.get(0, 0) - matrix.get(1, 1) - matrix.get(2, 2) + 1);
+				final float s = 0.5f / r;
+				return new Quaternion(
+						0.5f * r,
+						(matrix.get(0, 1) + matrix.get(1, 0)) * s,
+						(matrix.get(2, 0) - matrix.get(0, 2)) * s,
+						(matrix.get(2, 1) - matrix.get(1, 2)) * s);
+			}
+		} else {
+			final float r = (float) Math.sqrt(trace + 1);
+			final float s = 0.5f / r;
+			return new Quaternion(
+					(matrix.get(2, 1) - matrix.get(1, 2)) * s,
+					(matrix.get(0, 2) - matrix.get(2, 0)) * s,
+					(matrix.get(1, 0) - matrix.get(0, 1)) * s,
+					0.5f * r);
+		}
+	}
 }
