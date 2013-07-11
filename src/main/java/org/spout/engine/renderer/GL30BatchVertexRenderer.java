@@ -56,7 +56,8 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		vao = GL30.glGenVertexArrays();
 		SpoutRenderer.checkGLError();
 		//Util.checkGLError();
-		//GL30.glBindVertexArray(vao); // useless
+		// TODO errors! fix please!
+		GL30.glBindVertexArray(vao); // useless
 		//vertexBuffers.put(0, new VertexBufferImpl("vPosition", 4, 0)); //Auto create the first time
 	}
 

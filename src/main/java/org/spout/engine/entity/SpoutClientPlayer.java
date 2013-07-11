@@ -47,11 +47,6 @@ public class SpoutClientPlayer extends SpoutPlayer {
 
 	@Override
 	public void sendMessage(String message) {
-		SpoutSession<?> session = getSession();
-		if (session == null) {
-			((SpoutScreenStack)((Client)getEngine()).getScreenStack()).getConsole().addMessage(message);
-		} else {
-			super.sendMessage(message);
-		}
+		((SpoutScreenStack)((Client)getEngine()).getScreenStack()).getConsole().addMessage(message);
 	}
 }

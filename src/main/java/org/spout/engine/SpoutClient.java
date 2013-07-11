@@ -108,6 +108,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private SoundManager soundManager;
 	private SpoutInputManager inputManager;
 
+	public SpoutClient() {
+		logFile = "Client log-%D.txt";
+	}
+
 	@Override
 	public void init(SpoutApplication args) {
 		boolean inJar = false;
@@ -377,8 +381,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void disconnected() {
 		getLogger().log(Level.SEVERE, "ENGINE DISCONNECTING!");
 		new RuntimeException().printStackTrace();
-		this.session.set(null);
 		stop("Disconnected for some unknown reason!");
+		this.session.set(null);
 	}
 
 	@Override

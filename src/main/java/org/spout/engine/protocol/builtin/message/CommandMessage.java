@@ -33,20 +33,20 @@ import org.spout.api.command.Command;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class CommandMessage extends SpoutMessage {
-	private final int command;
+	private final String command;
 	private final String[] arguments;
 
 	public CommandMessage(Command command, String... arguments) {
-		this.command = command.getId();
+		this.command = command.getName();
 		this.arguments = arguments;
 	}
 
-	public CommandMessage(int command, String... arguments) {
+	public CommandMessage(String command, String... arguments) {
 		this.command = command;
 		this.arguments = arguments;
 	}
 
-	public int getCommand() {
+	public String getCommand() {
 		return command;
 	}
 

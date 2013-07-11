@@ -220,7 +220,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 		// try to execute and send any exceptions to the player
 		try {
-			cmd.execute(this, arguments);
+			cmd.process(this, arguments);
 		} catch (CommandException e) {
 			sendMessage(e.getMessage());
 		}

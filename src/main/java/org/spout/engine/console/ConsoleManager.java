@@ -34,7 +34,10 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jline.Completor;
+import org.spout.api.Client;
 import org.spout.api.Engine;
+import org.spout.api.Platform;
+import org.spout.api.Spout;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.logging.LoggerOutputStream;
@@ -115,7 +118,11 @@ public final class ConsoleManager {
 
 		@Override
 		public void run() {
-			engine.getCommandSource().processCommand(command, arguments);
+			if (Spout.getPlatform() == Platform.CLIENT) {
+				((Client) engine).getPlayer().sendCommand(command, arguments);
+			} else {
+				engine.getCommandSource().processCommand(command, arguments);
+			}
 		}
 
 		@Override

@@ -81,7 +81,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 		new ChunkDataMessage(0, 0, 0, chunkData, chunkData, null, null),
 		new ClickRequestMessage(0, 0, ClickRequestMessage.Action.LEFT),
 		new ClickResponseMessage(0, 0, ClickResponseMessage.Response.ALLOW),
-		new CommandMessage(0, "hi"),
+		new CommandMessage("test", "hi"),
 		new CuboidBlockUpdateMessage(Vector3.ZERO, Vector3.UP, new short[0], new short[0], new byte[0], new byte[0]),
 		new EntityDatatableMessage(0, TEST_SERIALIZED_DATA),
 		new EntityTransformMessage(0, 

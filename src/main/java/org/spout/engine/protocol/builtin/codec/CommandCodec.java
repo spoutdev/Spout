@@ -40,14 +40,14 @@ public class CommandCodec extends MessageCodec<CommandMessage> {
 	@Override
 	public ChannelBuffer encode(CommandMessage message) {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-		buffer.writeInt(message.getCommand());
+		ChannelBufferUtils.writeString(buffer, message.getCommand());
 		ChannelBufferUtils.writeStringArray(buffer, message.getArguments());
 		return buffer;
 	}
 
 	@Override
 	public CommandMessage decode(ChannelBuffer buffer) {
-		final int command = buffer.readInt();
+		final String command = ChannelBufferUtils.readString(buffer);
 		final String[] args = ChannelBufferUtils.readStringArray(buffer);
 		return new CommandMessage(command, args);
 	}

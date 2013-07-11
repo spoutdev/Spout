@@ -26,6 +26,9 @@
  */
 package org.spout.engine.console;
 
+import org.spout.api.Client;
+import org.spout.api.Platform;
+import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
@@ -34,6 +37,8 @@ import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.lang.Locale;
+import org.spout.api.protocol.Message;
+import org.spout.api.protocol.Session;
 
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
@@ -74,13 +79,25 @@ public class ConsoleCommandSource implements CommandSource {
 			sendMessage("Unknown command: " + cmd);
 			return;
 		}
-
-		// execute and send any exceptions
-		try {
-			command.execute(this, args);
-		} catch (CommandException e) {
-			sendMessage(e.getMessage());
-		}
+		switch (Spout.getPlatform()) {
+			case SERVER:
+			case PROXY:
+				// execute and send any exceptions
+				try {
+					command.process(this, arguments);
+				} catch (CommandException e) {
+					sendMessage(e.getMessage());
+				}
+				break;
+			case CLIENT:
+				Session session = ((Client) Spout.getEngine()).getPlayer().getSession();
+				Message msg = session.getProtocol().getCommandMessage(command, new CommandArguments(args));
+				if (msg == null) {
+					return;
+				}
+				session.send(msg);
+				break;
+	}
 	}
 
 	@Override
@@ -93,7 +110,7 @@ public class ConsoleCommandSource implements CommandSource {
 
 	@Override
 	public String getName() {
-		return "Console";
+		return Spout.getPlatform() == Platform.CLIENT ? "Console" : "Server";
 	}
 
 	@Override

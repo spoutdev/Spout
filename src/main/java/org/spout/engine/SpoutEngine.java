@@ -114,7 +114,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<SocketAddress, Protocol>();
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 	protected final CommandManager cmdManager = new CommandManager();
-	private String logFile;
+	protected String logFile;
 	private SpoutApplication arguments;
 	protected MemoryReclamationThread reclamation = null;
 	private DefaultPermissions defaultPerms;

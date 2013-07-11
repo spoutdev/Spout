@@ -117,7 +117,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	/**
 	 * The {@link FileSystem} for the server
 	 */
-	private final ServerFileSystem filesystem;
+	private final ServerFileSystem filesystem = new ServerFileSystem();
 	/**
 	 * If the server allows flight.
 	 */
@@ -146,7 +146,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private StringToUniqueIntegerMap engineLightingMap = null;
 
 	public SpoutServer() {
-		this.filesystem = new ServerFileSystem();
+		logFile = "Server log-%D.txt";
 	}
 
 	@Override
