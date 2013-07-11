@@ -256,4 +256,11 @@ public interface Session {
 			session.disconnect(false, "Message handler exception for " + message.getClass().getSimpleName());
 		}
 	}
+
+	/**
+	 * Gets a non-syncing map of data attached to this session.
+	 *
+	 * @return data map
+	 */
+	public SerializableMap getDataMap();
 }
