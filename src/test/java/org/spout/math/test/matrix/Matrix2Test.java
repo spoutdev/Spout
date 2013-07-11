@@ -64,8 +64,8 @@ public class Matrix2Test {
 
 	@Test
 	public void testCopyMatrixNConstructor() {
-		Matrix2 matrix = new Matrix2(new MatrixN(2));
-		TestUtil.assertEquals(matrix, 1, 0, 0, 1);
+		Matrix2 matrix = new Matrix2(new MatrixN(1, 2, 3, 4));
+		TestUtil.assertEquals(matrix, 1, 2, 3, 4);
 	}
 
 	@Test

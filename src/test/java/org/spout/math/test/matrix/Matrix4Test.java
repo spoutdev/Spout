@@ -86,12 +86,17 @@ public class Matrix4Test {
 
 	@Test
 	public void testCopyMatrixNConstructor() {
-		Matrix4 matrix = new Matrix4(new MatrixN(4));
+		Matrix4 matrix = new Matrix4(new MatrixN(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16
+		));
 		TestUtil.assertEquals(matrix,
-				1, 0, 0, 0,
-				0, 1, 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1);
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
 	}
 
 	@Test
@@ -283,7 +288,7 @@ public class Matrix4Test {
 		TestUtil.assertEquals(matrix,
 				-1, 10, 0, 0,
 				0, 1, -16, 4,
-				0, 0, 1, -4,
+				0, 0, 1, 0,
 				0, 0, -4, 1);
 	}
 
@@ -585,16 +590,16 @@ public class Matrix4Test {
 	@Test
 	public void testInvert() {
 		Matrix4 matrix = new Matrix4(
-				1, 0, 0, 0,
-				0, 2, 0, 0,
-				0, 0, 3, 0,
-				0, 0, 0, 4);
+				1, 2, 3, 4,
+				4, 1, 2, 3,
+				3, 4, 1, 2,
+				2, 3, 1, 4);
 		matrix = matrix.invert();
 		TestUtil.assertEquals(matrix,
-				1, 0, 0, 0,
-				0, 0.5f, 0, 0,
-				0, 0, 0.3333333333f, 0,
-				0, 0, 0, 0.25f);
+				-0.1875f, 0.275f, 0.0625f, -0.05f,
+				0.0625f, -0.225f, 0.3125f, -0.05f,
+				0.4375f, 0.025f, 0.1875f, -0.55f,
+				-0.0625f, 0.025f, -0.3125f, 0.45f);
 	}
 
 	@Test

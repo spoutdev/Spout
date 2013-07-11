@@ -66,8 +66,8 @@ public class Matrix3Test {
 
 	@Test
 	public void testCopyMatrixNConstructor() {
-		Matrix3 matrix = new Matrix3(new Matrix4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
-		TestUtil.assertEquals(matrix, 1, 2, 3, 5, 6, 7, 9, 10, 11);
+		Matrix3 matrix = new Matrix3(new MatrixN(1, 2, 3, 4, 5, 6, 7, 8, 9));
+		TestUtil.assertEquals(matrix, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 	}
 
 	@Test
@@ -266,8 +266,11 @@ public class Matrix3Test {
 		Assert.assertEquals(matrix1, null);
 		Matrix3 matrix2 = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1).invert();
 		TestUtil.assertEquals(matrix2, 1, 0, 0, 0, 1, 0, 0, 0, 1);
-		Matrix3 matrix3 = new Matrix3(1, 1, 0, 0, 1, 0, 0, 0, 1).invert();
-		TestUtil.assertEquals(matrix3, 1, -1, 0, 0, 1, 0, 0, 0, 1);
+		Matrix3 matrix3 = new Matrix3(1, 2, 3, 3, 1, 2, 2, 3, 1).invert();
+		TestUtil.assertEquals(matrix3,
+				-0.2777777777f, 0.3888888888f, 0.0555555555f,
+				0.0555555555f, -0.2777777777f, 0.3888888888f,
+				0.3888888888f, 0.0555555555f, -0.2777777777f);
 	}
 
 	@Test
