@@ -119,7 +119,7 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * Gets the region associated with the region x, y, z coordinates <br/>
-	 * <p/>
+	 * <p>
 	 * Will load or generate a region if requested.
 	 * @param x    the x coordinate
 	 * @param y    the y coordinate

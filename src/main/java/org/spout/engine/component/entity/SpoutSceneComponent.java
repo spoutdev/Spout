@@ -310,7 +310,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	/**
 	 * Gets the live transform state of this {@link org.spout.api.entity.Entity} within the scene.
-	 * <p/>
+	 * <p>
 	 * Warning: the live transform is unstable; it may change during the API tickstage.
 	 * @return The Transform representing the live state.
 	 */
@@ -321,7 +321,7 @@ public class SpoutSceneComponent extends SceneComponent {
 	/**
 	 * Gets the {@link Transform} this {@link org.spout.api.entity.Entity} had within the last game tick
 	 * of the scene with interpolation applied (so it appears smooth to users).
-	 * <p/>
+	 * <p>
 	 * The render transform is the transform of the entity clients see within the scene.
 	 * @return The Transform, interpolated, as of the last game tick.
 	 */
