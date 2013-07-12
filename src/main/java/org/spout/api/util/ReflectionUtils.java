@@ -28,6 +28,8 @@ package org.spout.api.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -387,5 +389,24 @@ public class ReflectionUtils {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Checks if the given class has custom serialization. Enums and classes with writeObject/readObject methods will return true.
+	 * 
+	 * @param clazz
+	 * @return has custom serializations
+	 */
+	public static boolean hasCustomSerialization(Class<?> clazz) {
+		if (clazz.isEnum()) {
+			return true; //Enums have custom serialization that does not read from fields
+		}
+		try {
+			clazz.getDeclaredMethod("writeObject", new Class[] {ObjectOutputStream.class});
+			clazz.getDeclaredMethod("readObject", new Class[] {ObjectInputStream .class});
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }
