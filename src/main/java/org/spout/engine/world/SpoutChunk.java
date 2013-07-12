@@ -2204,8 +2204,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
 				for (int z = -1; z <= 1; z++) {
-					SpoutChunk chunk = getWorld().getChunk(getX() + x, getY() + y, getZ() + z, LoadOption.LOAD_GEN);
-					chunks[x + 1][y + 1][z + 1] = chunk.getRenderSnapshot();
+					SpoutChunk chunk = getWorld().getChunk(getX() + x, getY() + y, getZ() + z, LoadOption.NO_LOAD);
+					
+					if(x == 0 && y == 0 && z == 0 && chunk == null){
+						//Should not happens
+						return;
+					}
+					
+					chunks[x + 1][y + 1][z + 1] = chunk != null ? chunk.getRenderSnapshot() : null;
 				}
 			}
 		}

@@ -195,9 +195,10 @@ public class ChunkMesh {
 			int y1 = facePos.getFloorY();
 			int z1 = facePos.getFloorZ();
 
-			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
+			ChunkSnapshot neighborChunk = chunkModel.getChunkFromBlock(x1, y1, z1);
+			BlockMaterial neighbor = neighborChunk != null ? chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1) : null;
 
-			if (!material.isFaceRendered(face, neighbor) || neighbor.getOcclusion(material.getData()).get(face.getOpposite())) {
+			if (neighbor == null || !material.isFaceRendered(face, neighbor) || neighbor.getOcclusion(material.getData()).get(face.getOpposite())) {
 				toRender[i] = false;
 				continue;
 			}
