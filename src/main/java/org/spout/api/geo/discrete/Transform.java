@@ -44,7 +44,7 @@ import org.spout.api.util.thread.annotation.Threadsafe;
 public final class Transform implements Serializable {
 	private static final long serialVersionUID = 2L;
 
-	private final SpinLock lock = new SpinLock();
+	private final transient SpinLock lock = new SpinLock();
 	private Point position; 
 	private Quaternion rotation;
 	private Vector3 scale;
