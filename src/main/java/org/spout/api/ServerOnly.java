@@ -33,12 +33,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Documented
-@Target(value = ElementType.METHOD)
+@Target(value = {ElementType.METHOD, ElementType.CONSTRUCTOR})
 @Retention(value = RetentionPolicy.SOURCE)
 public @interface ServerOnly {
 	public String author() default "SpoutDev";
 
 	public String version() default "1.1";
 
-	public String shortDescription() default "Indicates that the function requires Spout to be in Server mode to take effect.";
+	public String shortDescription() default "Indicates that the function should only while Platform is Server. "
+		+ "UnsupportedOperationException may occur otherwise.";
 }
