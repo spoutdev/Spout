@@ -28,8 +28,6 @@ package org.spout.engine;
 
 import static org.junit.Assert.fail;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -51,13 +49,13 @@ public class SerializableTest {
 		for (Class<?> clazz : classes) {
 			if (Serializable.class.isAssignableFrom(clazz) && !Modifier.isAbstract(clazz.getModifiers())) {
 				//Top level has custom serialization, skip
-				if (hasCustomSerialization(clazz)) {
+				if (ReflectionUtils.hasCustomSerialization(clazz)) {
 					continue;
 				}
 				Class<?> superclazz = clazz;
 				while (superclazz != null) {
 					//Could be superclass, can't be sure it's used, need to check all superclasses for serializability
-					if (hasCustomSerialization(superclazz)) {
+					if (ReflectionUtils.hasCustomSerialization(superclazz)) {
 						//System.out.println("Class " + superclazz.getName() + " has custom serialization, skipping field checks");
 					} else {
 						for (Field f : superclazz.getDeclaredFields()) {
@@ -87,16 +85,6 @@ public class SerializableTest {
 					superclazz = superclazz.getSuperclass();
 				}
 			}
-		}
-	}
-
-	private static boolean hasCustomSerialization(Class<?> clazz) {
-		try {
-			clazz.getDeclaredMethod("writeObject", new Class[] {ObjectOutputStream.class});
-			clazz.getDeclaredMethod("readObject", new Class[] {ObjectInputStream .class});
-			return true;
-		} catch (Exception e) {
-			return false;
 		}
 	}
 }
