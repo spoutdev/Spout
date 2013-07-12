@@ -236,7 +236,7 @@ public class ItemStack implements Serializable, Cloneable {
 	 * The amount of this item stack is set to contain the remaining amount<br>
 	 * The amount of the returned stack is set to be this amount or the maximum
 	 * stacking size<br><br>
-	 * <p/>
+	 * <p>
 	 * For example, limiting a stack of amount 120 to a max stacking size of 64
 	 * will:
 	 * <ul>
@@ -254,7 +254,7 @@ public class ItemStack implements Serializable, Cloneable {
 	 * The amount of this item stack is set to contain the remaining amount<br>
 	 * The amount of the returned stack is set to be this amount or the maximum
 	 * amount<br><br>
-	 * <p/>
+	 * <p>
 	 * For example, limiting a stack of amount 5 to a max size of 2 will:
 	 * <ul>
 	 * <li>Set the amount of this item stack to 3
@@ -277,7 +277,7 @@ public class ItemStack implements Serializable, Cloneable {
 	 * Tries to stack an item on top of this item<br>
 	 * The item must have the same properties as this item stack<br>
 	 * The amount of this item is kept below the max stacking size<br><br>
-	 * <p/>
+	 * <p>
 	 * The input item amount is affected<br>
 	 * If true is returned, this amount is 0, otherwise it is the amount it
 	 * didn't stack into this item

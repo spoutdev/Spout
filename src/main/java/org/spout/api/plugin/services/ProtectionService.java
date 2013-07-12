@@ -41,7 +41,7 @@ import org.spout.api.geo.discrete.Point;
  * the abstract methods.
  * To register your ProtectionService you will need to do something similar to:
  * <code>getServiceManager().register(ProtectionService.class, myProtectionServiceInstance, myPlugin, ServicePriority)</code>
- * <p/>
+ * <p>
  * The static methods provided are intended for direct usage by any plugins.  Plugins should NOT be getting the
  * protection services directly as it may result in incomplete data from the server.
  */

@@ -111,7 +111,7 @@ public interface Engine extends Named {
 	/**
 	 * Gets the update folder. The update folder is used to safely update
 	 * plugins at the right moment on a plugin load.
-	 * <p/>
+	 * <p>
 	 * The update folder name is relative to the plugins folder.
 	 * @return {@link File} of the update folder
 	 */
@@ -171,7 +171,7 @@ public interface Engine extends Named {
 	 * to the given name, by comparing the length of other player names that
 	 * start with the given parameter. <br/>
 	 * <br/>
-	 * <p/>
+	 * <p>
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
 	 * @param name of the world to search for
 	 * @param exact Whether to use exact lookup
@@ -285,9 +285,9 @@ public interface Engine extends Named {
 
 	/**
 	 * Sets the default world.
-	 * <p/>
+	 * <p>
 	 * The first loaded world will be set as the default world automatically.
-	 * <p/>
+	 * <p>
 	 * New players start in the default world.
 	 * @param world the default world
 	 * @return true on success
@@ -310,9 +310,9 @@ public interface Engine extends Named {
 
 	/**
 	 * Gets an abstract representation of the engine Filesystem.
-	 * <p/>
+	 * <p>
 	 * The Filesystem handles the loading of all resources.
-	 * <p/>
+	 * <p>
 	 * On the client, loading a resource will load the resource from the harddrive.
 	 * On the server, it will notify all clients to load the resource, as well as provide a representation of that resource.
 	 */

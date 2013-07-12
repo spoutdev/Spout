@@ -78,7 +78,7 @@ public interface Widget extends Tickable, ComponentOwner, Focusable, RenderPartC
 
 	/**
 	 * Gets the {@link org.spout.api.component.DatatableComponent} which is always attached to each widget.
-	 * <p/>
+	 * <p>
 	 * This is merely a convenience method.
 	 * @return datatable component
 	 */

@@ -77,7 +77,7 @@ public abstract class BlockComponent extends Component {
 	 * Called when the owning {@link org.spout.api.geo.cuboid.Block} is collided with an {@link Entity}.
 	 * @param point the point where collision occurred.
 	 * @param entity the entity that collided with the owner
-	 * <p/>
+	 * <p>
 	 * TODO EntityCollideBlockEvent
 	 */
 	public void onCollided(Point point, Entity entity) {

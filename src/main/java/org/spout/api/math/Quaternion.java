@@ -220,7 +220,7 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the angles about each axis of this quaternion stored in a Vector3
-	 * <p/>
+	 * <p>
 	 * vect.X = Rotation about the X axis (Roll) vect.Y = Rotation about the Y
 	 * axis (Yaw) vect.Z = Rotation about the Z axis (Pitch)
 	 * @return

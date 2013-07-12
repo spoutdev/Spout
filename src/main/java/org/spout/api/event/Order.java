@@ -28,7 +28,7 @@ package org.spout.api.event;
 
 /**
  * Order of an event listener may be registered at.
- * <p/>
+ * <p>
  * Odd-numbered (IGNORE_CANCELLED) slots are called even when events are marked "not propagating".<br/>
  * If an event stops propagating part way through an even slot, that slot will not cease execution,
  * but future even slots will not be called.

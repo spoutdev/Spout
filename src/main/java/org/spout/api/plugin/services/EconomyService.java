@@ -36,13 +36,13 @@ import org.spout.api.event.server.service.economy.AccountChangeEvent;
  * The economy service is a basic service that can be extended and registered as a service provider.<br/>
  * To implement your own economy, create a new class which extends EconomyService and override the abstract methods.<br/>
  * Since the assumption is, that EconomyService methods can be called outside of the main server thread, <b>you must make your implementation thread-safe.</b><br/>
- * <p/>
+ * <p>
  * To register your EconomyService you will need to do something similar to:<br/>
  * <code>getServiceManager().register(EconomyService.class, myEconomyInstance, myPlugin, ServicePriority)</code>
- * <p/>
+ * <p>
  * For plugins that wish to get the current economy provider, they will need to: {@link EconomyService#getEconomy()} this method can possibly return null, if an economy service has not been registered
  * yet with the ServiceManager.
- * <p/>
+ * <p>
  * Another option is to hook the {@link org.spout.api.event.server.service.ServiceRegisterEvent} and get the service provider that is being registered in the event.
  */
 public abstract class EconomyService {
@@ -439,7 +439,7 @@ public abstract class EconomyService {
 
 	/**
 	 * Attempts to transfer the given amount from one account to another.<br/>
-	 * <p/>
+	 * <p>
 	 * <p>This call will check if the from account has enough funds, then attempt to deposit funds into the to account.<br/>
 	 * If there is an issue depositing funds into the to account, the transfer fails immediately.
 	 * Next, it will then attempt to remove the amount from the from account, if this fails for any reason, it will attempt to remove the funds from the TO account.<br/>
@@ -461,7 +461,7 @@ public abstract class EconomyService {
 
 	/**
 	 * MULTICURRENCY ONLY: Attempts to transfer the given amount from one account to another of the specified currency.<br/>
-	 * <p/>
+	 * <p>
 	 * <p>This call will check if the from account has enough funds, then attempt to deposit funds into the to account.<br/>
 	 * If there is an issue depositing funds into the to account, the transfer fails immediately.
 	 * Next, it will then attempt to remove the amount from the from account, if this fails for any reason, it will attempt to remove the funds from the TO account.<br/>
@@ -562,7 +562,7 @@ public abstract class EconomyService {
 	/**
 	 * This will return a list of the top account names from the Economy.<br/>
 	 * If playersOnly is true, only player accounts will be returned from the Economy.<br/>
-	 * <p/>
+	 * <p>
 	 * An implementation should allow -1 for the end value to assume all accounts.<br/>
 	 * Depending on how the economy loads and stores accounts, this method may be particularly slow for getting large numbers of accounts.<br/>
 	 *
@@ -576,7 +576,7 @@ public abstract class EconomyService {
 	/**
 	 * MULTICURRENCY ONLY: This will return a list of the top account names from the Economy.<br/>
 	 * If playersOnly is true, only player accounts will be returned from the Economy.<br/>
-	 * <p/>
+	 * <p>
 	 * It is assumed that a start value of 1 will return the highest value account.<br/>
 	 * An implementation should allow -1 for the end value to assume all accounts.<br/>
 	 * Depending on how the economy loads and stores accounts, this method may be particularly slow for getting large numbers of accounts.
