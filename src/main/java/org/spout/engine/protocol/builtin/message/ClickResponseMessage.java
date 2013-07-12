@@ -35,16 +35,16 @@ import org.spout.api.util.SpoutToStringStyle;
 //TODO Send back widget ID and not X and Y?
 public class ClickResponseMessage extends SpoutMessage {
 	private final Response response;
-	private final int x;
-	private final int y;
+	private final byte x;
+	private final byte y;
 
-	public ClickResponseMessage(int x, int y, Response response) {
+	public ClickResponseMessage(byte x, byte y, Response response) {
 		this.x = x;
 		this.y = y;
 		this.response = response;
 	}
 
-	public ClickResponseMessage(int x, int y, int response) {
+	public ClickResponseMessage(byte x, byte y, int response) {
 		if (response < 0 || response >= Response.values().length) {
 			throw new IllegalArgumentException("Unknown response ID " + response);
 		}
@@ -53,11 +53,11 @@ public class ClickResponseMessage extends SpoutMessage {
 		this.response = Response.values()[response];
 	}
 
-	public int getX() {
+	public byte getX() {
 		return x;
 	}
 
-	public int getY() {
+	public byte getY() {
 		return y;
 	}
 

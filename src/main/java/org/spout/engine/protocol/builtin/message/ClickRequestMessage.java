@@ -33,16 +33,18 @@ import org.spout.api.util.SpoutToStringStyle;
 
 public class ClickRequestMessage extends SpoutMessage {
 	private final Action clickType;
-	private final int x;
-	private final int y;
+	// TODO: protocol - ensure that screen input can only be < 256
+	private final byte x;
+	private final byte y;
 
-	public ClickRequestMessage(int x, int y, Action clickType) {
+	// TODO: protocol - allow for no x and y for interact
+	public ClickRequestMessage(byte x, byte y, Action clickType) {
 		this.x = x;
 		this.y = y;
 		this.clickType = clickType;
 	}
 
-	public ClickRequestMessage(int x, int y, int clickType) {
+	public ClickRequestMessage(byte x, byte y, int clickType) {
 		if (clickType < 0 || clickType >= Action.values().length) {
 			throw new IllegalArgumentException("Unknown action ID " + clickType);
 		}
@@ -55,11 +57,11 @@ public class ClickRequestMessage extends SpoutMessage {
 		return clickType;
 	}
 
-	public int getX() {
+	public byte getX() {
 		return x;
 	}
 
-	public int getY() {
+	public byte getY() {
 		return y;
 	}
 

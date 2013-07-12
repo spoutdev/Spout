@@ -37,8 +37,8 @@ import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 
-public class StringMapCodec extends MessageCodec<SyncedMapMessage> {
-	public StringMapCodec() {
+public class SyncedMapCodec extends MessageCodec<SyncedMapMessage> {
+	public SyncedMapCodec() {
 		super(SyncedMapMessage.class, 0x01);
 	}
 

@@ -31,6 +31,7 @@ import org.spout.api.entity.Player;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
+import org.spout.api.protocol.ServerSession;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 
 /**
@@ -39,12 +40,14 @@ import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 public class BlockUpdateMessageHandler extends MessageHandler<BlockUpdateMessage> {
 	@Override
 	public void handleClient(ClientSession session, BlockUpdateMessage message) {
-		if(!session.hasPlayer()) {
-			throw new IllegalStateException("Message sent when session has no player");
-		}
-
 		Player player = session.getPlayer();
 		Block block = player.getWorld().getBlock(message.getX(), message.getY(), message.getZ());
 		block.setMaterial(BlockMaterial.get(message.getType()), message.getData());
+		throw new UnsupportedOperationException("BlockUpdateMessage not handled yet.");
+	}
+
+	@Override
+	public void handleServer(ServerSession session, BlockUpdateMessage message) {
+		throw new UnsupportedOperationException("BlockUpdateMessage not handled yet.");
 	}
 }

@@ -58,9 +58,6 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 		} else {
 			int size = 19;
 			int dataSize = Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.HALF_VOLUME + Chunk.BLOCKS.HALF_VOLUME;
-			if (message.getBiomeData() != null) {
-				dataSize += Chunk.BLOCKS.AREA;
-			}
 			byte[] uncompressedData = new byte[dataSize];
 			byte[] compressedData = new byte[dataSize];
 
@@ -73,12 +70,6 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				uncompressedData[index++] = (byte) s;
 				uncompressedData[index++] = (byte) (s >> 8);
 			}
-			boolean hasBiomes = message.getBiomeData() != null && message.getBiomeData() != null;
-			if (hasBiomes) {
-				System.arraycopy(message.getBiomeData(), 0, uncompressedData, index, message.getBiomeData().length);
-				index += message.getBiomeData().length;
-			}
-
 			Deflater deflater = new Deflater();
 			deflater.setInput(uncompressedData);
 			deflater.finish();
@@ -97,10 +88,6 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			buffer.writeInt(message.getX());
 			buffer.writeInt(message.getY());
 			buffer.writeInt(message.getZ());
-			buffer.writeByte(hasBiomes ? 1 : 0); // hasBiomes
-			if (hasBiomes) {
-				ChannelBufferUtils.writeString(buffer, message.getBiomeManagerClass());
-			}
 			buffer.writeInt(compressedSize);
 			buffer.writeBytes(compressedData, 0, compressedSize);
 		}
@@ -116,12 +103,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 		if (unload) {
 			return new ChunkDataMessage(x, y, z);
 		} else {
-			final boolean hasBiomes = buffer.readByte() == 1;
-			final String biomeManagerClass = hasBiomes ? ChannelBufferUtils.readString(buffer) : null;
 			int uncompressedSize = Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.HALF_VOLUME + Chunk.BLOCKS.HALF_VOLUME;
-			if (hasBiomes) {
-				uncompressedSize += Chunk.BLOCKS.AREA;
-			}
 			final byte[] uncompressedData = new byte[uncompressedSize];
 			final byte[] compressedData = new byte[buffer.readInt()];
 			buffer.readBytes(compressedData);
@@ -138,7 +120,6 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			final short[] blockData = new short[Chunk.BLOCKS.VOLUME];
 			final byte[] blockLight = new byte[Chunk.BLOCKS.HALF_VOLUME];
 			final byte[] skyLight = new byte[Chunk.BLOCKS.HALF_VOLUME];
-			final byte[] biomeData = hasBiomes ? new byte[Chunk.BLOCKS.AREA] : null;
 
 			int index = 0;
 			for (int i = 0; i < blockIds.length; ++i) {
@@ -151,11 +132,8 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			index += blockLight.length;
 			System.arraycopy(uncompressedData, index, skyLight, 0, skyLight.length);
 			index += skyLight.length;
-			if (hasBiomes) {
-				System.arraycopy(uncompressedData, index, biomeData, 0, biomeData.length);
-			}
 
-			return new ChunkDataMessage(x, y, z, blockIds, blockData, biomeData, biomeManagerClass);
+			return new ChunkDataMessage(x, y, z, blockIds, blockData);
 		}
 	}
 }

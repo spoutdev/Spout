@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.MessageCodec;
@@ -46,20 +47,14 @@ public class AddEntityCodec extends MessageCodec<AddEntityMessage> {
 	public ChannelBuffer encode(AddEntityMessage message) {
 		ChannelBuffer buffer = ChannelBuffers.buffer(4 + ChannelBufferUtils.UUID_SIZE + ChannelBufferUtils.VECTOR3_SIZE * 2 + ChannelBufferUtils.QUATERNINON_SIZE);
 		buffer.writeInt(message.getEntityId());
-		ChannelBufferUtils.writeUUID(buffer, message.getWorldUid());
-		ChannelBufferUtils.writeVector3(buffer, message.getPosition());
-		ChannelBufferUtils.writeQuaternion(buffer, message.getRotation());
-		ChannelBufferUtils.writeVector3(buffer, message.getScale());
+		ChannelBufferUtils.writeTransform(buffer, message.getTransform());
 		return buffer;
 	}
 
 	@Override
 	public AddEntityMessage decode(ChannelBuffer buffer) {
 		final int entityId = buffer.readInt();
-		final UUID worldUid = ChannelBufferUtils.readUUID(buffer);
-		final Vector3 position = ChannelBufferUtils.readVector3(buffer);
-		final Quaternion rotation = ChannelBufferUtils.readQuaternion(buffer);
-		final Vector3 scale = ChannelBufferUtils.readVector3(buffer);
-		return new AddEntityMessage(entityId, worldUid, position, rotation, scale, NullRepositionManager.getInstance());
+		final Transform transform = ChannelBufferUtils.readTransform(buffer);
+		return new AddEntityMessage(entityId, transform, NullRepositionManager.getInstance());
 	}
 }

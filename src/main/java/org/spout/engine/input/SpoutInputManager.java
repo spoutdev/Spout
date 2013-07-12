@@ -158,6 +158,7 @@ public class SpoutInputManager implements InputManager {
 
 		// Handle mouse
 		if (org.lwjgl.input.Mouse.isCreated() && Display.isActive()) {
+			// TODO can these be bytes, or should they be ints
 			int x, y;
 			while (org.lwjgl.input.Mouse.next()) {
 
@@ -218,8 +219,8 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	private void onMouseClicked(Player player, int button, boolean pressed, int x, int y) {
-		//TODO Just testing
-		player.getSession().send(new ClickRequestMessage(x, y, ClickRequestMessage.Action.LEFT));
+		//TODO Just testing - also, check int -> byte
+		player.getSession().send(new ClickRequestMessage((byte) x, (byte) y, ClickRequestMessage.Action.LEFT));
 
 		PlayerClickEvent event = Spout.getEventManager().callEvent(new PlayerClickEvent(player, button, pressed, new IntVector2(x, y)));
 		if (event.isCancelled()) {

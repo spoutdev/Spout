@@ -38,10 +38,8 @@ public class ChunkDataMessage extends SpoutMessage {
 	// Chunk x, y, z
 	private final int x, y, z;
 	private final short[] blockIds, blockData;
-	// TODO remove biome info; client doesn't use it
-	private final byte[] biomeData;
-	private final String biomeManagerClass;
 
+	// TODO: protocol - implement lighting send
 	public ChunkDataMessage(int x, int y, int z) {
 		this.unload = true;
 		this.x = x;
@@ -49,8 +47,6 @@ public class ChunkDataMessage extends SpoutMessage {
 		this.z = z;
 		this.blockIds = ArrayUtils.EMPTY_SHORT_ARRAY;
 		this.blockData = ArrayUtils.EMPTY_SHORT_ARRAY;
-		this.biomeData = null;
-		this.biomeManagerClass = null;
 	}
 
 	public ChunkDataMessage(ChunkSnapshot snapshot) {
@@ -60,19 +56,15 @@ public class ChunkDataMessage extends SpoutMessage {
 		this.z = snapshot.getZ();
 		this.blockIds = snapshot.getBlockIds();
 		this.blockData = snapshot.getBlockData();
-		this.biomeData = snapshot.getBiomeManager() != null ? snapshot.getBiomeManager().serialize() : null;
-		this.biomeManagerClass = snapshot.getBiomeManager() != null ? snapshot.getBiomeManager().getClass().getCanonicalName() : null;
 	}
 
-	public ChunkDataMessage(int x, int y, int z, short[] blockIds, short[] blockData, byte[] biomeData, String biomeManagerClass) {
+	public ChunkDataMessage(int x, int y, int z, short[] blockIds, short[] blockData) {
 		this.unload = false;
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.blockIds = blockIds;
 		this.blockData = blockData;
-		this.biomeData = biomeData;
-		this.biomeManagerClass = biomeManagerClass;
 	}
 
 	public boolean isUnload() {
@@ -99,14 +91,6 @@ public class ChunkDataMessage extends SpoutMessage {
 		return blockData;
 	}
 
-	public byte[] getBiomeData() {
-		return biomeData;
-	}
-
-	public String getBiomeManagerClass() {
-		return biomeManagerClass;
-	}
-
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
@@ -116,8 +100,6 @@ public class ChunkDataMessage extends SpoutMessage {
 				.append("z", z)
 				.append("blockIds", blockIds, false)
 				.append("blockData", blockData, false)
-				.append("biomeData", biomeData, false)
-				.append("biomeManagerClass", biomeManagerClass)
 				.toString();
 	}
 
@@ -130,8 +112,6 @@ public class ChunkDataMessage extends SpoutMessage {
 				.append(z)
 				.append(blockIds)
 				.append(blockData)
-				.append(biomeData)
-				.append(biomeManagerClass)
 				.toHashCode();
 	}
 
@@ -146,9 +126,7 @@ public class ChunkDataMessage extends SpoutMessage {
 					.append(z, other.z)
 					.append(blockIds, other.blockIds)
 					.append(blockData, other.blockData)
-					.append(biomeData, other.biomeData)
-					.append(biomeManagerClass, other.biomeManagerClass)
-					.isEquals();
+ 					.isEquals();
 		} else {
 			return false;
 		}

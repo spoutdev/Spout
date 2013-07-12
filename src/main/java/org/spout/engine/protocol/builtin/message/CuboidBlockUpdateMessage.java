@@ -38,6 +38,7 @@ public class CuboidBlockUpdateMessage extends SpoutMessage {
 	// These fields aren't sent across the network - just for reference
 	private transient final int sizeX, sizeY, sizeZ;
 	private final short[] blockTypes, blockData;
+	// TODO: protocol - why do we need a blockLight AND skyLight?
 	private final byte[] blockLight, skyLight;
 
 	public CuboidBlockUpdateMessage(Vector3 min, Vector3 max, short[] blockTypes, short[] blockData, byte[] blockLight, byte[] skyLight) {

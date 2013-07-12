@@ -33,7 +33,7 @@ import org.spout.api.util.SyncedMapRegistry;
 import org.spout.api.util.SyncedStringMap;
 import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 
-public class StringMapMessageHandler extends MessageHandler<SyncedMapMessage> {
+public class SyncedMapMessageHandler extends MessageHandler<SyncedMapMessage> {
 	@Override
 	public void handleClient(ClientSession session, SyncedMapMessage message) {
 		SyncedStringMap map = SyncedMapRegistry.get(message.getMap());

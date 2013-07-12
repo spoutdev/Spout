@@ -39,7 +39,7 @@ import org.spout.engine.protocol.builtin.codec.EntityTransformCodec;
 import org.spout.engine.protocol.builtin.codec.LoginCodec;
 import org.spout.engine.protocol.builtin.codec.PlayerInputCodec;
 import org.spout.engine.protocol.builtin.codec.RemoveEntityCodec;
-import org.spout.engine.protocol.builtin.codec.StringMapCodec;
+import org.spout.engine.protocol.builtin.codec.SyncedMapCodec;
 import org.spout.engine.protocol.builtin.codec.WorldChangeCodec;
 
 /**
@@ -50,7 +50,7 @@ public class SpoutCodecLookupService extends CodecLookupService {
 		super(256);
 		try {
 			/* 0x00 */ bind(LoginCodec.class);
-			/* 0x01 */ bind(StringMapCodec.class);
+			/* 0x01 */ bind(SyncedMapCodec.class);
 			/* 0x02 */ bind(WorldChangeCodec.class);
 			/* 0x03 */ bind(CommandCodec.class);
 			/* 0x04 */ bind(AddEntityCodec.class);

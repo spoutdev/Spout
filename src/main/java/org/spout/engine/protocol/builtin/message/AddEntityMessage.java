@@ -26,83 +26,41 @@
  */
 package org.spout.engine.protocol.builtin.message;
 
-import java.util.UUID;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.Client;
-import org.spout.api.Platform;
-import org.spout.api.Server;
-import org.spout.api.Spout;
-import org.spout.api.geo.World;
-import org.spout.api.geo.discrete.Point;
+
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
 import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class AddEntityMessage extends SpoutMessage {
 	private final int entityId;
-	// TODO is this needed?
-	private final UUID worldUid;
-	private final Vector3 pos, scale;
-	private final Quaternion rotation;
+	private final Transform transform;
 
-	public AddEntityMessage(int entityId, UUID worldUid, Transform transform, RepositionManager rm) {
-		this(entityId, worldUid, transform.getPosition(), transform.getRotation(), transform.getScale(), rm);
-	}
-
-	public AddEntityMessage(int entityId, UUID worldUid, Vector3 pos, Quaternion rotation, Vector3 scale, RepositionManager rm) {
+	// TODO: protocol - merge with EntityTransformMessage with a Type field
+	public AddEntityMessage(int entityId, Transform transform, RepositionManager rm) {
 		this.entityId = entityId;
-		this.worldUid = worldUid;
-		this.pos = rm.convert(pos);
-		this.rotation = rotation;
-		this.scale = scale;
+		this.transform = rm.convert(transform);
 	}
 
 	public int getEntityId() {
 		return entityId;
 	}
 
-	public UUID getWorldUid() {
-		return worldUid;
-	}
-
-	public Vector3 getPosition() {
-		return pos;
-	}
-
-	public Quaternion getRotation() {
-		return rotation;
-	}
-
-	public Vector3 getScale() {
-		return scale;
-	}
-
+	/**
+	 * @return the converted transform
+	 */
 	public Transform getTransform() {
-		World world = null;
-		if (Spout.getPlatform() == Platform.SERVER) {
-			world = ((Server) Spout.getEngine()).getWorld(worldUid);
-		} else {
-			World world1 = ((Client) Spout.getEngine()).getWorld();
-			if (world1.getUID().equals(worldUid)) {
-				world = world1;
-			}
-		}
-		return new Transform(new Point(pos, world), rotation, scale);
+		return transform;
 	}
 
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.append("entityId", entityId)
-				.append("worldUid", worldUid)
-				.append("pos", pos)
-				.append("scale", scale)
-				.append("rotation", rotation)
+				.append("transform", transform)
 				.toString();
 	}
 
@@ -110,10 +68,7 @@ public class AddEntityMessage extends SpoutMessage {
 	public int hashCode() {
 		return new HashCodeBuilder(65, 29)
 				.append(entityId)
-				.append(worldUid)
-				.append(pos)
-				.append(scale)
-				.append(rotation)
+				.append(transform)
 				.toHashCode();
 	}
 
@@ -123,10 +78,7 @@ public class AddEntityMessage extends SpoutMessage {
 			final AddEntityMessage other = (AddEntityMessage) obj;
 			return new EqualsBuilder()
 					.append(entityId, other.entityId)
-					.append(worldUid, other.worldUid)
-					.append(pos, other.pos)
-					.append(scale, other.scale)
-					.append(rotation, other.rotation)
+					.append(transform, other.transform)
 					.isEquals();
 		} else {
 			return false;

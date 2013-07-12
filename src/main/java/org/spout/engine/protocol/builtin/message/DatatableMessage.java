@@ -37,6 +37,7 @@ import org.spout.api.util.SpoutToStringStyle;
 public abstract class DatatableMessage extends SpoutMessage {
 	private final byte[] compressedData;
 
+	// TODO: protocol - allow the sending of deltas
 	public DatatableMessage(byte[] compressedData) {
 		this.compressedData = compressedData;
 	}

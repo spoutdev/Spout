@@ -42,6 +42,7 @@ public class BlockUpdateMessage extends SpoutMessage {
 		this.z = block.getZ();
 		this.type = block.getMaterial().getId();
 		this.data = block.getBlockData();
+		throw new UnsupportedOperationException("Need to implement light.");
 	}
 
 	public BlockUpdateMessage(int x, int y, int z, short type, short data) {

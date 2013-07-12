@@ -54,14 +54,14 @@ import org.spout.engine.protocol.builtin.handler.EntityDatatableMessageHandler;
 import org.spout.engine.protocol.builtin.handler.LoginMessageHandler;
 import org.spout.engine.protocol.builtin.handler.PlayerInputMessageHandler;
 import org.spout.engine.protocol.builtin.handler.RemoveEntityMessageHandler;
-import org.spout.engine.protocol.builtin.handler.StringMapMessageHandler;
+import org.spout.engine.protocol.builtin.handler.SyncedMapMessageHandler;
 import org.spout.engine.protocol.builtin.handler.WorldChangeMessageHandler;
 
 public class SpoutHandlerLookupService extends HandlerLookupService {
 	public SpoutHandlerLookupService() {
 		try {
 			bind(LoginMessage.class, LoginMessageHandler.class);
-			bind(SyncedMapMessage.class, StringMapMessageHandler.class);
+			bind(SyncedMapMessage.class, SyncedMapMessageHandler.class);
 			bind(WorldChangeMessage.class, WorldChangeMessageHandler.class);
 			bind(CommandMessage.class, CommandMessageHandler.class);
 			bind(AddEntityMessage.class, AddEntityMessageHandler.class);

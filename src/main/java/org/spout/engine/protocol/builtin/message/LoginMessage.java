@@ -49,6 +49,8 @@ public class LoginMessage extends SpoutMessage {
 	 * Server to Client, this is the player Id
 	 * @return
 	 */
+	// TODO: protocol - change this it proto version & player id
+	// TODO: protocol - implement protocol check
 	public int getExtraInt() {
 		return extraInt;
 	}
