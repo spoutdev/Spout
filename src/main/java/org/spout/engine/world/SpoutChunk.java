@@ -2007,7 +2007,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	/**
 	 * Called when an entity enters the chunk.
 	 * This method is NOT called for players.
-	 * <p/>
+	 * <p>
 	 * This method occurs during finalizeRun
 	 * @param e
 	 */
@@ -2018,7 +2018,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	/**
 	 * Called when an entity leaves the chunk.
 	 * This method is NOT called for players.
-	 * <p/>
+	 * <p>
 	 * This method occurs during finalizeRun
 	 * @param e
 	 */

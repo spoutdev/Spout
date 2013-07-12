@@ -41,9 +41,9 @@ import org.spout.engine.util.TripleInt;
 
 /**
  * A snapshotable class for triple int HashMaps based on Trove long maps.
- * <p/>
+ * <p>
  * This allows the class to support getLive functionality.
- * <p/>
+ * <p>
  * Removals from the Map occur at the next snapshot update.
  */
 public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
@@ -126,7 +126,7 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Removes a key/value pair from the Map.
-	 * <p/>
+	 * <p>
 	 * This method will have no effect if the key does not map to the given
 	 * value when the removal is attempted
 	 * @param x     x coordinate

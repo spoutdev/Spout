@@ -34,7 +34,7 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
 
 /**
  * A snapshotable object that supports basic class types.
- * <p/>
+ * <p>
  * This class should be used for immutable types that are updated by replacing
  * with a new immutable object
  * @param <T> the underlying type

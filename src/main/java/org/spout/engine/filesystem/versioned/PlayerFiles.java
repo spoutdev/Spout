@@ -117,7 +117,7 @@ public class PlayerFiles {
 
 	/**
 	 * Loads player data for the player, if it exists
-	 * <p/>
+	 * <p>
 	 * Returns null on failure or if the data could not be loaded.
 	 * If an exception is thrown or the player data is not in a valid format
 	 * it will be backed up and new player data will be created for the player
