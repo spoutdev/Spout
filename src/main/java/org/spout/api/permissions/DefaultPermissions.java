@@ -54,7 +54,7 @@ import java.util.logging.Level;
 
 public class DefaultPermissions extends ConfigurationHolderConfiguration implements Listener {
 	private final ConfigurationHolder ENABLED = new ConfigurationHolder(true, "enabled");
-	private final ConfigurationHolder DEFAULTS = new ConfigurationHolder(Collections.emptyList(), "defaults");
+	private final ConfigurationHolder DEFAULTS = new ConfigurationHolder("spout.*", "defaults");
 
 	private final Engine engine;
 	private final YamlConfiguration config;
