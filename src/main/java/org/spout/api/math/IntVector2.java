@@ -26,12 +26,16 @@
  */
 package org.spout.api.math;
 
+import java.io.Serializable;
+
 import org.spout.api.util.StringUtil;
 
 /**
  * A 2-dimensional vector represented by int-precision x,y coordinates
  */
-public class IntVector2 {
+public class IntVector2 implements Serializable{
+	private static final long serialVersionUID = 1L;
+
 	private int x;
 	private int y;
 

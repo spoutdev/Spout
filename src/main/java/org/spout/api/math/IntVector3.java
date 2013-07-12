@@ -37,6 +37,8 @@ import org.spout.api.util.StringUtil;
  * A 3-dimensional vector represented by int-precision x,y coordinates
  */
 public class IntVector3 extends IntVector2 {
+	private static final long serialVersionUID = 1L;
+
 	private int z;
 
 	public IntVector3(BlockFace face) {
