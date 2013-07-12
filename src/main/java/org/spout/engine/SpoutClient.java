@@ -98,7 +98,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
 	private final AtomicReference<SpoutClientWorld> world = new AtomicReference<SpoutClientWorld>();
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
-	private final FileSystem filesystem = new ClientFileSystem();
+	private final ClientFileSystem filesystem = new ClientFileSystem();
 	private final SessionTask sessionTask = new SessionTask();
 	// Handle stopping
 	private volatile boolean rendering = true;
@@ -380,7 +380,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	public void disconnected() {
 		getLogger().log(Level.SEVERE, "ENGINE DISCONNECTING!");
-		new RuntimeException().printStackTrace();
+		new RuntimeException("Not real exception.").printStackTrace();
 		stop("Disconnected for some unknown reason!");
 		this.session.set(null);
 	}

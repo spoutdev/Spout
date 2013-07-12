@@ -59,7 +59,9 @@ public class EntityTransformMessageHandler extends MessageHandler<EntityTransfor
 		if (message.getEntityId() == session.getPlayer().getId()) {
 			entity = session.getPlayer();
 		} else {
-			throw new IllegalStateException("Server can not receive non-player transforms.");
+			// TODO: please fix this sequence
+			//throw new IllegalStateException("Server can not receive non-player transforms.");
+			return;
 		}
 		if (entity != null) {
 			entity.getSession().getDataMap().put(MovementValidator.RECEIVED_TRANSFORM, rmInverse.convert(message.getTransform()));

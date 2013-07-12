@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.lwjgl.opengl.Display;
+import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
@@ -646,6 +647,14 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	private boolean tick(long delta) throws InterruptedException {
 		TickStage.setStage(TickStage.TICKSTART);
+
+		if (engine instanceof Client) {
+			// Pull input each frame
+			((SpoutClient) engine).getInputManager().pollInput(((Client) engine).getPlayer());
+			// Call InputExecutor registred by plugin
+			((SpoutClient) engine).getInputManager().execute(delta);
+		}
+
 		asyncManagers.copySnapshot();
 
 		taskManager.heartbeat(delta);

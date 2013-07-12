@@ -53,11 +53,10 @@ public class MovementValidator extends EntityComponent {
 
 	@Override
 	public void onTick(float dt) {
-		final float speed = 50;
+		final float speed = 5f;
 		PlayerInputState inputState = player.input();
 		Transform playerTransform = player.getScene().getTransform();
 		final Vector3 motion;
-		//TODO This needs to be an enum, this is hideous (shame on RoyAwesome)
 		if (inputState.getForward()) {
 			motion = playerTransform.forwardVector().multiply(speed * -dt);
 		} else if (inputState.getBackward()) {
@@ -71,7 +70,7 @@ public class MovementValidator extends EntityComponent {
 		} else if (inputState.getCrouch()) {
 			motion = playerTransform.upVector().multiply(speed * -dt);
 		} else {
-			playerTransform.setRotation(QuaternionMath.rotation(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
+			playerTransform.setRotation(QuaternionMath.rotation(5 * inputState.pitch(), 5 * inputState.yaw(), playerTransform.getRotation().getRoll()));
 			player.getScene().setTransform(playerTransform);
 			return;
 		}
@@ -82,7 +81,7 @@ public class MovementValidator extends EntityComponent {
 			Math.abs(old.getPosition().getY() - playerTransform.getPosition().getY()) > .2f ||
 			Math.abs(old.getPosition().getZ() - playerTransform.getPosition().getZ()) > .2f
 			) {
-			playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
+			playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(5 * inputState.pitch(), 5 * inputState.yaw(), playerTransform.getRotation().getRoll()));
 			player.getScene().setTransform(playerTransform);
 		}
 		

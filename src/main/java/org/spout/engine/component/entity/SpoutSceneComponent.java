@@ -362,7 +362,7 @@ public class SpoutSceneComponent extends SceneComponent {
 	 */
 	public void interpolateRender(float dtp) {
 
-		float dt = dtp * 80f / 20f;
+		/*float dt = dtp * 80f / 20f;
 
 		render.setPosition(render.getPosition().multiply(1 - dt).add(position.multiply(dt)));
 		Quaternion q = render.getRotation();
@@ -370,6 +370,9 @@ public class SpoutSceneComponent extends SceneComponent {
 				q.getY() * (1 - dt) + rotate.getY() * dt,
 				q.getZ() * (1 - dt) + rotate.getZ() * dt,
 				q.getW() * (1 - dt) + rotate.getW() * dt, false));
-		render.setScale(render.getScale().multiply(1 - dt).add(scale.multiply(dt)));
+		render.setScale(render.getScale().multiply(1 - dt).add(scale.multiply(dt)));*/
+		if (snapshot != null) {
+			render.set(snapshot);
+		}
 	}
 }

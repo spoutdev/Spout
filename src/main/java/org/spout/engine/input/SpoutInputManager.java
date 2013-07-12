@@ -348,9 +348,8 @@ public class SpoutInputManager implements InputManager {
 
 			final Client client = (Client) Spout.getEngine();
 			final PlayerInputState state = client.getPlayer().input();
-			final float speed = 50;
+			final float speed = 5f;
 			final Vector3 motion;
-			//TODO This needs to be an enum, this is hideous (shame on RoyAwesome)
 			if (state.getForward()) {
 				motion = playerTransform.forwardVector().multiply(speed * -dt);
 			} else if (state.getBackward()) {
@@ -364,10 +363,12 @@ public class SpoutInputManager implements InputManager {
 			} else if (state.getCrouch()) {
 				motion = playerTransform.upVector().multiply(speed * -dt);
 			} else {
+				playerTransform.setRotation(QuaternionMath.rotation(5 * state.pitch(), 5 * state.yaw(), playerTransform.getRotation().getRoll()));
+				client.getPlayer().getScene().setTransform(playerTransform);
 				return;
 			}
 
-			playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(state.pitch(), state.yaw(), playerTransform.getRotation().getRoll()));
+			playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(5 * state.pitch(), 5 * state.yaw(), playerTransform.getRotation().getRoll()));
 			client.getPlayer().getScene().setTransform(playerTransform);
 		}
 	}

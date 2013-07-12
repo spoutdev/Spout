@@ -210,12 +210,8 @@ public class SpoutRenderer {
 
 		//TODO Proper Player physics in AABB Branch
 		final SpoutSceneComponent scene = (SpoutSceneComponent) client.getPlayer().getScene();
+		// TODO: please fix interpolateRender
 		scene.interpolateRender(dt);
-
-		// Pull input each frame
-		client.getInputManager().pollInput(client.getPlayer());
-		// Call InputExecutor registred by plugin
-		client.getInputManager().execute(dt);
 
 		final Camera camera = client.getPlayer().getType(Camera.class);
 		final SkydomeComponent skydome = client.getWorld().get(SkydomeComponent.class);
