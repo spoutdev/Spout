@@ -37,7 +37,11 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Various utility methods that deal with reflection
@@ -172,7 +176,7 @@ public class ReflectionUtils {
 	 * @throws ClassNotFoundException if the package had invalid classes, or
 	 * does not exist
 	 */
-	public static List<Class<?>> getClassesForPackage(String packageName, boolean recursive) throws ClassNotFoundException {
+	public static List<Class<?>> getClassesForPackage(String packageName, boolean recursive, String ...excludes) throws ClassNotFoundException {
 		ArrayList<File> directories = new ArrayList<File>();
 		try {
 			ClassLoader cld = Thread.currentThread().getContextClassLoader();
@@ -196,19 +200,34 @@ public class ReflectionUtils {
 			throw new ClassNotFoundException("IOException was thrown when trying to get all resources for " + packageName, ioex);
 		}
 
+		@SuppressWarnings("unchecked")
+		final List<String> excludeList = (excludes != null && excludes.length > 0 ? Arrays.asList(excludes) : Collections.EMPTY_LIST);
+		
 		ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
 		for (File directory : directories) {
 			if (directory.exists()) {
 				String[] files = directory.list();
 				for (String file : files) {
 					if (file.endsWith(".class")) {
+						String name = null;
 						try {
 							String path = directory.getCanonicalPath().replaceAll("/", ".").replaceAll("\\\\", ".");
 							int start = path.indexOf(packageName);
 							path = path.substring(start, path.length());
-							classes.add(Class.forName(path + '.' + file.substring(0, file.length() - 6)));
-						} catch (IOException ex) {
-							throw new ClassNotFoundException("IOException was thrown when trying to get path for " + file);
+							name = path + '.' + file.substring(0, file.length() - 6);
+							//Check if excluded
+							boolean skip = false;
+							for (String excluded : excludeList) {
+								if (name.contains(excluded)) {
+									skip = true;
+									break;
+								}
+							}
+							if (!skip) {
+								classes.add(Class.forName(name));
+							}
+						} catch (Throwable ex) {
+							throw new ClassNotFoundException("Exception was thrown when loading " + name + " from file " + file, ex);
 						}
 					}
 				}
