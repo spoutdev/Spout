@@ -73,7 +73,6 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
 import org.spout.engine.util.thread.snapshotable.SnapshotableInt;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutChunk;
-import org.spout.engine.world.SpoutRegion;
 
 public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = Integer.MIN_VALUE;
@@ -82,8 +81,8 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	private static final Iterator<IntVector3> NOT_OBSERVING = new ArrayList<IntVector3>().iterator();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	//Snapshotable fields
-	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<EntityManager>(snapshotManager, null);
-	private final SnapshotableReference<Iterator<IntVector3>> observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, INITIAL_TICK);;
+	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<>(snapshotManager, null);
+	private final SnapshotableReference<Iterator<IntVector3>> observer = new SnapshotableReference<>(snapshotManager, INITIAL_TICK);;
 	private boolean observeChunksFailed = false;
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
 	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
@@ -91,7 +90,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	private volatile boolean remove = false;
 	//Other
 	private final Engine engine;
-	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
+	private final Set<SpoutChunk> observingChunks = new HashSet<>();
 	private final UUID uid;
 	protected boolean justSpawned = true;
 	//For faster access
@@ -299,7 +298,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	protected void updateObserver() {
-		List<Vector3> ungenerated = new ArrayList<Vector3>();
+		List<Vector3> ungenerated = new ArrayList<>();
 		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
 		World w = getWorld();
 		Transform t = scene.getTransform();
@@ -308,7 +307,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		int cy = p.getChunkY();
 		int cz = p.getChunkZ();
 		
-		HashSet<SpoutChunk> observing = new HashSet<SpoutChunk>((viewDistance * viewDistance * viewDistance * 3) / 2);
+		HashSet<SpoutChunk> observing = new HashSet<>((viewDistance * viewDistance * viewDistance * 3) / 2);
 		Iterator<IntVector3> itr = observer.getLive();
 		if (itr == OBSERVING) {
 			itr = new OutwardIterator(cx, cy, cz, viewDistance);

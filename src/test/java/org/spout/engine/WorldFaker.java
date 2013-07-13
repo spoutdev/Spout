@@ -26,16 +26,10 @@
  */
 package org.spout.engine;
 
-import java.util.UUID;
 
 import org.mockito.Mockito;
-import org.spout.api.Client;
-import org.spout.api.Platform;
-import org.spout.api.Server;
-import org.spout.api.Spout;
 
 import org.spout.api.geo.World;
-import org.spout.api.resource.FileSystem;
 
 @SuppressWarnings("deprecation")
 public class WorldFaker {

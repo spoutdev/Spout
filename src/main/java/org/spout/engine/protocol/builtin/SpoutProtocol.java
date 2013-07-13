@@ -30,7 +30,6 @@ import java.net.InetSocketAddress;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.component.entity.NetworkComponent;
@@ -57,7 +56,7 @@ import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 public class SpoutProtocol extends Protocol {
 	public static final int ENTITY_PROTOCOL_ID = NetworkComponent.getProtocolId(SpoutProtocol.class.getName());
 	public static final SpoutProtocol INSTANCE = new SpoutProtocol();
-	public static final DefaultedKey<Integer> PLAYER_ENTITY_ID = new DefaultedKeyImpl<Integer>("playerEntityId", -1);
+	public static final DefaultedKey<Integer> PLAYER_ENTITY_ID = new DefaultedKeyImpl<>("playerEntityId", -1);
 	public static final int PROTOCOL_VERSION = 0;
 	public static final int DEFAULT_PORT = 13756;
 

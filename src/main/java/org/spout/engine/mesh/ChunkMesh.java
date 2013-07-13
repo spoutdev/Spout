@@ -61,12 +61,11 @@ import org.spout.engine.world.SpoutChunkSnapshotModel;
  */
 public class ChunkMesh {
 
-	private HashMap<RenderMaterial, BufferContainer> meshs = new HashMap<RenderMaterial, BufferContainer>();
-
-	private SpoutChunkSnapshotModel chunkModel;
-	private ChunkSnapshot center;
+	private final Map<RenderMaterial, BufferContainer> meshs = new HashMap<>();
 	private final World world;
 	private final int chunkX,chunkY,chunkZ;
+	private SpoutChunkSnapshotModel chunkModel;
+	private ChunkSnapshot center;
 	private boolean isUnloaded = false;
 	private boolean first = false;
 
@@ -143,7 +142,7 @@ public class ChunkMesh {
 	}
 
 	public List<MeshFace> buildBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial, Vector3 position, boolean toRender[], OrientedMesh mesh) {
-		List<MeshFace> meshs = new ArrayList<MeshFace>();
+		List<MeshFace> meshs = new ArrayList<>();
 		Vector3 model = new Vector3(position.getX(), position.getY(), position.getZ());
 		for(OrientedMeshFace meshFace : mesh){
 
@@ -331,7 +330,4 @@ public class ChunkMesh {
 		}
 		return true;
 	}
-	
-	
-
 }

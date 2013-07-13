@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.event.world.RegionLoadEvent;
 import org.spout.api.event.world.RegionUnloadEvent;
@@ -45,7 +44,6 @@ import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
-import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 
 public class RegionSource implements Iterable<Region> {
 	private final static int REGION_MAP_BITS = 5;
@@ -63,7 +61,7 @@ public class RegionSource implements Iterable<Region> {
 
 	public RegionSource(SpoutWorld world) {
 		this.world = world;
-		loadedRegions = new TripleIntObjectReferenceArrayMap<Region>(REGION_MAP_BITS);
+		loadedRegions = new TripleIntObjectReferenceArrayMap<>(REGION_MAP_BITS);
 	}
 
 	@DelayedWrite

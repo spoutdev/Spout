@@ -32,7 +32,6 @@ import org.spout.api.component.Component;
 import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.engine.gui.SpoutScreenStack;
-import org.spout.engine.protocol.SpoutSession;
 
 /**
  * A subclass of SpoutPlayer with modifications for the client

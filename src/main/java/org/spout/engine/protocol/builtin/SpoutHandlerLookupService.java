@@ -68,7 +68,7 @@ public class SpoutHandlerLookupService extends HandlerLookupService {
 			bind(ClickRequestMessage.class, ClickRequestMessageHandler.class);
 			bind(ClickResponseMessage.class, ClickResponseMessageHandler.class);
 			bind(PlayerInputMessage.class, PlayerInputMessageHandler.class);
-		} catch (Exception e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}

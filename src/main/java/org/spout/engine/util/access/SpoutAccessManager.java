@@ -71,7 +71,7 @@ public class SpoutAccessManager implements AccessManager {
 
 	@Override
 	public Collection<String> getWhitelistedPlayers() {
-		return Collections.unmodifiableSet(new HashSet<String>(whitelist.getContents()));
+		return Collections.unmodifiableSet(new HashSet<>(whitelist.getContents()));
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class SpoutAccessManager implements AccessManager {
 
 	@Override
 	public Collection<String> getBanned(BanType type) {
-		return Collections.unmodifiableSet(new HashSet<String>(type == BanType.PLAYER ? bannedPlayers.getContents() : bannedIps.getContents()));
+		return Collections.unmodifiableSet(new HashSet<>(type == BanType.PLAYER ? bannedPlayers.getContents() : bannedIps.getContents()));
 	}
 
 	@Override

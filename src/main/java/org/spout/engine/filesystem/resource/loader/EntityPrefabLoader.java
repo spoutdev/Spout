@@ -74,7 +74,7 @@ public class EntityPrefabLoader extends ResourceLoader {
 		}
 
 		final List<? extends String> componentsPath = checkerListString.check(resourceProperties.get("Components"));
-		final List<Class<? extends Component>> components = new ArrayList<Class<? extends Component>>();
+		final List<Class<? extends Component>> components = new ArrayList<>();
 		for (String path : componentsPath) {
 			Class<?> componentClass;
 			try {
@@ -94,7 +94,7 @@ public class EntityPrefabLoader extends ResourceLoader {
 		}
 
 		final Map<? extends String, ?> datasOld = checkerMapStringObject.check(resourceProperties.get("Data"));
-		final Map<String, Object> datas = new HashMap<String, Object>();
+		final Map<String, Object> datas = new HashMap<>();
 		datas.putAll(datasOld);
 
 		return new ClientEntityPrefab((Client) engine, (String) name, components, datas);

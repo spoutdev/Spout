@@ -100,7 +100,7 @@ public class ZipFilePathResolver extends FilePathResolver {
 			}
 			// iterate through the zip's entries
 			Enumeration<? extends ZipEntry> entries = zip.entries();
-			List<String> list = new ArrayList<String>();
+			List<String> list = new ArrayList<>();
 			path = path.substring(1);
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = entries.nextElement();

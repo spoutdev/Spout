@@ -55,7 +55,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 	public final static int ALLOWED_BONE_PER_MESH = 10;
 	public final static int LAYOUT_WEIGHT = 4;
 	public final static int LAYOUT_ID = 5;
-	private Map<Model, List<AnimationPlayed>> animations = new HashMap<Model, List<AnimationPlayed>>();
+	private Map<Model, List<AnimationPlayed>> animations = new HashMap<>();
 	//Keep a matrices array at the size of managed skeleton
 	private RenderMaterial renderMaterial;
 	private int bonesInMesh = 0;
@@ -79,7 +79,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		List<AnimationPlayed> list = animations.get(model);
 
 		if (list == null) {
-			list = new ArrayList<AnimationPlayed>();
+			list = new ArrayList<>();
 			animations.put(model, list);
 		}
 

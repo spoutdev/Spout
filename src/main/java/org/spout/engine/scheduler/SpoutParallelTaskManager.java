@@ -57,13 +57,13 @@ public class SpoutParallelTaskManager implements TaskManager {
 	
 	private final AtomicLong upTime;
 	
-	private final TSyncIntObjectMap<ParallelTaskInfo> activeTasks = new TSyncIntObjectHashMap<ParallelTaskInfo>();
+	private final TSyncIntObjectMap<ParallelTaskInfo> activeTasks = new TSyncIntObjectHashMap<>();
 	
-	private final ConcurrentLinkedQueue<SpoutRegion> newRegions = new ConcurrentLinkedQueue<SpoutRegion>();
+	private final ConcurrentLinkedQueue<SpoutRegion> newRegions = new ConcurrentLinkedQueue<>();
 
-	private final ConcurrentLinkedQueue<SpoutRegion> deadRegions = new ConcurrentLinkedQueue<SpoutRegion>();
+	private final ConcurrentLinkedQueue<SpoutRegion> deadRegions = new ConcurrentLinkedQueue<>();
 	
-	private final ConcurrentLinkedQueue<SpoutTask> newTasks = new ConcurrentLinkedQueue<SpoutTask>();
+	private final ConcurrentLinkedQueue<SpoutTask> newTasks = new ConcurrentLinkedQueue<>();
 	
 	private final Scheduler scheduler;
 
@@ -83,7 +83,7 @@ public class SpoutParallelTaskManager implements TaskManager {
 		}
 		upTime = new AtomicLong(0);
 		this.engine = null;
-		this.world = new ArrayList<World>();
+		this.world = new ArrayList<>();
 		this.world.add(w);
 		this.scheduler = scheduler;
 	}

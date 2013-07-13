@@ -32,7 +32,6 @@ import org.jboss.netty.channel.Channel;
 import org.spout.api.geo.World;
 import org.spout.api.protocol.ClientNetworkSynchronizer;
 import org.spout.api.protocol.ClientSession;
-import org.spout.api.protocol.Message;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.engine.SpoutClient;
@@ -44,7 +43,7 @@ import org.spout.engine.world.SpoutWorld;
  * Handle client-specific session tasks
  */
 public class SpoutClientSession extends SpoutSession<SpoutClient> implements ClientSession {
-	private final AtomicReference<SpoutWorld> activeWorld = new AtomicReference<SpoutWorld>();
+	private final AtomicReference<SpoutWorld> activeWorld = new AtomicReference<>();
 	/**
 	 * Creates a new session.
 	 *

@@ -26,25 +26,15 @@
  */
 package org.spout.engine.protocol;
 
-import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
 
-import org.spout.api.inventory.ItemStack;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.Parameter;
-
-import org.spout.nbt.CompoundMap;
-import org.spout.nbt.IntTag;
-import org.spout.nbt.StringTag;
 import org.spout.engine.EngineFaker;
 import static org.spout.engine.EngineFaker.TEST_UUID;
 
@@ -55,7 +45,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.engine.WorldFaker;
-import org.spout.engine.protocol.builtin.ChannelBufferUtils;
 
 import static org.spout.engine.protocol.builtin.ChannelBufferUtils.readString;
 import static org.spout.engine.protocol.builtin.ChannelBufferUtils.writeString;
@@ -71,7 +60,6 @@ import static org.spout.engine.protocol.builtin.ChannelBufferUtils.readQuaternio
 import static org.spout.engine.protocol.builtin.ChannelBufferUtils.writeQuaternion;
 import static org.spout.engine.protocol.builtin.ChannelBufferUtils.readStringArray;
 import static org.spout.engine.protocol.builtin.ChannelBufferUtils.writeStringArray;
-import org.spout.engine.world.SpoutClientWorld;
 
 public class ChannelBufferUtilsTest {
 

@@ -61,7 +61,7 @@ public class SpoutEntityProtocol implements EntityProtocol {
 
 	@Override
 	public List<Message> getUpdateMessages(Entity entity, Transform liveTransform, RepositionManager rm, boolean force) {
-		List<Message> messages = new ArrayList<Message>(2);
+		List<Message> messages = new ArrayList<>(2);
 		if (force || entity.getScene().isTransformDirty()) {
 			messages.add(new UpdateEntityMessage(entity.getId(), liveTransform, UpdateEntityMessage.UpdateAction.TRANSFORM, rm));
 		}

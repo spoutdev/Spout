@@ -82,7 +82,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * Indicates the next scheduled time for the task to be called
 	 */
 	private final AtomicLong nextCallTime;
-	private final AtomicReference<QueueState> queueState = new AtomicReference<QueueState>(QueueState.UNQUEUED);
+	private final AtomicReference<QueueState> queueState = new AtomicReference<>(QueueState.UNQUEUED);
 	/**
 	 * A flag indicating if the task is actually executing
 	 */

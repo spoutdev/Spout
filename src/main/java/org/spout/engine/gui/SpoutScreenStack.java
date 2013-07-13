@@ -42,8 +42,8 @@ import org.spout.api.render.SpoutRenderMaterials;
 import org.spout.api.signal.SignalSubscriberObject;
 
 public class SpoutScreenStack extends SignalSubscriberObject implements ScreenStack {
-	private final LinkedList<Screen> screens = new LinkedList<Screen>();
-	private final LinkedList<Screen> visibleScreens = new LinkedList<Screen>();
+	private final LinkedList<Screen> screens = new LinkedList<>();
+	private final LinkedList<Screen> visibleScreens = new LinkedList<>();
 	private final Screen main;
 	private final DevConsole console;
 	private final DebugScreen debugScreen;
@@ -153,7 +153,7 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	@Override
 	public LinkedList<Screen> getVisibleScreens() {
 		synchronized (visibleScreens) {
-			return new LinkedList<Screen>(visibleScreens);
+			return new LinkedList<>(visibleScreens);
 		}
 	}
 

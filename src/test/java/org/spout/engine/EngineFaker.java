@@ -26,31 +26,21 @@
  */
 package org.spout.engine;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.mockito.Mockito;
 
-import org.spout.api.Engine;
-import org.spout.api.Engine;
-import org.spout.api.Platform;
 import org.spout.api.Platform;
 import org.spout.api.Server;
-import org.spout.api.Spout;
 import org.spout.api.Spout;
 import org.spout.api.event.Event;
 import org.spout.api.event.EventExecutor;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.Listener;
 import org.spout.api.event.Order;
-import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
-import org.spout.api.lang.PluginDictionary;
 import org.spout.api.plugin.Plugin;
-import org.spout.api.plugin.PluginDescriptionFile;
 import org.spout.api.resource.FileSystem;
 
 @SuppressWarnings("deprecation")

@@ -38,7 +38,6 @@ import java.util.UUID;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.discrete.Transform;

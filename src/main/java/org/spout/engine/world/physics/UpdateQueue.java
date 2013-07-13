@@ -38,11 +38,11 @@ import org.spout.api.util.map.TByteShortByteKeyedObjectHashMap;
 
 public class UpdateQueue {
 
-	private final TByteShortByteKeyedObjectHashMap<TIntList> map = new TByteShortByteKeyedObjectHashMap<TIntList>();
+	private final TByteShortByteKeyedObjectHashMap<TIntList> map = new TByteShortByteKeyedObjectHashMap<>();
 	private final TByteArrayList xArray = new TByteArrayList();
 	private final TByteArrayList yArray = new TByteArrayList();
 	private final TByteArrayList zArray = new TByteArrayList();
-	private final ArrayList<BlockMaterial> materials = new ArrayList<BlockMaterial>();
+	private final ArrayList<BlockMaterial> materials = new ArrayList<>();
 	private int y;
 	private int z;
 	private BlockMaterial oldMaterial;

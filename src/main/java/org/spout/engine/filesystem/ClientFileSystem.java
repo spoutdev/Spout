@@ -28,7 +28,6 @@ package org.spout.engine.filesystem;
 
 import java.net.URI;
 
-import org.spout.api.command.CommandSource;
 
 import org.spout.engine.filesystem.resource.loader.AnimationLoader;
 import org.spout.engine.filesystem.resource.loader.BlockMeshLoader;
