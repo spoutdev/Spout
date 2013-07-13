@@ -29,10 +29,10 @@ package org.spout.engine.renderer.vertexformat;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 
-public class PositionNormalTexture extends VertexFormat {
-	Vector3 position;
-	Vector3 normal;
-	Vector2 texture;
+public class PositionNormalTexture {
+	private Vector3 position;
+	private Vector3 normal;
+	private Vector2 texture;
 
 	public PositionNormalTexture(Vector3 position, Vector3 normal, Vector2 uv) {
 		this.position = position;

@@ -38,7 +38,7 @@ import org.spout.engine.SpoutRenderer;
 
 public class SpoutFloatBuffer {
 	
-	private static List<Integer> BUFFER_POOL = new LinkedList<Integer>();
+	private static List<Integer> BUFFER_POOL = new LinkedList<>();
 	
 	public static void initPool(int amount){
 		while(amount < BUFFER_POOL.size()){
@@ -86,13 +86,13 @@ public class SpoutFloatBuffer {
 	public void setData(int element, int layout, FloatBuffer buffer){
 		this.elements = new int[]{element};
 		this.layout = new int[]{layout};
-		offset = new int[elements.length];
+		this.offset = new int[elements.length];
 
-		offset[0] = 0;
-		stride = elements[0] * FLOAT_SIZE;
+		this.offset[0] = 0;
+		this.stride = elements[0] * FLOAT_SIZE;
 		
 		this.buffer = buffer;
-		current = 0;
+		this.current = 0;
 	}
 	
 	public void setData(int []elements, int[] layouts, FloatBuffer buffer){
@@ -101,16 +101,16 @@ public class SpoutFloatBuffer {
 
 		this.elements = elements;
 		this.layout = layouts;
-		offset = new int[elements.length];
+		this.offset = new int[elements.length];
 
-		stride = 0;
+		this.stride = 0;
 		for(int i = 0; i < elements.length; i++){
 			offset[i] = stride;
 			stride += elements[i] * FLOAT_SIZE;
 		}
 		
 		this.buffer = buffer;
-		current = 0;
+		this.current = 0;
 	}
 	
 	public boolean flush(boolean force){
@@ -149,7 +149,6 @@ public class SpoutFloatBuffer {
 			return true;
 		}
 		return false;
-
 	}
 
 	public void bind(){
@@ -170,7 +169,6 @@ public class SpoutFloatBuffer {
 				SpoutRenderer.checkGLError();
 			}
 		}
-		
 	}
 
 	public void unbind() {
@@ -200,5 +198,4 @@ public class SpoutFloatBuffer {
 		vboId = -1;
 		allocated = 0;
 	}
-
 }

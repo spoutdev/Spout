@@ -27,7 +27,6 @@
 package org.spout.engine;
 
 import java.awt.Canvas;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -57,9 +56,9 @@ import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
 import org.spout.api.render.Camera;
-import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
-import org.spout.api.render.Shader;
+import org.spout.api.render.shader.Shader;
+import org.spout.api.Spout;
 
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.component.entity.SpoutSceneComponent;
@@ -77,18 +76,15 @@ import org.spout.engine.util.MacOSXUtils;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
-import org.spout.api.Spout;
-import org.spout.engine.mesh.ChunkMesh;
-import org.spout.engine.world.SpoutChunk;
 
 public class SpoutRenderer {
 
+	private static final TIntObjectHashMap<String> GL_TYPE_NAMES = new TIntObjectHashMap<>();
 	private final SpoutClient client;
 	private DebugScreen debugScreen;
 	private SpoutScreenStack screenStack;
 	private boolean showDebugInfos = true;
-	@SuppressWarnings("unused")
-	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();
+	//private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<>();
 	private boolean ccoverride = false;
 	private Vector2 resolution;
 	private float aspectRatio;
@@ -173,7 +169,7 @@ public class SpoutRenderer {
 			// Test
 			reflectedDebugBatch = new SpriteBatch();
 			Shader s1 = client.getFileSystem().getResource("shader://Spout/shaders/diffuse.ssf");
-			HashMap<String, Object> map1 = new HashMap<String, Object>();
+			HashMap<String, Object> map1 = new HashMap<>();
 			map1.put("Diffuse", reflected);
 			reflectedDebugMat = new ClientRenderMaterial(s1, map1);
 			RenderPart screenPart1 = new RenderPart();
@@ -189,7 +185,7 @@ public class SpoutRenderer {
 		t = new ClientRenderTexture(true, false, true);
 		t.writeGPU();
 		Shader s = client.getFileSystem().getResource("shader://Spout/shaders/diffuse.ssf");
-		HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<>();
 		map.put("Diffuse", t);
 		mat = new ClientRenderMaterial(s, map);
 		RenderPart screenPart = new RenderPart();
@@ -363,10 +359,7 @@ public class SpoutRenderer {
 			if (MacOSXUtils.isMac()) {
 				createMacWindow();
 			} else {
-				if (client.getRenderMode() == RenderMode.GL11) {
-					ContextAttribs ca = new ContextAttribs(1, 5);
-					Display.create(new PixelFormat(8, 24, 0), ca);
-				} else if (client.getRenderMode() == RenderMode.GL20) {
+				if (client.getRenderMode() == RenderMode.GL20) {
 					ContextAttribs ca = new ContextAttribs(2, 1);
 					Display.create(new PixelFormat(8, 24, 0), ca);
 				} else if (client.getRenderMode() == RenderMode.GL30) {
@@ -406,10 +399,9 @@ public class SpoutRenderer {
 			wireframe = true;
 		}
 	}
-	private static final TIntObjectHashMap<String> glTypeNames = new TIntObjectHashMap<String>();
 
 	private static void setGLTypeName(int typeId, String typeName) {
-		glTypeNames.put(typeId, typeName);
+		GL_TYPE_NAMES.put(typeId, typeName);
 	}
 
 	static {
@@ -441,7 +433,7 @@ public class SpoutRenderer {
 	 * @return The GL type name
 	 */
 	public static String getGLTypeName(int glType) {
-		String name = glTypeNames.get(glType);
+		String name = GL_TYPE_NAMES.get(glType);
 		if (name == null) {
 			return "UNKNOWN(" + glType + ")";
 		} else {

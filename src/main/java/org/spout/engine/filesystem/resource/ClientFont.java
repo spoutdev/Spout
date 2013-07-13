@@ -44,10 +44,6 @@ import java.util.Map;
 
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.RenderMode;
-
-import org.spout.engine.SpoutClient;
-import org.spout.engine.renderer.shader.BasicShader;
 import org.spout.engine.renderer.shader.ClientShader;
 
 public class ClientFont extends ClientTexture implements org.spout.api.render.Font {
@@ -129,13 +125,9 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	@Override
 	public void writeGPU() {
 		super.writeGPU();
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("Diffuse", this);
-		if (((SpoutClient) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
-			material = new ClientRenderMaterial(new BasicShader(), params);
-		} else {
-			material = new ClientRenderMaterial((ClientShader)Spout.getFileSystem().getResource("shader://Spout/shaders/textShader.ssf"), params);
-		}
+		material = new ClientRenderMaterial((ClientShader)Spout.getFileSystem().getResource("shader://Spout/shaders/textShader.ssf"), params);
 	}
 
 	@Override
@@ -174,7 +166,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 	
 	@Override
-	public float getAdvance(char c) {//
+	public float getAdvance(char c) {
 		return glyphMetrics[indexOf(c)].getAdvanceX();
 	}
 

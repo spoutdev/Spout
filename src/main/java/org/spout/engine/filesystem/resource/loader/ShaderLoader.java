@@ -39,7 +39,6 @@ import org.spout.api.render.RenderMode;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
 
-import org.spout.engine.renderer.shader.BasicShader;
 import org.spout.engine.renderer.shader.ClientShader;
 
 public class ShaderLoader extends ResourceLoader {
@@ -52,10 +51,6 @@ public class ShaderLoader extends ResourceLoader {
 	@Override
 	public ClientShader load(InputStream in) {
 		final Client client = (Client) Spout.getEngine();
-
-		if (client.getRenderMode() == RenderMode.GL11) {
-			return new BasicShader();
-		}
 
 		// Get the paths for the Vertex and Fragment shaders
 		Yaml yaml = new Yaml();

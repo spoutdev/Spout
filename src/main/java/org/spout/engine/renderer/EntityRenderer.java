@@ -27,10 +27,7 @@
 package org.spout.engine.renderer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
@@ -48,7 +45,7 @@ import org.spout.engine.mesh.BaseMesh;
  * -- Keep a cache of all EntityRendererComponents who share a model. This cuts down on all rendering.
  */
 public class EntityRenderer {
-	private final List<SpoutModelComponent> RENDERERS = new ArrayList<SpoutModelComponent>();
+	private final List<SpoutModelComponent> RENDERERS = new ArrayList<>();
 	private int count = 0;
 
 	public void add(SpoutModelComponent renderer) {

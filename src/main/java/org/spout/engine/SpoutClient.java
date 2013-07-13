@@ -95,8 +95,8 @@ import org.spout.engine.world.SpoutClientWorld;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
-	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
-	private final AtomicReference<SpoutClientWorld> world = new AtomicReference<SpoutClientWorld>();
+	private final AtomicReference<SpoutClientSession> session = new AtomicReference<>();
+	private final AtomicReference<SpoutClientWorld> world = new AtomicReference<>();
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 	private final ClientFileSystem filesystem = new ClientFileSystem();
 	private final SessionTask sessionTask = new SessionTask();
@@ -424,7 +424,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(SpoutClient.class.getResourceAsStream("/natives/" + natives)));
 		String str;
-		List<String> files = new ArrayList<String>();
+		List<String> files = new ArrayList<>();
 		try {
 			while ((str = reader.readLine()) != null) {
 				files.add(str);

@@ -41,9 +41,9 @@ import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.plugin.PluginClassLoader;
-import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.api.render.effect.RenderEffect;
+import org.spout.api.render.shader.Shader;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
 
@@ -210,10 +210,7 @@ public class RenderMaterialLoader extends ResourceLoader {
 					try {
 						RenderEffect effectInstance = (RenderEffect)effect.newInstance();
 						material.addRenderEffect(effectInstance);
-					} catch (InstantiationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
+					} catch (InstantiationException | IllegalAccessException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
