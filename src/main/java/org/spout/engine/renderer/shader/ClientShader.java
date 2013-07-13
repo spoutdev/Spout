@@ -27,7 +27,6 @@
 package org.spout.engine.renderer.shader;
 
 import java.awt.Color;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,14 +36,12 @@ import java.util.Map.Entry;
 
 import org.lwjgl.opengl.*;
 
-import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
 
 import org.spout.engine.SpoutClient;
@@ -85,10 +82,6 @@ public class ClientShader implements SpoutShader {
 
 		@Override
 		public void run() {
-			if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
-				return;
-			}
-
 			//Create a new Shader object on the GPU
 			program = GL20.glCreateProgram();
 
@@ -173,14 +166,12 @@ public class ClientShader implements SpoutShader {
 
 		private final String name;
 		private final int type, size, location;
-		//private final boolean isUniform;
 
-		public AttrUniInfo(String name, int type, int size, int location/*, boolean isUniform*/) {
+		public AttrUniInfo(String name, int type, int size, int location) {
 			this.name = name;
 			this.type = type;
 			this.size = size;
 			this.location = location;
-			//this.isUniform = isUniform;
 		}
 
 		public String getName() {
@@ -198,11 +189,6 @@ public class ClientShader implements SpoutShader {
 		public int getLocation() {
 			return location;
 		}
-		/*
-		 * This method isn't even used
-		public boolean isUniform() {
-			return isUniform;
-		}*/
 
 		@Override
 		public String toString() {
@@ -364,11 +350,6 @@ public class ClientShader implements SpoutShader {
 
 	@Override
 	public void assign() {
-		if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
-			assign(true);
-			return;
-		}
-
 		if (assigned != this) {
 			GL20.glUseProgram(program);
 			SpoutRenderer.checkGLError();

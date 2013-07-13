@@ -40,11 +40,10 @@ import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
 
 public class GL30BatchVertexRenderer extends BatchVertexRenderer {
-	final int SIZE_FLOAT = 4;
-	int vao = -1;
-	int vbos = -1;
 
-	SpoutFloatBuffer buffer = null;
+	private int vao = -1;
+	//private int vbos = -1;
+	//private SpoutFloatBuffer buffer = null;
 	//TIntObjectHashMap<GLFloatBuffer > vertexBuffers = new TIntObjectHashMap<GLFloatBuffer>();
 
 	/**
@@ -57,7 +56,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		SpoutRenderer.checkGLError();
 
 		if(vao <= 0){
-			throw new IllegalStateException("Fait to generate VAO");
+			throw new IllegalStateException("Failed to generate VAO");
 		}
 
 		// TODO errors! fix please!
@@ -157,7 +156,6 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 
 		material.assign();
 
-		//System.out.println("glDrawArrays");
 		GL11.glDrawArrays(renderMode, startVert, endVert);
 		SpoutRenderer.checkGLError();
 
