@@ -51,7 +51,7 @@ import org.spout.api.math.Rectangle;
 import org.spout.engine.batcher.SpriteBatch;
 
 public class SpoutWidget extends BaseComponentOwner implements Widget {
-	private List<RenderPartPack> renderPartCache = new LinkedList<RenderPartPack>();
+	private List<RenderPartPack> renderPartCache = new LinkedList<>();
 	private boolean renderCacheClean = false;
 	private boolean dirty = true;
 	private SpriteBatch batcher = new SpriteBatch();
@@ -75,7 +75,7 @@ public class SpoutWidget extends BaseComponentOwner implements Widget {
 	public List<RenderPartPack> getRenderPartPacks() {
 		synchronized (renderPartCache) {
 			if (!renderCacheClean) {
-				renderPartCache = new LinkedList<RenderPartPack>();
+				renderPartCache = new LinkedList<>();
 
 				for (Component component : values()) {
 					if (component instanceof RenderPartContainer) {

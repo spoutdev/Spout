@@ -85,7 +85,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
 		super.syncEntity(e, liveTransform, spawn, destroy, update);
 		EntityProtocol protocol = getEntityProtocol(e);
-		List<Message> messages = new ArrayList<Message>(3);
+		List<Message> messages = new ArrayList<>(3);
 		if (destroy) {
 			messages.addAll(protocol.getDestroyMessages(e));
 		}

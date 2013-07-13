@@ -49,9 +49,9 @@ import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutTaskManager implements TaskManager {
 
-	private final ConcurrentHashMap<SpoutTask, SpoutWorker> activeWorkers = new ConcurrentHashMap<SpoutTask, SpoutWorker>();
+	private final ConcurrentHashMap<SpoutTask, SpoutWorker> activeWorkers = new ConcurrentHashMap<>();
 
-	private final ConcurrentHashMap<Integer, SpoutTask> activeTasks = new ConcurrentHashMap<Integer, SpoutTask>();
+	private final ConcurrentHashMap<Integer, SpoutTask> activeTasks = new ConcurrentHashMap<>();
 
 	private final TaskPriorityQueue taskQueue;
 
@@ -252,7 +252,7 @@ public class SpoutTaskManager implements TaskManager {
 
 	@Override
 	public void cancelTasks(Object plugin) {
-		ArrayList<SpoutTask> tasks = new ArrayList<SpoutTask>(activeTasks.values());
+		ArrayList<SpoutTask> tasks = new ArrayList<>(activeTasks.values());
 		for (SpoutTask task : tasks) {
 			if (task.getOwner() == plugin) {
 				cancelTask(task);
@@ -262,7 +262,7 @@ public class SpoutTaskManager implements TaskManager {
 
 	@Override
 	public void cancelAllTasks() {
-		ArrayList<SpoutTask> tasks = new ArrayList<SpoutTask>(activeTasks.values());
+		ArrayList<SpoutTask> tasks = new ArrayList<>(activeTasks.values());
 		for (SpoutTask task : tasks) {
 			cancelTask(task);
 		}
@@ -291,7 +291,7 @@ public class SpoutTaskManager implements TaskManager {
 	@Override
 	public List<Task> getPendingTasks() {
 		List<SpoutTask> tasks = taskQueue.getTasks();
-		List<Task> list = new ArrayList<Task>(tasks.size());
+		List<Task> list = new ArrayList<>(tasks.size());
 		for (SpoutTask t : tasks) {
 			list.add(t);
 		}

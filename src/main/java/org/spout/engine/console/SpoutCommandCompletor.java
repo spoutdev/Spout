@@ -52,7 +52,7 @@ public class SpoutCommandCompletor implements Completor {
 						@SuppressWarnings("rawtypes")
 						List candidates) {
 		String start = (buffer == null) ? "" : buffer;
-		TreeSet<String> all = new TreeSet<String>();
+		TreeSet<String> all = new TreeSet<>();
 		for (Command cmd : engine.getCommandManager().getCommands()) {
 			all.add(cmd.getName());
 		}

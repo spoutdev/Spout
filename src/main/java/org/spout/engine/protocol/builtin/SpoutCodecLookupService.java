@@ -26,6 +26,7 @@
  */
 package org.spout.engine.protocol.builtin;
 
+import java.lang.reflect.InvocationTargetException;
 import org.spout.api.protocol.CodecLookupService;
 import org.spout.engine.protocol.builtin.codec.BlockUpdateCodec;
 import org.spout.engine.protocol.builtin.codec.ChunkDataCodec;
@@ -59,7 +60,7 @@ public class SpoutCodecLookupService extends CodecLookupService {
 			/* 0x09 */ bind(ClickRequestCodec.class);
 			/* 0x0A */ bind(ClickResponseCodec.class);
 			/* 0x0B */ bind(PlayerInputCodec.class);
-		} catch (Throwable t) {
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException t) {
 			throw new ExceptionInInitializerError(t);
 		}
 	}

@@ -36,7 +36,6 @@ import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.component.widget.LabelComponent;
 import org.spout.api.meta.SpoutMetaPlugin;
-import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.render.SpoutRenderMaterials;
 
@@ -88,9 +87,9 @@ public class DebugScreen extends Screen implements DebugHud {
 	// The Internal Spout-dummy plugin
 	private final SpoutMetaPlugin plugin;
 	// Spout's debug messages
-	private final Map<Integer, Widget> spoutMessages = new HashMap<Integer, Widget>();
+	private final Map<Integer, Widget> spoutMessages = new HashMap<>();
 	// The hashmap that contains the plugin's debug messages
-	private final Map<Plugin, Widget> messages = new HashMap<Plugin, Widget>();
+	private final Map<Plugin, Widget> messages = new HashMap<>();
 
 	public DebugScreen() {
 		plugin = Spout.getPluginManager().getMetaPlugin();

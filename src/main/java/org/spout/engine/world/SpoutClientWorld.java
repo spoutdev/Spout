@@ -70,6 +70,18 @@ public class SpoutClientWorld extends SpoutWorld {
 		getRegionFromBlock(chunkX, chunkY, chunkZ, LoadOption.LOAD_GEN).removeChunk(chunkX, chunkY, chunkZ);
 	}
 
+	public void enableRenderQueue() {
+		this.renderQueueEnabled.set(true);
+	}
+
+	public void disableRenderQueue() {
+		this.renderQueueEnabled.set(false);
+	}
+
+	public boolean isRenderQueueEnabled() {
+		return renderQueueEnabled.get();
+	}
+
 	@Override
 	public void unload(boolean save) {
 		for (Component component : values()) {
@@ -187,19 +199,6 @@ public class SpoutClientWorld extends SpoutWorld {
 	@Override
 	public void queueChunkForGeneration(Vector3 chunk) {
 		throw new UnsupportedOperationException("Client is not allowed to queue chunks for generation");
-	}
-	
-	
-	public void enableRenderQueue() {
-		this.renderQueueEnabled.set(true);
-	}
-
-	public void disableRenderQueue() {
-		this.renderQueueEnabled.set(false);
-	}
-
-	public boolean isRenderQueueEnabled() {
-		return renderQueueEnabled.get();
 	}
 
 	@Override

@@ -42,10 +42,9 @@ import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
 
 
 public class BaseMesh implements Mesh {
-	GLBufferContainer container = new GLBufferContainer();
-	boolean batched = false;
-
-	BatchVertexRenderer renderer;
+	private final GLBufferContainer container = new GLBufferContainer();
+	private BatchVertexRenderer renderer;
+	private boolean batched = false;
 
 	public BaseMesh(ArrayList<MeshFace> faces, boolean normal, boolean color, boolean texture0, boolean indexate){
 		FloatBuffer vertexBuffer, normalBuffer = null, colorBuffer = null, texture0Buffer = null;
@@ -129,7 +128,7 @@ public class BaseMesh implements Mesh {
 		if (renderer == null)
 			renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 
-		if(batched)
+		if(isBatched())
 			return;
 
 		renderer.setGLBufferContainer(container);
@@ -138,14 +137,14 @@ public class BaseMesh implements Mesh {
 	}
 
 	public void preDraw(){
-		if (!batched)
+		if (!isBatched())
 			throw new IllegalStateException("Cannot render without batching first!");
 
 		renderer.preDraw();
 	}
 	
 	public void draw(RenderMaterial material){
-		if (!batched)
+		if (!isBatched())
 			throw new IllegalStateException("Cannot render without batching first!");
 
 		SnapshotRender snapshotRender = new SnapshotRender(material);
@@ -155,14 +154,14 @@ public class BaseMesh implements Mesh {
 	}
 	
 	public void postDraw(){
-		if (!batched)
+		if (!isBatched())
 			throw new IllegalStateException("Cannot render without batching first!");
 
 		renderer.postDraw();
 	}
 	
 	public void render(RenderMaterial material){
-		if (!batched)
+		if (!isBatched())
 			throw new IllegalStateException("Cannot render without batching first!");
 
 		SnapshotRender snapshotRender = new SnapshotRender(material);

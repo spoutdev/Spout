@@ -30,6 +30,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import org.spout.api.Platform;
@@ -44,7 +45,6 @@ import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.sanitation.SafeCast;
 
-import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.world.SpoutColumn;
 import org.spout.engine.world.SpoutServerWorld;
@@ -178,7 +178,7 @@ public class ColumnFiles {
 				manager = clazz.getConstructor(params).newInstance(column.getX(), column.getZ());
 				manager.deserialize(biomes);
 				column.setBiomeManager(manager);
-			} catch (Exception e) {
+			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				Spout.getLogger().severe("Unable to find biome manager class " + biomeManagerClass + ", this may cause world corruption");
 				e.printStackTrace();
 			}

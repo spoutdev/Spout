@@ -47,8 +47,8 @@ import org.spout.api.math.Vector3;
 import static org.lwjgl.openal.AL10.*;
 
 public class SpoutSoundManager implements SoundManager {
-	private final Set<SoundSource> sources = new HashSet<SoundSource>();
-	private final Set<Sound> sounds = new HashSet<Sound>();
+	private final Set<SoundSource> sources = new HashSet<>();
+	private final Set<Sound> sounds = new HashSet<>();
 	private final SoundListener listener = new SpoutSoundListener();
 	private float gain = 1, musicGain = 1;
 

@@ -105,7 +105,7 @@ public class PortBindings extends AnnotatedSubclassConfiguration {
 	}
 
 	public void addDefaults() {
-		final Set<String> existingProtocols = new HashSet<String>();
+		final Set<String> existingProtocols = new HashSet<>();
 		if (portBindings != null) {
 			for (ConfigPortBinding binding : portBindings) {
 				existingProtocols.add(binding.protocolName);
@@ -113,7 +113,7 @@ public class PortBindings extends AnnotatedSubclassConfiguration {
 		}
 
 		if (portBindings == null) {
-			portBindings = new ArrayList<ConfigPortBinding>();
+			portBindings = new ArrayList<>();
 		}
 
 		for (Protocol proto : Protocol.getProtocols()) {

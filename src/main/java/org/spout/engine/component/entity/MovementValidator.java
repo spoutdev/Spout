@@ -32,7 +32,6 @@ import org.spout.api.component.entity.EntityComponent;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
 

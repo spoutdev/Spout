@@ -76,7 +76,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	/**
 	 * A queue of incoming and unprocessed messages
 	 */
-	private final Queue<Message> messageQueue = new ArrayDeque<Message>();
+	private final Queue<Message> messageQueue = new ArrayDeque<>();
 	/**
 	 * A queue of incoming and unprocessed messages from a client
 	 */
@@ -88,7 +88,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	/**
 	 * A queue of outgoing messages that will be sent after the client finishes identification
 	 */
-	protected final Queue<Message> sendQueue = new ConcurrentLinkedQueue<Message>();
+	protected final Queue<Message> sendQueue = new ConcurrentLinkedQueue<>();
 	/**
 	 * The current state.
 	 */
@@ -96,7 +96,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	/**
 	 * The player associated with this session (if there is one).
 	 */
-	protected final AtomicReference<SpoutPlayer> player = new AtomicReference<SpoutPlayer>();
+	protected final AtomicReference<SpoutPlayer> player = new AtomicReference<>();
 	/**
 	 * The random long used for client-server handshake
 	 */
@@ -125,7 +125,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	/**
 	 * 
 	 */
-	private final AtomicReference<NetworkSendThread> networkSendThread = new AtomicReference<NetworkSendThread>();
+	private final AtomicReference<NetworkSendThread> networkSendThread = new AtomicReference<>();
 
 	/**
 	 * Default uncaught exception handler
@@ -142,7 +142,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	public SpoutSession(T engine, Channel channel, Protocol bootstrapProtocol) {
 		this.engine = engine;
 		this.channel = channel;
-		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
+		protocol = new AtomicReference<>(bootstrapProtocol);
 		isConnected = true;
 		this.exceptionHandler = new AtomicReference<UncaughtExceptionHandler>(new DefaultUncaughtExceptionHandler(this));
 		if (engine instanceof Server) {
@@ -150,7 +150,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		} else {
 			nullSynchronizer = new ClientNullNetworkSynchronizer((ClientSession) this);
 		}
-		synchronizer = new AtomicReference<NetworkSynchronizer>(nullSynchronizer);
+		synchronizer = new AtomicReference<>(nullSynchronizer);
 	}
 
 	/**

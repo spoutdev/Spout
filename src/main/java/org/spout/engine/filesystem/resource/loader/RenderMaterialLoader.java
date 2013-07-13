@@ -83,7 +83,7 @@ public class RenderMaterialLoader extends ResourceLoader {
 		}
 
 		// Better make a new HashMap, who knows whether we can even write to it...
-		final Map<String, Object> paramsNew = new HashMap<String, Object>();
+		final Map<String, Object> paramsNew = new HashMap<>();
 
 		if(resourceProperties.containsKey("MaterialParams"))
 		{

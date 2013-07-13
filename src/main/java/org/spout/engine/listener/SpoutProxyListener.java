@@ -36,7 +36,6 @@ import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 
 import org.spout.engine.SpoutProxy;
 import org.spout.engine.protocol.SpoutServerSession;
-import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutProxyListener implements Listener {
 	private final SpoutProxy proxy;

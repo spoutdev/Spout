@@ -74,7 +74,7 @@ public class FilePathResolver implements ResourcePathResolver {
 
 	@Override
 	public String[] list(String host, String path) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (File file : getFile(host, path).listFiles()) {
 			// we can't load directories, no point in returning them
 			if (file.isFile()) {

@@ -27,10 +27,6 @@
 package org.spout.engine.protocol.builtin.handler;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-
-import org.spout.api.Client;
-import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.World;
 import org.spout.api.protocol.MessageHandler;
@@ -61,13 +57,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			BiomeManager manager;
 			try {
 				manager = managerClass.getConstructor(int.class, int.class, int.class).newInstance(message.getX(), message.getY(), message.getZ());
-			} catch (InstantiationException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e);
-			} catch (NoSuchMethodException e) {
+			} catch (	InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 				throw new RuntimeException(e);
 			}
 			manager.deserialize(message.getBiomeData());

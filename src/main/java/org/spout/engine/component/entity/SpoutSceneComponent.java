@@ -45,11 +45,11 @@ public class SpoutSceneComponent extends SceneComponent {
 	private final Transform snapshot = new Transform();
 	private final Transform live = new Transform();
 	private Vector3 velocitySnapshot = Vector3.ZERO;
-	private final AtomicReference<Vector3> velocity = new AtomicReference<Vector3>(Vector3.ZERO);
-	private final AtomicReference<Vector3> impulses = new AtomicReference<Vector3>(Vector3.ZERO);
-	private final AtomicReference<Vector3> forces = new AtomicReference<Vector3>(Vector3.ZERO);
+	private final AtomicReference<Vector3> velocity = new AtomicReference<>(Vector3.ZERO);
+	private final AtomicReference<Vector3> impulses = new AtomicReference<>(Vector3.ZERO);
+	private final AtomicReference<Vector3> forces = new AtomicReference<>(Vector3.ZERO);
 	private final AtomicFloat mass = new AtomicFloat(0);
-	private final AtomicReference<BoundingBox> area = new AtomicReference<BoundingBox>(null);
+	private final AtomicReference<BoundingBox> area = new AtomicReference<>(null);
 	//Client/Rendering
 	private final Transform render = new Transform();
 	private Vector3 position = Vector3.ONE;

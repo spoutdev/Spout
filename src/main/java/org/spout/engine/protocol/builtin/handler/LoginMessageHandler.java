@@ -33,7 +33,6 @@ import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
-import org.spout.engine.protocol.builtin.SpoutProtocol;
 
 public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 

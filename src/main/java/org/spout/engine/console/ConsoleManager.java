@@ -39,7 +39,6 @@ import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.logging.LoggerOutputStream;
 import org.spout.logging.MessageFormatter;
 import org.spout.logging.file.RotatingFileHandler;
