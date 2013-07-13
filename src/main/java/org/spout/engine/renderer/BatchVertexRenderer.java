@@ -49,14 +49,14 @@ import org.spout.engine.renderer.shader.SpoutShader;
 import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
 
 public abstract class BatchVertexRenderer implements Renderer {
-	public static HashMap<Integer, List<Renderer>> pool = new HashMap<Integer, List<Renderer>>();
+	public static final Map<Integer, List<Renderer>> POOL = new HashMap<>();
 
 	public static void initPool(int renderMode, int number) {
-		List<Renderer> list = pool.get(renderMode);
+		List<Renderer> list = POOL.get(renderMode);
 
 		if (list == null) {
-			list = new LinkedList<Renderer>();
-			pool.put(renderMode, list);
+			list = new LinkedList<>();
+			POOL.put(renderMode, list);
 		}
 
 		Client client = (Client) Spout.getEngine();
@@ -88,9 +88,9 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	public static Renderer constructNewBatch(int renderMode) {
-		List<Renderer> list = pool.get(renderMode);
+		List<Renderer> list = POOL.get(renderMode);
 		if (list == null) {
-			// If we're using a pool, it should already be intialized
+			// If we're using a POOL, it should already be intialized
 			throw new IllegalStateException("Pool uninitialized!");
 		}
 		if (!list.isEmpty()) {
@@ -115,13 +115,13 @@ public abstract class BatchVertexRenderer implements Renderer {
 		}
 	}
 
-	final int renderMode;
-	List<Integer> attributesUsed = new ArrayList<Integer>();
-	SpoutFloatBuffer currentBuffer = null;
-	SpoutFloatBuffer flushingBuffer = null;
-	int currentNumVertices = 0;
-	int flushingNumVertices = 0;
-	int used = 1; // Benchmark
+	protected final int renderMode;
+	protected List<Integer> attributesUsed = new ArrayList<>();
+	protected SpoutFloatBuffer currentBuffer = null;
+	protected SpoutFloatBuffer flushingBuffer = null;
+	protected int flushingNumVertices = 0;
+	private int currentNumVertices = 0;
+	private int used = 1; // Benchmark
 
 	public BatchVertexRenderer(int mode) {
 		renderMode = mode;
@@ -192,9 +192,9 @@ public abstract class BatchVertexRenderer implements Renderer {
 	public void release() {
 		doRelease();
 		//TODO : Implement for each version to empty display list, vbo, etc...
-		List<Renderer> list = pool.get(renderMode);
+		List<Renderer> list = POOL.get(renderMode);
 		if (list == null) {
-			// If we're going to use a pool, it should already be initialized
+			// If we're going to use a POOL, it should already be initialized
 			throw new IllegalStateException("Unitialized pool!");
 		}
 		list.add(this);
@@ -212,7 +212,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	protected abstract void initFlush(Map<Integer, Buffer> buffers);
 
 	public void setBufferContainer(BufferContainer bufferContainer) {
-		Map<Integer, Buffer> buffers = new HashMap<Integer, Buffer>();
+		Map<Integer, Buffer> buffers = new HashMap<>();
 
 		for (Entry<Integer, Object> entry : bufferContainer.getBuffers().entrySet()) {
 			int layout = entry.getKey();
@@ -241,7 +241,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	public void setBufferContainers(BufferContainer[] bufferContainers) {
-		Map<Integer, Buffer> buffers = new HashMap<Integer, Buffer>();
+		Map<Integer, Buffer> buffers = new HashMap<>();
 
 		int first = 0;
 
@@ -303,7 +303,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	public void setGLBufferContainer(GLBufferContainer container) {
-		Map<Integer, Buffer> buffers = new HashMap<Integer, Buffer>();
+		Map<Integer, Buffer> buffers = new HashMap<>();
 
 		for (Entry<Integer, Buffer> entry : container.getBuffers().entrySet()) {
 			buffers.put(entry.getKey(), entry.getValue());

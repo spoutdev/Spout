@@ -33,9 +33,7 @@ import java.nio.ByteBuffer;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
-import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
 
 import org.spout.engine.SpoutClient;
@@ -97,19 +95,9 @@ public class ClientTexture extends Texture {
 
 		@Override
 		public void run() {
-			if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
-				GL11.glEnable(GL11.GL_TEXTURE_2D);
-				SpoutRenderer.checkGLError();
-			}
-
 			textureID = GL11.glGenTextures();
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 			SpoutRenderer.checkGLError();
-
-			if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
-				GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
-				SpoutRenderer.checkGLError();
-			}
 
 			/*if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30) {
 

@@ -28,9 +28,7 @@ package org.spout.engine.renderer.shader.variables;
 
 import org.lwjgl.opengl.GL20;
 
-import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.render.RenderMode;
 
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.shader.ShaderVariableNotFoundException;
@@ -48,9 +46,6 @@ public abstract class ShaderVariable {
 
 	@SuppressWarnings("unused")
 	public ShaderVariable(int program, String name) {
-		if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
-			return;  //Shaders don't exist in OpenGL 1.1
-		}
 		this.program = program;
 		//If we are an attribute, we aren't a uniform.  Don't continue
 		if (this instanceof AttributeShaderVariable) {

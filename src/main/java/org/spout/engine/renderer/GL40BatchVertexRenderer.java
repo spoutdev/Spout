@@ -28,7 +28,6 @@ package org.spout.engine.renderer;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 

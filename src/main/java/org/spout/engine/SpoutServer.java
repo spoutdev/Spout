@@ -136,8 +136,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * The {@link AccessManager} for the Server.
 	 */
 	private final SpoutAccessManager accessManager = new SpoutAccessManager();
-	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> players = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
-	private final SnapshotableLinkedHashMap<String, SpoutServerWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutServerWorld>(snapshotManager);
+	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> players = new SnapshotableLinkedHashMap<>(snapshotManager);
+	private final SnapshotableLinkedHashMap<String, SpoutServerWorld> loadedWorlds = new SnapshotableLinkedHashMap<>(snapshotManager);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
 	private final Object jmdnsSync = new Object();
 	private JmDNS jmdns = null;
@@ -355,7 +355,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public List<PortBinding> getBoundAddresses() {
-		List<PortBinding> bindings = new ArrayList<PortBinding>();
+		List<PortBinding> bindings = new ArrayList<>();
 		for (Map.Entry<SocketAddress, Protocol> entry : boundProtocols.entrySet()) {
 			bindings.add(new PortBindingImpl(entry.getValue(), entry.getKey()));
 		}
@@ -368,7 +368,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		if (SpoutConfiguration.SHOW_CONNECTIONS.getBoolean()) {
 			getLogger().info("Downstream channel connected: " + channel + ".");
 		}
-		return new SpoutServerSession<SpoutServer>(this, channel, protocol);
+		return new SpoutServerSession<>(this, channel, protocol);
 	}
 
 	@Override
@@ -454,7 +454,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public SpoutPlayer[] getOnlinePlayers() {
 		Map<String, SpoutPlayer> playerList = players.get();
-		ArrayList<SpoutPlayer> onlinePlayers = new ArrayList<SpoutPlayer>(playerList.size());
+		ArrayList<SpoutPlayer> onlinePlayers = new ArrayList<>(playerList.size());
 		for (SpoutPlayer player : playerList.values()) {
 			if (player.isOnline()) {
 				onlinePlayers.add(player);
@@ -499,7 +499,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	
 	@Override
 	public List<String> getAllPlayers() {
-		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<String> names = new ArrayList<>();
 		for (Player player : players.getValues()) {
 			names.add(player.getName());
 		}
@@ -629,7 +629,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public Collection<World> getWorlds() {
-		Collection<World> w = new ArrayList<World>();
+		Collection<World> w = new ArrayList<>();
 		for (SpoutServerWorld world : loadedWorlds.getValues()) {
 			w.add(world);
 		}
@@ -674,9 +674,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public List<File> getWorldFolders() {
 		File[] folders = this.getWorldFolder().listFiles((FilenameFilter) DirectoryFileFilter.INSTANCE);
 		if (folders == null || folders.length == 0) {
-			return new ArrayList<File>();
+			return new ArrayList<>();
 		}
-		List<File> worlds = new ArrayList<File>(folders.length);
+		List<File> worlds = new ArrayList<>(folders.length);
 		// Are they really world folders?
 		for (File world : folders) {
 			if (new File(world, "world.dat").exists()) {

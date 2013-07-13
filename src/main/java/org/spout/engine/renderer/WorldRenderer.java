@@ -32,7 +32,6 @@ import com.google.common.collect.TreeMultimap;
 import java.util.ArrayList;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,12 +57,12 @@ import org.spout.engine.world.SpoutClientWorld;
 public class WorldRenderer {
 	public static final long TIME_LIMIT = 2;
 	private final BatchGeneratorTask batchGenerator = new BatchGeneratorTask();
-	private final ConcurrentLinkedQueue<ChunkMesh> renderChunkMeshBatchQueue = new ConcurrentLinkedQueue<ChunkMesh>();
-	private final Queue<ChunkMeshBatchAggregator> toUpdate = new LinkedList<ChunkMeshBatchAggregator>();
+	private final ConcurrentLinkedQueue<ChunkMesh> renderChunkMeshBatchQueue = new ConcurrentLinkedQueue<>();
+	private final Queue<ChunkMeshBatchAggregator> toUpdate = new LinkedList<>();
 	/**
 	 * Store ChunkMeshBatchAggregator by BlockFace, RenderMaterial and ChunkMeshBatchAggregator position
 	 */
-	private final TInt21TripleObjectHashMapOfMaps<RenderMaterial, ChunkMeshBatchAggregator> chunkRenderersByPositions = new TInt21TripleObjectHashMapOfMaps<RenderMaterial, ChunkMeshBatchAggregator>();
+	private final TInt21TripleObjectHashMapOfMaps<RenderMaterial, ChunkMeshBatchAggregator> chunkRenderersByPositions = new TInt21TripleObjectHashMapOfMaps<>();
 	private final Multimap<RenderMaterial, ChunkMeshBatchAggregator> chunkRenderers = TreeMultimap.create(RenderMaterial.COMPARATOR, Ordering.arbitrary());
 	private SpoutClientWorld currentWorld = null;
 	//Benchmark
