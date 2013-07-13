@@ -26,6 +26,7 @@
  */
 package org.spout.api.render;
 
+import org.spout.api.render.shader.Shader;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;

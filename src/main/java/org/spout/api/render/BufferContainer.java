@@ -31,14 +31,14 @@ import java.util.Map;
 
 public class BufferContainer {
 
+	private final Map<Integer, Object> buffers = new HashMap<Integer, Object>();
 	public int element = 0;
-	final Map<Integer,Object> buffers = new HashMap<Integer,Object>();
 
-	public Map<Integer,Object> getBuffers(){
+	public Map<Integer, Object> getBuffers() {
 		return buffers;
 	}
 
-	public void setBuffers(int layout, Object buffer){
+	public void setBuffers(int layout, Object buffer) {
 		buffers.put(layout, buffer);
 	}
 }

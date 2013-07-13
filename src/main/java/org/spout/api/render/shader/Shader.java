@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.render.shader;
 
 import java.awt.Color;
 
@@ -32,6 +32,7 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
+import org.spout.api.render.Texture;
 
 public interface Shader {
 
