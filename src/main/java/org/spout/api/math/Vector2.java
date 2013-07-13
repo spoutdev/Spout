@@ -34,7 +34,7 @@ import org.spout.api.util.StringUtil;
 
 /**
  * A 2-dimensional vector represented by float-precision x,y coordinates
- * <p/>
+ * <p>
  * Note, this is the Immutable form of Vector2. All operations will construct a
  * new Vector2.
  */

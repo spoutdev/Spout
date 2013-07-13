@@ -135,7 +135,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 
 	/**
 	 * Gets the entity with the matching unique id
-	 * <p/>
+	 * <p>
 	 * Performs a search on each region for the entity, stopping when it
 	 * is found, or after all the worlds have been searched upon failure.
 	 * @param uid to search and match
@@ -168,7 +168,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 
 	/**
 	 * Creates and spawns an {@link Entity} at the {@link Point} blueprinted with the {@link EntityPrefab} provided.
-	 * <p/>
+	 * <p>
 	 * The {@link LoadOption} parameter is used to tell Spout if it should load, create and load, or not load the chunk
 	 * for the point provided. Great caution should be used; only load (and more so create) if absolutely necessary.
 	 * @param point The area in space to spawn
@@ -180,7 +180,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 
 	/**
 	 * Creates and spawns an {@link Entity} at the {@link Point} with the {@link Component} classes attached.
-	 * <p/>
+	 * <p>
 	 * The {@link LoadOption} parameter is used to tell Spout if it should load, create and load, or not load the chunk
 	 * for the point provided. Great caution should be used; only load (and more so create) if absolutely necessary.
 	 * @param point The area in space to spawn
@@ -192,7 +192,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 
 	/**
 	 * Creates and spawns multiple {@link Entity} at the {@link Point}s with the {@link Component} classes attached.
-	 * <p/>
+	 * <p>
 	 * The {@link LoadOption} parameter is used to tell Spout if it should load, create and load, or not load the chunk
 	 * for the points provided. Great caution should be used; only load (and more so create) if absolutely necessary.
 	 * @param points The areas in space to spawn
@@ -205,7 +205,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	/**
 	 * Creates and spawns multiple {@link Entity} with the {@link Component} classes attached. The {@link SpawnArrangement}
 	 * is a template for how to spawn (i.e. spawn entities around a point in a circle).
-	 * <p/>
+	 * <p>
 	 * The {@link LoadOption} parameter is used to tell Spout if it should load, create and load, or not load the chunk
 	 * for the points provided. Great caution should be used; only load (and more so create) if absolutely necessary.
 	 * @param arrangement The template for the spawn
@@ -479,7 +479,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 
 	/**
 	 * Gets the {@link DatatableComponent} which is always attached to each world.
-	 * <p/>
+	 * <p>
 	 * This is merely a convenience method.
 	 * @return datatable component
 	 */

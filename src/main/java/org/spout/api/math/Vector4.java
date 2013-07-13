@@ -34,7 +34,7 @@ import org.spout.api.util.StringUtil;
 
 /**
  * A 4-dimensional vector represented by float-precision x,y,z,w coordinates
- * <p/>
+ * <p>
  * Note, this is the Immutable form of Vector4. All operations will construct a
  * new Vector4.
  */

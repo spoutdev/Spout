@@ -50,7 +50,7 @@ public abstract class WorldComponent extends Component {
 
 	/**
 	 * Called when an {@link org.spout.api.entity.Entity} enters the owning {@link World}.
-	 * <p/>
+	 * <p>
 	 * This is only fired when the entity enters this owning world from another owning world. If you want to
 	 * perform logic on a spawning entity for this owning world, {@see #onSpawn(org.spout.api.event.entity.EntitySpawnEvent)}.
 	 * @param event see {@link org.spout.api.event.world.EntityEnterWorldEvent}
@@ -60,7 +60,7 @@ public abstract class WorldComponent extends Component {
 
 	/**
 	 * Called when an {@link org.spout.api.entity.Entity} exits the owning {@link World} for another.
-	 * <p/>
+	 * <p>
 	 * This is only fired when the entity will leave this owning world for another owning world. If you want to perform
 	 * logic on a de-spawning entity, {@see #onDespawn(org.spout.api.event.entity.EntityDespawnEvent)}.
 	 * @param event see {@link org.spout.api.event.world.EntityExitWorldEvent}
@@ -70,7 +70,7 @@ public abstract class WorldComponent extends Component {
 
 	/**
 	 * Called when an {@link org.spout.api.entity.Entity} spawns in the owning {@link World}.
-	 * <p/>
+	 * <p>
 	 * This is only fired when the entity is initially spawned into the owning world. If you want to perform login
 	 * on an entity coming from another world, {@see #onEnter(org.spout.api.event.entity.EntityChangeWorldEvent)} or
 	 * if you want to perform logic on an entity being loaded, {@see EntityComponent#onAttached()}.
@@ -81,7 +81,7 @@ public abstract class WorldComponent extends Component {
 
 	/**
 	 * Called when an {@link org.spout.api.entity.Entity} de-spawns from the owning {@link World}.
-	 * <p/>
+	 * <p>
 	 * This is only fired when the entity is de-spawned from the owning world ({@see org.spout.api.component.entity.EntityComponent#onDetached()}.
 	 * If you want to perform logic on an entity moving from this owning world to another owning world, {@see #onExit(org.spout.api.event.entity.EntityChangeWorldEvent)}.
 	 * @param event {@see org.spout.api.event.entity.EntitySpawnEvent}

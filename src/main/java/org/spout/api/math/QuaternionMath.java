@@ -144,7 +144,7 @@ public class QuaternionMath {
 	/**
 	 * Returns the angles, in degrees, about each axis of this quaternion stored
 	 * in a Vector3 <br/> <br/>
-	 * <p/>
+	 * <p>
 	 * vect.X = Rotation about the X axis (Pitch) <br/> vect.Y = Rotation about
 	 * the Y axis (Yaw) <br/> vect.Z = Rotation about the Z axis (Roll) <br/>
 	 * @param a The quaternion

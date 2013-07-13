@@ -659,9 +659,9 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Returns the length of the given vector.
-	 * <p/>
+	 * <p>
 	 * Note: Makes use of Math.sqrt and is not cached, so can be slow
-	 * <p/>
+	 * <p>
 	 * Also known as norm. ||a||
 	 *
 	 * @param a The vector

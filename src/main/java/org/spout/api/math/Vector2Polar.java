@@ -34,9 +34,9 @@ import org.spout.api.util.StringUtil;
 
 /**
  * A 2-dimensional vector represented by float-precision r,theta coordinates
- * <p/>
+ * <p>
  * Theta is in Radians!
- * <p/>
+ * <p>
  * Note, this is the Immutable form of Vector2Polar. All operations will
  * construct a new Vector2Polar.
  */

@@ -72,7 +72,7 @@ public abstract class EntityComponent extends Component {
 
 	/**
 	 * Called when the owner is spawned into the {@link org.spout.api.geo.World}.
-	 * <p/>
+	 * <p>
 	 * This should be used for setting up the owner with initial logic as the owner is
 	 * only spawned once. For executing logic that happens each time the owner is attached
 	 * with this EntityComponent, {@see org.spout.api.component.Component #onAttached()}.
@@ -82,7 +82,7 @@ public abstract class EntityComponent extends Component {
 
 	/**
 	 * Called when the owner comes within range of another owner with an attached {@link ObserverComponent}.
-	 * <p/>
+	 * <p>
 	 * TODO EntityObservedEvent
 	 */
 	public void onObserved() {
@@ -90,7 +90,7 @@ public abstract class EntityComponent extends Component {
 
 	/**
 	 * Called when the owner is out of range of any owners with attached {@link ObserverComponent}s.
-	 * <p/>
+	 * <p>
 	 * TODO EntityUnObservedEvent
 	 */
 	public void onUnObserved() {
@@ -100,7 +100,7 @@ public abstract class EntityComponent extends Component {
 	 * Called when the owning {@link Entity} collided with another owning Entity.
 	 * @param point the point where collision occurred.
 	 * @param entity the other entity that was collided with the owner Entity.
-	 * <p/>
+	 * <p>
 	 * TODO EntityCollideEntityEvent
 	 */
 	public void onCollided(Point point, Entity entity) {
@@ -111,7 +111,7 @@ public abstract class EntityComponent extends Component {
 	 * Called when the owner collides with a {@link Block}.
 	 * @param point the point where collision occurred
 	 * @param block The block this owning entity was collided with
-	 * <p/>
+	 * <p>
 	 * TODO EntityCollideBlockEvent
 	 */
 	public void onCollided(Point point, Block block) {

@@ -82,7 +82,7 @@ public class TrigMath {
 	/**
 	 * Tangent calculations using a table.<br> <i>sin(angle) /
 	 * cos(angle)</i><br><br>
-	 * <p/>
+	 * <p>
 	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
 	 * place
 	 * @param angle in radians
@@ -96,7 +96,7 @@ public class TrigMath {
 	/**
 	 * Cotangent calculations using a table.<br> <i>cos(angle) /
 	 * sin(angle)</i><br><br>
-	 * <p/>
+	 * <p>
 	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
 	 * place
 	 * @param angle in radians
@@ -109,7 +109,7 @@ public class TrigMath {
 
 	/**
 	 * Secant calculations using a table:<br> <i>1 / cos(angle)</i><br><br>
-	 * <p/>
+	 * <p>
 	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
 	 * place
 	 * @param angle the angle in radians
@@ -121,7 +121,7 @@ public class TrigMath {
 
 	/**
 	 * Cosecant calculations using a table.<br> <i>1 / sin(angle)</i><br><br>
-	 * <p/>
+	 * <p>
 	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
 	 * place
 	 * @param angle the angle in radians
@@ -134,7 +134,7 @@ public class TrigMath {
 	/**
 	 * Sinus calculation using a table.<br> For double-precision sin values, use
 	 * the MathHelper sin function<br><br>
-	 * <p/>
+	 * <p>
 	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
 	 * place
 	 * @param angle the angle in radians
@@ -147,7 +147,7 @@ public class TrigMath {
 	/**
 	 * Cosinus calculation using a table.<br> For double-precision cos values,
 	 * use the MathHelper cos function<br><br>
-	 * <p/>
+	 * <p>
 	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
 	 * place
 	 * @param angle the angle in radians

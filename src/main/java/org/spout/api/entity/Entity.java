@@ -58,7 +58,7 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 
 	/**
 	 * Gets the entity's persistent unique id.
-	 * <p/>
+	 * <p>
 	 * Can be used to look up the entity, and persists between starts.
 	 * @return persistent uuid
 	 */

@@ -86,7 +86,7 @@ public interface Client extends Engine {
 
 	/**
 	 * Returns the aspect ratio of the client, in pixels.
-	 * <p/>
+	 * <p>
 	 * Ratio = (screen width / screen height)
 	 * @return The ratio as a float
 	 */

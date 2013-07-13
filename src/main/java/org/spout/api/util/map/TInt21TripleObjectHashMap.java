@@ -90,10 +90,10 @@ public class TInt21TripleObjectHashMap<K> extends Int21TripleHashed {
 
 	/**
 	 * Returns the value to which the specified key is mapped, or <code>null</code> if this map contains no mapping for the key.
-	 * <p/>
+	 * <p>
 	 * More formally, if this map contains a mapping from a key <code>k</code> to a value <code>v</code> such that <code>(key==null ? k==null : key.equals(k))</code>, then this method returns <code>v</code>; otherwise it returns <code>null</code>.
 	 * (There can be at most one such mapping.)
-	 * <p/>
+	 * <p>
 	 * If this map permits <code>null</code> values, then a return value of <code>null</code> does not <i>necessarily</i> indicate that the map contains no mapping for the key; it's also possible that the map explicitly maps the key to <code>null</code>.
 	 * The {@see #containsKey(int, int, int) containsKey} operation may be used to distinguish these two cases.
 	 *
@@ -189,11 +189,11 @@ public class TInt21TripleObjectHashMap<K> extends Int21TripleHashed {
 	 * Removes the mapping for a key from this map if it is present (optional operation).
 	 * More formally, if this map contains a mapping from key <code>k</code> to value <code>v</code> such that <code>key.equals(k)</code>, that mapping is removed.
 	 * (The map can contain at most one such mapping.)
-	 * <p/>
+	 * <p>
 	 * Returns the value to which this map previously associated the key, or <code>null</code> if the map contained no mapping for the key.
 	 * </p>
 	 * If this map permits null values, then a return value of <code>null</code> does not <i>necessarily</i> indicate that the map contained no mapping for the key; it's also possible that the map explicitly mapped the key to <code>null</code>.
-	 * <p/>
+	 * <p>
 	 * The map will not contain a mapping for the specified key once the call returns.
 	 *
 	 * @see #key(int, int, int)

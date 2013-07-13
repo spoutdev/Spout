@@ -149,11 +149,11 @@ public class TInt21TripleHashSet extends Int21TripleHashed {
 	/**
 	 * Returns an array containing all of the elements in the backend set.
 	 * If the backend set makes any guarantees as to what order its elements are returned by its iterator, this method must return the elements in the same order.
-	 * <p/>
+	 * <p>
 	 * The returned array will be "safe" in that no references to it are maintained by the backend set.
 	 * (In other words, this method must allocate a new array even if the backend set is backed by an array).
 	 * The caller is thus free to modify the returned array.
-	 * <p/>
+	 * <p>
 	 * This method acts as bridge between array-based and collection-based APIs.
 	 *
 	 * @return an array containing all the elements in the backend set.

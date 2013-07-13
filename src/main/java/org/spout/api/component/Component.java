@@ -93,7 +93,7 @@ public abstract class Component implements Tickable {
 
 	/**
 	 * Called when the owner is set to be synchronized.
-	 * <p/>
+	 * <p>
 	 * This method is READ ONLY. You cannot update in this method.
 	 */
 	public void onSync() {
@@ -101,7 +101,7 @@ public abstract class Component implements Tickable {
 
 	/**
 	 * Gets the {@link DatatableComponent} which is always attached to each owner.
-	 * <p/>
+	 * <p>
 	 * This is merely a convenience method.
 	 * @return datatable component
 	 */
