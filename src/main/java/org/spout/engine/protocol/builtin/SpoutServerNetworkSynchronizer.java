@@ -46,7 +46,7 @@ import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
-import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
+import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
@@ -67,7 +67,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 
 	@Override
 	protected void sendPosition(Point p, Quaternion rot) {
-		session.send(new EntityTransformMessage(player.getId(), new Transform(p, rot, Vector3.ONE), getRepositionManager()));
+		session.send(new UpdateEntityMessage(player.getId(), new Transform(p, rot, Vector3.ONE), UpdateEntityMessage.UpdateAction.TRANSFORM, getRepositionManager()));
 	}
 
 	@Override

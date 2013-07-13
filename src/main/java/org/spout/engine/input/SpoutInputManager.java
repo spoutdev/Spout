@@ -54,8 +54,8 @@ import org.spout.api.math.Vector3;
 
 import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
-import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
+import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 
 public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
@@ -321,7 +321,7 @@ public class SpoutInputManager implements InputManager {
 		}
 		Player player = ((Client) Spout.getEngine()).getPlayer();
 		// TODO: move this to NetworkSynchronizer?
-		player.getSession().send(new EntityTransformMessage(player.getId(), sc.getLiveTransform(), player.getSession().getNetworkSynchronizer().getRepositionManager()));
+		player.getSession().send(new UpdateEntityMessage(player.getId(), sc.getLiveTransform(), UpdateEntityMessage.UpdateAction.TRANSFORM, player.getSession().getNetworkSynchronizer().getRepositionManager()));
 		PlayerInputState input = player.input();
 		player.getSession().send(new PlayerInputMessage(input.getUserCommands(), (short) input.pitch(), (short) input.yaw()));
 	}

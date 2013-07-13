@@ -36,7 +36,7 @@ import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
  */
 public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessage> {
 	public CuboidBlockUpdateCodec() {
-		super(CuboidBlockUpdateMessage.class, 0x0A);
+		super(CuboidBlockUpdateMessage.class, 0x08);
 	}
 
 	@Override

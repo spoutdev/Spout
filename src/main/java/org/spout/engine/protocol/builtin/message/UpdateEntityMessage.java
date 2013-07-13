@@ -26,45 +26,100 @@
  */
 package org.spout.engine.protocol.builtin.message;
 
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class RemoveEntityMessage extends SpoutMessage {
+public class UpdateEntityMessage extends SpoutMessage {
 	private final int entityId;
+	private final Transform transform;
+	private final UpdateAction action;
 
-	public RemoveEntityMessage(int entityId) {
+	// TODO: protocol - implement position-only update
+	// TODO: possibly combine Entity Datatable message here?
+	public UpdateEntityMessage(int entityId, Transform transform, UpdateAction action, RepositionManager rm) {
 		this.entityId = entityId;
+		this.transform = transform;
+		this.action = action;
 	}
 
 	public int getEntityId() {
 		return entityId;
 	}
 
+	/**
+	 * @return a copy of the converted transform
+	 */
+	public Transform getTransform() {
+		return transform.copy();
+	}
+
+	public UpdateAction getAction() {
+		return action;
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.append("entityId", entityId)
+				.append("transform", transform)
+				.append("action", action)
 				.toString();
 	}
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(61, 29)
+		return new HashCodeBuilder(37, 59)
 				.append(entityId)
+				.append(transform)
+				.append(action)
 				.toHashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof RemoveEntityMessage) {
-			final RemoveEntityMessage other = (RemoveEntityMessage) obj;
+		if (obj instanceof UpdateEntityMessage) {
+			final UpdateEntityMessage other = (UpdateEntityMessage) obj;
 			return new EqualsBuilder()
 					.append(entityId, other.entityId)
+					.append(transform, other.transform)
+					.append(action, other.action)
 					.isEquals();
 		} else {
 			return false;
 		}
+	}
+	
+	public enum UpdateAction {
+		// TODO; protocol - use UpdatAction.POSITION?
+		/**
+		 * Signals for the client to spawn a new entity. (S -> C)
+		 */
+		ADD,
+		/**
+		 * Signals for the engine to update the entity's transform.
+		 * S -> C for all entities.
+		 * C -> S for players (to verify client movement)
+		 *
+		 */
+		TRANSFORM,
+		/**
+		 * Signals for the engine to update the entity's position.
+		 * S -> C for all entities.
+		 * C -> S for players (to verify client movement)
+		 * 
+		 * CURRENTLY UNIMPLEMENTED - deprecated until implemented
+		 */
+		@Deprecated
+		POSITION,
+		/**
+		 * Signals the client to remove the entity. (S -> C)
+		 */
+		REMOVE;
 	}
 }

@@ -135,13 +135,15 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 		// Cache extra data
 		if (data == ExtraData.BIOME_DATA) {
-			this.biomes = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ(), LoadOption.LOAD_ONLY).clone();
+			BiomeManager biomeManager = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ(), LoadOption.LOAD_ONLY);
+			this.biomes = biomeManager == null ? null : biomeManager.clone();
 			this.dataMap = null;
 		} else if (data == ExtraData.DATATABLE) {
 			this.dataMap = chunk.getDataMap().deepCopy();
 			this.biomes = null;
 		} else if (data == ExtraData.BOTH) {
-			this.biomes = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ(), LoadOption.LOAD_ONLY).clone();
+			BiomeManager biomeManager = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ(), LoadOption.LOAD_ONLY);
+			this.biomes = biomeManager == null ? null : biomeManager.clone();
 			this.dataMap = chunk.getDataMap().deepCopy();
 		} else {
 			this.biomes = null;

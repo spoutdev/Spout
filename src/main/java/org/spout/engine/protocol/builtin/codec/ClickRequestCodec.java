@@ -33,7 +33,7 @@ import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 
 public class ClickRequestCodec extends MessageCodec<ClickRequestMessage> {
 	public ClickRequestCodec() {
-		super(ClickRequestMessage.class, 0x0B);
+		super(ClickRequestMessage.class, 0x09);
 	}
 
 	@Override

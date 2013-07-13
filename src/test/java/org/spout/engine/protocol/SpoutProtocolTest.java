@@ -43,7 +43,6 @@ import org.spout.api.util.SyncedMapEvent;
 import org.spout.engine.EngineFaker;
 import org.spout.engine.WorldFaker;
 import org.spout.engine.protocol.builtin.SpoutCodecLookupService;
-import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
@@ -51,11 +50,10 @@ import org.spout.engine.protocol.builtin.message.ClickResponseMessage;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
-import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
-import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
 import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
+import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 public class SpoutProtocolTest extends BaseProtocolTest {
@@ -76,7 +74,6 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 	private static final Transform TEST_TRANSFORM = new Transform(TEST_POINT, Quaternion.IDENTITY, Vector3.ZERO);
 	static final byte[] TEST_SERIALIZED_DATA = new DatatableComponent().serialize();
 	private static final Message[] TEST_MESSAGES = new Message[]{
-		new AddEntityMessage(0, TEST_TRANSFORM, new NullRepositionManager()),
 		new BlockUpdateMessage(0, 0, 0, (short) 0, (short) 0),
 		new ChunkDataMessage(0, 0, 0, chunkData, chunkData, null, null),
 		new ClickRequestMessage((byte) 0, (byte) 0, ClickRequestMessage.Action.LEFT),
@@ -84,12 +81,11 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 		new CommandMessage("test", "hi"),
 		new CuboidBlockUpdateMessage(Vector3.ZERO, Vector3.UP, new short[0], new short[0], new byte[0], new byte[0]),
 		new EntityDatatableMessage(0, TEST_SERIALIZED_DATA),
-		new EntityTransformMessage(0, TEST_TRANSFORM, new NullRepositionManager()),
 		new LoginMessage("Spouty", 0),
 		new PlayerInputMessage((short) 0, (short) 0, (short) 0),
-		new RemoveEntityMessage(0),
 		new SyncedMapMessage(0, SyncedMapEvent.Action.ADD, new ArrayList<Pair<Integer, String>>()),
-		new WorldChangeMessage("world", EngineFaker.TEST_UUID, TEST_SERIALIZED_DATA)
+		new WorldChangeMessage("world", EngineFaker.TEST_UUID, TEST_SERIALIZED_DATA),
+		new UpdateEntityMessage(0, TEST_TRANSFORM, UpdateEntityMessage.UpdateAction.TRANSFORM, new NullRepositionManager())
 	};
 
 	static {

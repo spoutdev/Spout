@@ -29,20 +29,14 @@ package org.spout.engine.protocol.builtin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.spout.api.Platform;
-import org.spout.api.Server;
-import org.spout.api.Spout;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.reposition.RepositionManager;
-import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
-import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
-import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
+import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 
 /**
  * EntityProtocol for the SpoutClient protocol
@@ -56,20 +50,20 @@ public class SpoutEntityProtocol implements EntityProtocol {
 	@Override
 	public List<Message> getSpawnMessages(Entity entity, RepositionManager rm) {
 		return Arrays.<Message>asList(
-			new AddEntityMessage(entity.getId(), entity.getScene().getTransform(), rm),
+			new UpdateEntityMessage(entity.getId(), entity.getScene().getTransform(), UpdateEntityMessage.UpdateAction.ADD, rm),
 			new EntityDatatableMessage(entity.getId(), entity.getData()));
 	}
 
 	@Override
 	public List<Message> getDestroyMessages(Entity entity) {
-		return Arrays.<Message>asList(new RemoveEntityMessage(entity.getId()));
+		return Arrays.<Message>asList(new UpdateEntityMessage(entity.getId(), null, UpdateEntityMessage.UpdateAction.REMOVE, null));
 	}
 
 	@Override
 	public List<Message> getUpdateMessages(Entity entity, Transform liveTransform, RepositionManager rm, boolean force) {
 		List<Message> messages = new ArrayList<Message>(2);
 		if (force || entity.getScene().isTransformDirty()) {
-			messages.add(new EntityTransformMessage(entity.getId(), liveTransform, rm));
+			messages.add(new UpdateEntityMessage(entity.getId(), liveTransform, UpdateEntityMessage.UpdateAction.TRANSFORM, rm));
 		}
 		if (entity.getData().isDirty()) {
 			messages.add(new EntityDatatableMessage(entity.getId(), entity.getData()));
