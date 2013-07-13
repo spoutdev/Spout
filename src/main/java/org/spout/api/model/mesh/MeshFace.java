@@ -26,6 +26,7 @@
  */
 package org.spout.api.model.mesh;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 import org.apache.commons.collections.iterators.ArrayIterator;
@@ -38,7 +39,9 @@ import org.spout.api.util.StringUtil;
  * Represents a Triangle for a model face
  *
  */
-public class MeshFace implements Iterable<Vertex> {
+public class MeshFace implements Iterable<Vertex>, Serializable {
+	private static final long serialVersionUID = 1L;
+
 	Vertex[] verts = new Vertex[3];
 
 	public MeshFace(Vertex v1, Vertex v2, Vertex v3) {

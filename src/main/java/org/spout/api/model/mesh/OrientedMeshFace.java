@@ -46,6 +46,8 @@ public class OrientedMeshFace extends MeshFace {
 
 	private final static Map<BlockFace,List<Vector3>> faceMap = new HashMap<BlockFace,List<Vector3>>();
 
+	private static final long serialVersionUID = 1L;
+
 	static{
 		/*   1--2
 		 *  /| /|

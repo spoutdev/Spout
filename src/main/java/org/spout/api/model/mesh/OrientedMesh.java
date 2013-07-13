@@ -26,20 +26,35 @@
  */
 package org.spout.api.model.mesh;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 import java.util.Iterator;
 import java.util.List;
 
 public class OrientedMesh implements Mesh, Iterable<OrientedMeshFace> {
+	private static final long serialVersionUID = 1L;
 
-	protected List<OrientedMeshFace> meshFace;
+	protected final List<OrientedMeshFace> meshFace;
 
-	public OrientedMesh(List<OrientedMeshFace> meshFace){
+	public <T extends List<OrientedMeshFace> & Serializable> OrientedMesh(T meshFace){
 		this.meshFace = meshFace;
 	}
 
 	@Override
 	public Iterator<OrientedMeshFace> iterator() {
 		return meshFace.iterator();
+	}
+
+	// This is a workaround for SerializableTest. We know at compile-time, thanks to generics, that meshFace will be Serializable
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
 	}
 
 }

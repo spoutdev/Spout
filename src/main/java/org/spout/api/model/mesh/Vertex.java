@@ -27,12 +27,15 @@
 package org.spout.api.model.mesh;
 
 import java.awt.Color;
+import java.io.Serializable;
 
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
 
-public class Vertex {
+public class Vertex implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	public static final int SIZE_FLOAT = 4;
 
 	public static final int VERTEX_LAYER = 0;

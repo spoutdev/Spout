@@ -27,6 +27,7 @@
 package org.spout.api.material.block;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
+import java.io.Serializable;
 
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
@@ -36,7 +37,7 @@ import org.spout.api.util.bytebit.ByteBitMask;
 /**
  * Indicates the facing of a Block
  */
-public enum BlockFace implements ByteBitMask {
+public enum BlockFace implements ByteBitMask, Serializable {
 	TOP(0x1, 0, 1, 0, new Quaternion(-90, 1, 0, 0)),
 	BOTTOM(0x2, 0, -1, 0, new Quaternion(90, 1, 0, 0), TOP),
 	NORTH(0x4, -1, 0, 0, new Quaternion(-90, 0, 1, 0)),
@@ -50,6 +51,7 @@ public enum BlockFace implements ByteBitMask {
 	private final Quaternion direction;
 	private BlockFace opposite = this;
 	private static final TIntObjectHashMap<BlockFace> OFFSET_MAP = new TIntObjectHashMap<BlockFace>(7);
+	private static final long serialVersionUID = 1L;
 
 	static {
 		for (BlockFace face : values()) {
