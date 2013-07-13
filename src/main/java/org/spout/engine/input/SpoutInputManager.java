@@ -315,6 +315,11 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	public void execute(float dt){
+		// TODO: protocol - hacky fix
+		if (((Client) Spout.getEngine()).getWorld().getName().equalsIgnoreCase("NullWorld")) {
+			return;
+		}
+		System.out.println("Handling input for " + ((Client) Spout.getEngine()).getWorld().getName());
 		SpoutSceneComponent sc = (SpoutSceneComponent) ((Client)Spout.getEngine()).getPlayer().getScene();
 		for(InputExecutor executor : inputExecutors){
 			executor.execute(dt, sc.getLiveTransform());

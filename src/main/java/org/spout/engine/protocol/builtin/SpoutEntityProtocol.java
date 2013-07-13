@@ -31,12 +31,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
+import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 /**
  * EntityProtocol for the SpoutClient protocol
@@ -49,9 +51,11 @@ public class SpoutEntityProtocol implements EntityProtocol {
 
 	@Override
 	public List<Message> getSpawnMessages(Entity entity, RepositionManager rm) {
-		return Arrays.<Message>asList(
-			new UpdateEntityMessage(entity.getId(), entity.getScene().getTransform(), UpdateEntityMessage.UpdateAction.ADD, rm),
-			new EntityDatatableMessage(entity.getId(), entity.getData()));
+		if (entity instanceof Player) {
+			return Arrays.<Message>asList(new WorldChangeMessage(entity.getWorld(), entity.getScene().getTransform(), entity.getWorld().getData()));
+		} else {
+			return Arrays.<Message>asList(new UpdateEntityMessage(entity.getId(), entity.getScene().getTransform(), UpdateEntityMessage.UpdateAction.ADD, rm));
+		}
 	}
 
 	@Override

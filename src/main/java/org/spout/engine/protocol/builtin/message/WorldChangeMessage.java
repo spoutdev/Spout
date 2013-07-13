@@ -31,29 +31,74 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.spout.api.Client;
+import org.spout.api.Platform;
+import org.spout.api.Server;
+import org.spout.api.Spout;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class WorldChangeMessage extends DatatableMessage {
 	private final String worldName;
-	private final UUID worldUuid;
-	public WorldChangeMessage(World world, SerializableMap data) {
-		this(world.getName(), world.getUID(), data.serialize());
+	private final UUID worldUUID;
+	private final Vector3 position;
+	private final Quaternion rotation;
+	private final Vector3 scale;
+
+	public WorldChangeMessage(World world, Transform playerTransform, SerializableMap data) {
+		this(world.getName(), world.getUID(), playerTransform, data.serialize());
 	}
 
-	public WorldChangeMessage(String worldName, UUID worldUuid, byte[] compressedData) {
+	public WorldChangeMessage(String worldName, UUID worldUUID, Transform playerTransform, byte[] compressedData) {
 		super(compressedData);
 		this.worldName = worldName;
-		this.worldUuid = worldUuid;
+		this.worldUUID = worldUUID;
+		// This MUST copy as a Vector3 for tests
+		this.position = new Vector3(playerTransform.getPosition());
+		this.rotation = playerTransform.getRotation();
+		this.scale = playerTransform.getScale();
+	}
+
+	public WorldChangeMessage(String worldName, UUID worldUUID, Vector3 position, Quaternion rotation, Vector3 scale, byte[] compressedData) {
+		super(compressedData);
+		this.worldName = worldName;
+		this.worldUUID = worldUUID;
+		this.position = position;
+		this.rotation = rotation;
+		this.scale = scale;
 	}
 
 	public UUID getWorldUUID() {
-		return worldUuid;
+		return worldUUID;
 	}
 
 	public String getWorldName() {
 		return worldName;
+	}
+
+	public Transform getPlayerTransform() {
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			return new Transform(new Point(position, ((Client) Spout.getEngine()).getWorld()), rotation, scale);
+		} else {
+			return new Transform(new Point(position, ((Server) Spout.getEngine()).getWorld(worldUUID)), rotation, scale);
+		}
+	}
+
+	public Vector3 getPosition() {
+		return position;
+	}
+
+	public Quaternion getRotation() {
+		return rotation;
+	}
+
+	public Vector3 getScale() {
+		return scale;
 	}
 
 	@Override
@@ -61,7 +106,7 @@ public class WorldChangeMessage extends DatatableMessage {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.appendSuper(super.toString())
 				.append("worldName", worldName)
-				.append("worldUuid", worldUuid)
+				.append("worldUuid", worldUUID)
 				.toString();
 	}
 
@@ -70,7 +115,7 @@ public class WorldChangeMessage extends DatatableMessage {
 		return new HashCodeBuilder(85, 87)
 				.append(getCompressedData())
 				.append(worldName)
-				.append(worldUuid)
+				.append(worldUUID)
 				.toHashCode();
 	}
 
@@ -81,7 +126,7 @@ public class WorldChangeMessage extends DatatableMessage {
 			return new EqualsBuilder()
 					.append(getCompressedData(), other.getCompressedData())
 					.append(worldName, other.worldName)
-					.append(worldUuid, other.worldUuid)
+					.append(worldUUID, other.worldUUID)
 					.isEquals();
 		} else {
 			return false;

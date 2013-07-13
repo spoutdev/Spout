@@ -902,7 +902,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 		time += System.currentTimeMillis();
 		if (Spout.debugMode() && time > PULSE_EVERY) {
-			Spout.getLogger().info("Task " + TickStage.getStage(TickStage.getStageInt()) + " took " + time + "ms");
+			//Spout.getLogger().info("Task " + TickStage.getStage(TickStage.getStageInt()) + " took " + time + "ms");
 		}
 	}
 

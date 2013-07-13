@@ -84,7 +84,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 		new LoginMessage("Spouty", 0),
 		new PlayerInputMessage((short) 0, (short) 0, (short) 0),
 		new SyncedMapMessage(0, SyncedMapEvent.Action.ADD, new ArrayList<Pair<Integer, String>>()),
-		new WorldChangeMessage("world", EngineFaker.TEST_UUID, TEST_SERIALIZED_DATA),
+		new WorldChangeMessage("world", EngineFaker.TEST_UUID, TEST_TRANSFORM, TEST_SERIALIZED_DATA),
 		new UpdateEntityMessage(0, TEST_TRANSFORM, UpdateEntityMessage.UpdateAction.TRANSFORM, new NullRepositionManager())
 	};
 

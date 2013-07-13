@@ -118,7 +118,9 @@ public class ChannelBufferUtils {
 			}
 		}
 		if (world == null) {
-			throw new IllegalArgumentException("Unknown world with UUID " + uuid);
+			throw new IllegalArgumentException("Unknown world with UUID " + uuid 
+				+ (Spout.getPlatform() == Platform.CLIENT ? "Client UUID: " + ((Client)Spout.getEngine()).getWorld().getUID() 
+					+ " World: " + ((Client)Spout.getEngine()).getWorld().getName() : ""));
 		}
 
 		final float x = buffer.readFloat();

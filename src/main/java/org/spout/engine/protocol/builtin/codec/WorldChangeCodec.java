@@ -30,7 +30,11 @@ import java.util.UUID;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
 import org.spout.api.protocol.MessageCodec;
+
 import org.spout.engine.protocol.builtin.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
@@ -44,6 +48,9 @@ public class WorldChangeCodec extends MessageCodec<WorldChangeMessage> {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		ChannelBufferUtils.writeString(buffer, message.getWorldName());
 		ChannelBufferUtils.writeUUID(buffer, message.getWorldUUID());
+		ChannelBufferUtils.writeVector3(buffer, message.getPosition());
+		ChannelBufferUtils.writeQuaternion(buffer, message.getRotation());
+		ChannelBufferUtils.writeVector3(buffer, message.getScale());
 		buffer.writeInt(message.getCompressedData().length);
 		buffer.writeBytes(message.getCompressedData());
 		return buffer;
@@ -53,8 +60,11 @@ public class WorldChangeCodec extends MessageCodec<WorldChangeMessage> {
 	public WorldChangeMessage decode(ChannelBuffer buffer) {
 		final String worldName = ChannelBufferUtils.readString(buffer);
 		final UUID worldUUID = ChannelBufferUtils.readUUID(buffer);
+		final Vector3 position = ChannelBufferUtils.readVector3(buffer);
+		final Quaternion rotation = ChannelBufferUtils.readQuaternion(buffer);
+		final Vector3 scale = ChannelBufferUtils.readVector3(buffer);
 		final byte[] compressedData = new byte[buffer.readInt()];
 		buffer.readBytes(compressedData);
-		return new WorldChangeMessage(worldName, worldUUID, compressedData);
+		return new WorldChangeMessage(worldName, worldUUID, position, rotation, scale, compressedData);
 	}
 }

@@ -49,14 +49,7 @@ public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessa
 
 		// Add is a special case because the player is already spawned
 		if (message.getAction() == ADD) {
-			Entity entity;
-			if (message.getEntityId() == session.getPlayer().getId()) {
-				entity = session.getPlayer();
-				entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
-				return;
-			} else {
-				entity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()));
-			}
+			Entity entity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()));
 			entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
 			((SpoutWorld) session.getEngine().getDefaultWorld()).spawnEntity(entity, message.getEntityId());
 		} else {
@@ -90,9 +83,11 @@ public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessa
 		if (message.getAction() == TRANSFORM) {
 			if (message.getEntityId() == session.getPlayer().getId()) {
 				session.getDataMap().put(MovementValidator.RECEIVED_TRANSFORM, rmInverse.convert(message.getTransform()));
+				return;
 			} else {
 				// TODO: protocol - please fix this sequence
 				//throw new IllegalStateException("Server can not receive non-player transforms.");
+				return;
 			}
 		}
 		throw new UnsupportedOperationException("Not allowed to perform the following UpdateAction on the server: " + message.getAction());
