@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.spout.api.util.StringToUniqueIntegerMap;
+import org.spout.api.util.SyncedStringMap;
 
 /**
  * A class used to lookup message codecs.
@@ -78,7 +79,7 @@ public abstract class CodecLookupService {
 	 * @throws IllegalAccessException if the codec could not be instantiated due
 	 *             to an access violation.
 	 */
-	protected <T extends Message, C extends MessageCodec<T>> C bind(Class<C> clazz, StringToUniqueIntegerMap dynamicPacketMap) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+	protected <T extends Message, C extends MessageCodec<T>> C bind(Class<C> clazz, SyncedStringMap dynamicPacketMap) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		boolean dynamicId = false;
 		Constructor<C> constructor;
 		try {
