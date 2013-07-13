@@ -67,7 +67,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 	static final byte[][] columnData = new byte[16][10240];
 	static final short[] chunkData = new short[16 * 16 * 16];
 	static {
-		Arrays.fill(chunkData, (byte) 0);
+		Arrays.fill(chunkData, (short) 0);
 	}
 	static final byte[] biomeData1 = new byte[256];
 	static final byte[] biomeData2 = new byte[256];
@@ -78,7 +78,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 	private static final Message[] TEST_MESSAGES = new Message[]{
 		new AddEntityMessage(0, TEST_TRANSFORM, new NullRepositionManager()),
 		new BlockUpdateMessage(0, 0, 0, (short) 0, (short) 0),
-		new ChunkDataMessage(0, 0, 0, chunkData, chunkData),
+		new ChunkDataMessage(0, 0, 0, chunkData, chunkData, null, null),
 		new ClickRequestMessage((byte) 0, (byte) 0, ClickRequestMessage.Action.LEFT),
 		new ClickResponseMessage((byte) 0, (byte) 0, ClickResponseMessage.Response.ALLOW),
 		new CommandMessage("test", "hi"),

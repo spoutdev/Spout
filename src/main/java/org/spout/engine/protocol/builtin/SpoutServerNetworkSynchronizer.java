@@ -34,6 +34,7 @@ import java.util.List;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
@@ -55,7 +56,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 
 	@Override
 	public Collection<Chunk> doSendChunk(Chunk c) {
-		session.send(new ChunkDataMessage(c.getSnapshot()));
+		session.send(new ChunkDataMessage(c.getSnapshot(ChunkSnapshot.SnapshotType.BOTH, ChunkSnapshot.EntityType.NO_ENTITIES, ChunkSnapshot.ExtraData.BIOME_DATA)));
 		return Collections.singleton(c);
 	}
 

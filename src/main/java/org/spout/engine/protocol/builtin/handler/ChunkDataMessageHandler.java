@@ -41,42 +41,37 @@ import org.spout.engine.world.SpoutClientWorld;
 public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 	@Override
 	public void handleClient(ClientSession session, ChunkDataMessage message) {
-		if(!session.hasPlayer()) {
-			throw new IllegalStateException("Message sent when session has no player");
-		}
-
 		World world = session.getEngine().getDefaultWorld();
-		/*
-		Class<? extends BiomeManager> managerClass;
-		try {
-			Class<?> testClass = Class.forName(message.getBiomeManagerClass());
-			if (!BiomeManager.class.isAssignableFrom(testClass)) {
-				throw new IllegalArgumentException("Biome manager class "+ testClass + " is not a BiomeManager");
-			}
-			managerClass = testClass.asSubclass(BiomeManager.class);
-		} catch (ClassNotFoundException e) {
-			throw new IllegalArgumentException("Unknown biome manager class: " + message.getBiomeManagerClass());
-		}*/
-		if (Spout.debugMode()) {
-			//Spout.getLogger().log(Level.INFO, "Recieved Chunk Data: {0}", message.toString());
-		}/*
-		BiomeManager manager;
-		try {
-			manager = managerClass.getConstructor(int.class, int.class, int.class).newInstance(message.getX(), message.getY(), message.getZ());
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		} catch (InvocationTargetException e) {
-			throw new RuntimeException(e);
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
-		manager.deserialize(message.getBiomeData());*/
 		if (message.isUnload()) {
 			((SpoutClientWorld) world).removeChunk(message.getX(), message.getY(), message.getZ());
-		} else {
-			((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData());
+			return;
 		}
+		if (message.hasBiomes()) {
+			Class<? extends BiomeManager> managerClass;
+			try {
+				Class<?> testClass = Class.forName(message.getBiomeManagerClass());
+				if (!BiomeManager.class.isAssignableFrom(testClass)) {
+					throw new IllegalArgumentException("Biome manager class "+ testClass + " is not a BiomeManager");
+				}
+				managerClass = testClass.asSubclass(BiomeManager.class);
+			} catch (ClassNotFoundException e) {
+				throw new IllegalArgumentException("Unknown biome manager class: " + message.getBiomeManagerClass());
+			}
+
+			BiomeManager manager;
+			try {
+				manager = managerClass.getConstructor(int.class, int.class, int.class).newInstance(message.getX(), message.getY(), message.getZ());
+			} catch (InstantiationException e) {
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			} catch (InvocationTargetException e) {
+				throw new RuntimeException(e);
+			} catch (NoSuchMethodException e) {
+				throw new RuntimeException(e);
+			}
+			manager.deserialize(message.getBiomeData());
+		}
+		((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData());
 	}
 }

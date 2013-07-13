@@ -65,6 +65,8 @@ public class SpoutProtocol extends Protocol {
 		super("Spout", DEFAULT_PORT, new SpoutCodecLookupService(), new SpoutHandlerLookupService());
 	}
 
+	// TODO: protocol - implement a BlockDatatable message
+
 	@Override
 	public MessageCodec<?> readHeader(ChannelBuffer buf) {
 		int id = buf.readUnsignedShort();
