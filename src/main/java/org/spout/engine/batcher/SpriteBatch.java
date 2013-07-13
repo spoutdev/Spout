@@ -39,7 +39,6 @@ import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
 import org.spout.api.render.BufferContainer;
-import org.spout.api.render.RenderMode;
 import org.spout.api.render.effect.SnapshotRender;
 
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -47,16 +46,9 @@ import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
 
 public class SpriteBatch {
 	private BatchVertexRenderer renderer;
-	private final ArrayList<RenderPartPack> sprites = new ArrayList<RenderPartPack>();
+	private final ArrayList<RenderPartPack> sprites = new ArrayList<>();
 	private final Matrix view;
 	private final Matrix projection;
-
-	public static SpriteBatch createSpriteBatch(RenderMode renderMode) {
-		if (renderMode == RenderMode.GL11) {
-			return new GL11SpriteBatch();
-		}
-		return new SpriteBatch();
-	}
 
 	public SpriteBatch() {
 		this.projection = MatrixMath.createIdentity();
@@ -68,7 +60,7 @@ public class SpriteBatch {
 	}
 
 	public void flush(RenderPartPack part) {
-		List<RenderPartPack> list = new ArrayList<RenderPartPack>();
+		List<RenderPartPack> list = new ArrayList<>();
 		list.add(part);
 		flush(list);
 	}

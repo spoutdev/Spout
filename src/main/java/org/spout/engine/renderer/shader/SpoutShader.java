@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.spout.api.math.Matrix;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.Shader;
+import org.spout.api.render.shader.Shader;
 
 public interface SpoutShader extends Shader {
 

@@ -41,7 +41,6 @@ import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.Shader;
 import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.EntityEffect;
 import org.spout.api.render.effect.MeshEffect;
@@ -49,6 +48,7 @@ import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
+import org.spout.api.render.shader.Shader;
 
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.shader.SpoutShader;
@@ -60,9 +60,9 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	boolean depthTesting;
 	int layer;
-	private List<RenderEffect> renderEffects = new ArrayList<RenderEffect>();
-	private List<EntityEffect> entityEffects = new ArrayList<EntityEffect>();
-	private List<BufferEffect> bufferEffects = new ArrayList<BufferEffect>();
+	private List<RenderEffect> renderEffects = new ArrayList<>();
+	private List<EntityEffect> entityEffects = new ArrayList<>();
+	private List<BufferEffect> bufferEffects = new ArrayList<>();
 
 	public ClientRenderMaterial(Shader s, Map<String, Object> params){
 		this(s, params, true, 0);

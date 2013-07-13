@@ -47,7 +47,6 @@ import org.spout.engine.listener.SpoutProxyListener;
 import org.spout.engine.listener.channel.SpoutProxyConnectListener;
 import org.spout.engine.protocol.SpoutProxySession;
 import org.spout.engine.protocol.SpoutServerSession;
-import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutProxy extends SpoutServer {
