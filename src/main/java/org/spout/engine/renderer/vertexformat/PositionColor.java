@@ -30,9 +30,9 @@ import java.awt.Color;
 
 import org.spout.api.math.Vector3;
 
-public class PositionColor extends VertexFormat {
-	Vector3 position;
-	Color color;
+public class PositionColor {
+	private Vector3 position;
+	private Color color;
 
 	public PositionColor(Vector3 position, Color c) {
 		this.position = position;

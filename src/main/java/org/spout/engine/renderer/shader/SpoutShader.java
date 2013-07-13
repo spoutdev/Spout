@@ -32,7 +32,7 @@ import org.spout.api.math.Matrix;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
 
-public interface SpoutShader extends Shader{
+public interface SpoutShader extends Shader {
 
 	public abstract void enableAttribute(String name, int size, int type, int stride, long offset, int layout);
 
