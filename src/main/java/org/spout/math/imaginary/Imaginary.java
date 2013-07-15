@@ -26,18 +26,58 @@
  */
 package org.spout.math.imaginary;
 
+/**
+ * Represents an imaginary number.
+ */
 public interface Imaginary {
+	/**
+	 * Multiplies the imaginary number by the given scalar.
+	 *
+	 * @param a The scalar to multiply by
+	 * @return The multiplied imaginary number
+	 */
 	public Imaginary mul(float a);
 
+	/**
+	 * Divides the imaginary number by the given scalar.
+	 *
+	 * @param a The scalar to divide by
+	 * @return The multiplied imaginary number
+	 */
 	public Imaginary div(float a);
 
+	/**
+	 * Returns the conjugated imaginary number.
+	 *
+	 * @return The conjugate
+	 */
 	public Imaginary conjugate();
 
+	/**
+	 * Returns the inverts imaginary number.
+	 *
+	 * @return The inverse
+	 */
 	public Imaginary invert();
 
+	/**
+	 * Returns the length of the imaginary number.
+	 *
+	 * @return The length
+	 */
 	public float length();
 
+	/**
+	 * Returns the square of the length of the imaginary number.
+	 *
+	 * @return The square of the length
+	 */
 	public float lengthSquared();
 
+	/**
+	 * Normalizes the imaginary number.
+	 *
+	 * @return The imaginary number, but of unit length
+	 */
 	public Imaginary normalize();
 }
