@@ -58,7 +58,6 @@ import org.spout.api.math.Vector3;
 
 import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
-import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 
 public class SpoutInputManager implements InputManager {

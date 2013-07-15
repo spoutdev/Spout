@@ -36,7 +36,6 @@ import org.spout.engine.protocol.builtin.handler.CommandMessageHandler;
 import org.spout.engine.protocol.builtin.handler.CuboidBlockUpdateMessageHandler;
 import org.spout.engine.protocol.builtin.handler.EntityDatatableMessageHandler;
 import org.spout.engine.protocol.builtin.handler.LoginMessageHandler;
-import org.spout.engine.protocol.builtin.handler.PlayerInputMessageHandler;
 import org.spout.engine.protocol.builtin.handler.SyncedMapMessageHandler;
 import org.spout.engine.protocol.builtin.handler.UpdateEntityMessageHandler;
 import org.spout.engine.protocol.builtin.handler.WorldChangeMessageHandler;
@@ -48,7 +47,6 @@ import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
-import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
@@ -67,7 +65,6 @@ public class SpoutHandlerLookupService extends HandlerLookupService {
 			bind(CuboidBlockUpdateMessage.class, CuboidBlockUpdateMessageHandler.class);
 			bind(ClickRequestMessage.class, ClickRequestMessageHandler.class);
 			bind(ClickResponseMessage.class, ClickResponseMessageHandler.class);
-			bind(PlayerInputMessage.class, PlayerInputMessageHandler.class);
 		} catch (Exception e) {
 			throw new ExceptionInInitializerError(e);
 		}

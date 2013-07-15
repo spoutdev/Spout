@@ -51,7 +51,6 @@ import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
-import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
@@ -82,7 +81,6 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 		new CuboidBlockUpdateMessage(Vector3.ZERO, Vector3.UP, new short[0], new short[0], new byte[0], new byte[0]),
 		new EntityDatatableMessage(0, TEST_SERIALIZED_DATA),
 		new LoginMessage("Spouty", 0),
-		new PlayerInputMessage((short) 0, (short) 0, (short) 0),
 		new SyncedMapMessage(0, SyncedMapEvent.Action.ADD, new ArrayList<Pair<Integer, String>>()),
 		new WorldChangeMessage("world", EngineFaker.TEST_UUID, TEST_TRANSFORM, TEST_SERIALIZED_DATA),
 		new UpdateEntityMessage(0, TEST_TRANSFORM, UpdateEntityMessage.UpdateAction.TRANSFORM, new NullRepositionManager())
