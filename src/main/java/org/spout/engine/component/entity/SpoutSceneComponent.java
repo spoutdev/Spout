@@ -29,13 +29,17 @@ package org.spout.engine.component.entity;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.ClientOnly;
+import org.spout.api.Platform;
+import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.component.entity.SceneComponent;
+import org.spout.api.entity.Player;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.util.concurrent.AtomicFloat;
 
 /**
@@ -74,9 +78,15 @@ public class SpoutSceneComponent extends SceneComponent {
 		return live.copy();
 	}
 
+	public SpoutSceneComponent setTransformNoSync(Transform transform) {
+		live.set(transform);
+		return this;
+	}
+
 	@Override
 	public SpoutSceneComponent setTransform(Transform transform) {
 		live.set(transform);
+		setSync();
 		return this;
 	}
 
@@ -90,9 +100,15 @@ public class SpoutSceneComponent extends SceneComponent {
 		return snapshot.getPosition();
 	}
 
+	public SpoutSceneComponent setPositionNoSync(Point point) {
+		live.setPosition(point);
+		return this;
+	}
+
 	@Override
 	public SpoutSceneComponent setPosition(Point point) {
 		live.setPosition(point);
+		setSync();
 		return this;
 	}
 
@@ -106,9 +122,15 @@ public class SpoutSceneComponent extends SceneComponent {
 		return snapshot.getRotation();
 	}
 
+	public SpoutSceneComponent setRotationNoSync(Quaternion rotation) {
+		live.setRotation(rotation);
+		return this;
+	}
+
 	@Override
 	public SpoutSceneComponent setRotation(Quaternion rotation) {
 		live.setRotation(rotation);
+		setSync();
 		return this;
 	}
 
@@ -122,9 +144,15 @@ public class SpoutSceneComponent extends SceneComponent {
 		return snapshot.getScale();
 	}
 
+	public SpoutSceneComponent setScaleNoSync(Vector3 scale) {
+		live.setScale(scale);
+		return this;
+	}
+
 	@Override
 	public SpoutSceneComponent setScale(Vector3 scale) {
 		live.setScale(scale);
+		setSync();
 		return this;
 	}
 
@@ -146,18 +174,21 @@ public class SpoutSceneComponent extends SceneComponent {
 	@Override
 	public SpoutSceneComponent translate(Vector3 point) {
 		live.translate(point);
+		setSync();
 		return this;
 	}
 
 	@Override
 	public SpoutSceneComponent rotate(Quaternion rotate) {
 		live.rotate(rotate);
+		setSync();
 		return this;
 	}
 
 	@Override
 	public SpoutSceneComponent scale(Vector3 scale) {
 		live.scale(scale);
+		setSync();
 		return this;
 	}
 
@@ -329,6 +360,12 @@ public class SpoutSceneComponent extends SceneComponent {
 	@Override
 	public Transform getRenderTransform() {
 		return render;
+	}
+	
+	private void setSync() {
+		if (getOwner() instanceof Player && Spout.getPlatform() == Platform.SERVER) {
+			((ServerNetworkSynchronizer) ((Player)getOwner()).getNetworkSynchronizer()).forceSync();
+		}
 	}
 
 	/**

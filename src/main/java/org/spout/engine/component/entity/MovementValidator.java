@@ -36,6 +36,7 @@ import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
+import org.spout.api.protocol.ServerNetworkSynchronizer;
 
 public class MovementValidator extends EntityComponent {
 	public static final String RECEIVED_TRANSFORM = "RECEIVED_TRANSFORM";
@@ -74,7 +75,7 @@ public class MovementValidator extends EntityComponent {
 			motion = playerTransform.upVector().multiply(speed * -dt);
 		} else {
 			playerTransform.setRotation(QuaternionMath.rotation(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
-			player.getScene().setTransform(playerTransform);
+			((SpoutSceneComponent) player.getScene()).setTransformNoSync(playerTransform);
 			return;
 		}
 		playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
@@ -87,7 +88,7 @@ public class MovementValidator extends EntityComponent {
 			) {
 			player.getScene().setTransform(playerTransform);
 		} else {
-			player.getScene().setTransform(old);
+			((SpoutSceneComponent) player.getScene()).setTransformNoSync(old);
 		}
 		
 	}

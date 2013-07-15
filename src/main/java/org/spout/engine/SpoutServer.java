@@ -785,6 +785,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 		//Initialize the session
 		session.getProtocol().initializeServerSession(session);
+		session.getNetworkSynchronizer().forceSync();
 		return player;
 	}
 

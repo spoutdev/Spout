@@ -132,7 +132,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		}
 
 		if (transform != null) {
-			scene.setTransform(transform);
+			scene.setTransformNoSync(transform);
 			scene.copySnapshot();
 		}
 

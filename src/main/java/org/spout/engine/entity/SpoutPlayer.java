@@ -72,6 +72,7 @@ import org.spout.api.util.thread.annotation.Threadsafe;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.component.entity.MovementValidator;
+import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutServerWorld;
@@ -176,7 +177,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (newTransform == null || newTransform.getPosition().getWorld() == null) {
 			return false;
 		}
-		getScene().setTransform(newTransform);
+		((SpoutSceneComponent) getScene()).setTransformNoSync(newTransform);
 		if (getEngine().getPlatform() == Platform.SERVER) {
 			setupInitialChunk(newTransform, LoadOption.LOAD_GEN);
 		}

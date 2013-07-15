@@ -76,6 +76,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
 	/** Includes chunks that need to be observed. When observation is successfully attained or no longer wanted, point is removed */
 	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
+	private boolean sync = false;
 
 	
 	protected int tickCounter = 0;
@@ -96,6 +97,11 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 		for (Point p : initializedChunks) {
 			removeObserver(p);
 		}
+	}
+	
+	@Override
+	public void forceSync() {
+		sync = true;
 	}
 
 	/**
@@ -208,8 +214,9 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 				return;
 			}
 
-			if (player.getScene().isTransformDirty()) {
+			if (player.getScene().isTransformDirty() && sync) {
 				sendPosition(player.getScene().getPosition(), player.getScene().getRotation());
+				sync = false;
 			}
 
 			boolean tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;

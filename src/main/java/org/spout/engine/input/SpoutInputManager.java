@@ -298,7 +298,6 @@ public class SpoutInputManager implements InputManager {
 	private void executeBindings(Set<Binding> bindings, Player player, boolean pressed) {
 		String arg = pressed ? "+" : "-";
 		// Do bindings
-		System.out.println("Bindings length: " + bindings.size());
 		for (Binding binding : bindings) {
 			if (binding.isAsync()) {
 				// Execute async
