@@ -31,6 +31,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.spout.api.entity.state.PlayerInputState.MouseDirection;
 import org.spout.api.input.Keyboard;
 
 /**
@@ -53,6 +54,13 @@ public @interface Binding {
 	 * @return mouse buttons
 	 */
 	public int[] mouse() default {};
+
+	/**
+	 * Returns the mouse directions this command is bound to.
+	 *
+	 * @return mouse buttons
+	 */
+	public MouseDirection[] mouseDirections() default {};
 
 	/**
 	 * Returns true if this binding should be run asynchronously.

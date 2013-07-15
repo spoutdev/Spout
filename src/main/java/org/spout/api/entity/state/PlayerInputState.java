@@ -70,10 +70,29 @@ public class PlayerInputState {
 		}
 	}
 
+	public static enum MouseDirection {
+		/** Up/Down */
+		PITCH("pitch"),
+		/** Left/Right */
+		YAW("yaw");
+		
+		private final String flagName;
+
+		private MouseDirection(String flagName) {
+			this.flagName = flagName;
+		}
+
+		public String getFlagName() {
+			return flagName;
+		}
+	}
+
 	public static final PlayerInputState DEFAULT_STATE = new PlayerInputState((short) 0, (short) 0, (short) 0);
 	private final short userCommands;
-	private final float pitch;
-	private final float yaw;
+	// TODO: protocol - do these need to be floats?
+	private final int pitch;
+	private final int yaw;
+
 
 	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean selectUp, boolean selectDown, boolean fire1, boolean fire2, boolean interact, float pitch, float yaw) {
 		short userCommands = 0;
@@ -89,14 +108,14 @@ public class PlayerInputState {
 		userCommands |= (fire2 ? Flags.FIRE_2.getBitFlag() : 0);
 		userCommands |= (interact ? Flags.INTERACT.getBitFlag() : 0);
 		this.userCommands = userCommands;
-		this.pitch = pitch;
-		this.yaw = yaw;
+		this.pitch = (int) pitch;
+		this.yaw = (int) yaw;
 	}
 
 	public PlayerInputState(short userCommands, float pitch, float yaw) {
 		this.userCommands = userCommands;
-		this.pitch = pitch;
-		this.yaw = yaw;
+		this.pitch = (int) pitch;
+		this.yaw = (int) yaw;
 	}
 
 	public boolean getForward() {

@@ -28,6 +28,8 @@ package org.spout.api.input;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.spout.api.entity.state.PlayerInputState.MouseDirection;
+
 /**
  * Represents a binding between an input action and a command.
  */
@@ -35,20 +37,27 @@ public class Binding {
 	private final String cmd;
 	private final Keyboard[] keys;
 	private final int[] buttons;
+	private final MouseDirection[] directions;
+	public static final String PITCH = "pitch", YAW = "yaw";
 	private final AtomicBoolean async = new AtomicBoolean(false);
 
-	public Binding(String cmd, Keyboard[] keys, int[] buttons) {
+	public Binding(String cmd, Keyboard[] keys, int[] buttons, MouseDirection[] directions) {
 		this.cmd = cmd;
 		this.keys = keys;
 		this.buttons = buttons;
+		this.directions = directions;
 	}
 
 	public Binding(String cmd, Keyboard... keys) {
-		this(cmd, keys, new int[0]);
+		this(cmd, keys, new int[0], new MouseDirection[0]);
 	}
 
 	public Binding(String cmd, int... buttons) {
-		this(cmd, new Keyboard[0], buttons);
+		this(cmd, new Keyboard[0], buttons, new MouseDirection[0]);
+	}
+	
+	public Binding(String cmd, MouseDirection... directions) {
+		this(cmd, new Keyboard[0], new int[0], directions);
 	}
 
 	/**
@@ -81,6 +90,17 @@ public class Binding {
 	 */
 	public int[] getMouseBindings() {
 		return buttons;
+	}
+
+	/**
+	 * Returns the mouse direction bindings bound to the command specified by
+	 * {@link #getCommand()}. When any of these are executed, the command will
+	 * be executed.
+	 *
+	 * @return mouse direction bindings
+	 */
+	public MouseDirection[] getMouseDirectionBindings() {
+		return directions;
 	}
 
 	/**

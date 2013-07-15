@@ -27,6 +27,7 @@
 package org.spout.api.input;
 
 import java.util.Set;
+import org.spout.api.entity.state.PlayerInputState.MouseDirection;
 
 /**
  * Represents the input of Spout.
@@ -75,6 +76,14 @@ public interface InputManager {
 	 * @return bindings bound to specified button
 	 */
 	public Set<Binding> getMouseBindingsFor(int button);
+
+	/**
+	 * Returns the bindings that are bound to the specified mouse direction.
+	 *
+	 * @param direction mouse direction bound
+	 * @return bindings bound to specified MouseDirection
+	 */
+	public Set<Binding> getMouseDirectionBindingsFor(MouseDirection direction);
 
 	/**
 	 * Returns a set of {@link InputExecutor} that are added.

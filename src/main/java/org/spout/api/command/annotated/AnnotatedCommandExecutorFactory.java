@@ -128,7 +128,7 @@ public final class AnnotatedCommandExecutorFactory {
 						throw new IllegalArgumentException("Command binding must allow at least 1 argument.");
 					}
 					Binding binding = method.getAnnotation(Binding.class);
-					org.spout.api.input.Binding b = new org.spout.api.input.Binding(command.getName(), binding.value(), binding.mouse()).setAsync(binding.async());
+					org.spout.api.input.Binding b = new org.spout.api.input.Binding(command.getName(), binding.value(), binding.mouse(), binding.mouseDirections()).setAsync(binding.async());
 					((Client) engine).getInputManager().bind(b);
 				}
 

@@ -26,6 +26,15 @@
  */
 package org.spout.api.protocol;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.math.Quaternion;
+
 /**
  * An implementation of ServerNetworkSynchronizer that doesn't do anything
  * used for when a ServerNetworkSynchronizer has not been set
@@ -33,5 +42,35 @@ package org.spout.api.protocol;
 public class ServerNullNetworkSynchronizer extends ServerNetworkSynchronizer {
 	public ServerNullNetworkSynchronizer(Session session) {
 		super(session, 0);
+	}
+
+	@Override
+	public Set<Chunk> getActiveChunks() {
+		return Collections.EMPTY_SET;
+	}
+
+	@Override
+	protected Collection<Chunk> doSendChunk(Chunk c) {
+		return Collections.EMPTY_SET;
+	}
+
+	@Override
+	protected void initChunk(Point p) {
+	}
+
+	@Override
+	protected void freeChunk(Point p) {
+	}
+
+	@Override
+	protected void sendPosition(Point p, Quaternion rot) {
+	}
+
+	@Override
+	protected void worldChanged(World world) {
+	}
+
+	@Override
+	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
 	}
 }
