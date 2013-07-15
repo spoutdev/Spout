@@ -81,6 +81,9 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 
 	public void forceRespawn() {
 	}
+	
+	public void forceSync() {
+	}
 
 	/**
 	 * Called just before the pre-snapshot stage.<br>
