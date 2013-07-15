@@ -165,7 +165,7 @@ public class ComplexTest {
 	@Test
 	public void testDirection() {
 		Vector2 vector = new Complex(4, 3).getDirection();
-		TestUtil.assertEquals(vector, 4, 3);
+		TestUtil.assertEquals(vector, 0.8f, 0.6f);
 	}
 
 	@Test
