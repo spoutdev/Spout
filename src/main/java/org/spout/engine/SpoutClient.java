@@ -299,6 +299,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (!super.stop(message, false)) {
 			return false;
 		}
+		
+		session.get().dispose();
 
 		// de-init OpenAL
 		soundManager.destroy();
@@ -312,6 +314,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				EngineStopEvent stopEvent = new EngineStopEvent(stopMessage);
 				getEventManager().callEvent(stopEvent);
 				stopMessage = stopEvent.getMessage();
+				System.out.println(stopMessage);
 
 				bootstrap.getFactory().releaseExternalResources();
 				boundProtocols.clear();
@@ -379,10 +382,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void disconnected() {
-		getLogger().log(Level.SEVERE, "ENGINE DISCONNECTING!");
-		new RuntimeException("Not real exception.").printStackTrace();
+		//getLogger().log(Level.WARNING, "ENGINE DISCONNECTING!");
+		//new RuntimeException("Not real exception.").printStackTrace();
 		stop("Disconnected for some unknown reason!");
-		this.session.set(null);
+		//this.session.set(null);
 	}
 
 	@Override

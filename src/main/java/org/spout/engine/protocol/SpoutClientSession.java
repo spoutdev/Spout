@@ -58,8 +58,8 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 	@Override
 	public void dispose() {
 		activeWorld.set(null);
-		SpoutPlayer player;
-		if ((player = this.player.getAndSet(null)) != null) {
+		SpoutPlayer player = this.player.get();
+		if (player != null) {
 			player.disconnect(false);
 		}
 		getEngine().disconnected();

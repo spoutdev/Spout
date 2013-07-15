@@ -311,8 +311,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 		getPluginManager().clearPlugins();
 
-		setupComplete.set(false);
-
 		if (stopScheduler) {
 			scheduler.stop();
 		}
