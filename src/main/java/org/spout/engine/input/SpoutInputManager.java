@@ -29,6 +29,8 @@ package org.spout.engine.input;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.opengl.*;
 
@@ -37,8 +39,10 @@ import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
+import org.spout.api.entity.state.PlayerInputState.MouseDirection;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
+import org.spout.api.exception.CommandException;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
@@ -76,6 +80,9 @@ public class SpoutInputManager implements InputManager {
 		bind(new Binding("left_click", Mouse.BUTTON_LEFT).setAsync(true));
 		bind(new Binding("interact", Mouse.BUTTON_RIGHT).setAsync(true));
 		bind(new Binding("fire_2", Mouse.BUTTON_MIDDLE).setAsync(true));
+		bind(new Binding("pitch", MouseDirection.PITCH).setAsync(true));
+		bind(new Binding("yaw", MouseDirection.YAW).setAsync(true));
+		bind(new Binding("validate_movement", Keyboard.KEY_V).setAsync(true));
 	}
 
 	@Override
@@ -123,6 +130,20 @@ public class SpoutInputManager implements InputManager {
 		for (Binding binding : bindings) {
 			for (int button : binding.getMouseBindings()) {
 				if (button == mouse) {
+					bound.add(binding);
+					break;
+				}
+			}
+		}
+		return bound;
+	}
+
+	@Override
+	public Set<Binding> getMouseDirectionBindingsFor(MouseDirection direction) {
+		Set<Binding> bound = new HashSet<Binding>();
+		for (Binding binding : bindings) {
+			for (MouseDirection d : binding.getMouseDirectionBindings()) {
+				if (d == direction) {
 					bound.add(binding);
 					break;
 				}
@@ -265,12 +286,12 @@ public class SpoutInputManager implements InputManager {
 		if (!redirected) {
 			boolean invert = SpoutInputConfiguration.INVERT_MOUSE.getBoolean();
 			if (dx != 0) {
-				player.processInput(player.input().withAddedYaw(PlayerInputState.MOUSE_SENSITIVITY * dx * (invert ? 1 : -1)));
+				executeDirectionBindings(getMouseDirectionBindingsFor(MouseDirection.YAW), player, (int) (PlayerInputState.MOUSE_SENSITIVITY * dx * (invert ? 1 : -1)));
 			}
 
 			// Mouse moved on y-axis
 			if (dy != 0) {
-				player.processInput(player.input().withAddedPitch(PlayerInputState.MOUSE_SENSITIVITY * dy * (invert ? -1 : 1)));
+				executeDirectionBindings(getMouseDirectionBindingsFor(MouseDirection.PITCH), player, (int) (PlayerInputState.MOUSE_SENSITIVITY * dy * (invert ? -1 : 1)));
 			}
 		}
 	}
@@ -278,13 +299,27 @@ public class SpoutInputManager implements InputManager {
 	private void executeBindings(Set<Binding> bindings, Player player, boolean pressed) {
 		String arg = pressed ? "+" : "-";
 		// Do bindings
+		System.out.println("Bindings length: " + bindings.size());
 		for (Binding binding : bindings) {
 			if (binding.isAsync()) {
 				// Execute async
-				player.processCommand(binding.getCommand(), arg);
+				new BindingTask(player, binding.getCommand(), arg).run();
 			} else {
 				// Queue sync
-				player.getEngine().getScheduler().scheduleSyncDelayedTask(null, new BindingTask(player, binding.getCommand(), arg));
+				player.getEngine().getScheduler().scheduleSyncDelayedTask(Spout.getPluginManager().getMetaPlugin(), new BindingTask(player, binding.getCommand(), arg));
+			}
+		}
+	}
+
+	private void executeDirectionBindings(Set<Binding> bindings, Player player, int arg) {
+		// Do bindings
+		for (Binding binding : bindings) {
+			if (binding.isAsync()) {
+				// Execute async
+				new BindingTask(player, binding.getCommand(), "" + arg).run();
+			} else {
+				// Queue sync
+				player.getEngine().getScheduler().scheduleSyncDelayedTask(Spout.getPluginManager().getMetaPlugin(), new BindingTask(player, binding.getCommand(), "" + arg));
 			}
 		}
 	}
@@ -303,6 +338,7 @@ public class SpoutInputManager implements InputManager {
 		@Override
 		public void run() {
 			player.processCommand(command, arguments);
+			player.sendCommand(command, arguments);
 		}
 	}
 
@@ -319,7 +355,6 @@ public class SpoutInputManager implements InputManager {
 		if (((Client) Spout.getEngine()).getWorld().getName().equalsIgnoreCase("NullWorld")) {
 			return;
 		}
-		System.out.println("Handling input for " + ((Client) Spout.getEngine()).getWorld().getName());
 		SpoutSceneComponent sc = (SpoutSceneComponent) ((Client)Spout.getEngine()).getPlayer().getScene();
 		for(InputExecutor executor : inputExecutors){
 			executor.execute(dt, sc.getLiveTransform());
@@ -327,8 +362,8 @@ public class SpoutInputManager implements InputManager {
 		Player player = ((Client) Spout.getEngine()).getPlayer();
 		// TODO: move this to NetworkSynchronizer?
 		player.getSession().send(new UpdateEntityMessage(player.getId(), sc.getLiveTransform(), UpdateEntityMessage.UpdateAction.TRANSFORM, player.getSession().getNetworkSynchronizer().getRepositionManager()));
-		PlayerInputState input = player.input();
-		player.getSession().send(new PlayerInputMessage(input.getUserCommands(), (short) input.pitch(), (short) input.yaw()));
+		//PlayerInputState input = player.input();
+		//player.getSession().send(new PlayerInputMessage(input.getUserCommands(), (short) input.pitch(), (short) input.yaw()));
 	}
 
 	@Override
@@ -354,7 +389,7 @@ public class SpoutInputManager implements InputManager {
 
 			final Client client = (Client) Spout.getEngine();
 			final PlayerInputState state = client.getPlayer().input();
-			final float speed = 5f;
+			final float speed = .1f;
 			final Vector3 motion;
 			if (state.getForward()) {
 				motion = playerTransform.forwardVector().multiply(speed * -dt);
@@ -369,12 +404,12 @@ public class SpoutInputManager implements InputManager {
 			} else if (state.getCrouch()) {
 				motion = playerTransform.upVector().multiply(speed * -dt);
 			} else {
-				playerTransform.setRotation(QuaternionMath.rotation(5 * state.pitch(), 5 * state.yaw(), playerTransform.getRotation().getRoll()));
+				playerTransform.setRotation(QuaternionMath.rotation(state.pitch(), state.yaw(), playerTransform.getRotation().getRoll()));
 				client.getPlayer().getScene().setTransform(playerTransform);
 				return;
 			}
 
-			playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(5 * state.pitch(), 5 * state.yaw(), playerTransform.getRotation().getRoll()));
+			playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(state.pitch(), state.yaw(), playerTransform.getRotation().getRoll()));
 			client.getPlayer().getScene().setTransform(playerTransform);
 		}
 	}

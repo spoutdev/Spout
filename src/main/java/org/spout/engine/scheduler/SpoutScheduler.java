@@ -652,6 +652,7 @@ public final class SpoutScheduler implements Scheduler {
 			// Pull input each frame
 			((SpoutClient) engine).getInputManager().pollInput(((Client) engine).getPlayer());
 			// Call InputExecutor registred by plugin
+			// Delta is milliseconds
 			((SpoutClient) engine).getInputManager().execute(delta);
 		}
 

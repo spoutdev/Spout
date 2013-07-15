@@ -417,7 +417,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			int y = base.getFloorY();
 			int z = base.getFloorZ();
 			
-			if (!testCuboid(x, y, z, buffer)) {
+			if (testCuboid(x, y, z, buffer)) {
 				return false;
 			}
 			
@@ -468,6 +468,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 	}
 	
+	/** 
+	 *
+	 * @return true if all materials are the same
+	 */
 	public boolean testCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer) {
 		blockStore.writeLock();
 		try {

@@ -51,11 +51,7 @@ public class SpoutEntityProtocol implements EntityProtocol {
 
 	@Override
 	public List<Message> getSpawnMessages(Entity entity, RepositionManager rm) {
-		if (entity instanceof Player) {
-			return Arrays.<Message>asList(new WorldChangeMessage(entity.getWorld(), entity.getScene().getTransform(), entity.getWorld().getData()));
-		} else {
-			return Arrays.<Message>asList(new UpdateEntityMessage(entity.getId(), entity.getScene().getTransform(), UpdateEntityMessage.UpdateAction.ADD, rm));
-		}
+		return Arrays.<Message>asList(new UpdateEntityMessage(entity.getId(), entity.getScene().getTransform(), UpdateEntityMessage.UpdateAction.ADD, rm));
 	}
 
 	@Override

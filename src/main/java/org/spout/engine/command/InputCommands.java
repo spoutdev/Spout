@@ -96,6 +96,16 @@ public class InputCommands {
 					.setHelp("Adds the " + flag.name() + " flag to the calling player's input state")
 					.setExecutor(new InputFlagHandler(flag));
 		}
+
+		engine.getCommandManager().getCommand(PlayerInputState.MouseDirection.PITCH.getFlagName())
+			.setArgumentBounds(1, 1)
+			.setHelp("Adds pitch handling to the calling player's input state")
+			.setExecutor(new MouseMovementHandler(PlayerInputState.MouseDirection.PITCH));
+
+		engine.getCommandManager().getCommand(PlayerInputState.MouseDirection.YAW.getFlagName())
+			.setArgumentBounds(1, 1)
+			.setHelp("Adds yaw handling to the calling player's input state")
+			.setExecutor(new MouseMovementHandler(PlayerInputState.MouseDirection.YAW));
 	}
 
 	public static class InputFlagHandler implements Executor {
@@ -115,6 +125,27 @@ public class InputCommands {
 				player.processInput(player.input().withAddedFlag(flag));
 			} else {
 				player.processInput(player.input().withRemovedFlag(flag));
+			}
+		}
+	}
+
+	public static class MouseMovementHandler implements Executor {
+		private final PlayerInputState.MouseDirection direction;
+
+		public MouseMovementHandler(PlayerInputState.MouseDirection direction) {
+			this.direction = direction;
+		}
+
+		@Override
+		public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
+			if (!(source instanceof Player)) {
+				throw new CommandException("Source must be a player!");
+			}
+			Player player = (Player) source;
+			if (direction == PlayerInputState.MouseDirection.PITCH) {
+				player.processInput(player.input().withAddedPitch(args.getFloat(0)));
+			} else {
+				player.processInput(player.input().withAddedYaw(args.getFloat(0)));
 			}
 		}
 	}

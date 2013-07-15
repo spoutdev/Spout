@@ -39,21 +39,27 @@ import org.spout.api.Spout;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandBatch;
 import org.spout.api.command.CommandSource;
+import org.spout.api.command.annotated.Binding;
 import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.Filter;
 import org.spout.api.command.annotated.Permissible;
 import org.spout.api.command.annotated.Platform;
+import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.gui.Screen;
+import org.spout.api.input.Keyboard;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.Plugin;
 
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.component.entity.MovementValidator;
 
 public class CommonCommands {
 	private final SpoutEngine engine;
@@ -361,5 +367,21 @@ public class CommonCommands {
 		}
 		player.sendMessage("You were teleported to " + point.getWorld().getName() + ", X: " + point.getX()
 				+ ", Y: " + point.getY() + ", Z: " + point.getZ() + ".");
+	}
+	
+	@org.spout.api.command.annotated.Command(aliases = "validate_movement", desc = "Toggle the validating of movement.", min = 1, max = 1)
+	@Filter(PlayerFilter.class)
+	public void validateInput(CommandSource source, CommandArguments args) throws CommandException {
+		if (!args.getString(0).equalsIgnoreCase("+")) {
+			return;
+		}
+		if (Spout.getPlatform() == org.spout.api.Platform.SERVER) {
+			boolean wasValidating = ((Player) source).getData().get(MovementValidator.VALIDATE_MOVEMENT);
+			if (wasValidating) {
+				((Player) source).getData().put(MovementValidator.VALIDATE_MOVEMENT, false);
+			} else {
+				((Player) source).getData().put(MovementValidator.VALIDATE_MOVEMENT, true);
+			}
+		}
 	}
 }

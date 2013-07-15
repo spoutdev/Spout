@@ -366,20 +366,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public void teleport(Point loc) {
 		getScene().setPosition(loc);
-		setPositionDirty();
 	}
 
 	@Override
 	public void teleport(Transform transform) {
 		getScene().setTransform(transform);
-		setPositionDirty();
-	}
-	
-	private void setPositionDirty() {
-		// TODO something for client?
-		if (Spout.getPlatform() == Platform.SERVER) {
-			((ServerNetworkSynchronizer) getNetworkSynchronizer()).setPositionDirty();
-		}
 	}
 
 	@Override

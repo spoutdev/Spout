@@ -589,7 +589,7 @@ public class TestCommands {
 	@Platform(org.spout.api.Platform.SERVER)
 	@Filter(PlayerFilter.class)
 	public void respawn(CommandSource source, CommandArguments args) throws CommandException {
-		((ServerNetworkSynchronizer) ((Player) source).getNetworkSynchronizer()).setRespawned();
+		((ServerNetworkSynchronizer) ((Player) source).getNetworkSynchronizer()).forceRespawn();
 	}
 
 	/**
