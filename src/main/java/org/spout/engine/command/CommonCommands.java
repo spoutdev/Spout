@@ -73,6 +73,7 @@ public class CommonCommands {
 	}
 
 	@Command(aliases = {"bat", "batch"}, usage = "batch <file>", desc = "Executes a Spout batch file.", min = 1, max = 1)
+	@Permissible("spout.command.batch")
 	public void batch(CommandSource source, CommandArguments args) throws CommandException {
 		String fileName = args.getString(0);
 		if (!(source.hasPermission("spout.command.batch." + fileName))) {
@@ -369,7 +370,7 @@ public class CommonCommands {
 				+ ", Y: " + point.getY() + ", Z: " + point.getZ() + ".");
 	}
 	
-	@org.spout.api.command.annotated.Command(aliases = "validate_movement", desc = "Toggle the validating of movement.", min = 1, max = 1)
+	@Command(aliases = "validate_movement", desc = "Toggle the validating of movement.", min = 1, max = 1)
 	@Filter(PlayerFilter.class)
 	public void validateInput(CommandSource source, CommandArguments args) throws CommandException {
 		if (!args.getString(0).equalsIgnoreCase("+")) {
@@ -383,5 +384,11 @@ public class CommonCommands {
 				((Player) source).getData().put(MovementValidator.VALIDATE_MOVEMENT, true);
 			}
 		}
+	}
+
+	@Command(aliases = {"ver", "version"}, desc = "Display the version of Spout this server is running.")
+	@Permissible("spout.command.version")
+	public void version(CommandSource source, CommandArguments args) throws CommandException {
+		source.sendMessage("This server is running Spout #" + Spout.getAPIVersion().replace("dev b", "") + ".");
 	}
 }
