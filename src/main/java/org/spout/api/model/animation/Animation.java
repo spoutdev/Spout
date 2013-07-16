@@ -75,6 +75,12 @@ public class Animation {
 		return frame;
 	}
 
+	/**
+	 * Get BoneTransform for a gived bone and frame
+	 * @param bone
+	 * @param frame
+	 * @return
+	 */
 	public BoneTransform getBoneTransform(int bone, int frame) {
 		return frames[bone][frame];
 	}
@@ -91,6 +97,14 @@ public class Animation {
 			}
 			i++;
 		}
+	}
+
+	/**
+	 * Return the number of bones
+	 * @return
+	 */
+	public int getSize() {
+		return frames.length;
 	}
 
 }

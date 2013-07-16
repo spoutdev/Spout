@@ -48,9 +48,10 @@ public abstract class AnimationComponent extends EntityComponent {
 
 	/**
 	 * Stop the animation
+	 * @param model
 	 * @param animation (Require to send the AnimationPlayed returned when send to play)
 	 */
-	public abstract void stopAnimation(AnimationPlayed animation);
+	public abstract void stopAnimation(Model model, AnimationPlayed animation);
 
 	/**
 	 * Stop all animations
