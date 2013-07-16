@@ -1640,7 +1640,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		if (chunk != null) {
 			chunk.unload(false);
 			// TODO is this right?
-			((SpoutScheduler) Spout.getScheduler()).addToQueue(new SpoutChunkSnapshotModel(chunk.getWorld(), chunkX, chunkY, chunkZ, true, System.currentTimeMillis()));
+			SpoutScheduler.addToQueue(new SpoutChunkSnapshotModel(chunk.getWorld(), chunkX, chunkY, chunkZ, true, System.currentTimeMillis()));
 			chunks[regionChunkX][regionChunkY][regionChunkZ].set(null);
 		}
 	}

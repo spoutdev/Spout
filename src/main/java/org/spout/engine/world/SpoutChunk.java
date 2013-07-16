@@ -89,6 +89,7 @@ import org.spout.api.material.DynamicMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.block.BlockSnapshot;
 import org.spout.api.material.range.EffectRange;
@@ -2185,24 +2186,20 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		return snapshot;
 	}
 
-	public void touchNeighborRender() {
-		for (int x = -1; x <= 1; x++) {
-			for (int y = -1; y <= 1; y++) {
-				for (int z = -1; z <= 1; z++) {
-					if (x != 0 && y != 0 && z != 0) {
-						SpoutChunk chunk = getWorld().getChunk(getX() + x, getY() + y, getZ() + z, LoadOption.LOAD_GEN);
-						if (!chunk.isBlank) chunk.render(false);
-					}
-				}
-			}
+	public void touchNeighborRender(BlockFaces neigbourstoUpdate) {
+		for(BlockFace face : neigbourstoUpdate){
+			SpoutChunk chunk = getWorld().getChunk(getX() + face.getOffset().getFloorX(), getY() + face.getOffset().getFloorY(), getZ() + face.getOffset().getFloorZ(), LoadOption.NO_LOAD);
+			if (chunk != null && !chunk.isBlank) chunk.render(BlockFaces.NONE);
 		}
 	}
 
 	public static AtomicInteger meshesGenerated = new AtomicInteger();
+	
 	public void render() {
-		render(true);
+		render(BlockFaces.BTNSWE);
 	}
-	public void render(boolean touch) {
+	
+	public void render(BlockFaces neigbourstoUpdate) {
 		ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
 		// TODO: we're actually only going to need TBNESW of center chunk, meaning we can not load 8 chunks
 		for (int x = -1; x <= 1; x++) {
@@ -2262,10 +2259,8 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		setRenderDirty(false);
 		SpoutChunkSnapshotModel model = new SpoutChunkSnapshotModel(getWorld(), getX(), getY(), getZ(), chunks, 1, updatedRenderMaterials, first, System.currentTimeMillis());
 		SpoutScheduler.addToQueue(model);
-		if (touch) {
-			// This is the "root" chunk
-			touchNeighborRender();
-		}
+		
+		touchNeighborRender(neigbourstoUpdate);
 	}
 
 	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {
