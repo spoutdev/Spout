@@ -2201,21 +2201,19 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	
 	public void render(BlockFaces neigbourstoUpdate) {
 		ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
-		// TODO: we're actually only going to need TBNESW of center chunk, meaning we can not load 8 chunks
-		for (int x = -1; x <= 1; x++) {
-			for (int y = -1; y <= 1; y++) {
-				for (int z = -1; z <= 1; z++) {
-					SpoutChunk chunk = getWorld().getChunk(getX() + x, getY() + y, getZ() + z, LoadOption.NO_LOAD);
-					
-					if(x == 0 && y == 0 && z == 0 && chunk == null){
-						//Should not happens
-						return;
-					}
-					
-					chunks[x + 1][y + 1][z + 1] = chunk != null ? chunk.getRenderSnapshot() : null;
-				}
+
+		chunks[1][1][1] = getRenderSnapshot();
+
+		for(BlockFace face : BlockFaces.BTNSWE){
+			SpoutChunk chunk = getWorld().getChunk(getX() + face.getOffset().getFloorX(), getY() + face.getOffset().getFloorY(), getZ() + face.getOffset().getFloorZ(), LoadOption.NO_LOAD);
+
+			if(chunk == null){
+				continue;
 			}
+
+			chunks[face.getOffset().getFloorX() + 1][face.getOffset().getFloorY() + 1][face.getOffset().getFloorZ() + 1] = chunk.getRenderSnapshot();
 		}
+
 		boolean first = firstRender;
 		//boolean first = enteredViewDistance();
 		final HashSet<RenderMaterial> updatedRenderMaterials;
