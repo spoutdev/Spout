@@ -621,12 +621,12 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		final float FmN = far - near;
 		orthographic.set(0, 0, near2 / RmL);
 		orthographic.set(1, 1, near2 / TmB);
-		orthographic.set(0, 2, (right + left) / RmL);
-		orthographic.set(1, 2, (top + bottom) / TmB);
+		orthographic.set(2, 0, (right + left) / RmL);
+		orthographic.set(2, 1, (top + bottom) / TmB);
 		orthographic.set(2, 2, (-far - near) / FmN);
-		orthographic.set(2, 3, -1);
-		orthographic.set(3, 2, -near2 * far / FmN);
-		orthographic.set(3, 3, 0);
+		orthographic.set(3, 2, -1);
+		orthographic.set(2, 3, -near2 * far / FmN);
+		orthographic.set(3, 3, 1);
 		return orthographic;
 	}
 

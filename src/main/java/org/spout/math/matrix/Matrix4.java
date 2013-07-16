@@ -676,10 +676,10 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 		final float TmB = top - bottom;
 		final float FmN = far - near;
 		return new Matrix4(
-				near2 / RmL, 0, (right + left) / RmL, 0,
-				0, near2 / TmB, (top + bottom) / TmB, 0,
-				0, 0, (-far - near) / FmN, -1,
-				0, 0, -near2 * far / FmN, 0);
+				near2 / RmL, 0, 0, 0,
+				0, near2 / TmB, 0, 0,
+				(right + left) / RmL, (top + bottom) / TmB, (-far - near) / FmN, -near2 * far / FmN,
+				0, 0, -1, 1);
 	}
 
 	private static float det3(float m00, float m01, float m02,
