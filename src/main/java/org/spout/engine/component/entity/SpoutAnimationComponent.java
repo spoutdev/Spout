@@ -43,29 +43,44 @@ import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.AnimationPlayed;
 import org.spout.api.model.animation.Skeleton;
-import org.spout.api.render.RenderMaterial;
 
 import org.spout.engine.mesh.BaseMesh;
 
 public class SpoutAnimationComponent extends AnimationComponent {
+
+	/**
+	 * Identity matrix used on bones when no animation to play
+	 */
 	private final static Matrix identity = MatrixMath.createIdentity();
+
 	//Depend of the shader
 	public final static int ALLOWED_BONE_PER_VERTEX = 2;
 	public final static int ALLOWED_ANIMATION_PER_MESH = 2;
 	public final static int ALLOWED_BONE_PER_MESH = 10;
 	public final static int LAYOUT_WEIGHT = 4;
 	public final static int LAYOUT_ID = 5;
-	private Map<Model, List<AnimationPlayed>> animations = new HashMap<Model, List<AnimationPlayed>>();
-	//Keep a matrices array at the size of managed skeleton
-	private RenderMaterial renderMaterial;
-	private int bonesInMesh = 0;
-	private Matrix[] matrices = null;
 
+	/**
+	 * Entity can have more than one model, this Map allow to handle a list of animation for each model
+	 */
+	private Map<Model, List<AnimationPlayed>> animations = new HashMap<Model, List<AnimationPlayed>>();
+
+	/**
+	 * Matrices array at the size of managed skeleton used to fill shader when no animation to play
+	 */
+	private Matrix[] defaultMatrices = null;
+
+	/**
+	 * Ask to play a animation on a model of the entity
+	 */
 	@Override
 	public AnimationPlayed playAnimation(Model model, Animation animation) {
 		return playAnimation(model, animation, false);
 	}
 
+	/**
+	 * Ask to play a animation on a model of the entity, allow to play a animation in loop
+	 */
 	@Override
 	public AnimationPlayed playAnimation(Model model, Animation animation, boolean loop) {
 		//TODO : Maybe check if the animation is compatible with the skeletin of this model
@@ -89,8 +104,16 @@ public class SpoutAnimationComponent extends AnimationComponent {
 	}
 
 	@Override
-	public void stopAnimation(AnimationPlayed animation) {
-		animations.remove(animation);
+	public void stopAnimation(Model model, AnimationPlayed animation) {
+		List<AnimationPlayed> list = animations.get(model);
+
+		if(list == null)
+			return;
+
+		list.remove(animation);
+
+		if(list.isEmpty())
+			animations.remove(model);
 	}
 
 	@Override
@@ -113,15 +136,12 @@ public class SpoutAnimationComponent extends AnimationComponent {
 			if (skeleton != null) {
 
 				BaseMesh mesh = (BaseMesh) model.getMesh();
-				renderMaterial = model.getRenderMaterial();
 
 				//Register matrices identity to fill when no animation
-				matrices = new Matrix[ALLOWED_BONE_PER_MESH];
-				for (int i = 0; i < matrices.length; i++) {
-					matrices[i] = identity;
+				defaultMatrices = new Matrix[ALLOWED_BONE_PER_MESH];
+				for (int i = 0; i < defaultMatrices.length; i++) {
+					defaultMatrices[i] = identity;
 				}
-
-				bonesInMesh = skeleton.getBoneSize();
 
 				if (mesh.getContainer().getBuffers().containsKey(LAYOUT_ID)) {
 					return;
@@ -171,66 +191,87 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		}
 	}
 
+	/**
+	 * Update played animation whith the elapsed time
+	 * @param model
+	 * @param dt
+	 */
 	public void updateAnimation(Model model, float dt) {
 		if (animations.isEmpty()) {
 			return;
 		}
 
-		List<AnimationPlayed> list = animations.get(model);
-		for (int i = 0; i < list.size(); i++) {
-			AnimationPlayed ac = list.get(i);
+		List<AnimationPlayed> finished = new ArrayList<>();
 
+		for (AnimationPlayed ac : animations.get(model)) {
+
+			// Increment time of the animation
 			ac.setCurrentTime(ac.getCurrentTime() + dt * ac.getSpeed());
 
+			// Recompute the current frame to play
 			ac.setCurrentFrame((int) (ac.getCurrentTime() / ac.getAnimation().getDelay()));
 
-			if (ac.getCurrentFrame() >= ac.getAnimation().getFrame()) { //Loop
-				if (!ac.isLoop()) {
+			if (ac.getCurrentFrame() >= ac.getAnimation().getFrame()) { 
+				if (ac.isLoop()) {	// Loop animation
+					//Reset the animation
 
-					//TODO : Send a AnimationEndEvent is the loop is enabled ?
+					//TODO Use a modulo to keep continuous animation nice
 
-					animations.remove(i);
-					i--;
+					ac.setCurrentTime(0);
+					ac.setCurrentFrame(0);
+				}else{
+					finished.add(ac);
 
+					//TODO : Send a AnimationEndEvent is the loop is enabled too ?
 					if (AnimationEndEvent.getHandlerList().getRegisteredListeners().length != 0) {
 						Spout.getEventManager().callEvent(new AnimationEndEvent(getOwner(), ac.getAnimation()));
 					}
 				}
-				ac.setCurrentTime(0);
-				ac.setCurrentFrame(0);
 			}
 		}
+
+		// Remove finished animations
+		animations.get(model).removeAll(finished);
 	}
 
+	/**
+	 * Set bone_matrix for a model for currents animations
+	 * @param model
+	 */
 	public void render(Model model) {
-		int count = 0;
+		int animationCount = 0;
 
 		List<AnimationPlayed> list = animations.get(model);
 
 		if (list != null) {
 			for (AnimationPlayed ac : list) {
-				int i;
+				int boneCount;
 
-				for (i = 0; i < bonesInMesh; i++) {
-					ac.getMatrices()[i] = ac.getAnimation().getBoneTransform(i, ac.getCurrentFrame()).getMatrix();
+				// Send matrices for existings bones
+				for (boneCount = 0; boneCount < ac.getAnimation().getSize(); boneCount++) {
+					ac.getMatrices()[boneCount] = ac.getAnimation().getBoneTransform(boneCount, ac.getCurrentFrame()).getMatrix();
 				}
 
-				for (; i < ALLOWED_BONE_PER_MESH; i++) {
-					ac.getMatrices()[i] = identity.transpose();
+				// Send matrices to fill the shader
+				for (; boneCount < ALLOWED_BONE_PER_MESH; boneCount++) {
+					ac.getMatrices()[boneCount] = identity.transpose();
 				}
 
-				renderMaterial.getShader().setUniform("bone_matrix" + (count + 1), ac.getMatrices());
+				//Define bone_matrix? (start at 1 in shader)
+				model.getRenderMaterial().getShader().setUniform("bone_matrix" + (animationCount + 1), ac.getMatrices());
 
-				count++;
-				if (count >= ALLOWED_ANIMATION_PER_MESH) {
+				animationCount++;
+				if (animationCount >= ALLOWED_ANIMATION_PER_MESH) {
 					break;
 				}
 			}
 		}
 
-		while (count < ALLOWED_ANIMATION_PER_MESH) {
-			renderMaterial.getShader().setUniform("bone_matrix" + (count + 1), matrices);
-			count++;
+		// Fill animations slots with defaults matrices
+		while (animationCount < ALLOWED_ANIMATION_PER_MESH) {
+			//Define bone_matrix? (start at 1 in shader)
+			model.getRenderMaterial().getShader().setUniform("bone_matrix" + (animationCount + 1), defaultMatrices);
+			animationCount++;
 		}
 	}
 }
