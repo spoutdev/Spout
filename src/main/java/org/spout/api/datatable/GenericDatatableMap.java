@@ -43,6 +43,12 @@ import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.SyncedStringMap;
 import org.spout.api.util.VarInt;
 
+/**
+ * Keys are actually stored across two maps.
+ * One map, {@link SyncedStringMap}, stores the string -> int key conversion.
+ * The second map, {@link TSynchronizedIntObjectMap}, stores the actual data.
+ * 
+ */
 class GenericDatatableMap implements DatatableMap {
 	private static final SyncedStringMap ROOT_STRING_MAP = SyncedStringMap.create(GenericDatatableMap.class.getName());
 	private final StringToUniqueIntegerMap stringmap;

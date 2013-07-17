@@ -24,63 +24,18 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.gui;
+package org.spout.api.datatable;
 
-import org.spout.api.component.ComponentOwner;
-import org.spout.api.datatable.ManagedMap;
-import org.spout.api.geo.discrete.Transform2D;
-import org.spout.api.math.Rectangle;
-import org.spout.api.tickable.Tickable;
-
-/**
- * Represents an element on a {@link Screen}.
+/*
+ * This is a {@link SerializableMap} that also manages a dirty state.
  */
-public interface Widget extends Tickable, ComponentOwner, Focusable, RenderPartContainer {
-	/**
-	 * Invokes a render update in the next frame
-	 */
-	public abstract void update();
+public interface ManagedMap extends SerializableMap {
 
 	/**
-	 * Returns the screen the widget is on.
-	 *
-	 * @return screen widget is on
+	 * This will return if the map has been map has been modified since the last call to setDirty(false).
+	 * @return the dirty state of the map
 	 */
-	public abstract Screen getScreen();
+	boolean isDirty();
 
-	/**
-	 * Sets the screen
-	 *
-	 * @param screen to set
-	 */
-	public abstract void setScreen(Screen screen);
-
-	/**
-	 * Returns the geometry of this widget.
-	 *
-	 * @return transform of widget
-	 */
-	public abstract Transform2D getTransform();
-
-	/**
-	 * Returns the bounding box of this widget.
-	 *
-	 * @return bounding box
-	 */
-	public abstract Rectangle getBounds();
-
-	/**
-	 * Sets the bounding box of this widget
-	 *
-	 * @param bounds of widget
-	 */
-	public abstract void setBounds(Rectangle bounds);
-
-	/**
-	 * Gets the {@link ManagedMap} which a Widget always has.
-	 *
-	 * @return ManagedMap
-	 */
-	@Override
-	public ManagedMap getData();
+	void setDirty(boolean dirty);
 }

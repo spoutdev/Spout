@@ -31,9 +31,9 @@ import java.util.UUID;
 
 import org.spout.api.Engine;
 import org.spout.api.component.ComponentOwner;
-import org.spout.api.component.DatatableComponent;
 import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.component.entity.SceneComponent;
+import org.spout.api.datatable.ManagedMap;
 import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
@@ -192,11 +192,10 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	public EntitySnapshot snapshot();
 
 	/**
-	 * Gets the {@link org.spout.api.component.DatatableComponent} which is always attached to each entity.
-	 * <p>
-	 * This is a convenience method for get(DatatableComponent.class).
-	 * </p>
-	 * @return datatable component
+	 * Gets the {@link ManagedMap} which an Entity always has.
+	 *
+	 * @return ManagedMap
 	 */
-	public DatatableComponent getData();
+	@Override
+	public ManagedMap getData();
 }

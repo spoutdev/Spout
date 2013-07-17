@@ -27,6 +27,7 @@
 package org.spout.api.component;
 
 import java.util.Collection;
+import org.spout.api.datatable.ManagedMap;
 
 /**
  * Represents an object which may own components.
@@ -91,8 +92,8 @@ public interface ComponentOwner {
 	public Collection<Component> values();
 
 	/**
-	 * Gets the {@link DatatableComponent} attached to the owner.
+	 * Gets the {@link ManagedMap} of the owner.
 	 * @return datatable component
 	 */
-	public DatatableComponent getData();
+	public ManagedMap getData();
 }

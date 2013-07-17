@@ -26,6 +26,7 @@
  */
 package org.spout.api.component;
 
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.tickable.Tickable;
 
 public abstract class Component implements Tickable {
@@ -100,12 +101,12 @@ public abstract class Component implements Tickable {
 	}
 
 	/**
-	 * Gets the {@link DatatableComponent} which is always attached to each owner.
+	 * Gets the {@link SerializableMap} which a ComponentOwner always has
 	 * <p>
 	 * This is merely a convenience method.
-	 * @return datatable component
+	 * @return SerializableMap of the owner
 	 */
-	public final DatatableComponent getDatatable() {
+	public final SerializableMap getDatatable() {
 		return getOwner().getData();
 	}
 }

@@ -36,6 +36,7 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -46,11 +47,14 @@ import org.spout.api.util.StringToUniqueIntegerMap;
  * Manages a string keyed, serializable object hashmap that can be serialized easily
  * to an array of bytes and deserialized from an array of bytes, intended for persistence
  * and network transfers.
+ * This also tracks modification and updates a dirty field accordingly.
  */
-public class ManagedHashMap implements SerializableMap {
+public class ManagedHashMap implements ManagedMap {
 	// This doesn't need to be persisted across restarts
 	private static final AtomicInteger nonSyncingNextId = new AtomicInteger();
 	final GenericDatatableMap map;
+	private final AtomicBoolean dirty = new AtomicBoolean(true);
+
 	public ManagedHashMap() {
 		this.map = new GenericDatatableMap();
 	}
@@ -139,7 +143,7 @@ public class ManagedHashMap implements SerializableMap {
 
 	@Override
 	public <T> T get(String key, Class<T> clazz) {
-		Serializable s = get((Object)key);
+		Serializable s = get(key);
 		if (s != null) {
 			try {
 				return clazz.cast(s);
@@ -153,6 +157,7 @@ public class ManagedHashMap implements SerializableMap {
 	public <T extends Serializable> T putIfAbsent(DefaultedKey<T> key, T value) {
 		String keyString = key.getKeyString();
 		try {
+			dirty.set(true);
 			return (T) putIfAbsent(keyString, value);
 		} catch (ClassCastException e) {
 			return null;
@@ -162,6 +167,7 @@ public class ManagedHashMap implements SerializableMap {
 	@Override
 	public Serializable putIfAbsent(String key, Serializable value) {
 		int intKey = map.getIntKey(key);
+		dirty.set(true);
 		AbstractData data = map.setIfAbsent(intKey, getAbstractDataValue(intKey, value));
 		if (data == null) {
 			return null;
@@ -173,6 +179,7 @@ public class ManagedHashMap implements SerializableMap {
 	@Override
 	public Serializable put(String key, Serializable value) {
 		int intKey = map.getIntKey(key);
+		dirty.set(true);
 		AbstractData data = map.getAndSet(intKey, getAbstractDataValue(intKey, value));
 		if (data == null) {
 			return null;
@@ -185,6 +192,7 @@ public class ManagedHashMap implements SerializableMap {
 	@Override
 	public <T extends Serializable> T put(DefaultedKey<T> key, T value) {
 		String keyString = key.getKeyString();
+		dirty.set(true);
 		try {
 			return (T)put(keyString, value);
 		} catch (ClassCastException e) {
@@ -195,14 +203,17 @@ public class ManagedHashMap implements SerializableMap {
 	@Override
 	public Serializable remove(Object key) {
 		if (key instanceof String) {
+			dirty.set(true);
 			return remove((String)key);
 		} else if (key instanceof DefaultedKey) {
+			dirty.set(true);
 			return remove(((DefaultedKey<?>)key).getKeyString());
 		}
 		return null;
 	}
 
 	public Serializable remove(String key) {
+		dirty.set(true);
 		return map.remove(key).get();
 	}
 
@@ -318,6 +329,7 @@ public class ManagedHashMap implements SerializableMap {
 				throw new ConcurrentModificationException();
 			}
 			current = null;
+			dirty.set(true);
 			map.remove(keys.get(index));
 		}
 	}
@@ -343,6 +355,7 @@ public class ManagedHashMap implements SerializableMap {
 		@Override
 		public Serializable setValue(Serializable value) {
 			this.value = value;
+			ManagedHashMap.this.dirty.set(true);
 			return ManagedHashMap.this.put(key, value);
 		}
 
@@ -399,6 +412,7 @@ public class ManagedHashMap implements SerializableMap {
 				throw new ConcurrentModificationException();
 			}
 			current = null;
+			dirty.set(true);
 			map.remove(keys.get(index));
 		}
 	}
@@ -460,11 +474,13 @@ public class ManagedHashMap implements SerializableMap {
 
 	@Override
 	public void deserialize(byte[] data) throws IOException {
+		dirty.set(true);
 		map.decompress(data);
 	}
 
 	@Override
 	public void deserialize(byte[] data, boolean wipe) throws IOException {
+		dirty.set(true);
 		map.decompress(data, wipe);
 	}
 
@@ -479,6 +495,7 @@ public class ManagedHashMap implements SerializableMap {
 		return map;
 	}
 
+	// TODO: move this to DataRegistry
 	private final AbstractData getAbstractDataValue(int intKey, Serializable value) {
 		if (value instanceof Boolean) {
 			return new BooleanData(intKey, (Boolean)value);
@@ -501,5 +518,19 @@ public class ManagedHashMap implements SerializableMap {
 		} else {
 			return map.niltype;
 		}
+	}
+
+	/**
+	 * This will return if the map has been map has been modified since the last call to setDirty(false).
+	 * @return the dirty state of the map
+	 */
+	@Override
+	public boolean isDirty() {
+		return dirty.get();
+	}
+	
+	@Override
+	public void setDirty(boolean dirty) {
+		this.dirty.set(dirty);
 	}
 }

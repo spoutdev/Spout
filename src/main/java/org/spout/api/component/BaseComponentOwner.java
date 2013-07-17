@@ -36,20 +36,21 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import org.spout.api.Spout;
+import org.spout.api.datatable.ManagedHashMap;
 
 public class BaseComponentOwner implements ComponentOwner {
 	/**
 	 * Map of class name, component
 	 */
 	protected final BiMap<Class<? extends Component>, Component> components = HashBiMap.create();
-	protected final DatatableComponent data;
+	protected final ManagedHashMap data;
 
 	public BaseComponentOwner() {
-		data = add(DatatableComponent.class);
+		data = new ManagedHashMap();
 	}
 
-	public BaseComponentOwner(Class<? extends DatatableComponent> component) {
-		data = add(component);
+	public BaseComponentOwner(ManagedHashMap data) {
+		this.data = data;
 	}
 
 	/**
@@ -228,7 +229,7 @@ public class BaseComponentOwner implements ComponentOwner {
 	}
 
 	@Override
-	public DatatableComponent getData() {
+	public ManagedHashMap getData() {
 		return data;
 	}
 

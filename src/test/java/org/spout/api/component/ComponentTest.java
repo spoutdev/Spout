@@ -121,8 +121,8 @@ public final class ComponentTest {
 		assertThat(generic, hasItems(c1, c2));
 		
 		Collection<Component> components = base.values();
-		assertTrue(components.size() == 4);
-		assertThat(components, hasItems(c1, c2, c3, base.getData()));
+		assertTrue(components.size() == 3);
+		assertThat(components, hasItems(c1, c2, c3));
 
 		GenericComponentWithInterface cwi = base.add(GenericComponentWithInterface.class);
 		Interface type = base.getType(Interface.class);
