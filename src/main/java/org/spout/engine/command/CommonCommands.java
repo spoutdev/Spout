@@ -27,6 +27,7 @@
 package org.spout.engine.command;
 
 import org.spout.api.Server;
+import org.spout.api.Spout;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandBatch;
 import org.spout.api.command.CommandSource;
@@ -68,6 +69,7 @@ public class CommonCommands {
 	}
 
 	@CommandDescription(aliases = {"bat", "batch"}, usage = "<file>", desc = "Executes a Spout batch file.")
+	@Permissible("spout.command.batch")
 	public void batch(CommandSource source, CommandArguments args) throws CommandException {
 		String fileName = args.popString("file");
 		args.assertCompletelyParsed();
@@ -266,5 +268,11 @@ public class CommonCommands {
 		if (engine.getPlatform() == org.spout.api.Platform.SERVER) {
 			player.getData().put(MovementValidator.VALIDATE_MOVEMENT, !player.getData().get(MovementValidator.VALIDATE_MOVEMENT));
 		}
+	}
+
+	@CommandDescription(aliases = {"ver", "version"}, desc = "Display the version of Spout this server is running.")
+	@Permissible("spout.command.version")
+	public void version(CommandSource source, CommandArguments args) throws CommandException {
+		source.sendMessage("This server is running Spout #" + Spout.getAPIVersion().replace("dev b", "") + ".");
 	}
 }
