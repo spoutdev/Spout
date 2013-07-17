@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -50,9 +51,10 @@ public final class Command implements Named {
 	private final List<String> aliases = new ArrayList<String>();
 	private final Set<Command> children = new HashSet<Command>();
 	private String help, usage, permission;
-	private int minArgs = 0, maxArgs = -1;
 	private Executor executor;
+	private List<CommandFlags.Flag> flags = new ArrayList<CommandFlags.Flag>();
 	private Set<CommandFilter> filters = new HashSet<CommandFilter>();
+	private boolean parseFlags = true;
 
 	protected Command(String name, String... names) {
 		this.name = name;
@@ -70,7 +72,7 @@ public final class Command implements Named {
 	 * throws a CommandException.
 	 */
 	public void process(CommandSource source, String... args) throws CommandException {
-		process(source, new CommandArguments(args));
+		process(source, new CommandArguments(name, args));
 	}
 
 	/**
@@ -83,44 +85,37 @@ public final class Command implements Named {
 	 * throws a CommandException.
 	 */
 	public void process(CommandSource source, CommandArguments args) throws CommandException {
+
+
+		// check permissions
 		if (permission != null && !source.hasPermission(permission)) {
 			throw new CommandException("You do not have permission to execute this command.");
 		}
 
-		// check argument count
-		verifyArgs(source, args);
+		args.flags().registerFlags(this.flags);
 
-		// execute a child if applicable
-		if (args.length() > 0) {
-			List<String> childArgs = new ArrayList<String>(args.get());
-			childArgs.remove(0);
-			Command child = getChild(args.getString(0), false);
-			if (child != null) {
-				child.process(source, new CommandArguments(childArgs));
-				return;
-			}
-		}
-
-		// no child found, filter...
+		// no child found, try to execute
 		for (CommandFilter filter : filters) {
 			filter.validate(this, source, args);
 		}
 
-		// ...then try to execute
-		if (executor == null) {
-			throw new CommandException("Command exists but has no set executor.");
-		}
-		executor.execute(source, this, args);
-	}
-
-	private void verifyArgs(CommandSource source, CommandArguments args) throws CommandException {
-		int len = args.length();
-		if (len < minArgs) {
-			source.sendMessage("Not enough arguments. (minimum " + minArgs + ")");
-			throw new CommandException(getUsage());
-		} else if (maxArgs >= 0 && len > maxArgs) { // -1 signifies infinite arguments
-			source.sendMessage("Too many arguments. (maximum " + maxArgs + ")");
-			throw new CommandException(getUsage());
+		// execute a child if applicable
+		if (children.size() > 0) {
+			Command child = getChild(args.popString("child"), false);
+			if (child != null) {
+				if (executor != null) {
+					executor.execute(source, this, args);
+				}
+				child.process(source, args);
+			} else {
+				throw args.failure("child", "Unknown child!", false);
+			}
+		} else {
+			if (executor == null) {
+				throw new CommandException("CommandDescription exists but has no set executor.");
+			}
+			args.flags().parse();
+			executor.execute(source, this, args);
 		}
 	}
 
@@ -240,6 +235,26 @@ public final class Command implements Named {
 		return this;
 	}
 
+	public boolean shouldParseFlags() {
+		return parseFlags;
+	}
+
+	public void setShouldParseFlags(boolean parseFlags) {
+		this.parseFlags = parseFlags;
+	}
+
+	public List<CommandFlags.Flag> getFlags() {
+		return ImmutableList.copyOf(flags);
+	}
+
+	public void addFlag(CommandFlags.Flag flag) {
+		this.flags.add(flag);
+	}
+
+	public void addFlag(CommandFlags.Flag... flags) {
+		this.flags.addAll(Arrays.asList(flags));
+	}
+
 	/**
 	 * Returns the command's help information.
 	 *
@@ -297,59 +312,6 @@ public final class Command implements Named {
 	 */
 	public Command setPermission(String permission) {
 		this.permission = permission;
-		return this;
-	}
-
-	/**
-	 * Sets the minimum and maximum arguments in which this command can operate.
-	 *
-	 * @param min minimum amount of arguments
-	 * @param max maximum amount of arguments (-1 for no limit)
-	 * @return this command
-	 */
-	public Command setArgumentBounds(int min, int max) {
-		minArgs = min;
-		maxArgs = max;
-		return this;
-	}
-
-	/**
-	 * Returns the maximum amount of arguments for this command.
-	 *
-	 * @return maximum amount of arguments
-	 */
-	public int getMaxArguments() {
-		return maxArgs;
-	}
-
-	/**
-	 * Sets the maximum arguments for this command.
-	 *
-	 * @param max maximum amount of arguments (-1 for no limit)
-	 * @return this command
-	 */
-	public Command setMaxArguments(int max) {
-		maxArgs = max;
-		return this;
-	}
-
-	/**
-	 * Returns the minimum amount of arguments for this command.
-	 *
-	 * @return minimum amount of arguments.
-	 */
-	public int getMinArguments() {
-		return minArgs;
-	}
-
-	/**
-	 * Sets the minimum arguments for this command.
-	 *
-	 * @param min minimum amount of arguments
-	 * @return this command
-	 */
-	public Command setMinArguments(int min) {
-		minArgs = min;
 		return this;
 	}
 

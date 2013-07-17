@@ -26,8 +26,12 @@
  */
 package org.spout.api.command;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.junit.Rule;
 import org.junit.Test;
 
+import org.junit.rules.ExpectedException;
 import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.exception.CommandException;
@@ -35,38 +39,36 @@ import org.spout.api.geo.World;
 import org.spout.api.lang.Locale;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 public class CommandTest {
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@Test
-	public void testCommand() {
+	public void testCommand() throws CommandException {
 		CommandManager cm = new CommandManager();
 		CommandSource testSource = new TestCommandSource(cm);
 		Command cmd = cm.getCommand("test1")
-				.setArgumentBounds(1, 2)
 				.addAlias("t1")
 				.setPermission("test.1")
 				.setExecutor(new Executor() {
 					@Override
 					public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
+						args.popString("testArg1");
+						args.popString("testArg2", "Not specified");
+						args.assertCompletelyParsed();
 					}
 				});
 
 		// execute with success
-		try {
-			cmd.process(testSource, "foo");
-			cmd.process(testSource, "foo", "bar");
-		} catch (CommandException e) {
-			unexpectedException(e);
-		}
+		cmd.process(testSource, "foo");
+		cmd.process(testSource, "foo", "bar");
 
 		// execute with failure
-		try {
-			cmd.process(testSource, "foo", "bar", "baz");
-			expectedException();
-			cmd.process(testSource);
-			expectedException();
-		} catch (CommandException ignored) {
-		}
+		thrown.expect(CommandException.class);
+		cmd.process(testSource, "foo", "bar", "baz");
+		cmd.process(testSource);
 	}
 
 	@Test
@@ -81,7 +83,7 @@ public class CommandTest {
 					@Override
 					public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
 						assertEquals("baz", command.getName());
-						assertEquals("hello", args.getString(0));
+						assertEquals("hello", args.popString("testStr"));
 					}
 				});
 
@@ -95,18 +97,12 @@ public class CommandTest {
 		cm.getCommand("test3").addFilter(new PlayerFilter()).setExecutor(new Executor() {
 			@Override
 			public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
-				fail("Non-player made it through the filter.");
 			}
 		});
+
+		thrown.expectCause(isA(CommandException.class));
+		thrown.expectMessage("You must be a Player to execute this command");
 		source.processCommand("test3");
-	}
-
-	public static void unexpectedException(Exception e) {
-		fail("Execution threw unexpected exception: " + e.getMessage());
-	}
-
-	public static void expectedException() {
-		fail("Execution didn't throw exception when expected.");
 	}
 
 	private static class TestCommandSource implements CommandSource {
@@ -136,7 +132,7 @@ public class CommandTest {
 			try {
 				cmd.process(this, args);
 			} catch (CommandException e) {
-				sendMessage(e.getMessage());
+				throw new RuntimeException(e);
 			}
 		}
 

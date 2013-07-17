@@ -45,7 +45,7 @@ public class PreCommandEvent extends Event implements Cancellable {
 	public PreCommandEvent(CommandSource source, String command, String... args) {
 		this.source = source;
 		this.command = command;
-		this.args = new CommandArguments(args);
+		this.args = new CommandArguments(command, args);
 	}
 
 	public CommandSource getCommandSource() {
@@ -62,6 +62,7 @@ public class PreCommandEvent extends Event implements Cancellable {
 
 	public void setCommand(String command) {
 		this.command = command;
+		this.args = new CommandArguments(this.command, args.get());
 	}
 
 	/**
@@ -85,7 +86,7 @@ public class PreCommandEvent extends Event implements Cancellable {
 	 * @param args
 	 */
 	public void setArguments(String... args) {
-		setArguments(new CommandArguments(args));
+		setArguments(new CommandArguments(command, args));
 	}
 
 	@Override

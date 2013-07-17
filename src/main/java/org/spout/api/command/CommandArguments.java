@@ -26,41 +26,70 @@
  */
 package org.spout.api.command;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import org.spout.api.Client;
-import org.spout.api.Platform;
+import org.spout.api.Engine;
 import org.spout.api.Server;
-
 import org.spout.api.Spout;
 import org.spout.api.entity.Player;
+import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.math.Vector3;
+import org.spout.api.plugin.Plugin;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * This class is used as a wrapper for command arguments and making them easily
- * parse-able. Notice that this class does not actually have a reference to the
- * root command of the execution.
+ * This class is used as a wrapper for command arguments to make them easily
+ * parse-able.
+ *
+ * Please note that the javadocs for the pop* methods describe how input is currently handled. Handling may
+ * change over time, and while efforts are made to retain backwards compatibility it is not always possible.
  */
 public class CommandArguments {
+	private final StringBuilder commandString = new StringBuilder();
+	private final Map<String, Object> parsedArgs = new HashMap<String, Object>();
+	private final Map<String, String> argOverrides = new HashMap<String, String>();
 	private final List<String> args;
+	private final CommandFlags flags;
+	int index = 0;
 
-	public CommandArguments(List<String> args) {
-		this.args = args;
+	public CommandArguments(String commandName, List<String> args) {
+		this.commandString.append(commandName);
+		this.args = new ArrayList<String>(args);
+		this.flags = new CommandFlags(this);
 	}
 
-	public CommandArguments(String... args) {
-		this(Arrays.asList(args));
+
+	public CommandArguments(String commandName, String... args) {
+		this(commandName, Arrays.asList(args));
 	}
 
 	/**
-	 * Returns all the arguments.
+	 * Returns all the remaining arguments.
 	 *
 	 * @return all arguments
 	 */
 	public List<String> get() {
-		return Collections.unmodifiableList(args);
+		return args.subList(index, args.size());
+	}
+
+	/**
+	 * Gives the mutable list of argument strings currently in use by this.
+	 *
+	 * @return the arguments
+	 */
+	List<String> getLive() {
+		return args;
 	}
 
 	/**
@@ -73,314 +102,590 @@ public class CommandArguments {
 	}
 
 	/**
-	 * Parses the argument to a generic {@link Object}. The argument is parsed
-	 * in the following order.
+	 * Returns whether any more unparsed arguments are present
 	 *
-	 * <ul>
-	 *     <li>{@link Double}</li>
-	 *     <li>{@link Float}</li>
-	 *     <li>{@link Integer}</li>
-	 *     <li>{@link World}</li>
-	 *     <li>{@link Player}</li>
-	 *     <li>{@link Boolean}</li>
-	 *     <li>{@link String}</li>
-	 * </ul>
-	 *
-	 * @param index to parse argument from
-	 * @return generic object at index
-	 * @throws CommandException
+	 * @return whether the current index is less than the total number of arguments
 	 */
-	public Object get(int index) throws CommandException {
-		if (isDouble(index)) return getDouble(index);
-		if (isFloat(index)) return getFloat(index);
-		if (isInteger(index)) return getInteger(index);
-		if (isWorld(index)) return getWorld(index);
-		if (isPlayer(index)) return getPlayer(index);
-		if (isBoolean(index)) return getBoolean(index);
-		return getString(index);
+	public boolean hasMore() {
+		return index < args.size();
 	}
 
-	private String getString0(int index) {
+	public CommandFlags flags() {
+		return flags;
+	}
+
+	// State control
+
+	/**
+	 * Called when an error has occurred while parsing the specified argument
+	 * Example:
+	 * <pre>
+	 * 	 if (success) {
+	 * 		 return success(argName, myValue);
+	 *     } else {
+	 * 		 throw failure(argName, "I dun goofed", "some", "other", "options");
+	 *     }
+	 * </pre>
+	 *
+	 * @param argName The name of the argument
+	 * @param error The error that occurred
+	 * @param completions Possible completions for the argument
+	 * @param silenceable Whether the error is caused by syntax of single argument/permanntly invalid provided value (or not)
+	 * @see ArgumentParseException for more detail about meanings of args
+	 * @return The exception -- must be thrown
+	 */
+	public ArgumentParseException failure(String argName, String error, boolean silenceable, String... completions) {
+		return new ArgumentParseException(commandString.toString(), argName, error, silenceable, completions);
+	}
+
+	/**
+	 * Must be called when an argument has been successfully parsed
+	 * This stores the parsed value into the map, appends the string value to the map, and advances the index.
+	 *
+	 * @param argName     The name of the arg
+	 * @param parsedValue The parsed value of the argument
+	 * @param <T>         The type of the parsed value
+	 * @return {@code parsedValue}
+	 */
+
+	public <T> T success(String argName, T parsedValue) {
+		return success(argName, parsedValue, false);
+	}
+
+	public <T> T success(String argName, T parsedValue, boolean fallbackValue) {
+		if (argName != null) { // Store arg
+			parsedArgs.put(argName, parsedValue);
+		}
+
+		String valueOverride = argOverrides.get(argName); // Add to parsed command string
+		commandString.append(' ');
+
+		if (valueOverride != null) {
+			commandString.append(valueOverride);
+		} else if (index >= args.size()) {
+			commandString.append(" [").append(argName).append("]");
+		} else {
+			commandString.append(args.get(index));
+			if (!fallbackValue) {
+				index++; // And increment index
+			}
+		}
+
+		return parsedValue;
+	}
+
+	/**
+	 * This method should be called in methods that can potentially return a default value.
+	 *
+	 * @param e The thrown exception
+	 * @param def The default value that could be returned
+	 * @param <T> The type of the argument
+	 * @return The default value, if error is safe to silence
+	 * @throws ArgumentParseException if the error is not appropriate to be silenced
+	 */
+	public <T> T potentialDefault(ArgumentParseException e, T def) throws ArgumentParseException {
+		if (e.isSilenceable()) {
+			return success(e.getInvalidArgName(), def, true);
+		} else {
+			throw e;
+		}
+	}
+
+	private static final Pattern QUOTE_START_REGEX = Pattern.compile("^('|\")"),
+								 QUOTE_END_REGEX = Pattern.compile("[^\\\\]?('|\")$"),
+								 QUOTE_ESCAPE_REGEX = Pattern.compile("\\\\([\"'])");
+
+	/**
+	 * Return the current argument, without advancing the argument index.
+	 * Combines quoted strings provided as arguments as necessary.
+	 * If there are no arguments remaining, the default value is returned.
+	 *
+	 * @param argName The name of the argument
+	 * @return The argument with the current index.
+	 * @throws ArgumentParseException if an invalid quoted string was attempted to be used
+	 * @see #success(String, Object)
+	 * @see #failure(String, String, boolean, String...)
+	 * @see #popString(String) for getting a string-typed argument
+	 */
+	public String currentArgument(String argName) throws ArgumentParseException {
+		if (argName != null && argOverrides.containsKey(argName)) {
+			return argOverrides.get(argName);
+		}
+
 		if (index >= args.size()) {
-			return null;
+			throw failure(argName, "Argument not present", true);
 		}
-		return args.get(index);
+
+		// Quoted argument parsing -- comparts and removes unnecessary arguments
+		String current = args.get(index);
+		Matcher start = QUOTE_START_REGEX.matcher(current);
+		if (start.find()) { // We've found a quoted string
+			boolean foundEnd = false;
+			String quoteChar = start.group(1);
+			StringBuffer quotedBuilder = new StringBuffer(2 * current.length());
+
+			current = current.substring(1);
+			for (boolean first = true; ((index + 1) < args.size() || first) && !foundEnd; first = false) {
+				if (!first) {
+					current = args.remove(index + 1);
+				}
+
+				Matcher end = QUOTE_END_REGEX.matcher(current);
+				if (end.find() && end.group(1).equals(quoteChar)) { // End character found here
+					foundEnd = true;
+					current = current.substring(0, current.length() - 1);
+				}
+
+				if (!first) {
+					quotedBuilder.append(" ");
+				}
+				Matcher escape = QUOTE_ESCAPE_REGEX.matcher(current); // Replace escaped strings
+				while (escape.find()) {
+					escape.appendReplacement(quotedBuilder, escape.group(1));
+				}
+				escape.appendTail(quotedBuilder);
+			}
+
+			if (!foundEnd) { // Unmatched: "quoted string
+				throw failure(argName, "Unmatched quoted string!", false, quoteChar);
+			}
+			args.set(index, (current = quotedBuilder.toString()));
+		} else {
+			Matcher escape = QUOTE_ESCAPE_REGEX.matcher(current);
+			if (escape.find()) {
+				StringBuffer replace = new StringBuffer(current.length() - 1);
+				escape.appendReplacement(replace, escape.group(1));
+				while (escape.find()) {
+					escape.appendReplacement(replace, escape.group(1));
+				}
+				escape.appendTail(replace);
+			}
+		}
+
+		return current;
+	}
+
+	boolean setArgOverride(String name, String value) {
+		if (!this.argOverrides.containsKey(name)) {
+			this.argOverrides.put(name, value);
+			return true;
+		}
+		return false;
 	}
 
 	/**
-	 * Returns the {@link String} at the specified index.
+	 * Increase the argument 'pointer' by one without storing any arguments
 	 *
-	 * @param index to get string from
-	 * @return string at specified index
-	 * @throws CommandException if the specified index is out of bounds
+	 * @return Whether there is an argument present at the incremented index
 	 */
-	public String getString(int index) throws CommandException {
-		String str = getString0(index);
-		if (str == null) {
-			throw new CommandException("Specified index is out of bounds. (index " + index + "; size " + args.size() + ")");
-		}
-		return str;
+	public boolean advance() {
+		return ++index < args.size();
 	}
 
-	private Integer getInteger0(int index) {
+	/**
+	 *
+	 * @throws ArgumentParseException when unparsed arguments are present.
+	 */
+	public void assertCompletelyParsed() throws ArgumentParseException {
+		if (index < args.size()) {
+			throw failure("...", "Too many arguments are present!", false);
+		}
+	}
+
+	// Argument storage methods
+
+	public String popString(String argName) throws ArgumentParseException {
+		String arg = currentArgument(argName);
+		return success(argName, arg);
+	}
+
+	public String popString(String argName, String def) throws ArgumentParseException {
 		try {
-			return Integer.parseInt(getString0(index));
+			return popString(argName);
+		} catch (ArgumentParseException e) {
+			return potentialDefault(e, def);
+		}
+	}
+
+	public int popInteger(String argName) throws ArgumentParseException {
+		String arg = currentArgument(argName);
+		try {
+			return success(argName, Integer.parseInt(arg));
 		} catch (NumberFormatException e) {
-			return null;
+			throw failure(argName, "Input '" + arg + "' is not an integer you silly!", false);
+		}
+	}
+
+	public int popInteger(String argName, int def) throws ArgumentParseException {
+		try {
+			return popInteger(argName);
+		} catch (ArgumentParseException e) {
+			return potentialDefault(e, def);
+		}
+	}
+
+	public float popFloat(String argName) throws ArgumentParseException {
+		String arg = currentArgument(argName);
+		try {
+			return success(argName, Float.parseFloat(arg));
+		} catch (NumberFormatException e) {
+			throw failure(argName, "Input '" + arg + "' is not a float you silly!", false);
+		}
+	}
+
+	public float popFloat(String argName, float def) throws ArgumentParseException {
+		try {
+			return popFloat(argName);
+		} catch (ArgumentParseException e) {
+			return potentialDefault(e, def);
+		}
+	}
+
+	public double popDouble(String argName) throws ArgumentParseException {
+		String arg = currentArgument(argName);
+		try {
+			return success(argName, Double.parseDouble(arg));
+		} catch (NumberFormatException e) {
+			throw failure(argName, "Input '" + arg + "' is not a double you silly!", false);
+		}
+	}
+
+	public double popDouble(String argName, double def) throws ArgumentParseException {
+		try {
+			return popDouble(argName);
+		} catch (ArgumentParseException e) {
+			return potentialDefault(e, def);
+		}
+	}
+
+	public boolean popBoolean(String argName) throws ArgumentParseException {
+		String str = currentArgument(argName);
+		if (!str.equalsIgnoreCase("true") && !str.equalsIgnoreCase("false")) {
+			throw failure(argName, "Value '" + str + "' is not a boolean you silly!", false);
+		}
+		return success(argName, Boolean.parseBoolean(str));
+	}
+
+	public boolean popBoolean(String argName, boolean def) throws ArgumentParseException {
+		try {
+			return popBoolean(argName);
+		} catch (ArgumentParseException e) {
+			return potentialDefault(e, def);
+		}
+	}
+
+	public Player popPlayer(String argName) throws ArgumentParseException {
+		String name = currentArgument(argName);
+		Player player;
+		Engine e = Spout.getEngine();
+		if (e instanceof Server) {
+			Server server = (Server) e;
+			player = server.getPlayer(name, false);
+			if (player == null) {
+				Collection<Player> matched = server.matchPlayer(name);
+				String[] names = new String[matched.size()];
+				int index = 0;
+				for (Player p : matched) {
+					names[index] = p.getName();
+					index++;
+				}
+				throw failure(argName, "Player not found.", true, names);
+			}
+		} else if (e instanceof Client) {
+			if (((Client) e).getPlayer().getName().equals(name)) {
+				return ((Client) e).getPlayer();
+			} else {
+				throw failure(argName, "Not the client player!", true);
+			}
+		} else {
+			throw failure(argName, "Unknown Engine type: " + e.getPlatform(), false);
+		}
+		return success(argName, player);
+	}
+
+	public Player popPlayerOrMe(String argName, CommandSource me) throws ArgumentParseException {
+		if (!hasMore()) {
+			if (me instanceof Player) {
+				return success(argName, (Player) me);
+			}
+			throw failure(argName, "You must either be a player or specify a player!", true);
+		}
+		return popPlayer(argName);
+	}
+
+	/**
+	 * Gets a worl
+	 * @param argName
+	 * @return
+	 * @throws ArgumentParseException
+	 */
+	public World popWorld(String argName) throws ArgumentParseException {
+		String arg = currentArgument(argName);
+		World world = Spout.getEngine().getWorld(arg, false);
+		if (world == null) {
+			throw failure(argName, "World not found!", true);
+		}
+		return success(argName, world);
+	}
+
+	public World popWorld(String argName, CommandSource source) throws ArgumentParseException {
+		String arg;
+		try {
+			arg = currentArgument(argName);
+		} catch (ArgumentParseException ex) {
+			if (source instanceof Player) {
+				return ((Player) source).getWorld();
+			} else {
+				throw ex;
+			}
+		}
+		World world = Spout.getEngine().getWorld(arg, false);
+		if (world == null) {
+			throw failure(argName, "World not found!", true);
+		}
+		return success(argName, world);
+	}
+
+	public World popWorld(String argName, World def) throws ArgumentParseException {
+		try {
+			return popWorld(argName);
+		} catch (ArgumentParseException e) {
+			return potentialDefault(e, def);
 		}
 	}
 
 	/**
-	 * Parses and returns an integer at the specified index.
+	 * Pop a {@link Vector3}.
+	 * Accepts either x y z or x,y,z syntax
+	 * TODO support relative syntax
 	 *
-	 * @param index to get int from
-	 * @return int at index
-	 * @throws CommandException if string at specified index is not an int
+	 * @param argName The name of the argument
+	 * @return A parsed vector
+	 * @throws ArgumentParseException if not enough coordinates are provided or the coordinates are not floats
 	 */
-	public int getInteger(int index) throws CommandException {
-		Integer i = getInteger0(index);
+	public Vector3 popVector3(String argName) throws ArgumentParseException {
+		try {
+			float x, y, z;
+			if (currentArgument(argName).contains(",")) {
+				String[] els = currentArgument(argName).split(",");
+				if (els.length < 3) {
+					throw failure(argName, "Must provide 3 coordinates", false);
+				}
+				x = Float.parseFloat(els[0]);
+				y = Float.parseFloat(els[1]);
+				z = Float.parseFloat(els[2]);
+			} else {
+				x = popFloat(null);
+				y = popFloat(null);
+				z = popFloat(null);
+			}
+			return success(argName, new Vector3(x, y, z));
+		} catch (ArgumentParseException e) {
+			throw failure(argName, e.getReason(), e.isSilenceable(), e.getCompletions());
+		}
+	}
+
+	public Vector3 popVector3(String argName, Vector3 def) throws ArgumentParseException {
+		try {
+			return popVector3(argName);
+		} catch (ArgumentParseException e) {
+			return potentialDefault(e, def);
+		}
+	}
+
+	/**
+	 * Format for point:
+	 * {@code world x,y,z} or {@code world x y z}
+	 *
+	 * @see #popWorld(String, CommandSource) for world syntax
+	 * @see #popVector3(String) for coordinates syntax
+	 * @param argName Name of key to store this argument value as
+	 * @return A point
+	 */
+	public Point popPoint(String argName, CommandSource source) throws ArgumentParseException {
+		try {
+			World world = popWorld(null, source);
+			Vector3 vec = popVector3(null);
+			return success(argName, new Point(vec, world));
+		} catch (ArgumentParseException e) {
+			throw failure(argName, e.getReason(), e.isSilenceable(), e.getCompletions());
+		}
+	}
+
+	/**
+	 * @see #popPoint(String, CommandSource) non-defaulted version
+	 */
+	public Point popPoint(String argName, CommandSource source, Point def) throws ArgumentParseException {
+		try {
+			return popPoint(argName, source);
+		} catch (ArgumentParseException e) {
+			return potentialDefault(e, def);
+		}
+	}
+
+	private static final int MAX_ARG_FULLPRINT = 5;
+
+	private static String buildEnumError(Class<? extends Enum<?>> enumClass) {
+		Enum<?>[] constants = enumClass.getEnumConstants();
+		String itemList;
+		if (constants.length > MAX_ARG_FULLPRINT) {
+			itemList = "an element of " + enumClass.getSimpleName();
+		} else {
+			boolean first = true;
+			StringBuilder build = new StringBuilder();
+			for (Enum<?> e : constants) {
+				if (!first) {
+					build.append(", ");
+				}
+				build.append("'").append(e.name()).append("'");
+				first = false;
+			}
+			itemList = build.toString();
+		}
+		return "Invalid " + enumClass.getSimpleName() + "; Must be 0-" + constants.length + " or " + itemList + ".";
+	}
+
+	/**
+	 * Pop an enum value from the arguments list.
+	 * Values are checked by index and by uppercased name.
+	 *
+	 * @param argName The name of the argument
+	 * @param enumClass The enum class to
+	 * @param <T> The type of enum
+	 * @return The enum value
+	 * @throws ArgumentParseException if no argument is present or an unknown element is chosen.
+	 */
+	public <T extends Enum<T>> T popEnumValue(String argName, Class<T> enumClass) throws ArgumentParseException {
+		String key = currentArgument(argName);
+		T[] constants = enumClass.getEnumConstants();
+		T value;
+		try {
+			int index = Integer.parseInt(key);
+			if (index < 0 || index >= constants.length) {
+				throw failure(argName, buildEnumError(enumClass), false);
+			}
+			value = constants[index];
+		} catch (NumberFormatException e) {
+			try {
+				value = Enum.valueOf(enumClass, key.toUpperCase());
+			} catch (IllegalArgumentException e2) {
+				throw failure(argName, buildEnumError(enumClass), false);
+			}
+		}
+		return success(argName, value);
+
+	}
+
+	/**
+	 * @see #popEnumValue(String, Class) non-defaulted version
+	 */
+	public <T extends Enum<T>> T popEnumValue(String argName, Class<T> enumClass, T def) throws ArgumentParseException {
+		try {
+			return popEnumValue(argName, enumClass);
+		} catch (ArgumentParseException e) {
+			return potentialDefault(e, def);
+		}
+	}
+
+	/**
+	 * Returns a string including every remaining argument
+	 *
+	 * @return string from specified arg on
+	 */
+	public String popRemainingStrings(String argName) throws ArgumentParseException {
+		if (!hasMore()) {
+			failure(argName, "No arguments present", true);
+		}
+		StringBuilder builder = new StringBuilder();
+		while (hasMore()) {
+			builder.append(currentArgument(argName));
+			advance();
+			if (hasMore()) {
+				builder.append(' ');
+			}
+		}
+		String ret = builder.toString();
+		assertCompletelyParsed(); // If not, there's a bug
+		return success(argName, ret);
+	}
+
+	public String popRemainingStrings(String argName, String def) throws ArgumentParseException {
+		try {
+			return popRemainingStrings(argName);
+		} catch (ArgumentParseException e) {
+			return potentialDefault(e, def);
+		}
+	}
+
+	// Command utility methods
+
+	public Player checkPlayer(CommandSource source) throws CommandException {
+		if (source instanceof Player) {
+			return (Player) source;
+		} else {
+			throw new CommandException("You must be a player to use this commmand!");
+		}
+	}
+
+	public void logAndNotify(Engine loggerSource, CommandSource source, String message) {
+		logAndNotify(loggerSource.getLogger(), source, message);
+	}
+
+	public void logAndNotify(Plugin loggerSource, CommandSource source, String message) {
+		logAndNotify(loggerSource.getLogger(), source, message);
+	}
+
+	public void logAndNotify(Logger logger, CommandSource source, String message) {
+		if (source instanceof Player) { // TODO: Better detection if we're console
+			source.sendMessage(message);
+		}
+		if (logger != null) {
+			logger.info(message);
+		}
+	}
+
+	// Parsed argument access methods
+	public <T> T get(String key, Class<T> type) {
+		return get(key, type, null);
+	}
+
+	public <T> T get(String key, Class<T> type, T def) {
+		Object o = parsedArgs.get(key);
+
+		if (o == null) {
+			return def;
+		} else if (type.isInstance(o)) {
+			return type.cast(o);
+		}
+		throw new RuntimeException("Incorrect argument type " + type.getName() + " for argument " + key);
+	}
+
+	public boolean has(String key) {
+		return parsedArgs.containsKey(key);
+	}
+
+	public String getString(String key) {
+		return get(key, String.class);
+	}
+
+	public String getString(String key, String def) {
+		return get(key, String.class, def);
+	}
+
+	public int getInteger(String key, int def) {
+		Integer i = get(key, Integer.class);
 		if (i == null) {
-			throw new CommandException("Expected integer at index " + index);
+			return def;
 		}
 		return i;
 	}
 
-	/**
-	 * Returns true if the {@link String} at the specified index is an integer.
-	 *
-	 * @param index to check
-	 * @return true if string at specified index is an int
-	 */
-	public boolean isInteger(int index) {
-		return getInteger0(index) != null;
-	}
-
-	private Float getFloat0(int index) {
-		try {
-			return Float.parseFloat(getString0(index));
-		} catch (NumberFormatException e) {
-			return null;
-		}
-	}
-
-	/**
-	 * Parses and returns a float at the specified index.
-	 *
-	 * @param index to get float from
-	 * @return float at index
-	 * @throws CommandException if string at specified index is not a float
-	 */
-	public float getFloat(int index) throws CommandException {
-		Float f = getFloat0(index);
+	public float getFloat(String key, float def) {
+		Float f = get(key, Float.class);
 		if (f == null) {
-			throw new CommandException("Expected floating point at index " + index);
+			return def;
 		}
 		return f;
-	}
-
-	/**
-	 * Returns true if the {@link String} at the specified index is a float.
-	 *
-	 * @param index to check
-	 * @return true if string at specified index is a float
-	 */
-	public boolean isFloat(int index) {
-		return getFloat0(index) != null;
-	}
-
-	private Double getDouble0(int index) {
-		try {
-			return Double.parseDouble(getString0(index));
-		} catch (NumberFormatException e) {
-			return null;
-		}
-	}
-
-	/**
-	 * Parses and returns a double at the specified index.
-	 *
-	 * @param index to get double from
-	 * @return double at index
-	 * @throws CommandException if string at specified index is not a double
-	 */
-	public double getDouble(int index) throws CommandException {
-		Double d = getDouble0(index);
-		if (d == null) {
-			throw new CommandException("Expected floating point at index " + index);
-		}
-		return d;
-	}
-
-	/**
-	 * Returns true if the {@link String} at the specified index is a double.
-	 *
-	 * @param index to check
-	 * @return true if string at specified index is a double
-	 */
-	public boolean isDouble(int index) {
-		return getDouble0(index) != null;
-	}
-
-	private Boolean getBoolean0(int index) {
-		String str = getString0(index);
-		if (!str.equalsIgnoreCase("true") && !str.equalsIgnoreCase("false")) {
-			return null;
-		}
-		return Boolean.parseBoolean(str);
-	}
-
-	/**
-	 * Parses and returns a boolean at the specified index.
-	 *
-	 * @param index to get boolean from
-	 * @return boolean at specified index
-	 * @throws CommandException if the string at the specified index is not a boolean
-	 */
-	public boolean getBoolean(int index) throws CommandException {
-		Boolean b = getBoolean0(index);
-		if (b == null) {
-			throw new CommandException("Expected boolean value at index " + index);
-		}
-		return b;
-	}
-
-	/**
-	 * Returns true if the string at the specified index is a boolean.
-	 *
-	 * @param index to check
-	 * @return true if string at specified index is a boolean
-	 */
-	public boolean isBoolean(int index) {
-		return getBoolean0(index) != null;
-	}
-
-	/**
-	 * Returns a string including every argument from the specified index on.
-	 *
-	 * @param index of arg to start string at
-	 * @return string of specified arg on
-	 */
-	public String getJoinedString(int index) {
-		StringBuilder builder = new StringBuilder();
-		for (int i = index; i < args.size(); i++) {
-			builder.append(args.get(i));
-			if (i + 1 != args.size()) {
-				builder.append(' ');
-			}
-		}
-		return builder.toString();
-	}
-
-	private Player getPlayer0(int index, boolean exact) {
-		if (Spout.getPlatform() == Platform.SERVER) {
-			return ((Server) Spout.getEngine()).getPlayer(getString0(index), exact);
-		} else {
-			if (exact && ((Client) Spout.getEngine()).getPlayer().getName().equals(getString0(index))) {
-				return ((Client) Spout.getEngine()).getPlayer();
-			}
-			// TODO fix this please
-			throw new UnsupportedOperationException("Can't match player on client");
-		}
-	}
-
-	/**
-	 * Returns a player at the specified index.
-	 *
-	 * @param index to get player from
-	 * @param exact if the player's name must be exact
-	 * @return the player at the specified index
-	 * @throws CommandException if the specified player is not online
-	 */
-	public Player getPlayer(int index, boolean exact) throws CommandException {
-		Player player = getPlayer0(index, exact);
-		if (player == null) {
-			throw new CommandException("Player not found.");
-		}
-		return player;
-	}
-
-	/**
-	 * Returns a player at the specified index.
-	 *
-	 * @param index to get player from
-	 * @return the player at the specified index
-	 * @throws CommandException if the specified player is not online
-	 */
-	public Player getPlayer(int index) throws CommandException {
-		return getPlayer(index, false);
-	}
-
-	/**
-	 * Returns true if there is an online player's name at the specified index.
-	 *
-	 * @param index to check
-	 * @param exact if the player's name needs to be exact
-	 * @return true if player is online
-	 */
-	public boolean isPlayer(int index, boolean exact) {
-		return getPlayer0(index, exact) != null;
-	}
-
-	/**
-	 * Returns true if there is an online player's name at the specified index.
-	 *
-	 * @param index to check
-	 * @return true if player is online
-	 */
-	public boolean isPlayer(int index) {
-		return isPlayer(index, false);
-	}
-
-	private World getWorld0(int index, boolean exact) {
-		return Spout.getEngine().getWorld(getString0(index), exact);
-	}
-
-	/**
-	 * Returns the world at the specified index.
-	 *
-	 * @param index to get world from
-	 * @param exact if the world name must be exact
-	 * @return world at index
-	 * @throws CommandException if world does not exist
-	 */
-	public World getWorld(int index, boolean exact) throws CommandException {
-		World world = getWorld0(index, exact);
-		if (world == null) {
-			throw new CommandException("World not found.");
-		}
-		return world;
-	}
-
-	/**
-	 * Returns the world at the specified index.
-	 *
-	 * @param index to get world from
-	 * @return world at index
-	 * @throws CommandException if world does not exist
-	 */
-	public World getWorld(int index) throws CommandException {
-		return getWorld(index, true);
-	}
-
-	/**
-	 * Returns true if the world at the specified index exists.
-	 *
-	 * @param index to check
-	 * @param exact if the name of the world needs to be exact
-	 * @return true if world is at specified index
-	 */
-	public boolean isWorld(int index, boolean exact) {
-		return getWorld0(index, exact) != null;
-	}
-
-	/**
-	 * Returns true if the world at the specified index exists.
-	 *
-	 * @param index to check
-	 * @return true if world is at specified index
-	 */
-	public boolean isWorld(int index) {
-		return isWorld(index, true);
 	}
 
 	/**
@@ -394,6 +699,10 @@ public class CommandArguments {
 
 	@Override
 	public String toString() {
-		return getJoinedString(0);
+		try {
+			return popRemainingStrings(null);
+		} catch (ArgumentParseException e) {
+			return "";
+		}
 	}
 }

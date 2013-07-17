@@ -56,7 +56,7 @@ public final class AnnotatedCommandExecutor implements Executor {
 			method.setAccessible(true);
 			try {
 				//Support backwards arguments
-				if (method.getParameterTypes()[0] == CommandSource.class){
+				if (CommandSource.class.isAssignableFrom(method.getParameterTypes()[0])){
 					method.invoke(instance, source, args);
 				} else {
 					method.invoke(instance, args, source);

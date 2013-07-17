@@ -35,6 +35,7 @@ import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandArguments;
+import org.spout.api.command.CommandFlags;
 import org.spout.api.command.CommandSource;
 
 public final class AnnotatedCommandExecutorFactory {
@@ -68,9 +69,9 @@ public final class AnnotatedCommandExecutorFactory {
 	}
 
 	private static boolean hasCommandAnnotation(Method method) {
-		return method.isAnnotationPresent(org.spout.api.command.annotated.Command.class);
+		return method.isAnnotationPresent(CommandDescription.class);
 	}
-	
+
 	private static AnnotatedCommandExecutor create(Class<?> commands, Object instance, org.spout.api.command.Command parent) {
 		Map<org.spout.api.command.Command, Method> cmdMap = new HashMap<org.spout.api.command.Command, Method>();
 		while (commands != null) {
@@ -83,7 +84,7 @@ public final class AnnotatedCommandExecutorFactory {
 
 				// create the command
 				Engine engine = Spout.getEngine();
-				org.spout.api.command.annotated.Command a = method.getAnnotation(org.spout.api.command.annotated.Command.class);
+				CommandDescription a = method.getAnnotation(CommandDescription.class);
 				org.spout.api.command.Command command;
 				if (parent != null) { // parent specified? create child
 					command = parent.getChild(a.aliases()[0]);
@@ -95,7 +96,10 @@ public final class AnnotatedCommandExecutorFactory {
 				command.addAlias(a.aliases());
 				command.setHelp(a.desc());
 				command.setUsage(a.usage());
-				command.setArgumentBounds(a.min(), a.max());
+				for (Flag flag : a.flags()) {
+					command.addFlag(new CommandFlags.Flag(flag.value(), flag.aliases()));
+				}
+				command.setShouldParseFlags(a.parseFlags());
 
 				// check the platform
 				if (method.isAnnotationPresent(Platform.class)) {
@@ -123,10 +127,6 @@ public final class AnnotatedCommandExecutorFactory {
 				// add binding
 				// you can still have a binding annotation on a server command method but this block will be skipped
 				if (method.isAnnotationPresent(Binding.class) && engine instanceof Client) {
-					int max = a.max();
-					if (max < 1 && max != -1) {
-						throw new IllegalArgumentException("Command binding must allow at least 1 argument.");
-					}
 					Binding binding = method.getAnnotation(Binding.class);
 					org.spout.api.input.Binding b = new org.spout.api.input.Binding(command.getName(), binding.value(), binding.mouse(), binding.mouseDirections()).setAsync(binding.async());
 					((Client) engine).getInputManager().bind(b);
@@ -171,7 +171,7 @@ public final class AnnotatedCommandExecutorFactory {
 	public static AnnotatedCommandExecutor create(Object instance) {
 		return create(instance.getClass(), instance, null);
 	}
-	
+
 	/**
 	 * Registers all the defined commands by method in this class.
 	 * @param commands the class containing the static commands
@@ -179,7 +179,7 @@ public final class AnnotatedCommandExecutorFactory {
 	public static AnnotatedCommandExecutor create(Class<?> commands) {
 		return create(commands, null, null);
 	}
-	
+
 	/**
 	 * Registers all the defined commands by method in this class.
 	 *
@@ -189,7 +189,7 @@ public final class AnnotatedCommandExecutorFactory {
 	public static AnnotatedCommandExecutor create(Object instance, org.spout.api.command.Command parent) {
 		return create(instance.getClass(), instance, parent);
 	}
-	
+
 	/**
 	 * Registers all the defined commands by method in this class.
 	 *

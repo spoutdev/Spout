@@ -31,41 +31,43 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.spout.api.entity.state.PlayerInputState.MouseDirection;
-import org.spout.api.input.Keyboard;
-
 /**
- * Represents a key-binding used with the {@link CommandDescription} annotation in
- * {@link AnnotatedCommandExecutor}s.
+ * This allows for annotation-based command registration.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Binding {
+public @interface CommandDescription {
 	/**
-	 * Returns the keys that this command is bound to.
+	 * Returns all the aliases this command is recognized under.
 	 *
-	 * @return keys command is bound to
+	 * @return aliases of command
 	 */
-	public Keyboard[] value() default {};
+	public String[] aliases();
 
 	/**
-	 * Returns the mouse buttons this command is bound to.
+	 * Returns the proper usage of the command.
 	 *
-	 * @return mouse buttons
+	 * @return proper usage
 	 */
-	public int[] mouse() default {};
+	public String usage() default "";
 
 	/**
-	 * Returns the mouse directions this command is bound to.
+	 * Returns a description of the command.
 	 *
-	 * @return mouse buttons
+	 * @return description of the command
 	 */
-	public MouseDirection[] mouseDirections() default {};
+	public String desc();
 
 	/**
-	 * Returns true if this binding should be run asynchronously.
-	 *
-	 * @return true if should run async
+	 * Whether parsing flags should be attempted
+	 * @return ^
 	 */
-	public boolean async() default false;
+	public boolean parseFlags() default true;
+
+	/**
+	 * Flag descriptors to be used for the command flag
+	 * @return The command flag values
+	 */
+	public Flag[] flags() default {};
+
 }

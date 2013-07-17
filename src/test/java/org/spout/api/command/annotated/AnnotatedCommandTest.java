@@ -36,88 +36,78 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.Executor;
 
 public class AnnotatedCommandTest {
-	
+
 	@Test
 	public void testAnnotatedCommands() {
 		EngineFaker.setupEngine();
-		
+
 		CommandManager cm = Spout.getEngine().getCommandManager();
 		Executor exec1 = AnnotatedCommandExecutorFactory.create(new CommandsTest());
 		Executor exec2 = AnnotatedCommandExecutorFactory.create(new BarCommand(), cm.getCommand("foo"));
 		Executor exec3 = AnnotatedCommandExecutorFactory.create(ClassCommandsTest.class);
-		
+
 		org.spout.api.command.Command foo = cm.getCommand("foo");
 		org.spout.api.command.Command test = cm.getCommand("test");
 		org.spout.api.command.Command bar = foo.getChild("bar");
 		org.spout.api.command.Command herp = cm.getCommand("herp");
 		org.spout.api.command.Command backflip = cm.getCommand("backflip");
-		
+
 		Assert.assertSame(exec1, foo.getExecutor());
 		Assert.assertEquals("foo", foo.getName());
 		Assert.assertEquals("foo main command", foo.getHelp());
 		Assert.assertEquals("<bar>", foo.getUsage());
-		Assert.assertEquals(0, foo.getMinArguments());
-		Assert.assertEquals(-1, foo.getMaxArguments());
 		Assert.assertArrayEquals(foo.getAliases().toArray(), new String[] {"foo", "foo"});
-		
+
 		Assert.assertSame(exec1, test.getExecutor());
 		Assert.assertEquals("test", test.getName());
 		Assert.assertEquals("Stuff.", test.getHelp());
 		Assert.assertEquals("", test.getUsage());
-		Assert.assertEquals(0, test.getMinArguments());
-		Assert.assertEquals(0, test.getMaxArguments());
 		Assert.assertArrayEquals(test.getAliases().toArray(), new String[] {"test", "test", "t"});
-		
+
 		Assert.assertSame(exec2, bar.getExecutor());
 		Assert.assertEquals("bar", bar.getName());
 		Assert.assertEquals("Does a bar with an optionnal baz", bar.getHelp());
 		Assert.assertEquals("[baz]", bar.getUsage());
-		Assert.assertEquals(0, bar.getMinArguments());
-		Assert.assertEquals(1, bar.getMaxArguments());
 		Assert.assertArrayEquals(bar.getAliases().toArray(), new String[] {"bar", "bar"});
-		
+
 		Assert.assertSame(exec3, herp.getExecutor());
 		Assert.assertEquals("herp", herp.getName());
 		Assert.assertEquals("herps a derp.", herp.getHelp());
 		Assert.assertEquals("<derp>", herp.getUsage());
-		Assert.assertEquals(1, herp.getMinArguments());
-		Assert.assertEquals(1, herp.getMaxArguments());
 		Assert.assertArrayEquals(herp.getAliases().toArray(), new String[] {"herp", "herp"});
-		
+
 		Assert.assertSame(exec3, backflip.getExecutor());
 		Assert.assertEquals("backflip", backflip.getName());
 		Assert.assertEquals("Makes the server do a backflip", backflip.getHelp());
 		Assert.assertEquals("", backflip.getUsage());
-		Assert.assertEquals(0, backflip.getMinArguments());
-		Assert.assertEquals(-1, backflip.getMaxArguments());
 		Assert.assertArrayEquals(backflip.getAliases().toArray(), new String[] {"backflip", "backflip", "bflip"});
 	}
 
 	private static class CommandsTest {
-		@Command(aliases = "foo", desc = "foo main command", usage = "<bar>")
+		@CommandDescription(aliases = "foo", desc = "foo main command", usage = "<bar>")
 		public void foo(CommandSource source, CommandArguments args) {
 		}
-		
-		@Command(aliases = {"test", "t"}, desc = "Stuff.", min = 0, max = 0)
+
+		@CommandDescription(aliases = {"test", "t"}, desc = "Stuff.")
 		public void test(CommandSource source, CommandArguments args) {
 		}
 	}
-	
+
 	private static class BarCommand {
-		@Command(aliases = "bar", desc = "Does a bar with an optionnal baz", usage = "[baz]", min = 0, max = 1)
+		@CommandDescription(aliases = "bar", desc = "Does a bar with an optionnal baz", usage = "[baz]")
 		public void bar(CommandSource source, CommandArguments args) {
 		}
 	}
-	
+
 	private static final class ClassCommandsTest {
 		private ClassCommandsTest() {
 		}
-		
-		@Command(aliases = "herp", desc = "herps a derp.", usage = "<derp>", min = 1, max = 1)
+
+		@CommandDescription(aliases = "herp", desc = "herps a derp.", usage = "<derp>")
 		public static void herp(CommandSource source, CommandArguments args) {
 		}
-		
-		@Command(aliases = {"backflip", "bflip"}, desc = "Makes the server do a backflip")
+
+		@CommandDescription(aliases = {"backflip", "bflip"}, desc = "Makes the server do a backflip")
 		public static void backflip(CommandSource source, CommandArguments args) {
 		}
 	}
