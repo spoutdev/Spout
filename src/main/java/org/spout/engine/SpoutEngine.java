@@ -159,7 +159,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	public void start() {
 		Spout.info("Spout is starting in {0}-only mode.", getPlatform().name().toLowerCase());
-		Spout.info("Current version is {0} (Implementing SpoutAPI {1}).", getVersion(), getAPIVersion());
+		Spout.info("This server is running Spout #{0}.", Spout.getAPIVersion().replace("dev b", ""));
 		Spout.info("This software is currently in alpha status so components may");
 		Spout.info("have bugs or not work at all. Please report any issues to");
 		Spout.info("http://issues.spout.org");
