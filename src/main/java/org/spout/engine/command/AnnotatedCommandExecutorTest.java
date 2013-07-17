@@ -28,20 +28,23 @@ package org.spout.engine.command;
 
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.CommandDescription;
+import org.spout.api.exception.ArgumentParseException;
 
 public class AnnotatedCommandExecutorTest {
 	public static final class RootExecutor {
-		@Command(aliases = "root", desc = "Root command")
-		public void root(CommandSource source, CommandArguments args) {
-			source.sendMessage("Executed root command 'root " + args.getJoinedString(0) + "'.");
+		@CommandDescription(aliases = "root", desc = "Root command")
+		public void root(CommandSource source, CommandArguments args) throws ArgumentParseException {
+			String argStr = args.popRemainingStrings("args");
+			source.sendMessage("Executed root command 'root " + argStr + "'.");
 		}
 	}
 
 	public static final class ChildExecutor {
-		@Command(aliases = "child", desc = "Child command")
-		public void child(CommandSource source, CommandArguments args) {
-			source.sendMessage("Executed child command 'root " + args.getJoinedString(0) + "'.");
+		@CommandDescription(aliases = "child", desc = "Child command")
+		public void child(CommandSource source, CommandArguments args) throws ArgumentParseException {
+			args.assertCompletelyParsed();
+			source.sendMessage("Executed child command 'root " + args.getString("args") + "'.");
 		}
 	}
 }

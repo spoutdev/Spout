@@ -28,8 +28,9 @@ package org.spout.engine.command;
 
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.CommandDescription;
 
+import org.spout.api.exception.ArgumentParseException;
 import org.spout.engine.SpoutClient;
 
 public class RendererCommands {
@@ -39,8 +40,9 @@ public class RendererCommands {
 		this.client = client;
 	}
 
-	@Command(aliases = {"r_wireframe"}, desc = "Toggles Wireframe for the renderer")
-	public void toggleWireframe(CommandSource source, CommandArguments args) {
+	@CommandDescription(aliases = {"r_wireframe"}, desc = "Toggles Wireframe for the renderer")
+	public void toggleWireframe(CommandSource source, CommandArguments args) throws ArgumentParseException {
+		args.assertCompletelyParsed();
 
 		client.getScheduler().enqueueRenderTask(new Runnable() {
 			@Override

@@ -105,14 +105,13 @@ public abstract class CommonFileSystem implements FileSystem {
 	private void initInstallations() {
 		Spout.getCommandManager().getCommand("install")
 				.setPermission(INSTALLATION_PERMISSION)
-				.setArgumentBounds(1, 2)
 				.setHelp("Replies to an installation request.")
 				.setUsage("<list|allow|deny> [plugin|all]")
 				.setExecutor(new Executor() {
 					@Override
 					public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
 						// list the requested installations
-						String arg = args.getString(0);
+						String arg = args.popString("action");
 						if (arg.equalsIgnoreCase("list")) {
 							source.sendMessage("Listing pending installations...");
 							for (Map.Entry<String, URI> e : requestedInstallations.entrySet()) {
@@ -122,7 +121,7 @@ public abstract class CommonFileSystem implements FileSystem {
 						}
 
 						// install all pending installations
-						String plugin = args.getString(1);
+						String plugin = args.popString("plugin");
 						if (plugin.equalsIgnoreCase("all")) {
 							for (String p : requestedInstallations.keySet()) {
 								allowInstallation(source, p);

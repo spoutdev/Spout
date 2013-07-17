@@ -162,7 +162,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			((SpoutServerWorld) getWorld()).removePlayer(this);
 			//save player data on disconnect, probably should do this periodically as well...
 			PlayerFiles.savePlayerData(this, async);
-		}	
+		}
 		onlineLive.set(false);
 		return true;
 	}
@@ -195,7 +195,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public void sendCommand(String command, String... args) {
 		Command cmd = Spout.getCommandManager().getCommand(command, false);
-		Message msg = session.getProtocol().getCommandMessage(cmd, new CommandArguments(args));
+		Message msg = session.getProtocol().getCommandMessage(cmd, new CommandArguments(cmd.getName(), args));
 		if (msg == null) {
 			return;
 		}

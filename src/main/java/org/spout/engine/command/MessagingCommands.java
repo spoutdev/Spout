@@ -29,10 +29,11 @@ package org.spout.engine.command;
 import org.spout.api.Server;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.CommandDescription;
 import org.spout.api.command.annotated.Permissible;
 import org.spout.api.command.annotated.Platform;
 import org.spout.api.entity.Player;
+import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
 
 import org.spout.engine.SpoutEngine;
@@ -47,26 +48,24 @@ public class MessagingCommands  {
 		this.engine = engine;
 	}
 
-	@Command(aliases = {"tell", "msg"}, usage = "<target> <message>", desc = "Tell a message to a specific user", min = 2)
+	@CommandDescription(aliases = {"tell", "msg"}, usage = "<target> <message>", desc = "Tell a message to a specific user")
 	@Permissible("spout.command.tell")
 	public void tell(CommandSource source, CommandArguments args) throws CommandException {
-		String playerName = args.getString(0);
-		String message = args.getJoinedString(1);
-		Player player = args.getPlayer(0, false);
+		Player player = args.popPlayer("player");
+		String message = args.popRemainingStrings("message");
+
 		if (player == source) {
 			source.sendMessage("Forever alone.");
 		} else if (player != null) {
 			source.sendMessage("To " + player.getName() + ": " + message);
 			player.sendMessage("From " + source.getName() + ": " + message);
-		} else {
-			throw new CommandException("Player '" + playerName + "' not found.");
 		}
 	}
 
-	@Command(aliases = {"emote", "me", "action"}, usage = "<action>", desc = "Emote in the third person", min = 1)
+	@CommandDescription(aliases = {"emote", "me", "action"}, usage = "<action>", desc = "Emote in the third person")
 	@Permissible("spout.command.emote")
 	@Platform({org.spout.api.Platform.SERVER, org.spout.api.Platform.PROXY})
-	public void emote(CommandSource source, CommandArguments args) {
-		((Server) engine).broadcastMessage(source.getName() + " " + args.getJoinedString(0));
+	public void emote(CommandSource source, CommandArguments args) throws ArgumentParseException {
+		((Server) engine).broadcastMessage("* " + source.getName() + " " + args.popRemainingStrings("action"));
 	}
 }

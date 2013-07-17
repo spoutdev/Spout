@@ -26,40 +26,35 @@
  */
 package org.spout.engine.command;
 
+import org.spout.api.Server;
+import org.spout.api.command.CommandArguments;
+import org.spout.api.command.CommandBatch;
+import org.spout.api.command.CommandSource;
+import org.spout.api.command.annotated.CommandDescription;
+import org.spout.api.command.annotated.Filter;
+import org.spout.api.command.annotated.Permissible;
+import org.spout.api.command.annotated.Platform;
+import org.spout.api.command.filter.PlayerFilter;
+import org.spout.api.entity.Player;
+import org.spout.api.exception.ArgumentParseException;
+import org.spout.api.exception.CommandException;
+import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
+import org.spout.api.meta.SpoutMetaPlugin;
+import org.spout.api.plugin.Plugin;
+import org.spout.engine.SpoutEngine;
+import org.spout.engine.component.entity.MovementValidator;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.spout.api.Client;
-import org.spout.api.Server;
-import org.spout.api.Spout;
-
-import org.spout.api.command.CommandArguments;
-import org.spout.api.command.CommandBatch;
-import org.spout.api.command.CommandSource;
-import org.spout.api.command.annotated.Binding;
-import org.spout.api.command.annotated.Command;
-import org.spout.api.command.annotated.Filter;
-import org.spout.api.command.annotated.Permissible;
-import org.spout.api.command.annotated.Platform;
-import org.spout.api.command.filter.PlayerFilter;
-import org.spout.api.entity.Player;
-import org.spout.api.exception.CommandException;
-import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Region;
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
-import org.spout.api.gui.Screen;
-import org.spout.api.input.Keyboard;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
-import org.spout.api.meta.SpoutMetaPlugin;
-import org.spout.api.plugin.Plugin;
-
-import org.spout.engine.SpoutEngine;
-import org.spout.engine.component.entity.MovementValidator;
 
 public class CommonCommands {
 	private final SpoutEngine engine;
@@ -72,9 +67,11 @@ public class CommonCommands {
 		return engine;
 	}
 
-	@Command(aliases = {"bat", "batch"}, usage = "batch <file>", desc = "Executes a Spout batch file.", min = 1, max = 1)
+	@CommandDescription(aliases = {"bat", "batch"}, usage = "<file>", desc = "Executes a Spout batch file.")
 	public void batch(CommandSource source, CommandArguments args) throws CommandException {
-		String fileName = args.getString(0);
+		String fileName = args.popString("file");
+		args.assertCompletelyParsed();
+
 		if (!(source.hasPermission("spout.command.batch." + fileName))) {
 			throw new CommandException("You do not have permission to execute " + fileName);
 		}
@@ -83,9 +80,9 @@ public class CommonCommands {
 		source.sendMessage("Executed " + fileName + ".");
 	}
 
-	@Command(aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)
+	@CommandDescription(aliases = "stop", usage = "[message]", desc = "Stop the server!")
 	@Permissible("spout.command.stop")
-	public void stop(CommandSource source, CommandArguments args) {
+	public void stop(CommandSource source, CommandArguments args) throws ArgumentParseException {
 		String message = "Engine halting";
 		switch (engine.getPlatform()) {
 			case CLIENT:
@@ -98,13 +95,11 @@ public class CommonCommands {
 				message = "Server halting";
 				break;
 		}
-		if (args.length() > 0) {
-			message = args.getJoinedString(0);
-		}
+		message = args.popRemainingStrings("message", message);
 		engine.stop(message);
 	}
 
-	@Command(aliases = "stackdump", desc = "Writes the stack trace of all active threads to the logs", max = -1)
+	@CommandDescription(aliases = "stackdump", desc = "Writes the stack trace of all active threads to the logs")
 	@Permissible("spout.command.dumpstack")
 	public void dumpstack(CommandSource source, CommandArguments args) {
 		Map<Thread, StackTraceElement[]> dump = Thread.getAllStackTraces();
@@ -121,10 +116,10 @@ public class CommonCommands {
 		engine.getLogger().info("[---------------End Stack Dump---------------]");
 	}
 
-	@Command(aliases = "reload", usage = "[plugin]", desc = "Reload engine and/or plugins", max = 1)
+	@CommandDescription(aliases = "reload", usage = "[plugin]", desc = "Reload engine and/or plugins")
 	@Permissible("spout.command.reload")
 	public void reload(CommandSource source, CommandArguments args) throws CommandException {
-		if (args.length() == 0) {
+		if (!args.hasMore()) {
 			source.sendMessage("Reloading engine...");
 
 			for (Plugin plugin : getEngine().getPluginManager().getPlugins()) {
@@ -135,7 +130,8 @@ public class CommonCommands {
 
 			source.sendMessage("Reloaded.");
 		} else {
-			String pluginName = args.getString(0);
+			String pluginName = args.popString("plugin");
+			args.assertCompletelyParsed();
 			if (getEngine().getPluginManager().getPlugin(pluginName) == null) {
 				throw new CommandException("'" + pluginName + "' is not a valid plugin name.");
 			}
@@ -149,9 +145,10 @@ public class CommonCommands {
 		}
 	}
 
-	@Command(aliases = {"plugins", "pl"}, desc = "List all plugins on the engine")
+	@CommandDescription(aliases = {"plugins", "pl"}, desc = "List all plugins on the engine")
 	@Permissible("spout.command.plugins")
-	public void plugins(CommandSource source, CommandArguments args) {
+	public void plugins(CommandSource source, CommandArguments args) throws ArgumentParseException {
+		args.assertCompletelyParsed();
 		List<Plugin> plugins = getEngine().getPluginManager().getPlugins();
 		StringBuilder pluginListString = new StringBuilder();
 		pluginListString.append(Arrays.<Object>asList("Plugins (", plugins.size() - 1, "): "));
@@ -172,28 +169,13 @@ public class CommonCommands {
 		source.sendMessage(pluginListString.toString());
 	}
 
-	@Command(aliases = {"setspawn", "ss"}, desc = "Sets the spawnpoint for a world", min = 0, max = 4)
+	@CommandDescription(aliases = {"setspawn", "ss"}, desc = "Sets the spawnpoint for a world")
 	@Permissible("spout.command.setspawn")
 	@Platform(org.spout.api.Platform.SERVER)
 	public void setspawn(CommandSource source, CommandArguments args) throws CommandException {
-		//Not a player? Make sure the console is specifying world, x, y, z
-		if (!(source instanceof Player)) {
-			if (args.length() != 4) {
-				throw new CommandException("Need to specify world as well as x y z when executing from the console.");
-			}
-		}
-		Point point;
-		//Source is a player and didn't provide world, x, y, z so instead set the spawn point of their current world at their current position.
-		if (args.length() != 4) {
-			point = ((Player) source).getScene().getPosition();
-			//Either Source is the console or the player specified world, x, y, z so set those values
-		} else {
-			World world = args.getWorld(0, true);
-			if (world == null) {
-				throw new CommandException("World: " + args.getString(0) + " is not loaded/existant!");
-			}
-			point = new Point(world, args.getInteger(1), args.getInteger(2), args.getInteger(3));
-		}
+		Point point = args.popPoint("spawnpoint", source);
+		args.assertCompletelyParsed();
+
 		//Finally set the spawn point
 		point.getWorld().setSpawnPoint(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
 		//Notify the source
@@ -201,78 +183,48 @@ public class CommonCommands {
 				+ point.getBlockX() + ", y: " + point.getBlockY() + ", z: " + point.getBlockZ());
 	}
 
-	@Command(aliases = {"whatisspawn", "wis"}, desc = "Tells you the spawnpoint of a world", min = 0, max = 1)
+	@CommandDescription(aliases = {"whatisspawn", "wis"}, desc = "Tells you the spawnpoint of a world")
 	@Permissible("spout.command.tellspawn")
 	@Platform(org.spout.api.Platform.SERVER)
 	public void tellspawn(CommandSource source, CommandArguments args) throws CommandException {
-		if (!(source instanceof Player)) {
-			if (args.length() != 1) {
-				throw new CommandException("Must specify a world to find out the spawnpoint from the console!");
-			}
-		}
-		Point point;
-		if (args.length() != 1) {
-			point = ((Player) source).getScene().getPosition();
-		} else {
-			final World world = args.getWorld(0, true);
-			if (world == null) {
-				throw new CommandException("World: " + args.getString(0) + " is not loaded/existant!");
-			}
-			point = world.getSpawnPoint().getPosition();
-		}
+		Point point = args.popWorld("world", source).getSpawnPoint().getPosition();
+		args.assertCompletelyParsed();
+
 		source.sendMessage("The spawnpoint of world: " + point.getWorld().getName() + " is x: "
-				 + point.getBlockX() + ", y: " + point.getBlockY() + ", z: " + point.getBlockZ());
+				+ point.getBlockX() + ", y: " + point.getBlockY() + ", z: " + point.getBlockZ());
 	}
 
-	@Command(aliases = {"worldinfo"}, desc = "Provides info about known worlds", usage = "[world]", min = 0, max = 1)
+	@CommandDescription(aliases = {"worldinfo"}, desc = "Provides info about known worlds", usage = "[world]")
 	@Permissible("spout.command.worldinfo")
 	public void worldInfo(CommandSource source, CommandArguments args) throws CommandException {
-		switch (Spout.getPlatform()) {
-			case SERVER:
-				if (args.length() == 0) {
-					Collection<World> worlds = ((Server) engine).getWorlds();
-					StringBuilder output = new StringBuilder("Worlds (" + worlds.size() + "): ");
-					for (Iterator<World> i = worlds.iterator(); i.hasNext(); ) {
-						output.append(i.next().getName());
-						if (i.hasNext()) {
-							output.append(", ");
-						}
-					}
-					source.sendMessage(output.toString());
-				} else {
-					World world = ((Server) engine).getWorld(args.getString(0));
-					if (world == null) {
-						throw new CommandException("Unknown world: " + world);
-					}
-					source.sendMessage("World: " + world.getName());
-					source.sendMessage("==========================");
-					source.sendMessage("Age: " + world.getAge());
-					source.sendMessage("UUID: " + world.getUID());
-					source.sendMessage("Seed: " + world.getSeed());
+		if (!args.hasMore() && getEngine() instanceof Server) {
+			Collection<World> worlds = ((Server) engine).getWorlds();
+			StringBuilder output = new StringBuilder("Worlds (" + worlds.size() + "): ");
+			for (Iterator<World> i = worlds.iterator(); i.hasNext(); ) {
+				output.append(i.next().getName());
+				if (i.hasNext()) {
+					output.append(", ");
 				}
-				break;
-			case CLIENT:
-				World world = ((Client) engine).getWorld();
-				if (world == null) {
-					throw new CommandException("Unknown world: " + world);
-				}
-				source.sendMessage("World: " + world.getName());
-				source.sendMessage("==========================");
-				source.sendMessage("Age: " + world.getAge());
-				source.sendMessage("UUID: " + world.getUID());
-				source.sendMessage("Seed: " + world.getSeed());
-				break;
+			}
+			source.sendMessage(output.toString());
+		} else {
+			World world = args.popWorld("world");
+			args.assertCompletelyParsed();
+			source.sendMessage("World: " + world.getName());
+			source.sendMessage("==========================");
+			source.sendMessage("Age: " + world.getAge());
+			source.sendMessage("UUID: " + world.getUID());
+			source.sendMessage("Seed: " + world.getSeed());
 		}
 
 	}
 
-	@Command(aliases = {"regioninfo"}, desc = "Provides info about regions", usage = "[world]", min = 1, max = 1)
+	@CommandDescription(aliases = {"regioninfo"}, desc = "Provides info about regions in a given world", usage = "[world]")
 	@Permissible("spout.command.regioninfo")
 	public void chunkInfo(CommandSource source, CommandArguments args) throws CommandException {
-		World world = engine.getWorld(args.getString(0), true);
-		if (world == null) {
-			throw new CommandException("Unknown world: " + world);
-		}
+		World world = args.popWorld("world");
+		args.assertCompletelyParsed();
+
 		source.sendMessage("World: " + world.getName());
 		source.sendMessage("==========================");
 		int chunks = 0;
@@ -285,103 +237,34 @@ public class CommonCommands {
 		source.sendMessage("chunks: " + chunks);
 	}
 
-	@Command(aliases = {"tp", "teleport"}, usage = "[player] [player|x] [y] [z] [world]", desc = "Teleport to a location", min = 1, max = 5)
+	@CommandDescription(aliases = {"tp", "teleport"}, usage = "[player] <target>", desc = "Teleport to a location")
 	@Permissible("spout.command.tp")
 	public void tp(CommandSource source, CommandArguments args) throws CommandException {
-		Player player;
-		Player target = null;
-		Point point;
-		if (args.length() == 1) {
-			if (!(source instanceof Player)) {
-				throw new CommandException("You must be a player to teleport yourself!");
-			}
+		Player player = args.popPlayerOrMe("source", source);
+		Point point = args.popPoint("target", source);
+		args.assertCompletelyParsed();
 
-			player = args.getPlayer(0, true);
-			if (player == null || !player.isOnline()) {
-				throw new CommandException(args.getString(0) + " is not online.");
-			}
-			point = player.getScene().getPosition();
-		} else {
-			player = args.getPlayer(0, true);
-			if (player == null || !player.isOnline()) {
-				throw new CommandException(args.getString(0) + " is not online.");
-			}
-
-			if (args.length() > 2) {
-				World world = null;
-				if (args.length() > 4) {
-					world = args.getWorld(4);
-					if (world == null) {
-						source.sendMessage("Invalid world! Using player's world.");
-					}
-				}
-				if (world == null) {
-					world = player.getWorld();
-				}
-
-				float x = player.getScene().getPosition().getX();
-				if (args.isInteger(1)) {
-					x = args.getInteger(1);
-				} else if (args.getString(1).startsWith("~")) {
-					x += Integer.parseInt(args.getString(1).substring(1));
-				} else {
-					throw new CommandException("Invalid coordinates");
-				}
-
-				float y = player.getScene().getPosition().getY();
-				if (args.isInteger(2)) {
-					y = args.getInteger(2);
-				} else if (args.getString(2).startsWith("~")) {
-					y += Integer.parseInt(args.getString(2).substring(1));
-				} else {
-					throw new CommandException("Invalid coordinates");
-				}
-
-				float z = player.getScene().getPosition().getZ();
-				if (args.isInteger(3)) {
-					z = args.getInteger(3);
-				} else if (args.getString(3).startsWith("~")) {
-					z += Integer.parseInt(args.getString(3).substring(1));
-				} else {
-					throw new CommandException("Invalid coordinates");
-				}
-
-				point = new Point(world, x, y, z);
-			} else {
-				target = args.getPlayer(1, true);
-
-				if (target == null || !target.isOnline()) {
-					throw new CommandException(args.getString(1) + " is not online.");
-				}
-
-				point = target.getScene().getPosition();
-			}
-		}
 		point.getWorld().getChunkFromBlock(point);
 		player.teleport(point);
 
-		if (target != null) {
+		/*if (target != null) { // TODO: players in popPoint
 			player.sendMessage("You teleported to " + target.getName() + ".");
 			target.sendMessage(player.getName() + " teleported to you.");
 			return;
-		}
+		}*/
 		player.sendMessage("You were teleported to " + point.getWorld().getName() + ", X: " + point.getX()
 				+ ", Y: " + point.getY() + ", Z: " + point.getZ() + ".");
 	}
-	
-	@org.spout.api.command.annotated.Command(aliases = "validate_movement", desc = "Toggle the validating of movement.", min = 1, max = 1)
+
+	@CommandDescription(aliases = "validate_movement", desc = "Toggle the validating of movement.")
 	@Filter(PlayerFilter.class)
-	public void validateInput(CommandSource source, CommandArguments args) throws CommandException {
-		if (!args.getString(0).equalsIgnoreCase("+")) {
+	public void validateInput(Player player, CommandArguments args) throws CommandException {
+		if (!InputCommands.isPressed(args)) {
 			return;
 		}
-		if (Spout.getPlatform() == org.spout.api.Platform.SERVER) {
-			boolean wasValidating = ((Player) source).getData().get(MovementValidator.VALIDATE_MOVEMENT);
-			if (wasValidating) {
-				((Player) source).getData().put(MovementValidator.VALIDATE_MOVEMENT, false);
-			} else {
-				((Player) source).getData().put(MovementValidator.VALIDATE_MOVEMENT, true);
-			}
+
+		if (engine.getPlatform() == org.spout.api.Platform.SERVER) {
+			player.getData().put(MovementValidator.VALIDATE_MOVEMENT, !player.getData().get(MovementValidator.VALIDATE_MOVEMENT));
 		}
 	}
 }

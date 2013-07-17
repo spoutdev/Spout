@@ -29,13 +29,13 @@ package org.spout.engine.command;
 import org.spout.api.Engine;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
-import org.spout.api.command.CommandManager;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.Executor;
 import org.spout.api.command.annotated.Binding;
-import org.spout.api.command.filter.PlayerFilter;
+import org.spout.api.command.annotated.CommandDescription;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
+import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
 import org.spout.api.gui.Screen;
 import org.spout.api.input.Keyboard;
@@ -50,13 +50,17 @@ public class InputCommands {
 	public InputCommands(SpoutClient client) {
 		this.client = client;
 	}
+	public static boolean isPressed(CommandArguments args) throws ArgumentParseException {
+		return args.success("pressed", args.currentArgument("pressed").equalsIgnoreCase("+"));
+	}
 
-	@org.spout.api.command.annotated.Command(aliases = "dev_console", desc = "Toggle display of debugging info.", min = 1, max = 1)
+	@CommandDescription(aliases = "dev_console", desc = "Toggle display of debugging info.")
 	@Binding(value = Keyboard.KEY_F2, async = true)
 	public void devConsole(CommandSource source, CommandArguments args) throws CommandException {
-		if (!args.getString(0).equalsIgnoreCase("+")) {
+		if (!isPressed(args)) {
 			return;
 		}
+		args.assertCompletelyParsed();
 		final Screen consoleScreen = client.getScreenStack().getConsole();
 		client.getScheduler().enqueueRenderTask(new Runnable() {
 			@Override
@@ -70,12 +74,14 @@ public class InputCommands {
 		});
 	}
 
-	@org.spout.api.command.annotated.Command(aliases = "debug_info", desc = "Toggle display of debugging info.", min = 1, max = 1)
+	@CommandDescription(aliases = "debug_info", desc = "Toggle display of debugging info.")
 	@Binding(value = Keyboard.KEY_F3, async = true)
 	public void debugInfo(CommandSource source, CommandArguments args) throws CommandException {
-		if (!args.getString(0).equalsIgnoreCase("+")) {
+		if (!isPressed(args)) {
 			return;
 		}
+		args.assertCompletelyParsed();
+
 		final Screen debugScreen = (Screen) client.getScreenStack().getDebugHud();
 		client.getScheduler().enqueueRenderTask(new Runnable() {
 			@Override
@@ -92,18 +98,15 @@ public class InputCommands {
 	public static void setupInputCommands(Engine engine) {
 		for (PlayerInputState.Flags flag : PlayerInputState.Flags.values()) {
 			engine.getCommandManager().getCommand(flag.name())
-					.setArgumentBounds(1, 1)
 					.setHelp("Adds the " + flag.name() + " flag to the calling player's input state")
 					.setExecutor(new InputFlagHandler(flag));
 		}
 
 		engine.getCommandManager().getCommand(PlayerInputState.MouseDirection.PITCH.getFlagName())
-			.setArgumentBounds(1, 1)
 			.setHelp("Adds pitch handling to the calling player's input state")
 			.setExecutor(new MouseMovementHandler(PlayerInputState.MouseDirection.PITCH));
 
 		engine.getCommandManager().getCommand(PlayerInputState.MouseDirection.YAW.getFlagName())
-			.setArgumentBounds(1, 1)
 			.setHelp("Adds yaw handling to the calling player's input state")
 			.setExecutor(new MouseMovementHandler(PlayerInputState.MouseDirection.YAW));
 	}
@@ -121,7 +124,7 @@ public class InputCommands {
 				throw new CommandException("Source must be a player!");
 			}
 			Player player = (Player) source;
-			if (args.getString(0).equalsIgnoreCase("+")) {
+			if (isPressed(args)) {
 				player.processInput(player.input().withAddedFlag(flag));
 			} else {
 				player.processInput(player.input().withRemovedFlag(flag));
@@ -138,14 +141,15 @@ public class InputCommands {
 
 		@Override
 		public void execute(CommandSource source, Command command, CommandArguments args) throws CommandException {
-			if (!(source instanceof Player)) {
-				throw new CommandException("Source must be a player!");
-			}
-			Player player = (Player) source;
+			float diff = args.popFloat("diff");
+			args.assertCompletelyParsed();
+
+			Player player = args.checkPlayer(source);
+
 			if (direction == PlayerInputState.MouseDirection.PITCH) {
-				player.processInput(player.input().withAddedPitch(args.getFloat(0)));
+				player.processInput(player.input().withAddedPitch(diff));
 			} else {
-				player.processInput(player.input().withAddedYaw(args.getFloat(0)));
+				player.processInput(player.input().withAddedYaw(diff));
 			}
 		}
 	}

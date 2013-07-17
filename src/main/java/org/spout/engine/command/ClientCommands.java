@@ -28,7 +28,8 @@ package org.spout.engine.command;
 
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.CommandDescription;
+import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
 import org.spout.api.input.Binding;
 import org.spout.api.input.Keyboard;
@@ -46,18 +47,23 @@ public class ClientCommands extends CommonCommands {
 		return (SpoutClient) super.getEngine();
 	}
 
-	@Command(aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key", min = 2)
+	@CommandDescription(aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key")
 	public void bind(CommandSource source, CommandArguments args) throws CommandException {
-		getEngine().getInputManager().bind(new Binding(args.getJoinedString(1), Keyboard.valueOf(args.getString(0).toUpperCase())));
+		Keyboard key = args.popEnumValue("key", Keyboard.class);
+		String command = args.popString("command");
+		args.assertCompletelyParsed();
+		getEngine().getInputManager().bind(new Binding(command, key));
 	}
 
-	@Command(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!", min = 1, max = -1)
-	public void clientSay(CommandSource source, CommandArguments args) {
-		getEngine().getCommandSource().sendMessage(args.getJoinedString(0));
+	@CommandDescription(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!")
+	public void clientSay(CommandSource source, CommandArguments args) throws CommandException {
+		String message = args.popRemainingStrings("message");
+		getEngine().getCommandSource().sendMessage(message);
 	}
 
-	@Command(aliases = {"clear"}, usage = "[message]", desc = "Console Cleared", min = 0, max = 0)
-	public void consoleClear(CommandSource source, CommandArguments args) {
+	@CommandDescription(aliases = {"clear"}, usage = "[message]", desc = "Clear the client's console")
+	public void consoleClear(CommandSource source, CommandArguments args) throws ArgumentParseException {
+		args.assertCompletelyParsed();
 		getEngine().getScreenStack().getConsole().clearConsole();
 	}
 }

@@ -91,7 +91,7 @@ public class ConsoleCommandSource implements CommandSource {
 				break;
 			case CLIENT:
 				Session session = ((Client) Spout.getEngine()).getPlayer().getSession();
-				Message msg = session.getProtocol().getCommandMessage(command, new CommandArguments(args));
+				Message msg = session.getProtocol().getCommandMessage(command, new CommandArguments(command.getName(), args));
 				if (msg == null) {
 					return;
 				}

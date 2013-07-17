@@ -26,19 +26,6 @@
  */
 package org.spout.engine.command;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.spout.api.Client;
 import org.spout.api.Server;
 import org.spout.api.Spout;
@@ -47,8 +34,12 @@ import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.CommandDescription;
 import org.spout.api.command.annotated.Filter;
+import org.spout.api.command.annotated.Flag;
+import org.spout.api.command.annotated.Permissible;
+import org.spout.api.command.annotated.Platform;
+import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.component.entity.AnimationComponent;
 import org.spout.api.component.entity.InteractComponent;
 import org.spout.api.component.widget.RenderPartComponent;
@@ -60,9 +51,6 @@ import org.spout.api.component.widget.button.CheckBoxComponent;
 import org.spout.api.component.widget.button.RadioComponent;
 import org.spout.api.component.widget.list.ComboBoxComponent;
 import org.spout.api.component.widget.list.ItemListComponent;
-import org.spout.api.command.annotated.Permissible;
-import org.spout.api.command.annotated.Platform;
-import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
@@ -82,17 +70,27 @@ import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.plugin.Plugin;
-import org.spout.api.plugin.PluginManager;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
-
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.component.entity.SpoutModelComponent;
-import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.world.SpoutChunk;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class TestCommands {
 	private final SpoutEngine engine;
@@ -101,10 +99,14 @@ public class TestCommands {
 		this.engine = engine;
 	}
 
-	@Command(aliases = "reqinstall", usage = "<plugin> <uri>", desc = "Requests a plugin install.", min = 2, max = 2)
+	@CommandDescription(aliases = "reqinstall", usage = "<plugin> <uri>", desc = "Requests a plugin install.")
 	public void requestInstall(CommandSource source, CommandArguments args) throws CommandException {
+		final String plugin = args.popString("plugin");
+		final String url = args.popString("url");
+		args.assertCompletelyParsed();
+
 		try {
-			Spout.getFileSystem().requestPluginInstall(args.getString(0), new URI(args.getString(1)));
+			Spout.getFileSystem().requestPluginInstall(plugin, new URI(url));
 		} catch (URISyntaxException e) {
 			throw new CommandException(e);
 		}
@@ -118,69 +120,69 @@ public class TestCommands {
 		return source;
 	}
 
-	@Command(aliases = "sound", usage = "<load|play|pause|stop|rewind|dispose|pitch|gain|loop> <path|id> [value]",
-			desc = "Test command for sound management.", min = 2, max = 3)
+	@CommandDescription(aliases = "sound", usage = "<load|play|pause|stop|rewind|dispose|pitch|gain|loop> <path|id> [value]",
+			desc = "Test command for sound management.")
 	public void sound(CommandSource source, CommandArguments args) throws CommandException {
 		if (!(engine instanceof Client)) {
 			throw new CommandException("Sounds can only be managed on the client.");
 		}
 
 		SoundManager sm = ((Client) engine).getSoundManager();
-		String action = args.getString(0);
+		String action = args.popString("action");
 		if (action.equalsIgnoreCase("load")) {
-			String path = args.getString(1);
+			String path = args.popString("path");
+			args.assertCompletelyParsed();
+
 			Sound sound = engine.getFileSystem().getResource("sound://" + path);
 			if (sound == null) {
 				throw new CommandException("Could not get sound at path " + path);
 			}
 			int sourceId = sm.createSource(sound).getId();
 			source.sendMessage("Created new source at your position with id: " + sourceId);
-		} else if (action.equalsIgnoreCase("play")) {
-			SoundSource soundSource = getSoundSource(args.getInteger(1));
-			soundSource.play();
-			source.sendMessage("Playing...");
-		} else if (action.equalsIgnoreCase("pause")) {
-			SoundSource soundSource = getSoundSource(args.getInteger(1));
-			soundSource.pause();
-			source.sendMessage("Paused.");
-		} else if (action.equalsIgnoreCase("stop")) {
-			SoundSource soundSource = getSoundSource(args.getInteger(1));
-			soundSource.stop();
-			source.sendMessage("Stopped.");
-		} else if (action.equalsIgnoreCase("rewind")) {
-			SoundSource soundSource = getSoundSource(args.getInteger(1));
-			soundSource.rewind();
-			source.sendMessage("Rewinding...");
-		} else if (action.equalsIgnoreCase("dispose")) {
-			sm.removeSource(getSoundSource(args.getInteger(1)));
-			source.sendMessage("Source dispoed.");
-		} else if (action.equalsIgnoreCase("pitch")) {
-			SoundSource soundSource = getSoundSource(args.getInteger(1));
-			float pitch = (float) args.getDouble(2);
-			soundSource.setPitch(pitch);
-			source.sendMessage("Set pitch to " + pitch);
-		} else if (action.equalsIgnoreCase("gain")) {
-			SoundSource soundSource = getSoundSource(args.getInteger(1));
-			float gain = (float) args.getDouble(2);
-			soundSource.setGain(gain);
-			source.sendMessage("Set gain to " + gain);
-		} else if (action.equalsIgnoreCase("loop")) {
-			SoundSource soundSource = getSoundSource(args.getInteger(1));
-			boolean loop = Boolean.valueOf(args.getString(2));
-			source.sendMessage("Set to loop: " + loop);
 		} else {
-			throw new CommandException("Unknown action: " + action);
+			int id = args.popInteger("id");
+			SoundSource soundSource = getSoundSource(id);
+			if (action.equalsIgnoreCase("play")) {
+				soundSource.play();
+				source.sendMessage("Playing...");
+			} else if (action.equalsIgnoreCase("pause")) {
+				soundSource.pause();
+				source.sendMessage("Paused.");
+			} else if (action.equalsIgnoreCase("stop")) {
+				soundSource.stop();
+				source.sendMessage("Stopped.");
+			} else if (action.equalsIgnoreCase("rewind")) {
+				soundSource.rewind();
+				source.sendMessage("Rewinding...");
+			} else if (action.equalsIgnoreCase("dispose")) {
+				source.sendMessage("Source dispoed.");
+			} else if (action.equalsIgnoreCase("pitch")) {
+				float pitch = args.popFloat("pitch");
+				soundSource.setPitch(pitch);
+				source.sendMessage("Set pitch to " + pitch);
+			} else if (action.equalsIgnoreCase("gain")) {
+				float gain = args.popFloat("gain");
+				soundSource.setGain(gain);
+				source.sendMessage("Set gain to " + gain);
+			} else if (action.equalsIgnoreCase("loop")) {
+				boolean loop = args.popBoolean("loop");
+				source.sendMessage("Set to loop: " + loop);
+			} else {
+				throw new CommandException("Unknown action: " + action);
+			}
 		}
 	}
 
-	@Command(aliases = "widget", usage = "<button|checkbox|radio|combo|list|label|slider|spinner|textfield|rect>",
-			desc = "Renders a widget on your screen.", min = 1, max = 1)
+	@CommandDescription(aliases = "widget", usage = "<button|checkbox|radio|combo|list|label|slider|spinner|textfield|rect>",
+			desc = "Renders a widget on your screen.")
 	@Platform(org.spout.api.Platform.CLIENT)
 	public void widget(CommandSource source, CommandArguments args) throws CommandException {
 		Client client = (Client) engine;
 		Screen screen = new Screen();
 		Widget widget = client.getScreenStack().createWidget();
-		String flag = args.getString(0);
+		String flag = args.getString("type");
+		args.assertCompletelyParsed();
+
 		if (flag.equalsIgnoreCase("button")) {
 			widget.add(ButtonComponent.class);
 		} else if (flag.equalsIgnoreCase("checkbox")) {
@@ -202,62 +204,49 @@ public class TestCommands {
 		} else {
 			throw new CommandException("Component not found.");
 		}
-		screen.attachWidget(((PluginManager) Spout.getPluginManager()).getMetaPlugin(), widget);
+		screen.attachWidget(engine.getPluginManager().getMetaPlugin(), widget);
 		client.getScreenStack().openScreen(screen);
 	}
 
-	@Command(aliases = "break", desc = "Debug command to break a block")
+	@CommandDescription(aliases = "break", desc = "Debug command to break a block")
 	@Platform(org.spout.api.Platform.CLIENT)
-	public void debugBreak(CommandSource source, CommandArguments args) throws CommandException {
-		Client client = (Client) engine;
-		Player player = client.getPlayer();
+	@Filter(PlayerFilter.class)
+	public void debugBreak(Player player, CommandArguments args) throws CommandException {
 		Block block = player.get(InteractComponent.class).getTargetBlock();
 
 		if (block == null || block.getMaterial().equals(BlockMaterial.AIR)) {
-			source.sendMessage("No blocks in range.");
+			player.sendMessage("No blocks in range.");
 		} else {
-			source.sendMessage("Block to break: " + block.toString());
+			player.sendMessage("Block to break: " + block.toString());
 			block.setMaterial(BlockMaterial.AIR);
 		}
 	}
 
-	@Command(aliases = {"dbg"}, desc = "Debug Output")
+	@CommandDescription(aliases = {"dbg"}, desc = "Debug Output")
 	public void debugOutput(CommandSource source, CommandArguments args) {
 		World world = engine.getDefaultWorld();
 		source.sendMessage("World Entity count: " + world.getAll().size());
 	}
 
-	@Command(aliases = "dumpthreads", desc = "Dumps a listing of all thread stacks to the console")
+	@CommandDescription(aliases = "dumpthreads", desc = "Dumps a listing of all thread stacks to the console")
 	public void dumpThreads(CommandSource source, CommandArguments args) throws CommandException {
 		AsyncExecutorUtils.dumpAllStacks();
 	}
 
-	@Command(aliases = "testmsg", desc = "Test extracting chat styles from a message and printing them")
-	public void testMsg(CommandSource source, CommandArguments args) throws CommandException {
-		source.sendMessage(args.getJoinedString(0));
-	}
-
-	@Command(aliases = "plugins-tofile", usage = "[filename]", desc = "Creates a file containing all loaded plugins and their version", min = 0, max = 1)
+	@CommandDescription(aliases = "plugins-tofile", usage = "[filename]", desc = "Creates a file containing all loaded plugins and their version")
 	@Permissible("spout.command.pluginstofile")
 	public void getPluginDetails(CommandSource source, CommandArguments args) throws CommandException {
-
-		// File and filename
-		String filename = "";
 		String standpath = "pluginreports";
-		File file = null;
 
 		// Getting date
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
 		String parse = dateFormat.format(date);
 
+		String filename = args.popString("filename", parse + ".txt");
+		args.assertCompletelyParsed();
 		// Create file with passed filename or current date and time as name
-		if (args.length() == 1) {
-			filename = args.getString(0);
-			file = new File(standpath.concat("/" + replaceInvalidCharsWin(filename)));
-		} else {
-			file = new File(standpath.concat("/" + replaceInvalidCharsWin(parse)).concat(".txt"));
-		}
+		File file = new File(standpath, replaceInvalidCharsWin(filename));
 
 		// Delete the file if existent
 		if (file.exists()) {
@@ -276,192 +265,135 @@ public class TestCommands {
 
 		// Content Builder
 		StringBuilder sbuild = new StringBuilder();
-		sbuild.append("# This file was created on the ").append(dateFormat.format(date).concat(linesep));
-		sbuild.append("# Plugin Name | Version | Authors".concat(linesep));
+		sbuild.append("# This file was created on the ").append(parse).append(linesep);
+		sbuild.append("# Plugin Name | Version | Authors").append(linesep);
 
 		// Plugins to write down
 		List<Plugin> plugins = engine.getPluginManager().getPlugins();
 
-		// Getting plugin informations
+		// Getting plugin information
 		for (Plugin plugin : plugins) {
 
 			// Name and Version
-			sbuild.append(plugin.getName().concat(" | "));
-			sbuild.append(plugin.getDescription().getVersion());
+			sbuild.append(plugin.getName()).append(" | ")
+					.append(plugin.getDescription().getVersion());
 
 			// Authors
 			List<String> authors = plugin.getDescription().getAuthors();
-			StringBuilder authbuilder = new StringBuilder();
 			if (authors != null && authors.size() > 0) {
+				sbuild.append(" | ");
 				int size = authors.size();
 				int count = 0;
 				for (String s : authors) {
 					count++;
 					if (count != size) {
-						authbuilder.append(s).append(", ");
+						sbuild.append(s).append(", ");
 					} else {
-						authbuilder.append(s);
+						sbuild.append(s);
 					}
 				}
-				sbuild.append(" | ".concat(authbuilder.toString()).concat(linesep));
-			} else {
-				sbuild.append(linesep);
 			}
+			sbuild.append(linesep);
 		}
 
 		BufferedWriter writer = null;
 
 		// Write to file
-		if (file != null) {
-			try {
-				writer = new BufferedWriter(new FileWriter(file));
-				writer.write(sbuild.toString());
-			} catch (IOException e) {
-				throw new CommandException("Couldn't write to report-file!");
-			} finally {
-				if (writer != null) {
-					try {
-						writer.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+		try {
+			writer = new BufferedWriter(new FileWriter(file));
+			writer.write(sbuild.toString());
+		} catch (IOException e) {
+			throw new CommandException("Couldn't write to report-file!");
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}
 
-		source.sendMessage("Plugins-report successfully created! " + linesep + "Stored in: " + standpath);
+		source.sendMessage("Plugins-report successfully created  in: " + standpath);
 	}
 
-	@Command(aliases = {"move"}, desc = "Move a entity with his Id", min = 4, max = 4)
+	@CommandDescription(aliases = {"move"}, desc = "Move a entity with his Id")
 	public void moveEntity(CommandSource source, CommandArguments args) throws CommandException {
-		SpoutPlayer player;
-		if (!(source instanceof Player)) {
-			if (engine.getPlatform() == org.spout.api.Platform.CLIENT) {
-				player = ((SpoutClient) engine).getPlayer();
-			} else {
-				player = (SpoutPlayer) source;
-			}
-		} else {
-			throw new CommandException("Can only run this as a player!");
-		}
-
-		int id = args.getInteger(0);
-		float x = (float) args.getDouble(1);
-		float y = (float) args.getDouble(2);
-		float z = (float) args.getDouble(3);
-
-		Entity e = player.getWorld().getEntity(id);
+		int id = args.popInteger("id");
+		Point p = args.popPoint("dest", source);
+		Entity e = p.getWorld().getEntity(id);
+		args.assertCompletelyParsed();
 
 		if (e == null) {
-			return;
+			throw new CommandException("No entity with id " + id + " in world " + p.getWorld().getName());
 		}
 
-		e.getScene().setPosition(new Point(e.getWorld(), x, y, z));
+		e.getScene().setPosition(p);
 
-		engine.getLogger().info("Entity " + id + " move to " + x + " " + y + " " + z);
+		engine.getLogger().info("Entity " + id + " move to " + p.getBlockX() + "," + p.getBlockY() + "," + p.getBlockZ());
 	}
 
-	@Command(aliases = {"rotate"}, desc = "Rotate a entity with his Id", min = 4, max = 4)
+	@CommandDescription(aliases = {"rotate"}, desc = "Rotate a entity with his Id")
 	public void rotateEntity(CommandSource source, CommandArguments args) throws CommandException {
-		SpoutPlayer player;
-		if (!(source instanceof Player)) {
-			if (engine.getPlatform() == org.spout.api.Platform.CLIENT) {
-				player = ((SpoutClient) engine).getPlayer();
-			} else {
-				player = (SpoutPlayer) source;
-			}
-		} else {
-			throw new CommandException("Can only run this as a player!");
-		}
+		int id = args.popInteger("id");
+		World world = args.popWorld("world");
+		Vector3 rot = args.popVector3("rot");
+		args.assertCompletelyParsed();
 
-		int id = args.getInteger(0);
-		float pitch = (float) args.getDouble(1);
-		float yaw = (float) args.getDouble(2);
-		float roll = (float) args.getDouble(3);
-
-		Entity e = player.getWorld().getEntity(id);
-
+		Entity e = world.getEntity(id);
 		if (e == null) {
-			return;
+			throw new CommandException("Unknown entity " + id + " in world " + world + "!");
 		}
-		e.getScene().setRotation(e.getScene().getTransform().getRotation().rotate(0, pitch, yaw, roll));
+		e.getScene().setRotation(e.getScene().getRotation().rotate(0, rot));
 
-		engine.getLogger().info("Entity " + id + " rotate to " + pitch + " " + yaw + " " + roll);
+		engine.getLogger().info("Entity " + id + " rotate to " + rot.getX() + " " + rot.getY() + " " + rot.getZ());
 	}
 
-	@Command(aliases = {"scale"}, desc = "Scale a entity with his Id", min = 4, max = 4)
+	@CommandDescription(aliases = {"scale"}, desc = "Scale a entity with his Id")
 	public void scaleEntity(CommandSource source, CommandArguments args) throws CommandException {
-		SpoutPlayer player;
-		if (!(source instanceof Player)) {
-			if (engine.getPlatform() == org.spout.api.Platform.CLIENT) {
-				player = ((SpoutClient) engine).getPlayer();
-			} else {
-				player = (SpoutPlayer) source;
-			}
-		} else {
-			throw new CommandException("Can only run this as a player!");
-		}
+		int id = args.popInteger("id");
+		World world = args.popWorld("world");
+		Vector3 scale = args.popVector3("scale");
+		args.assertCompletelyParsed();
 
-		int id = args.getInteger(0);
-		float x = (float) args.getDouble(1);
-		float y = (float) args.getDouble(2);
-		float z = (float) args.getDouble(3);
-
-		Entity e = player.getWorld().getEntity(id);
-
+		Entity e = world.getEntity(id);
 		if (e == null) {
-			return;
+			throw new CommandException("Unknown entity " + id + " in world " + world + "!");
 		}
 
 		Transform transform = e.getScene().getTransform();
-		transform.scale(new Vector3(x, y, z));
+		transform.scale(scale);
 		e.getScene().setTransform(transform);
 
-		engine.getLogger().info("Entity " + id + " scale to " + x + " " + y + " " + z);
+		engine.getLogger().info("Entity " + id + " scale to " + scale.getX() + " " + scale.getY() + " " + scale.getZ());
 	}
 
-	@Command(aliases = {"animstart"}, desc = "Launch a animation his Id", min = 2, max = 3)
+	@CommandDescription(aliases = {"animstart"}, desc = "Launch a animation his Id", flags = {@Flag(aliases = {"loop", "l"})})
 	public void playAnimation(CommandSource source, CommandArguments args) throws CommandException {
-		SpoutPlayer player;
-		if (!(source instanceof Player)) {
-			if (engine.getPlatform() == org.spout.api.Platform.CLIENT) {
-				player = ((SpoutClient) engine).getPlayer();
-			} else {
-				player = (SpoutPlayer) source;
-			}
-		} else {
-			throw new CommandException("Can only run this as a player!");
-		}
+		int id = args.popInteger("id");
+		World world = args.popWorld("world", source);
+		String animationName = args.popString("animation");
+		args.assertCompletelyParsed();
 
-		int id = args.getInteger(0);
-
-		Entity e = player.getWorld().getEntity(id);
-
+		Entity e = world.getEntity(id);
 		if (e == null) {
-			source.sendMessage("Entity not found");
-			return;
+			throw new CommandException("No entity with id " + id + " in world " + world.getName());
 		}
 
 		SpoutModelComponent rendererComponent = e.get(SpoutModelComponent.class);
-
 		if (rendererComponent.getModels().isEmpty()) {
-			source.sendMessage("No model on this entity");
-			return;
+			throw new CommandException("Entity with id " + id + " in world " + world.getName() + " has no model");
 		}
-
 		Model model = rendererComponent.getModels().get(0);
 
 		Skeleton skeleton = model.getSkeleton();
-
 		if (skeleton == null) {
-			source.sendMessage("No skeleton on this entity");
-			return;
+			throw new CommandException("Entity with id " + id + " in world " + world.getName() + " has no skeleton");
 		}
 
-		Animation animation = model.getAnimations().get(args.getString(1));
-
+		Animation animation = model.getAnimations().get(animationName);
 		if (animation == null) {
-			source.sendMessage("No animation with " + args.getString(1) + ", see the list :");
+			source.sendMessage("No animation with " + animationName + ", see the list :");
 			for (String a : model.getAnimations().keySet()) {
 				source.sendMessage(a);
 			}
@@ -469,48 +401,34 @@ public class TestCommands {
 		}
 
 		AnimationComponent ac = e.get(AnimationComponent.class);
-
-		ac.playAnimation(model, animation, args.length() > 2 && args.getString(2).equalsIgnoreCase("on"));
-
-		source.sendMessage("Entity " + id + " play " + animation.getName());
+		ac.playAnimation(model, animation, args.has("loop"));
+		source.sendMessage("Entity " + id + " is now playing " + animation.getName());
 	}
 
-	@Command(aliases = {"animstop"}, desc = "Stop all animation on a entity", min = 1, max = 1)
+	@CommandDescription(aliases = {"animstop"}, desc = "Stop all animation on a entity")
 	public void stopAnimation(CommandSource source, CommandArguments args) throws CommandException {
-		SpoutPlayer player;
-		if (!(source instanceof Player)) {
-			if (engine.getPlatform() == org.spout.api.Platform.CLIENT) {
-				player = ((SpoutClient) engine).getPlayer();
-			} else {
-				player = (SpoutPlayer) source;
-			}
-		} else {
-			throw new CommandException("Can only run this as a player!");
-		}
-
-		int id = args.getInteger(0);
-
-		Entity e = player.getWorld().getEntity(id);
+		int id = args.popInteger("id");
+		World world = args.popWorld("world", source);
+		Entity e = world.getEntity(id);
+		args.assertCompletelyParsed();
 
 		if (e == null) {
-			source.sendMessage("Entity not found");
-			return;
+			throw new CommandException("No entity with id " + id + " in world " + world.getName());
 		}
 
 		AnimationComponent ac = e.get(AnimationComponent.class);
-
 		if (ac == null) {
-			source.sendMessage("No AnimationComponent on this entity");
-			return;
+			throw new CommandException("Entity " + id + " in world " + world.getName() + " does not have an AnimationComponent");
 		}
 
 		ac.stopAnimations();
-
 		source.sendMessage("Entity " + id + " animation stopped ");
 	}
 
-	@Command(aliases = {"profpop"}, desc = "Prints the populator profiler results to console", min = 0, max = 0)
+	@CommandDescription(aliases = {"profpop"}, desc = "Prints the populator profiler results to console")
 	public void profilePopulator(CommandSource source, CommandArguments args) throws CommandException {
+		args.assertCompletelyParsed();
+
 		Spout.getLogger().info("");
 		Spout.getLogger().info("Populator profiler results");
 		long totalPopulator = 0;
@@ -533,14 +451,14 @@ public class TestCommands {
 		Spout.getLogger().info("Total " + totalDecorator);
 	}
 
-	@Command(aliases = {"resend"}, usage = "[all|one]", desc = "Resends chunks to players", min = 0, max = 1)
+	@CommandDescription(aliases = {"resend"}, usage = "[all|one]", desc = "Resends chunks to players")
 	public void resendChunks(CommandSource source, CommandArguments args) throws CommandException {
 		if (args.length() > 0) {
 			if (engine.getPlatform() != org.spout.api.Platform.SERVER) {
 				throw new CommandException("This command must be used on the server");
 			}
 			boolean one = false;
-			if (args.getString(0).equalsIgnoreCase("one")) {
+			if (args.popString("amt").equalsIgnoreCase("one")) {
 				one = true;
 			}
 			int count = 0;
@@ -565,8 +483,9 @@ public class TestCommands {
 		}
 	}
 
-	@Command(aliases = {"testnetwork"}, desc = "Checks that the session is open and connected", min = 0, max = 0)
+	@CommandDescription(aliases = {"testnetwork"}, desc = "Checks that the session is open and connected")
 	public void testNetwork(CommandSource source, CommandArguments args) throws CommandException {
+		args.assertCompletelyParsed();
 		switch (engine.getPlatform()) {
 			case CLIENT:
 				Session session = ((SpoutClient) engine).getSession();
@@ -574,7 +493,7 @@ public class TestCommands {
 					source.sendMessage("Network is open and connected");
 				} else {
 					source.sendMessage("Network is down. Stopping.");
-				engine.stop();
+					engine.stop();
 				}
 				break;
 			case SERVER:
@@ -585,11 +504,12 @@ public class TestCommands {
 		}
 	}
 
-	@Command(aliases = "respawn", usage = "", desc = "Forces the client to respawn", max = 0)
+	@CommandDescription(aliases = "respawn", usage = "", desc = "Forces the client to respawn")
 	@Platform(org.spout.api.Platform.SERVER)
 	@Filter(PlayerFilter.class)
-	public void respawn(CommandSource source, CommandArguments args) throws CommandException {
-		((ServerNetworkSynchronizer) ((Player) source).getNetworkSynchronizer()).forceRespawn();
+	public void respawn(Player player, CommandArguments args) throws CommandException {
+		args.assertCompletelyParsed();
+		((ServerNetworkSynchronizer) player.getNetworkSynchronizer()).forceRespawn();
 	}
 
 	/**
