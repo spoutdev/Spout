@@ -1,5 +1,9 @@
 package org.spout.api.guix;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.geo.discrete.Transform2D;
@@ -10,7 +14,7 @@ import org.spout.api.tickable.Tickable;
 /**
  * Represents an element on a {@link Screen}.
  */
-public class Widget implements Comparable<Widget>, Tickable {
+public abstract class Widget implements Comparable<Widget>, Tickable {
 	protected Screen screen;
 	private Rectangle bounds = Rectangle.ZERO;
 	private Transform2D transform = new Transform2D();
@@ -22,6 +26,10 @@ public class Widget implements Comparable<Widget>, Tickable {
 
 
 	private boolean grabbed = false;
+
+	public List<Sprite> getSprites() {
+		return Collections.emptyList();
+	}
 
 	/**
 	 * Returns the hit box of this widget.
