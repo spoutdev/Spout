@@ -387,7 +387,7 @@ public class SpoutInputManager implements InputManager {
 
 			final Client client = (Client) Spout.getEngine();
 			final PlayerInputState state = client.getPlayer().input();
-			final float speed = .1f;
+			final float speed = 50f;
 			final Vector3 motion;
 			if (state.getForward()) {
 				motion = playerTransform.forwardVector().multiply(speed * -dt);

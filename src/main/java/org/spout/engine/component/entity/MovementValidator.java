@@ -57,7 +57,7 @@ public class MovementValidator extends EntityComponent {
 	@Override
 	public void onTick(float dt) {
 		// dt is in seconds
-		final float speed = .1f;
+		final float speed = 50f;
 		PlayerInputState inputState = player.input();
 		Transform playerTransform = player.getScene().getTransform();
 		final Vector3 motion;
