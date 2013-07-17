@@ -56,7 +56,7 @@ public class RadioComponent extends ButtonComponent {
 	 * @return true if this is selected.
 	 */
 	public boolean isSelected() {
-		return getDatatable().get(KEY_SELECTED);
+		return getData().get(KEY_SELECTED);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class RadioComponent extends ButtonComponent {
 	 * @param selected true if select
 	 */
 	public void setSelected(boolean selected) {
-		getDatatable().put(KEY_SELECTED, selected);
+		getData().put(KEY_SELECTED, selected);
 		emit(SIGNAL_SELECTED, selected);
 		if (selected) {
 			for (Widget widget : getOwner().getScreen().getWidgets()) {

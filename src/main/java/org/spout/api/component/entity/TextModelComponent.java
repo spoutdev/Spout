@@ -38,20 +38,20 @@ public class TextModelComponent extends EntityComponent {
 	protected boolean lookCamera = true;
 
 	public String getText() {
-		return getDatatable().get(KEY_TEXT);
+		return getData().get(KEY_TEXT);
 	}
 
 	public void setText(String text) {
-		getDatatable().put(KEY_TEXT, text);
+		getData().put(KEY_TEXT, text);
 		dirty = true;
 	}
 
 	public Font getFont() {
-		return getDatatable().get(KEY_FONT);
+		return getData().get(KEY_FONT);
 	}
 
 	public void setFont(Font font) {
-		getDatatable().put(KEY_FONT, font);
+		getData().put(KEY_FONT, font);
 		dirty = true;
 	}
 

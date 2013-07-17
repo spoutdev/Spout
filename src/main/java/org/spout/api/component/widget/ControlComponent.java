@@ -69,10 +69,10 @@ public class ControlComponent extends WidgetComponent {
 	}
 
 	public int getTabIndex() {
-		return getDatatable().get(KEY_TAB_INDEX);
+		return getData().get(KEY_TAB_INDEX);
 	}
 
 	public void setTabIndex(int newIndex) {
-		getDatatable().put(KEY_TAB_INDEX, newIndex);
+		getData().put(KEY_TAB_INDEX, newIndex);
 	}
 }

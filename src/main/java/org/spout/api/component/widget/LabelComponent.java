@@ -99,7 +99,7 @@ public class LabelComponent extends WidgetComponent {
 	 * @param font of label
 	 */
 	public void setFont(Font font) {
-		getDatatable().put(KEY_FONT, font);
+		getData().put(KEY_FONT, font);
 		getOwner().update();
 	}
 
@@ -108,7 +108,7 @@ public class LabelComponent extends WidgetComponent {
 	 * @return font of label
 	 */
 	public Font getFont() {
-		return getDatatable().get(KEY_FONT);
+		return getData().get(KEY_FONT);
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class LabelComponent extends WidgetComponent {
 	 * @return text on label
 	 */
 	public String getText() {
-		return getDatatable().get(KEY_TEXT);
+		return getData().get(KEY_TEXT);
 	}
 
 	/**
@@ -124,7 +124,7 @@ public class LabelComponent extends WidgetComponent {
 	 * @param text on label
 	 */
 	public void setText(String text) {
-		getDatatable().put(KEY_TEXT, text);
+		getData().put(KEY_TEXT, text);
 		getOwner().update();
 	}
 
@@ -173,7 +173,7 @@ public class LabelComponent extends WidgetComponent {
 	 * @return text of color
 	 */
 	public Color getColor() {
-		return getDatatable().get(KEY_COLOR);
+		return getData().get(KEY_COLOR);
 	}
 
 	/**
@@ -181,7 +181,7 @@ public class LabelComponent extends WidgetComponent {
 	 * @param color of text
 	 */
 	public void setColor(Color color) {
-		getDatatable().put(KEY_COLOR, color);
+		getData().put(KEY_COLOR, color);
 		getOwner().update();
 	}
 

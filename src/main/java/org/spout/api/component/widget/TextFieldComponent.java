@@ -194,7 +194,7 @@ public class TextFieldComponent extends LabelComponent {
 		if (rows < 1 || rows > getMaxRows()) {
 			throw new IllegalArgumentException("Specified rows exceeds the limit for this text field or is less than one.");
 		}
-		getDatatable().put(KEY_ROWS, rows);
+		getData().put(KEY_ROWS, rows);
 		Rectangle rect = field.getSprite();
 		float height = getRowHeight() * rows;
 		// shift y down, multiply row height by specified rows
@@ -206,7 +206,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return rows of TextField
 	 */
 	public int getRows() {
-		return getDatatable().get(KEY_ROWS);
+		return getData().get(KEY_ROWS);
 	}
 
 	/**
@@ -224,7 +224,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return maximum amount of rows
 	 */
 	public int getMaxRows() {
-		return getDatatable().get(KEY_MAX_ROWS);
+		return getData().get(KEY_MAX_ROWS);
 	}
 
 	/**
@@ -234,7 +234,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @param maxRows maximum amount of rows
 	 */
 	public void setMaxRows(int maxRows) {
-		getDatatable().put(KEY_MAX_ROWS, maxRows);
+		getData().put(KEY_MAX_ROWS, maxRows);
 	}
 
 	/**
@@ -261,7 +261,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return maximum amount of characters permitted on a row
 	 */
 	public int getMaxChars() {
-		return getDatatable().get(KEY_MAX_CHARS);
+		return getData().get(KEY_MAX_CHARS);
 	}
 
 	/**
@@ -271,7 +271,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @param maxChars maximum amount of characters permitted on a row
 	 */
 	public void setMaxChars(int maxChars) {
-		getDatatable().put(KEY_MAX_CHARS, maxChars);
+		getData().put(KEY_MAX_CHARS, maxChars);
 	}
 
 	/**
@@ -280,7 +280,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return whether this text field is scrollable
 	 */
 	public boolean isScrollable() {
-		return getDatatable().get(KEY_SCROLLABLE);
+		return getData().get(KEY_SCROLLABLE);
 	}
 
 	/**
@@ -289,7 +289,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @param scrollable whether this text field should attach a scroll bar.
 	 */
 	public void setScrollable(boolean scrollable) {
-		getDatatable().put(KEY_SCROLLABLE, scrollable);
+		getData().put(KEY_SCROLLABLE, scrollable);
 	}
 
 	/**
@@ -299,7 +299,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return true if this is a password field
 	 */
 	public boolean isPasswordField() {
-		return getDatatable().get(KEY_PASSWORD_FIELD);
+		return getData().get(KEY_PASSWORD_FIELD);
 	}
 
 	/**
@@ -309,14 +309,14 @@ public class TextFieldComponent extends LabelComponent {
 	 * @param passwordField
 	 */
 	public void setPasswordField(boolean passwordField) {
-		getDatatable().get(KEY_PASSWORD_FIELD, passwordField);
+		getData().get(KEY_PASSWORD_FIELD, passwordField);
 	}
 
 	/**
 	 * Gets the character used when {@link #isPasswordField()} returns true.
 	 */
 	public char getPasswordChar() {
-		return getDatatable().get(KEY_PASSWORD_CHAR);
+		return getData().get(KEY_PASSWORD_CHAR);
 	}
 
 	/**
@@ -327,7 +327,7 @@ public class TextFieldComponent extends LabelComponent {
 		if (!isValidChar(passwordChar)) {
 			throw new IllegalArgumentException("Specified character must be a valid character as designated by LabelComponent#isValidChar(char)");
 		}
-		getDatatable().put(KEY_PASSWORD_CHAR, passwordChar);
+		getData().put(KEY_PASSWORD_CHAR, passwordChar);
 	}
 
 	/**
@@ -346,7 +346,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return index of the cursor among the text
 	 */
 	public int getCursorIndex() {
-		return getDatatable().get(KEY_CURSOR_INDEX);
+		return getData().get(KEY_CURSOR_INDEX);
 	}
 
 	/**
@@ -362,7 +362,7 @@ public class TextFieldComponent extends LabelComponent {
 			throw new IllegalArgumentException("Specified index must be between 0 and " + row.length());
 		}
 
-		getDatatable().put(KEY_CURSOR_INDEX, cursorIndex);
+		getData().put(KEY_CURSOR_INDEX, cursorIndex);
 		Rectangle rect = cursor.getSprite();
 		float x = getInitialCursorBounds().getX();
 		int textIndex = cursorIndex - 1;
@@ -384,7 +384,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return row that cursor is on
 	 */
 	public int getCursorRow() {
-		return getDatatable().get(KEY_CURSOR_ROW);
+		return getData().get(KEY_CURSOR_ROW);
 	}
 
 	/**
@@ -400,7 +400,7 @@ public class TextFieldComponent extends LabelComponent {
 		float y = getInitialCursorBounds().getY() + rows * rowHeight - cursorRow * rowHeight;
 		Rectangle rect = cursor.getSprite();
 		cursor.setSprite(new Rectangle(rect.getX(), y, rect.getWidth(), rect.getHeight()));
-		getDatatable().put(KEY_CURSOR_ROW, cursorRow);
+		getData().put(KEY_CURSOR_ROW, cursorRow);
 	}
 
 	/**
@@ -462,11 +462,11 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return all of the text
 	 */
 	public String getCachedText() {
-		return getDatatable().get(KEY_CACHED_TEXT);
+		return getData().get(KEY_CACHED_TEXT);
 	}
 
 	private void setCachedText(String cachedText) {
-		getDatatable().put(KEY_CACHED_TEXT, cachedText);
+		getData().put(KEY_CACHED_TEXT, cachedText);
 	}
 
 	@Override

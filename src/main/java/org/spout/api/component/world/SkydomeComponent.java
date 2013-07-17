@@ -37,7 +37,7 @@ public class SkydomeComponent extends WorldComponent {
 	 * @return The model or null if no model is currently set
 	 */
 	public Model getModel() {
-		return getDatatable().get(SKYDOME_MODEL);
+		return getData().get(SKYDOME_MODEL);
 	}
 
 	/**
@@ -45,6 +45,6 @@ public class SkydomeComponent extends WorldComponent {
 	 * @param model the new model of the skydome.
 	 */
 	public void setModel(final Model model) {
-		getDatatable().put(SKYDOME_MODEL, model);
+		getData().put(SKYDOME_MODEL, model);
 	}
 }

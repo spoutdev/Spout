@@ -106,7 +106,7 @@ public abstract class Component implements Tickable {
 	 * This is merely a convenience method.
 	 * @return SerializableMap of the owner
 	 */
-	public final SerializableMap getDatatable() {
+	public final SerializableMap getData() {
 		return getOwner().getData();
 	}
 }

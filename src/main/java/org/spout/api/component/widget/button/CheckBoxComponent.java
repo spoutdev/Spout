@@ -52,11 +52,11 @@ public class CheckBoxComponent extends ButtonComponent {
 	}
 
 	public boolean isChecked() {
-		return getDatatable().get(KEY_CHECKED);
+		return getData().get(KEY_CHECKED);
 	}
 
 	public void setChecked(boolean checked) {
-		getDatatable().put(KEY_CHECKED, checked);
+		getData().put(KEY_CHECKED, checked);
 		emit(SIGNAL_CHECKED, checked);
 	}
 }
