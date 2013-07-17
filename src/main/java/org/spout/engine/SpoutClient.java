@@ -61,7 +61,7 @@ import org.spout.api.Platform;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
-import org.spout.api.component.DatatableComponent;
+import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.engine.EngineStartEvent;
@@ -154,7 +154,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public void start() {
 		// Completely blank world to allow the player to start in
-		worldChanged("NullWorld", UUID.randomUUID(), new DatatableComponent().serialize());
+		worldChanged("NullWorld", UUID.randomUUID(), new ManagedHashMap().serialize());
 		if (!connnect()) {
 			return;
 		}

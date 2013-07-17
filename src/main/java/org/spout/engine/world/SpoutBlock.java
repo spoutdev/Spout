@@ -35,7 +35,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Spout;
 import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
-import org.spout.api.component.DatatableComponent;
+import org.spout.api.datatable.ManagedMap;
 import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.LoadOption;
@@ -349,7 +349,7 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public DatatableComponent getData() {
+	public ManagedMap getData() {
 		BlockComponentOwner owner = getChunk().getBlockComponentOwner(x, y, z, false);
 		if (owner == null) {
 			throw new IllegalStateException("The datatable is only available on blocks who have a BlockComponentOwner (blocks with components added)");

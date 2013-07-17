@@ -67,7 +67,7 @@ public class SpoutEntityProtocol implements EntityProtocol {
 		}
 		if (entity.getData().isDirty()) {
 			messages.add(new EntityDatatableMessage(entity.getId(), entity.getData()));
-			entity.getData().onSend();
+			entity.getData().setDirty(false);
 		}
 		return messages;
 	}

@@ -148,7 +148,7 @@ public class WorldFiles {
 		
 		world.setSpawnPoint(t);
 		
-		SerializableMap dataMap = world.getData().getBaseMap();
+		SerializableMap dataMap = world.getData();
 		dataMap.clear();
 		try {
 			dataMap.deserialize(extraData);

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 import org.apache.commons.lang3.tuple.Pair;
-import org.spout.api.component.DatatableComponent;
+import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -71,7 +71,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 	private static final World TEST_WORLD = WorldFaker.setupWorld();
 	private static final Point TEST_POINT = new Point(TEST_WORLD, 0, 0, 0);
 	private static final Transform TEST_TRANSFORM = new Transform(TEST_POINT, Quaternion.IDENTITY, Vector3.ZERO);
-	static final byte[] TEST_SERIALIZED_DATA = new DatatableComponent().serialize();
+	static final byte[] TEST_SERIALIZED_DATA = new ManagedHashMap().serialize();
 	private static final Message[] TEST_MESSAGES = new Message[]{
 		new BlockUpdateMessage(0, 0, 0, (short) 0, (short) 0),
 		new ChunkDataMessage(0, 0, 0, chunkData, chunkData, null, null),
