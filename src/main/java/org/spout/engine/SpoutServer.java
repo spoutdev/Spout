@@ -28,9 +28,6 @@ package org.spout.engine;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -46,8 +43,10 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang3.Validate;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -62,6 +61,7 @@ import org.teleal.cling.controlpoint.ControlPoint;
 import org.teleal.cling.support.igd.PortMappingListener;
 import org.teleal.cling.support.model.PortMapping;
 import org.teleal.cling.transport.spi.InitializationException;
+
 import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
@@ -80,38 +80,39 @@ import org.spout.api.generator.biome.BiomeRegistry;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.lighting.LightingRegistry;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
+import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.resource.FileSystem;
+import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
+
 import org.spout.cereal.config.ConfigurationException;
+
+import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ServerFileSystem;
+import org.spout.engine.filesystem.versioned.PlayerFiles;
+import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.listener.SpoutServerListener;
 import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.PortBindings;
 import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutServerSession;
+import org.spout.engine.protocol.SpoutSessionRegistry;
 import org.spout.engine.util.access.SpoutAccessManager;
+import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
+import org.spout.engine.world.SpoutServerWorld;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
-
-import org.spout.api.lighting.LightingRegistry;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
-import org.spout.api.protocol.SessionRegistry;
-import org.spout.api.util.StringToUniqueIntegerMap;
-import org.spout.engine.component.entity.SpoutSceneComponent;
-import org.spout.engine.filesystem.versioned.PlayerFiles;
-import org.spout.engine.filesystem.versioned.WorldFiles;
-import org.spout.engine.protocol.SpoutSessionRegistry;
-import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
-import org.spout.engine.world.SpoutServerWorld;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	/**
@@ -146,7 +147,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private StringToUniqueIntegerMap engineLightingMap = null;
 
 	public SpoutServer() {
-		logFile = "Server log-%D.txt";
+		logFile = "server-log-%D.txt";
 	}
 
 	@Override
@@ -155,9 +156,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	protected void start(boolean checkWorlds, Listener listener) {
-		//Setup the Biome Registry
+		// Setup the Biome Registry
 		engineBiomeMap = BiomeRegistry.setupRegistry();
-		//Setup the Lighting Registry
+		// Setup the Lighting Registry
 		engineLightingMap = LightingRegistry.setupRegistry();
 
 		super.start();
@@ -168,13 +169,13 @@ public class SpoutServer extends SpoutEngine implements Server {
 				world.setSpawnPoint(new Transform(new Point(world, 0, 5, 0), Quaternion.IDENTITY, Vector3.ONE));
 				this.setDefaultWorld(world);
 			} else {
-				//Pick the default world from the configuration
+				// Pick the default world from the configuration
 				World world = this.getWorld(SpoutConfiguration.DEFAULT_WORLD.getString());
 				if (world != null) {
 					this.setDefaultWorld(world);
 				}
 
-				//If we don't have a default world set, just grab one.
+				// If we don't have a default world set, just grab one.
 				getDefaultWorld();
 			}
 		}
@@ -197,7 +198,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			Spout.severe("Error loading port bindings: ", e);
 		}
 
-		//UPnP
+		// UPnP
 		if (SpoutConfiguration.UPNP.getBoolean()) {
 			for (PortBinding binding : getBoundAddresses()) {
 				if (binding.getAddress() instanceof InetSocketAddress) {
@@ -206,7 +207,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			}
 		}
 
-		//Bonjour
+		// Bonjour
 		setupBonjour();
 
 		if (boundProtocols.size() == 0) {
@@ -217,7 +218,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public void init(SpoutApplication args) {
 		super.init(args);
-		//Note: All threads are daemons, cleanup of the executors is handled by bootstrap.getFactory().releaseExternalResources(); in stop(...).
+		// Note: All threads are daemons, cleanup of the executors is handled by bootstrap.getFactory().releaseExternalResources(); in stop(...).
 		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
 		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
 		ChannelFactory factory = new SpoutNioServerSocketChannel(executorBoss, executorWorker);
@@ -320,12 +321,12 @@ public class SpoutServer extends SpoutEngine implements Server {
 	protected Runnable getSessionTask() {
 		return sesionTask;
 	}
-	
+
 	private class SessionTask implements Runnable {
 		@Override
 		public void run() {
 			sessions.pulse();
-		}		
+		}
 	}
 
 	@Override
@@ -496,7 +497,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public Collection<Player> matchPlayer(String name) {
 		return StringUtil.matchName(Arrays.<Player>asList(getOnlinePlayers()), name);
 	}
-	
+
 	@Override
 	public List<String> getAllPlayers() {
 		ArrayList<String> names = new ArrayList<>();
@@ -514,7 +515,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		}
 	}
 
-	
+
 	@Override
 	public AccessManager getAccessManager() {
 		return accessManager;
@@ -617,6 +618,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			return StringUtil.getShortest(StringUtil.matchName(loadedWorlds.getValues(), name));
 		}
 	}
+
 	@Override
 	public SpoutServerWorld getWorld(UUID uid) {
 		for (SpoutServerWorld world : loadedWorlds.getValues()) {
@@ -645,7 +647,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			return loadedWorlds.getLive().get(name);
 		}
 
-		// TODO - should include generator (and non-zero seed)
+		// TODO: Should include generator (and non-zero seed)
 		if (generator == null) {
 			generator = defaultGenerator;
 		}
@@ -667,9 +669,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public void save(boolean worlds, boolean players) {
-		// TODO Auto-generated method stub
+		// TODO: Auto-generated method stub
 	}
-	
+
 	@Override
 	public List<File> getWorldFolders() {
 		File[] folders = this.getWorldFolder().listFiles((FilenameFilter) DirectoryFileFilter.INSTANCE);
@@ -712,7 +714,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		World first = loadedWorlds.values().iterator().next();
 		return first;
 	}
-	
+
 	@Override
 	public boolean unloadWorld(String name, boolean save) {
 		return unloadWorld(loadedWorlds.getLive().get(name), save);
@@ -734,12 +736,12 @@ public class SpoutServer extends SpoutEngine implements Server {
 				getEventManager().callDelayedEvent(new WorldUnloadEvent(world));
 				w.unload(save);
 			}
-			//Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading
-			//      Also, should blank out as much internal world data as possible, in case plugins retain references to unloaded worlds
+			// Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading.
+			// Also, should blank out as much internal world data as possible, in case plugins retain references to unloaded worlds.
 		}
 		return success;
 	}
-	
+
 	@Override
 	public Entity getEntity(UUID uid) {
 		for (World w : loadedWorlds.get().values()) {
@@ -750,7 +752,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		}
 		return null;
 	}
-	
+
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutServerSession<?> session, int viewDistance) {
 		SpoutPlayer player = PlayerFiles.loadPlayerData(playerName);
@@ -771,19 +773,19 @@ public class SpoutServer extends SpoutEngine implements Server {
 		}
 
 		final SpoutSceneComponent scene = (SpoutSceneComponent) player.getScene();
-		
-		//Test for valid old position
+
+		// Test for valid old position
 		created |= scene.getTransformLive().getPosition().getWorld() == null;
-		
-		//Connect the player and set their transform to the default world's spawn.
+
+		// Connect the player and set their transform to the default world's spawn.
 		player.connect(session, created ? ((SpoutServerWorld) getDefaultWorld()).getSpawnPoint() : scene.getTransformLive());
 
-		//Spawn the player in the world
+		// Spawn the player in the world
 		World world = scene.getTransformLive().getPosition().getWorld();
 		world.spawnEntity(player);
 		((SpoutServerWorld) world).addPlayer(player);
 
-		//Initialize the session
+		// Initialize the session
 		session.getProtocol().initializeServerSession(session);
 		session.getNetworkSynchronizer().forceSync();
 		return player;

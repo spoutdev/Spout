@@ -109,7 +109,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private SpoutInputManager inputManager;
 
 	public SpoutClient() {
-		logFile = "Client log-%D.txt";
+		logFile = "client-log-%D.txt";
 	}
 
 	@Override
@@ -140,11 +140,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		inputManager = new SpoutInputManager();
 
-		// initialize sound system
+		// Initialize sound system
 		soundManager = new SpoutSoundManager();
 		soundManager.init();
 
-		// configure sound system
+		// Configure sound system
 		AudioConfiguration audioConfig = new AudioConfiguration();
 		audioConfig.load();
 		soundManager.setGain(AudioConfiguration.SOUND_VOLUME.getFloat());
@@ -176,7 +176,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		getScheduler().startMeshThread();
 		getScheduler().startGuiThread();
 
-		//TODO Maybe a better way of alerting plugins the client is done?
+		// TODO: Maybe a better way of alerting plugins the client is done?
 		if (EngineStartEvent.getHandlerList().getRegisteredListeners().length != 0) {
 			getEventManager().callEvent(new EngineStartEvent());
 		}
@@ -207,7 +207,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			connect.await(10, TimeUnit.SECONDS);
 		} catch (InterruptedException ex) {
 			getLogger().log(Level.SEVERE, "Connection took too long! Cancelling connect and stopping engine!");
-			stop();// TODO make sure that this is fine here
+			stop(); // TODO: Make sure that this is fine here
 			return false;
 		}
 
@@ -219,7 +219,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			handler.setSession(session);
 			session.getProtocol().initializeClientSession(session);
 
-			// TODO this is really unclean
+			// TODO: This is really unclean
 			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", new Transform().setPosition(new Point(getWorld(), 1, 200, 1)), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 			if (!p.connect(session, p.getScene().getTransform())) {
 				getLogger().log(Level.SEVERE, "Error in calling player connect");
@@ -237,12 +237,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	protected Runnable getSessionTask() {
 		return sessionTask;
 	}
-	
+
 	private class SessionTask implements Runnable {
 		@Override
 		public void run() {
 			session.get().pulse();
-		}		
+		}
 	}
 
 	@Override
@@ -299,10 +299,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (!super.stop(message, false)) {
 			return false;
 		}
-		
+
 		session.get().dispose();
 
-		// de-init OpenAL
+		// De-init OpenAL
 		soundManager.destroy();
 		soundManager = null;
 
@@ -358,7 +358,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
 		System.out.println("WORLD CHANGED!");
 		SpoutClientWorld world = new SpoutClientWorld(name, this, uuid);
-		//Load in datatable
+		// Load in datatable
 		SerializableMap map = world.getData();
 		try {
 			map.deserialize(data);
@@ -376,7 +376,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public SpoutClientSession newSession(Channel channel) {
-		// TODO this really needs to be removed and moved to server only
+		// TODO: This really needs to be removed and moved to server only
 		throw new UnsupportedOperationException("Can't add new session on client!");
 		//return new SpoutClientSession(this, channel, protocol);
 	}
@@ -402,7 +402,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public SpoutClientWorld getWorld() {
 		return world.get();
 	}
-	
+
 	@Override
 	public Collection<World> getWorlds() {
 		return Collections.singleton((World) world.get());
@@ -475,9 +475,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void startTickRun(int stage, long delta) {
-		// TODO should this be removed?
+		// TODO: Should this be removed?
 	}
-	
+
 	public Session getSession() {
 		return session.get();
 	}
