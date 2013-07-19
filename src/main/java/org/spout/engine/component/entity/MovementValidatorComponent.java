@@ -36,20 +36,19 @@ import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
-import org.spout.api.protocol.ServerNetworkSynchronizer;
 
-public class MovementValidator extends EntityComponent {
+public class MovementValidatorComponent extends EntityComponent {
 	public static final String RECEIVED_TRANSFORM = "RECEIVED_TRANSFORM";
-	public static final DefaultedKey<Boolean> VALIDATE_MOVEMENT = new DefaultedKeyImpl<>("validate_movement", true);
+	public static final DefaultedKey<Boolean> VALIDATE_MOVEMENT = new DefaultedKeyImpl<>("VALIDATE_MOVEMENT", true);
 
 	private Player player;
 	@Override
 	public void onAttached() {
 		if (!(getOwner() instanceof Player)) {
-			throw new UnsupportedOperationException("FallbackInputManager must be attached to a player");
+			throw new UnsupportedOperationException("MovementValidatorComponent must be attached to a player");
 		}
 		if (Spout.getPlatform() != Platform.SERVER) {
-			throw new UnsupportedOperationException("FallbackInputHandler must be attached on the server");
+			throw new UnsupportedOperationException("MovementValidatorComponent must be attached on the server");
 		}
 		player = (Player) getOwner();
 	}
@@ -59,7 +58,7 @@ public class MovementValidator extends EntityComponent {
 		// dt is in seconds
 		final float speed = 50f;
 		PlayerInputState inputState = player.input();
-		Transform playerTransform = player.getScene().getTransform();
+		Transform playerTransform = player.getPhysics().getTransform();
 		final Vector3 motion;
 		if (inputState.getForward()) {
 			motion = playerTransform.forwardVector().multiply(speed * -dt);
@@ -75,23 +74,19 @@ public class MovementValidator extends EntityComponent {
 			motion = playerTransform.upVector().multiply(speed * -dt);
 		} else {
 			playerTransform.setRotation(QuaternionMath.rotation(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
-			((SpoutSceneComponent) player.getScene()).setTransformNoSync(playerTransform);
+			((SpoutPhysicsComponent) player.getPhysics()).setTransform(playerTransform, false);
 			return;
 		}
 		playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
 		Transform old = player.getSession().getDataMap().get(RECEIVED_TRANSFORM, (Transform) null);
-		//if (old != null) System.out.println("Difference: " + playerTransform.getPosition().subtract(old.getPosition()));
 		if (player.getData().get(VALIDATE_MOVEMENT) && (old == null ||
 			Math.abs(old.getPosition().getX() - playerTransform.getPosition().getX()) > .2f ||
 			Math.abs(old.getPosition().getY() - playerTransform.getPosition().getY()) > .2f ||
 			Math.abs(old.getPosition().getZ() - playerTransform.getPosition().getZ()) > .2f)
 			) {
-			player.getScene().setTransform(playerTransform);
+			player.getPhysics().setTransform(playerTransform);
 		} else {
-			((SpoutSceneComponent) player.getScene()).setTransformNoSync(old);
+			((SpoutPhysicsComponent) player.getPhysics()).setTransform(old, false);
 		}
-		
 	}
-	
-
 }

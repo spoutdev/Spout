@@ -48,7 +48,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.Plugin;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.component.entity.MovementValidator;
+import org.spout.engine.component.entity.MovementValidatorComponent;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -266,7 +266,7 @@ public class CommonCommands {
 		}
 
 		if (engine.getPlatform() == org.spout.api.Platform.SERVER) {
-			player.getData().put(MovementValidator.VALIDATE_MOVEMENT, !player.getData().get(MovementValidator.VALIDATE_MOVEMENT));
+			player.getData().put(MovementValidatorComponent.VALIDATE_MOVEMENT, !player.getData().get(MovementValidatorComponent.VALIDATE_MOVEMENT));
 		}
 	}
 

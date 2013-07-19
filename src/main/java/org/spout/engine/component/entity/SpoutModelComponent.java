@@ -60,7 +60,7 @@ public class SpoutModelComponent extends ModelComponent {
 	}
 
 	public void draw(Model model) {
-		Matrix modelMatrix = getOwner().getScene().getRenderTransform().toMatrix();
+		Matrix modelMatrix = getOwner().getPhysics().getTransformRender().toMatrix();
 
 		model.getRenderMaterial().getShader().setUniform("Model", modelMatrix);
 

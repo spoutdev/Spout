@@ -874,11 +874,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		chunkObserversDirtyQueueElement.add();
 		TickStage.checkStage(TickStage.FINALIZE);
 
-		Integer oldDistance = ((SpoutEntity) entity).getPrevViewDistance();
-		if (oldDistance == null) {
-			return false;
-		}
-
 		if (observers.remove(entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.remove(entity);
 

@@ -27,18 +27,15 @@
 package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.reposition.RepositionManager;
 
-import org.spout.engine.component.entity.MovementValidator;
+import org.spout.engine.component.entity.MovementValidatorComponent;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 
 import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.ADD;
-import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.POSITION;
-import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.REMOVE;
 import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.TRANSFORM;
 import org.spout.engine.world.SpoutWorld;
 
@@ -50,7 +47,7 @@ public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessa
 		// Add is a special case because the player is already spawned
 		if (message.getAction() == ADD) {
 			Entity entity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()));
-			entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
+			entity.getPhysics().setTransform(rmInverse.convert(message.getTransform()));
 			((SpoutWorld) session.getEngine().getDefaultWorld()).spawnEntity(entity, message.getEntityId());
 		} else {
 			Entity entity;
@@ -66,7 +63,7 @@ public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessa
 
 			switch (message.getAction()) {
 				case TRANSFORM:
-					entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
+					entity.getPhysics().setTransform(rmInverse.convert(message.getTransform()));
 					break;
 				case POSITION:
 					throw new UnsupportedOperationException("UpdateAction.POSITION not implemented yet.");
@@ -82,7 +79,7 @@ public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessa
 
 		if (message.getAction() == TRANSFORM) {
 			if (message.getEntityId() == session.getPlayer().getId()) {
-				session.getDataMap().put(MovementValidator.RECEIVED_TRANSFORM, rmInverse.convert(message.getTransform()));
+				session.getDataMap().put(MovementValidatorComponent.RECEIVED_TRANSFORM, rmInverse.convert(message.getTransform()));
 				return;
 			} else {
 				// TODO: protocol - please fix this sequence

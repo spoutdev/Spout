@@ -328,7 +328,7 @@ public class TestCommands {
 			throw new CommandException("No entity with id " + id + " in world " + p.getWorld().getName());
 		}
 
-		e.getScene().setPosition(p);
+		e.getPhysics().setPosition(p);
 
 		engine.getLogger().info("Entity " + id + " move to " + p.getBlockX() + "," + p.getBlockY() + "," + p.getBlockZ());
 	}
@@ -344,7 +344,7 @@ public class TestCommands {
 		if (e == null) {
 			throw new CommandException("Unknown entity " + id + " in world " + world + "!");
 		}
-		e.getScene().setRotation(e.getScene().getRotation().rotate(0, rot));
+		e.getPhysics().setRotation(e.getPhysics().getRotation().rotate(0, rot));
 
 		engine.getLogger().info("Entity " + id + " rotate to " + rot.getX() + " " + rot.getY() + " " + rot.getZ());
 	}
@@ -361,9 +361,9 @@ public class TestCommands {
 			throw new CommandException("Unknown entity " + id + " in world " + world + "!");
 		}
 
-		Transform transform = e.getScene().getTransform();
+		Transform transform = e.getPhysics().getTransform();
 		transform.scale(scale);
-		e.getScene().setTransform(transform);
+		e.getPhysics().setTransform(transform);
 
 		engine.getLogger().info("Entity " + id + " scale to " + scale.getX() + " " + scale.getY() + " " + scale.getZ());
 	}

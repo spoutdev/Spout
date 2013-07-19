@@ -35,17 +35,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
-import org.spout.api.Client;
 
 import org.spout.api.Engine;
-import org.spout.api.Platform;
-import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.entity.EntityComponent;
 import org.spout.api.component.entity.ModelComponent;
 import org.spout.api.component.entity.NetworkComponent;
-import org.spout.api.component.entity.SceneComponent;
+import org.spout.api.component.entity.PhysicsComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
@@ -66,7 +63,7 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.component.entity.SpoutModelComponent;
-import org.spout.engine.component.entity.SpoutSceneComponent;
+import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
@@ -83,11 +80,11 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	//Snapshotable fields
 	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<EntityManager>(snapshotManager, null);
-	private final SnapshotableReference<Iterator<IntVector3>> observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, INITIAL_TICK);;
+	private final SnapshotableReference<Iterator<IntVector3>> observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, INITIAL_TICK);
 	private boolean observeChunksFailed = false;
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
 	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
-	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 5);
+	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 10);
 	private volatile boolean remove = false;
 	//Other
 	private final Engine engine;
@@ -96,7 +93,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	protected boolean justSpawned = true;
 	//For faster access
 	private final NetworkComponent network;
-	private final SpoutSceneComponent scene;
+	private final SpoutPhysicsComponent physics;
 	private Class<? extends Component>[] initialComponents = null;
 
 	public SpoutEntity(Engine engine, Transform transform) {
@@ -108,7 +105,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	public SpoutEntity(Engine engine, Point point, boolean load) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE),  -1, null, false, (byte[])null, (Class<? extends Component>[]) null);
+		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE),  -1, null, load, (byte[])null, (Class<? extends Component>[]) null);
 	}
 
 	protected SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
@@ -117,11 +114,19 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	public SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
+		if (transform == null) {
+			throw new IllegalArgumentException("Entities must always have a valid transform");
+		}
+
+		if (viewDistance <= 0) {
+			throw new IllegalArgumentException("View distance must be greater than 0");
+		}
+
 		id.set(NOTSPAWNEDID);
 		this.engine = engine;
 		
 		observer.set(NOT_OBSERVING);
-		scene = (SpoutSceneComponent) add(SceneComponent.class);
+		physics = (SpoutPhysicsComponent) add(PhysicsComponent.class);
 
 		network = add(NetworkComponent.class);
 
@@ -131,10 +136,8 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 			this.uid = UUID.randomUUID();
 		}
 
-		if (transform != null) {
-			scene.setTransformNoSync(transform);
-			scene.copySnapshot();
-		}
+		physics.setTransform(transform, false);
+		physics.copySnapshot();
 
 		if (components != null && components.length > 0) {
 			initialComponents = components;
@@ -142,9 +145,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 		int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
 
-		if (viewDistance < 0) {
-			viewDistance = maxViewDistance;
-		} else if (viewDistance > maxViewDistance) {
+		if (viewDistance > maxViewDistance) {
 			viewDistance = maxViewDistance;
 		}
 
@@ -161,16 +162,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		//Set all the initial snapshot values
 		//Ensures there are no null/wrong snapshot values for the first tick
 		snapshotManager.copyAllSnapshots();
-		
-		if (transform != null) {
-			if (load) {
-				setupInitialChunk(transform, LoadOption.LOAD_GEN);
-			} else {
-				// At least try to set it up if it's there
-				// TODO this masks a problem; if this doesn't happen, entityManager NPEs
-				setupInitialChunk(transform, LoadOption.NO_LOAD);
-			}
-		}
+		setupInitialChunk(load == true ? LoadOption.LOAD_GEN : LoadOption.NO_LOAD);
 	}
 
 	@Override
@@ -180,8 +172,8 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	@Override
 	protected <T extends Component> T add(Class<T> type, boolean attach) {
-		if (type.equals(SceneComponent.class)) {
-			return super.add(type, SpoutSceneComponent.class, attach);
+		if (type.equals(PhysicsComponent.class)) {
+			return super.add(type, SpoutPhysicsComponent.class, attach);
 		} else if (type.equals(ModelComponent.class)) {
 			T component = super.add(type, SpoutModelComponent.class, attach);
 			if (getEngine() instanceof SpoutClient) {
@@ -247,6 +239,8 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 		//Entity was removed so automatically remove observer/components
 		if (isRemoved()) {
+			//Get rid of physics
+			physics.deactivate();
 			removeObserver();
 			//Call onRemoved for Components and remove them
 			for (Component component : values()) {
@@ -273,13 +267,15 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 		//Move entity from Region A to Region B
 		if (chunkLive != null && (chunk == null || chunk.getRegion() != chunkLive.getRegion())) {
+			boolean activated = physics.isActivated();
+			physics.deactivate();
 			entityManager.get().removeEntity(this);
-			//Only allow non removed entities to move to new region
-			if (!isRemoved()) {
-				//Set the new EntityManager for the new region
-				entityManager.set(chunkLive.getRegion().getEntityManager());
-				//Add entity to Region B
-				entityManager.getLive().addEntity(this);
+			//Set the new EntityManager for the new region
+			entityManager.set(chunkLive.getRegion().getEntityManager());
+			//Add entity to Region B
+			entityManager.getLive().addEntity(this);
+			if (activated) {
+				physics.activate(entityManager.getLive().getRegion());
 			}
 		}
 
@@ -302,7 +298,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		List<Vector3> ungenerated = new ArrayList<Vector3>();
 		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
 		World w = getWorld();
-		Transform t = scene.getTransform();
+		Transform t = physics.getTransform();
 		Point p = t.getPosition();
 		int cx = p.getChunkX();
 		int cy = p.getChunkY();
@@ -344,11 +340,11 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	@Override
 	public Chunk getChunk() {
-		return scene.getPosition().getChunk(LoadOption.NO_LOAD);
+		return physics.getPosition().getChunk(LoadOption.NO_LOAD);
 	}
 
 	public Chunk getChunkLive() {
-		return scene.getTransformLive().getPosition().getChunk(LoadOption.NO_LOAD);
+		return physics.getTransformLive().getPosition().getChunk(LoadOption.NO_LOAD);
 	}
 
 	@Override
@@ -373,26 +369,24 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	@Override
 	public World getWorld() {
-		// TODO this shouldn't be needed
-		if (Spout.getPlatform() == Platform.SERVER) {
-			return entityManager.get().getRegion().getWorld();
-		} else {
-			return ((Client) Spout.getEngine()).getWorld();
-		}
+		return getRegion().getWorld();
 	}
 
 	@Override
 	public void setViewDistance(int distance) {
+		if (distance <= 0) {
+			throw new IllegalArgumentException("View distance must be greater than 0");
+		}
 		viewDistance.set(distance);
 	}
 
 	@Override
 	public int getViewDistance() {
-		return viewDistance.getLive();
+		return viewDistance.get();
 	}
 
-	public int getPrevViewDistance() {
-		return viewDistance.get();
+	public int getViewDistanceLive() {
+		return viewDistance.getLive();
 	}
 
 	@Override
@@ -416,7 +410,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	@Override
 	public String toString() {
-		return "SpoutEntity - ID: " + this.getId() + " Position: " + scene.getPosition();
+		return "SpoutEntity - ID: " + this.getId() + " Position: " + physics.getPosition();
 	}
 
 	@Override
@@ -427,8 +421,8 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	/**
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
-	public void setupInitialChunk(Transform transform, LoadOption loadopt) {
-		SpoutChunk chunk = (SpoutChunk) scene.getTransformLive().getPosition().getChunk(loadopt);
+	public void setupInitialChunk(LoadOption loadopt) {
+		SpoutChunk chunk = (SpoutChunk) physics.getTransformLive().getPosition().getChunk(loadopt);
 		if (chunk == null) {
 			// It's possible we're in client mode and we have no chunk
 			return;
@@ -445,7 +439,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	@Override
 	public void copySnapshot() {
-		scene.copySnapshot();
+		physics.copySnapshot();
 		snapshotManager.copyAllSnapshots();
 
 		justSpawned = false;
@@ -479,8 +473,8 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	@Override
-	public SceneComponent getScene() {
-		return scene;
+	public PhysicsComponent getPhysics() {
+		return physics;
 	}
 
 	@Override

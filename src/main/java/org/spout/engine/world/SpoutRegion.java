@@ -45,7 +45,6 @@ import java.util.logging.Level;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.collision.BoundingBox;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -55,15 +54,13 @@ import org.spout.api.event.chunk.ChunkPopulateEvent;
 import org.spout.api.event.chunk.ChunkUnloadEvent;
 import org.spout.api.event.chunk.ChunkUpdatedEvent;
 import org.spout.api.generator.biome.Biome;
-import org.spout.api.geo.AreaChunkAccess;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.Region;
-import static org.spout.api.geo.cuboid.Region.CHUNKS;
-import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.material.BlockMaterial;
@@ -73,6 +70,7 @@ import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
+import org.spout.api.math.ReactConverter;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
@@ -91,10 +89,10 @@ import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.engine.SpoutConfiguration;
+import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.versioned.ChunkFiles;
 import org.spout.engine.protocol.builtin.message.ChunkDatatableMessage;
@@ -102,8 +100,15 @@ import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
+import org.spout.engine.world.collision.SpoutCollisionListener;
+import org.spout.engine.world.collision.SpoutLinkedWorldInfo;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
+import org.spout.physics.body.RigidBody;
+import org.spout.physics.collision.shape.CollisionShape;
+import org.spout.physics.engine.linked.LinkedDynamicsWorld;
+import org.spout.physics.math.Matrix3x3;
+import org.spout.physics.math.Quaternion;
 
 public class SpoutRegion extends Region implements AsyncManager {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
@@ -166,6 +171,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 	private ChunkCuboidLightBufferWrapper<?>[] lightBuffers = null;
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
 
+	private final LinkedDynamicsWorld simulation;
+
 	@SuppressWarnings("unchecked")
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		super(world, x * Region.BLOCKS.SIZE, y * Region.BLOCKS.SIZE, z * Region.BLOCKS.SIZE);
@@ -209,6 +216,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), null, this, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
+		simulation = new LinkedDynamicsWorld(ReactConverter.toReactVector3(0f, -9.81f, -0f), new SpoutLinkedWorldInfo(this));
+		simulation.addListener(new SpoutCollisionListener());
+		simulation.start();
 	}
 
 	@Override
@@ -342,7 +352,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
-						entity.setupInitialChunk(entity.getScene().getTransform(), LoadOption.NO_LOAD);
+						entity.setupInitialChunk(LoadOption.NO_LOAD);
 						entityManager.addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
@@ -700,142 +710,12 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 * @param dt
 	 */
 	private void updateDynamics(float dt) {
-		dt = 1F/20F; //for testing
-		for (SpoutEntity entity : entityManager.getAllLive()) {
-			if (!entity.isRemoved()) {
-				SpoutSceneComponent scene = (SpoutSceneComponent) entity.getScene();
-				if (scene.isActivated()) {
-					//TODO: This is a poor linear approximation of acceleration merely to prove it works
-					//need to switch to proper numerical approximation of derivatives, e.g Runge–Kutta methods
-					final Vector3 forces = scene.getRawForces().add(scene.getRawImpulses());
-					final Vector3 acceleration = forces.divide(scene.getMass()).add(0, -9.81F, 0);
-					final Vector3 prevVelocity = scene.getRawMovementVelocity();
-
-					/* Calculate the new position*/
-
-					//TODO: need to detect if dt is too large and will result in tunneling, 
-					// and compensate with multiple timesteps to reduce traveled distance per step
-
-					//Eular linear approximation: s = ut + 0.5at^2
-					// s - new position
-					// u - velocity
-					// t - timestep
-					// a - acceleration
-
-					final Vector3 movement = prevVelocity.multiply(dt).add(acceleration.multiply(dt * dt).divide(2));
-					//final Point position = scene.getTransformLive().getPosition();
-					Point newPosition = scene.getTransformLive().getPosition().add(movement);
-					final BoundingBox volume = scene.getVolume();
-					//final BoundingBox oldVolume = volume.clone().offset(position);
-					BoundingBox worldVolume = volume.clone().offset(newPosition);
-					final int bx = newPosition.getBlockX();
-					final int by = newPosition.getBlockY();
-					final int bz = newPosition.getBlockZ();
-					final int rangeX = (int) Math.ceil(volume.getMax().getX() - volume.getMin().getX());
-					final int rangeY = (int) Math.ceil(volume.getMax().getY() - volume.getMin().getY());
-					final int rangeZ = (int) Math.ceil(volume.getMax().getZ() - volume.getMin().getZ());
-					//TODO Use CollisionVolume instead of BoundingBox
-					final LinkedList<BoundingBox> nearbyAABB = new LinkedList<BoundingBox>();
-					for (int dx = -rangeX; dx <= rangeX; dx++) {
-						for (int dy = -rangeY; dy <= rangeY; dy++) {
-							for (int dz = -rangeZ; dz <= rangeZ; dz++) {
-								BlockMaterial material;
-								AreaChunkAccess source;
-								if (this.containsBlock(bx + dx, by + dy, bz + dz)) {
-									source = this;
-								} else {
-									//TODO: handle intra-regional physics separately
-									source = this.getWorld();
-								}
-								if (entity.isObserver() || source.getChunkFromBlock(bx + dx, by + dy, bz + dz, LoadOption.NO_LOAD) != null){
-									material = source.getBlockMaterial(bx + dx, by + dy, bz + dz);
-								} else {
-									//TODO: handle falling into unloaded chunks correctly
-									material = BlockMaterial.AIR;
-								}
-								if (material != BlockMaterial.AIR) {
-									 //TODO give block materials proper volumes - unsafe cast if a material were to have a volume that wasn't a bounding box
-									BoundingBox block = (BoundingBox) material.getVolume().offset(new Vector3(bx + dx, by + dy, bz + dz));
-									//if (worldVolume.intersects(block) || block.containsBoundingBox(worldVolume)) {
-										nearbyAABB.add(block);
-									//}
-								}
-							}
-						}
-					}
-					//TODO: collisions with other entities
-
-					//Check we are currently encased in a block
-					//for (BoundingBox box : nearbyAABB) {
-					//	if (box.containsBoundingBox(oldVolume)) {
-					//		for (BlockFace face : BlockFaces.NESWBT) {
-					//			face.
-					//		}
-					//	}
-					//}
-
-					//Offset in Y direction first
-					Vector3 totalOffset = Vector3.ZERO;
-					for (BoundingBox box : nearbyAABB) {
-						if (worldVolume.intersects(box) || box.containsBoundingBox(worldVolume)) {
-							//Offset the entity with the minimum distance needed to move out of the block
-							Vector3 offset = worldVolume.resolveStatic(box);
-							if (!offset.equals(Vector3.ZERO)) {
-								worldVolume = worldVolume.offset(0, offset.getY(), 0);
-								totalOffset = totalOffset.add(0, offset.getY(), 0);
-								break;
-							}
-						}
-					}
-
-					//Offset in X direction
-					for (BoundingBox box : nearbyAABB) {
-						if (worldVolume.intersects(box) || box.containsBoundingBox(worldVolume)) {
-							//Offset the entity with the minimum distance needed to move out of the block
-							Vector3 offset = worldVolume.resolveStatic(box);
-							if (!offset.equals(Vector3.ZERO)) {
-								worldVolume = worldVolume.offset(offset.getX(), 0, 0);
-								totalOffset = totalOffset.add(offset.getX(), 0, 0);
-								break;
-							}
-						}
-					}
-
-					//Offset in Z direction
-					for (BoundingBox box : nearbyAABB) {
-						if (worldVolume.intersects(box) || box.containsBoundingBox(worldVolume)) {
-							//Offset the entity with the minimum distance needed to move out of the block
-							Vector3 offset = worldVolume.resolveStatic(box);
-							if (!offset.equals(Vector3.ZERO)) {
-								worldVolume = worldVolume.offset(0, 0, offset.getZ());
-								totalOffset = totalOffset.add(0, 0, offset.getZ());
-								break;
-							}
-						}
-					}
-
-					boolean stillColliding = false;
-					for (BoundingBox other : nearbyAABB) {
-						stillColliding |= worldVolume.intersects(other) || other.containsBoundingBox(worldVolume);
-					}
-					if (stillColliding) {
-						//Unable to resolve collisions!
-					}
-					//Was forced to collide, kill accel/velocity
-					if (!totalOffset.equals(Vector3.ZERO)) {
-						scene.setMovementVelocity(Vector3.ZERO).setRawForces(Vector3.ZERO);
-						scene.setPosition(newPosition.add(totalOffset));
-						//Spout.info("Moving entity [" + entity.getId() + "] to " + newPosition.add(totalOffset)) ;
-					} else {
-						/* Calculate the new velocity */
-						scene.setPosition(newPosition);
-						Vector3 velocity = prevVelocity.add(acceleration.multiply(dt));
-						scene.setMovementVelocity(velocity);
-					}
-					scene.setRawImpulses(Vector3.ZERO);
-
-				}
-			}
+		for (final Entity entity : getAll()) {
+			((SpoutPhysicsComponent) entity.getPhysics()).onPrePhysicsTick();
+		}
+		simulation.update();
+		for (final Entity entity : getAll()) {
+			((SpoutPhysicsComponent) entity.getPhysics()).onPostPhysicsTick(dt);
 		}
 	}
 
@@ -855,9 +735,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 				break;
 			}
 			case 1: {
-				if (SpoutConfiguration.SIMULATE_DYNAMICS.getBoolean(true)) {
-					updateDynamics(dt);
-				}
+				updateDynamics(dt);
 				break;
 			}
 			case 2: {
@@ -1813,4 +1691,19 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return c.getLightBuffer(manager);
 	}
 
+	public LinkedDynamicsWorld getSimulation() {
+		return simulation;
+	}
+
+	public RigidBody addBody(final Transform transform, final float mass, final CollisionShape shape, final boolean isMobile) {
+		if (isMobile) {
+			return simulation.createMobileRigidBody(new org.spout.physics.math.Transform(ReactConverter.toReactVector3(transform.getPosition()), new Quaternion(0, 0, 0, 1)), mass, shape);
+		} else {
+			return simulation.createImmobileRigidBody(new org.spout.physics.math.Transform(ReactConverter.toReactVector3(transform.getPosition()), new Quaternion(0, 0, 0, 1)), mass, shape);
+		}
+	}
+
+	public void removeBody(final RigidBody body) {
+		simulation.destroyRigidBody(body);
+	}
 }

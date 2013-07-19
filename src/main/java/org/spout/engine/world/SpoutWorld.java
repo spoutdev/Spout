@@ -534,7 +534,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 					throw new IllegalArgumentException("Can not set entity id's manually");
 				}
 			}
-			EntitySpawnEvent event = getEngine().getEventManager().callEvent(new EntitySpawnEvent(e, e.getScene().getPosition()));
+			EntitySpawnEvent event = getEngine().getEventManager().callEvent(new EntitySpawnEvent(e, e.getPhysics().getPosition()));
 			if (event.isCancelled()) {
 				return;
 			}
@@ -673,7 +673,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity != ignore) {
-				double distance = position.distanceSquared(entity.getScene().getPosition());
+				double distance = position.distanceSquared(entity.getPhysics().getPosition());
 				if (distance < RANGE_SQUARED) {
 					foundEntities.add(entity);
 				}
@@ -690,7 +690,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	@Override
 	public List<Entity> getNearbyEntities(Entity entity, int range) {
-		return getNearbyEntities(entity.getScene().getPosition(), range);
+		return getNearbyEntities(entity.getPhysics().getPosition(), range);
 	}
 
 	@Override
@@ -700,7 +700,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity != ignore) {
-				double distance = position.distanceSquared(entity.getScene().getPosition());
+				double distance = position.distanceSquared(entity.getPhysics().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = entity;
@@ -717,7 +717,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	@Override
 	public Entity getNearestEntity(Entity entity, int range) {
-		return getNearestEntity(entity.getScene().getPosition(), range);
+		return getNearestEntity(entity.getPhysics().getPosition(), range);
 	}
 
 	/**
@@ -764,7 +764,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Entity entity, int range) {
-		return getNearbyPlayers(entity.getScene().getPosition(), range);
+		return getNearbyPlayers(entity.getPhysics().getPosition(), range);
 	}
 
 	/**
@@ -783,7 +783,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity instanceof Player && entity != ignore) {
-				double distance = position.distanceSquared(entity.getScene().getPosition());
+				double distance = position.distanceSquared(entity.getPhysics().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = entity;
@@ -815,7 +815,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range) {
-		return getNearestPlayer(entity.getScene().getPosition(), range);
+		return getNearestPlayer(entity.getPhysics().getPosition(), range);
 	}
 
 	/**

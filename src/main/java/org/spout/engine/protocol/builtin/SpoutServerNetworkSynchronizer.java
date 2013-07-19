@@ -51,7 +51,8 @@ import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
-import org.spout.engine.component.entity.SpoutSceneComponent;
+
+import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
@@ -117,14 +118,13 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 		tickCounter++;
 
 		//TODO: update chunk lists?
-		final int prevViewDistance = ((SpoutPlayer) player).getPrevViewDistance();
-		// TODO: protocol - maybe we should clarify that this is a live value
-		final int currentViewDistance = player.getViewDistance() >> Chunk.BLOCKS.BITS;
+		final int prevViewDistance = player.getViewDistance();
+		final int currentViewDistance = ((SpoutPlayer) player).getViewDistanceLive() >> Chunk.BLOCKS.BITS;
 
-		final Point lastPosition = ((SpoutSceneComponent) player.getScene()).getTransform().getPosition();
-		final Point currentPosition = ((SpoutSceneComponent) player.getScene()).getTransformLive().getPosition();
+		final Point lastPosition = player.getPhysics().getTransform().getPosition();
+		final Point currentPosition = ((SpoutPhysicsComponent) player.getPhysics()).getTransformLive().getPosition();
 		
-		if (lastPosition == null || (currentPosition != null && lastPosition.getWorld() != currentPosition.getWorld())) {
+		if (lastPosition == null || (currentPosition != null && getPlayer().getPhysics().isWorldDirty())) {
 			clearObservers();
 			worldChanged = true;
 		}
@@ -177,7 +177,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 	public void preSnapshot() {
 		super.preSnapshot();
 		if (worldChanged) {
-			Point ep = player.getScene().getPosition();
+			Point ep = player.getPhysics().getPosition();
 			resetChunks();
 			worldChanged(ep.getWorld());
 			worldChanged = false;
@@ -216,8 +216,8 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 				return;
 			}
 
-			if (player.getScene().isTransformDirty() && sync) {
-				sendPosition(player.getScene().getPosition(), player.getScene().getRotation());
+			if (player.getPhysics().isTransformDirty() && sync) {
+				sendPosition(player.getPhysics().getPosition(), player.getPhysics().getRotation());
 				sync = false;
 			}
 
@@ -392,7 +392,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 
 	@Override
 	protected void worldChanged(World world) {
-		session.send(new WorldChangeMessage(world, session.getPlayer().getScene().getTransform(), world.getData()));
+		session.send(new WorldChangeMessage(world, session.getPlayer().getPhysics().getTransform(), world.getData()));
 	}
 
 	@Override

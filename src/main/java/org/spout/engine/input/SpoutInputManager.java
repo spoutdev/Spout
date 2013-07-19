@@ -53,7 +53,7 @@ import org.spout.api.math.IntVector2;
 import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
 
-import org.spout.engine.component.entity.SpoutSceneComponent;
+import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 
@@ -350,15 +350,13 @@ public class SpoutInputManager implements InputManager {
 		if (((Client) Spout.getEngine()).getWorld().getName().equalsIgnoreCase("NullWorld")) {
 			return;
 		}
-		SpoutSceneComponent sc = (SpoutSceneComponent) ((Client)Spout.getEngine()).getPlayer().getScene();
+		SpoutPhysicsComponent physics = (SpoutPhysicsComponent) ((Client)Spout.getEngine()).getPlayer().getPhysics();
 		for(InputExecutor executor : inputExecutors){
-			executor.execute(dt, sc.getLiveTransform());
+			executor.execute(dt, physics.getTransformLive());
 		}
 		Player player = ((Client) Spout.getEngine()).getPlayer();
 		// TODO: move this to NetworkSynchronizer?
-		player.getSession().send(new UpdateEntityMessage(player.getId(), sc.getLiveTransform(), UpdateEntityMessage.UpdateAction.TRANSFORM, player.getSession().getNetworkSynchronizer().getRepositionManager()));
-		//PlayerInputState input = player.input();
-		//player.getSession().send(new PlayerInputMessage(input.getUserCommands(), (short) input.pitch(), (short) input.yaw()));
+		player.getSession().send(new UpdateEntityMessage(player.getId(), physics.getTransformLive(), UpdateEntityMessage.UpdateAction.TRANSFORM, player.getSession().getNetworkSynchronizer().getRepositionManager()));
 	}
 
 	@Override
@@ -410,12 +408,12 @@ public class SpoutInputManager implements InputManager {
 				motion = playerTransform.upVector().multiply(speed * -dt);
 			} else {
 				playerTransform.setRotation(QuaternionMath.rotation(state.pitch(), state.yaw(), playerTransform.getRotation().getRoll()));
-				client.getPlayer().getScene().setTransform(playerTransform);
+				client.getPlayer().getPhysics().setTransform(playerTransform);
 				return;
 			}
 
 			playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(state.pitch(), state.yaw(), playerTransform.getRotation().getRoll()));
-			client.getPlayer().getScene().setTransform(playerTransform);
+			client.getPlayer().getPhysics().setTransform(playerTransform);
 		}
 	}
 }

@@ -61,7 +61,7 @@ import org.spout.api.render.shader.Shader;
 import org.spout.api.Spout;
 
 import org.spout.engine.batcher.SpriteBatch;
-import org.spout.engine.component.entity.SpoutSceneComponent;
+import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.filesystem.resource.ClientRenderMaterial;
 import org.spout.engine.filesystem.resource.ClientRenderTexture;
 import org.spout.engine.gui.DebugScreen;
@@ -203,12 +203,6 @@ public class SpoutRenderer {
 
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//TODO Proper Player physics in AABB Branch
-		final SpoutSceneComponent scene = (SpoutSceneComponent) client.getPlayer().getScene();
-		// TODO: please fix interpolateRender
-		scene.interpolateRender(dt);
-
 		final Camera camera = client.getPlayer().getType(Camera.class);
 		final SkydomeComponent skydome = client.getWorld().get(SkydomeComponent.class);
 
@@ -298,7 +292,7 @@ public class SpoutRenderer {
 		//GUI -> Update debug info
 		if (showDebugInfos) {
 			int id = 0;
-			Point position = client.getPlayer().getScene().getPosition();
+			Point position = client.getPlayer().getPhysics().getPosition();
 			debugScreen.spoutUpdate(id++, "Spout client! Logged as " + client.getPlayer().getDisplayName() + " in world: " + client.getWorld().getName());
 			debugScreen.spoutUpdate(id++, "x: " + position.getX() + "y: " + position.getY() + "z: " + position.getZ());
 			debugScreen.spoutUpdate(id++, "FPS: " + client.getScheduler().getFps() + " (" + (client.getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal") + ")");

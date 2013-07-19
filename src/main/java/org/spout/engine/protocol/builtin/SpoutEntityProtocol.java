@@ -49,7 +49,7 @@ public class SpoutEntityProtocol implements EntityProtocol {
 
 	@Override
 	public List<Message> getSpawnMessages(Entity entity, RepositionManager rm) {
-		return Arrays.<Message>asList(new UpdateEntityMessage(entity.getId(), entity.getScene().getTransform(), UpdateEntityMessage.UpdateAction.ADD, rm));
+		return Arrays.<Message>asList(new UpdateEntityMessage(entity.getId(), entity.getPhysics().getTransform(), UpdateEntityMessage.UpdateAction.ADD, rm));
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class SpoutEntityProtocol implements EntityProtocol {
 	@Override
 	public List<Message> getUpdateMessages(Entity entity, Transform liveTransform, RepositionManager rm, boolean force) {
 		List<Message> messages = new ArrayList<Message>(2);
-		if (force || entity.getScene().isTransformDirty()) {
+		if (force || entity.getPhysics().isTransformDirty()) {
 			messages.add(new UpdateEntityMessage(entity.getId(), liveTransform, UpdateEntityMessage.UpdateAction.TRANSFORM, rm));
 		}
 		if (!entity.getData().getDeltaMap().isEmpty()) {

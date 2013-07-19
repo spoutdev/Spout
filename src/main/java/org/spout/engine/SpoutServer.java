@@ -95,8 +95,7 @@ import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
 
 import org.spout.cereal.config.ConfigurationException;
-
-import org.spout.engine.component.entity.SpoutSceneComponent;
+import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
@@ -759,7 +758,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		boolean created = false;
 		if (player == null) {
 			getLogger().info("First login for " + playerName + ", creating new player data");
-			player = new SpoutPlayer(this, playerName, ((SpoutServerWorld) getDefaultWorld()).getSpawnPoint(), viewDistance);
+			player = new SpoutPlayer(this, playerName, getDefaultWorld().getSpawnPoint(), viewDistance);
 			created = true;
 		}
 		SpoutPlayer oldPlayer = players.put(playerName, player);
@@ -772,16 +771,16 @@ public class SpoutServer extends SpoutEngine implements Server {
 			oldPlayer.kick("Login occured from another client");
 		}
 
-		final SpoutSceneComponent scene = (SpoutSceneComponent) player.getScene();
+		final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) player.getPhysics();
 
 		// Test for valid old position
-		created |= scene.getTransformLive().getPosition().getWorld() == null;
+		created |= physics.getTransformLive().getPosition().getWorld() == null;
 
 		// Connect the player and set their transform to the default world's spawn.
-		player.connect(session, created ? ((SpoutServerWorld) getDefaultWorld()).getSpawnPoint() : scene.getTransformLive());
+		player.connect(session, created ? ((SpoutServerWorld) getDefaultWorld()).getSpawnPoint() : physics.getTransformLive());
 
 		// Spawn the player in the world
-		World world = scene.getTransformLive().getPosition().getWorld();
+		World world = physics.getTransformLive().getPosition().getWorld();
 		world.spawnEntity(player);
 		((SpoutServerWorld) world).addPlayer(player);
 

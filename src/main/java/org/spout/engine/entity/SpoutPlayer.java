@@ -59,8 +59,6 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Locale;
-import org.spout.api.math.QuaternionMath;
-import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
@@ -71,8 +69,8 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutServer;
-import org.spout.engine.component.entity.MovementValidator;
-import org.spout.engine.component.entity.SpoutSceneComponent;
+import org.spout.engine.component.entity.MovementValidatorComponent;
+import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutServerWorld;
@@ -109,7 +107,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		hashcode = name.hashCode();
 		this.setObserver(true);
 		if (Spout.getPlatform() == Platform.SERVER) {
-			add(MovementValidator.class);
+			add(MovementValidatorComponent.class);
 		}
 	}
 
@@ -177,9 +175,9 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (newTransform == null || newTransform.getPosition().getWorld() == null) {
 			return false;
 		}
-		((SpoutSceneComponent) getScene()).setTransformNoSync(newTransform);
+		((SpoutPhysicsComponent) getPhysics()).setTransform(newTransform, false);
 		if (getEngine().getPlatform() == Platform.SERVER) {
-			setupInitialChunk(newTransform, LoadOption.LOAD_GEN);
+			setupInitialChunk(LoadOption.LOAD_GEN);
 		}
 		sessionLive.set(session);
 		session.setPlayer(this);
@@ -366,12 +364,12 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void teleport(Point loc) {
-		getScene().setPosition(loc);
+		getPhysics().setPosition(loc);
 	}
 
 	@Override
 	public void teleport(Transform transform) {
-		getScene().setTransform(transform);
+		getPhysics().setTransform(transform);
 	}
 
 	@Override

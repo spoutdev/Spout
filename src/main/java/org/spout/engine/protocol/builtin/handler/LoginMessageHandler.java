@@ -28,10 +28,13 @@ package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.event.player.ClientPlayerConnectedEvent;
 import org.spout.api.event.player.PlayerConnectEvent;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
+
+import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
 
@@ -39,7 +42,7 @@ public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 
 	@Override
 	public void handleServer(ServerSession session, LoginMessage message) {
-		session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName()));
+		session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName(), (SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE)));
 		session.setState(Session.State.GAME);
 		if (session.hasPlayer()) {
 			session.send(new LoginMessage("", session.getPlayer().getId()));

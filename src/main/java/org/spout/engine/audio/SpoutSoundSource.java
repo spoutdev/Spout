@@ -52,7 +52,7 @@ public class SpoutSoundSource extends SoundSource {
 	@Override
 	public void init() {
 		// cast is safe because of protected constructor and sound manager is only available on client
-		setPosition(((Client) Spout.getEngine()).getPlayer().getScene().getPosition());
+		setPosition(((Client) Spout.getEngine()).getPlayer().getPhysics().getPosition());
 		setVelocity(Vector3.ZERO);
 		setPitch(1);
 		setGain(1);
