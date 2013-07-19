@@ -119,4 +119,20 @@ public interface InputManager {
 	 * @param redirect
 	 */
 	public void setRedirected(boolean redirect);
+
+	/**
+	 * Returns true if the specified {@link Keyboard} is currently pressed.
+	 *
+	 * @param key to check
+	 * @return true if pressed
+	 */
+	public boolean isKeyDown(Keyboard key);
+
+	/**
+	 * Returns true if the specified mouse button is pressed.
+	 *
+	 * @param button to check
+	 * @return true if pressed
+	 */
+	public boolean isButtonDown(int button);
 }
