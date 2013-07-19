@@ -1,6 +1,5 @@
 package org.spout.api.guix;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,30 +17,41 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	protected Screen screen;
 	private Rectangle bounds = Rectangle.ZERO;
 	private Transform2D transform = new Transform2D();
-	private int zIndex = 0;
+	private int zIndex = 0, tabIndex = 0;
 
 	// internal helper fields
 	private int clicks = 0;
-	private float clickTimer = 0.5f;
+	private float gracePeriod = 0.5f, clickTimer = gracePeriod;
 
 
 	private boolean grabbed = false;
 
+	/**
+	 * Returns the {@link Sprite}s that belong to this Widget. This collection
+	 * of Sprites are used for rendering within the {@link GuiRenderer}
+	 * implementation.
+	 *
+	 * @return list of sprites belonging to this widget
+	 */
 	public List<Sprite> getSprites() {
 		return Collections.emptyList();
 	}
 
 	/**
-	 * Returns the hit box of this widget.
+	 * Returns the hit box of this widget. The bounds of this widget determines
+	 * when the {@link org.spout.api.input.InputManager} should notify this
+	 * widget of being clicked.
 	 *
-	 * @return hit box
+	 * @return hit box of widget
 	 */
 	public final Rectangle getBounds() {
 		return bounds;
 	}
 
 	/**
-	 * Sets the hit box of this widget.
+	 * Sets the hit box of this widget. The bounds of this widget determines
+	 * when the {@link org.spout.api.input.InputManager} should notify this
+	 * widget of being clicked.
 	 *
 	 * @param bounds of widget
 	 */
@@ -50,16 +60,20 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	}
 
 	/**
-	 * Returns the transform of the widget.
+	 * Returns the transform of the widget. This determines how the widget's
+	 * geometry should be configured on the screen. All {@link Sprite}s
+	 * belonging to this widget will be shifted accordingly. This should be
+	 * modified to position, rotate, and scale this widget proportionally.
 	 *
-	 * @return transform
+	 * @return transform of widget
 	 */
 	public final Transform2D getTransform() {
 		return transform;
 	}
 
 	/**
-	 * Returns the z index of the widget on the screen.
+	 * Returns the z index of the widget on the screen. Widgets with smaller
+	 * z-indices will be rendered behind widgets with larger z-indices.
 	 *
 	 * @return z index
 	 */
@@ -68,7 +82,8 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	}
 
 	/**
-	 * Sets the z index of this widget
+	 * Sets the z index of this widget. Widgets with smaller
+	 * z-indices will be rendered behind widgets with larger z-indices.
 	 *
 	 * @param zIndex of widget
 	 */
@@ -77,27 +92,37 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	}
 
 	/**
-	 * Notifies widget of focus.
+	 * Notifies widget of focus. Focus is gained when the client either tabs to
+	 * make the widget active or if the client clicks the widget. This method
+	 * is marked final for internal handling of focusing and always makes a
+	 * call to {@link org.spout.api.guix.Widget#onFocus()}.
 	 */
 	public final void focus() {
 		onFocus();
 	}
 
 	/**
-	 * Called when the Widget focuses.
+	 * Called when the Widget focuses. Focus is gained when the client either
+	 * tabs to make the widget active or if the client clicks the widget.
 	 */
 	public void onFocus() {
 	}
 
 	/**
-	 * Notifies widget of being blurred.
+	 * Notifies widget of being blurred. A widget is blurred once a widget has
+	 * focus and loses it. This method is marked final for internal handling of
+	 * blurring and always makes a call to
+	 * {@link org.spout.api.guix.Widget#onBlur()}.
+	 *
+	 * @see org.spout.api.guix.Widget#onFocus()
 	 */
 	public final void blur() {
 		onBlur();
 	}
 
 	/**
-	 * Called when the Widget is blurred.
+	 * Called when the Widget is blurred. A widget is blurred once a widget has
+	 * focus and loses it.
 	 */
 	public void onBlur() {
 	}
@@ -108,47 +133,57 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	}
 
 	/**
-	 * Notifies the widget of being clicked.
+	 * Returns the period in which to report how many clicks have occurred, in
+	 * seconds. The default is 0.5 and is widely accepted as the 'grace period'
+	 * for double-clicks.
+	 *
+	 * @return period in which to report clicks
+	 */
+	public final float getGracePeriod() {
+		return gracePeriod;
+	}
+
+	/**
+	 * Sets the period in which to report how many clicks have occurred, in
+	 * seconds. The default is 0.5 and is widely accepted as the 'grace period'
+	 * for double-clicks.
+	 *
+	 * @param gracePeriod to set
+	 */
+	public final void setGracePeriod(float gracePeriod) {
+		this.gracePeriod = gracePeriod;
+	}
+
+	/**
+	 * Notifies the widget of being clicked. A widget is 'clicked' when the
+	 * client presses or releases a mouse button. This method is marked final
+	 * for internal handling of client clicks. This method also reports the
+	 * amount of clicks clicked within the designated period for easier double,
+	 * triple, etc click handling. This method reports the event that occurred
+	 * and the amount of clicks within the 'grace period' designated in this
+	 * widget. This method always calls
+	 * {@link Widget#onClick(org.spout.api.event.player.input.PlayerClickEvent, int)}
 	 *
 	 * @param event of click
 	 */
 	public final void click(PlayerClickEvent event) {
-		// clicks are the amount of clicks within a 0.5 sec period
-		clicks++;
-		if (clicks == 2) onDoubleClick(event);
-		if (clicks == 3) onTripleClick(event);
-
-		// TODO: handle drag and drops
-
-		onClick(event);
+		onClick(event, clicks++);
 	}
 
 	/**
-	 * Called when the widget is clicked.
+	 * Called when the widget is clicked. A widget is 'clicked' when the
+	 * client presses or releases a mouse button.
 	 *
 	 * @param event of click
 	 */
-	public void onClick(PlayerClickEvent event) {
+	public void onClick(PlayerClickEvent event, int clicksWithinTimer) {
 	}
 
 	/**
-	 * Called when there are two clicks within a 0.5 second period.
-	 *
-	 * @param event of click
-	 */
-	public void onDoubleClick(PlayerClickEvent event) {
-	}
-
-	/**
-	 * Called when there are three clicks within a 0.5 second period.
-	 *
-	 * @param event of click
-	 */
-	public void onTripleClick(PlayerClickEvent event) {
-	}
-
-	/**
-	 * Notifies the widget of being keyed.
+	 * Notifies the widget of being keyed. A widget is 'keyed' when the widget
+	 * is focused and a key is pressed or released by the client. This method
+	 * marked final for internal key handling and always calls
+	 * {@link Widget#onKey(org.spout.api.event.player.input.PlayerKeyEvent)}
 	 *
 	 * @param event of key press/release
 	 */
@@ -157,7 +192,8 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	}
 
 	/**
-	 * Called when the widget is keyed.
+	 * Called when the widget is keyed. A widget is 'keyed' when the widget
+	 * is focused and a key is pressed or released by the client.
 	 *
 	 * @param event of key
 	 */
@@ -165,8 +201,13 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	}
 
 	/**
-	 * Called when the mouse is moved.
+	 * Called when the mouse is moved. This method is called when the mouse is
+	 * moved. This also specifies if the mouse if hovering over this widget's
+	 * hit box. This method is marked final for internal handling and always
+	 * calls
+	 * {@link Widget#onMouseMove(org.spout.api.math.IntVector2, org.spout.api.math.IntVector2, boolean)}
 	 *
+	 * @see org.spout.api.guix.Widget#getBounds()
 	 * @param from the location of mouse before this event
 	 * @param to the location of mouse after this event
 	 * @param hovered if the mouse is hovered over this widget
@@ -178,8 +219,11 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	}
 
 	/**
-	 * Called when the mouse is moved.
+	 * Called when the mouse is moved. This method is called when the mouse is
+	 * moved. This also specifies if the mouse if hovering over this widget's
+	 * hit box.
 	 *
+	 * @see org.spout.api.guix.Widget#getBounds()
 	 * @param from the location of mouse before this event
 	 * @param to the location of mouse after this event
 	 * @param hovered if the mouse is hovered over this widget

@@ -190,7 +190,7 @@ public class Screen extends BasicTickable {
 	}
 
 	/**
-	 * Returns true if this screen should be rendered
+	 * Returns true if this screen should be rendered.
 	 *
 	 * @return true if visible
 	 */

@@ -10,6 +10,13 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 
+/**
+ * Contains render data for {@link Widget}s to be used by the
+ * {@link GuiRenderer}. Multiple of these are returned to be rendered
+ * for each Widget.
+ *
+ * @see org.spout.api.guix.Widget#getSprites()
+ */
 public class Sprite implements Comparable<Sprite> {
 	private RenderMaterial material;
 	private Rectangle source = Rectangle.ZERO;
@@ -17,10 +24,26 @@ public class Sprite implements Comparable<Sprite> {
 	private int zIndex = 0;
 	private Color color = Color.WHITE;
 
+	/**
+	 * Returns the {@link RenderMaterial} of the Sprite.
+	 * This is used by the source {@link Rectangle} to obtain sub-images
+	 * common for sprite-sheets.
+	 *
+	 * @see org.spout.api.guix.Sprite#getSource()
+	 * @return material to render
+	 */
 	public RenderMaterial getMaterial() {
 		return material;
 	}
 
+	/**
+	 * Sets the {@link RenderMaterial} of the Sprite.
+	 * This is used by the source {@link Rectangle} to obtain sub-images
+	 * common for sprite-sheets.
+	 *
+	 * @see org.spout.api.guix.Sprite#getSource()
+	 * @param material to render
+	 */
 	public void setMaterial(RenderMaterial material) {
 		this.material = material;
 	}

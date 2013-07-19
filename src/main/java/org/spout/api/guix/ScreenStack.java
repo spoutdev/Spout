@@ -82,7 +82,7 @@ public class ScreenStack extends BasicTickable {
 	}
 
 	/**
-	 *
+	 * Closes all currently opened screens.
 	 */
 	public void closeAll() {
 		screens.clear();
