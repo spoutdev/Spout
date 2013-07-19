@@ -29,10 +29,8 @@ package org.spout.engine.input;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.Display;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -42,7 +40,6 @@ import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.entity.state.PlayerInputState.MouseDirection;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
-import org.spout.api.exception.CommandException;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
@@ -372,6 +369,16 @@ public class SpoutInputManager implements InputManager {
 	@Override
 	public void setRedirected(boolean redirect) {
 		redirected = redirect;
+	}
+
+	@Override
+	public boolean isKeyDown(Keyboard key) {
+		return org.lwjgl.input.Keyboard.isKeyDown(key.getId());
+	}
+
+	@Override
+	public boolean isButtonDown(int button) {
+		return org.lwjgl.input.Mouse.isButtonDown(button);
 	}
 
 	public void onClientStart() {
