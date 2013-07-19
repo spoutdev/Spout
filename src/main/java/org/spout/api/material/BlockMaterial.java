@@ -29,19 +29,16 @@ package org.spout.api.material;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.spout.api.collision.BoundingBox;
-import org.spout.api.collision.CollisionStrategy;
-import org.spout.api.collision.CollisionVolume;
 import org.spout.api.component.block.BlockComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cause;
 import org.spout.api.event.cause.MaterialCause;
+import org.spout.api.event.entity.EntityCollideBlockEvent;
 import org.spout.api.event.player.Action;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.material.basic.BasicAir;
-import org.spout.api.material.basic.BasicSkyBox;
-import org.spout.api.material.basic.BasicSolid;
+import org.spout.api.material.basic.Air;
+import org.spout.api.material.basic.Solid;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.range.EffectRange;
@@ -53,49 +50,67 @@ import org.spout.api.util.flag.Flag;
 
 import com.google.common.collect.ImmutableSet;
 
+import org.spout.physics.ReactDefaults;
+import org.spout.physics.collision.shape.CollisionShape;
+
 /**
  * Defines the specific characteristics of a Block
  */
 @SuppressWarnings("unchecked")
 public class BlockMaterial extends Material implements Placeable {
-	public static final BlockMaterial AIR = new BasicAir();
-	public static final BlockMaterial SOLID = new BasicSolid("SolidBlue", SpoutModels.SOLID_BLUE);
-	public static final BlockMaterial SOLID_BROWN = new BasicSolid("SolidBrown", SpoutModels.SOLID_BROWN);
-	public static final BlockMaterial SOLID_GREEN = new BasicSolid("SolidGreen", SpoutModels.SOLID_GREEN);
-	public static final BlockMaterial SOLID_LIGHTGREEN = new BasicSolid("SolidLightGreen", SpoutModels.SOLID_LIGHTGREEN);
-	public static final BlockMaterial SOLID_RED = new BasicSolid("SolidRed", SpoutModels.SOLID_RED);
-	public static final BlockMaterial SOLID_SKYBLUE = new BasicSolid("SolidSkyBlue", SpoutModels.SOLID_SKYBLUE);
+	public static final BlockMaterial AIR = new Air();
+	public static final BlockMaterial UNBREAKABLE = new Solid("Unbreakable");
+	public static final BlockMaterial UNGENERATED = new Solid("Ungenerated").setInvisible();
+	public static final BlockMaterial ERROR = new Solid("Missing Plugin");
 
-	public static final BlockMaterial UNBREAKABLE = new BlockMaterial("Unbreakable").setHardness(100.f);
-	public static final BlockMaterial UNGENERATED = new BlockMaterial("Ungenerated").setHardness(100.f).setInvisible();
-	public static final BlockMaterial SKYBOX = new BasicSkyBox();
-	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
-	
+	public static final BlockMaterial SOLID_BLUE = new Solid("SolidBlue", SpoutModels.SOLID_BLUE);
+	public static final BlockMaterial SOLID_BROWN = new Solid("SolidBrown", SpoutModels.SOLID_BROWN);
+	public static final BlockMaterial SOLID_GREEN = new Solid("SolidGreen", SpoutModels.SOLID_GREEN);
+	public static final BlockMaterial SOLID_LIGHTGREEN = new Solid("SolidLightGreen", SpoutModels.SOLID_LIGHTGREEN);
+	public static final BlockMaterial SOLID_RED = new Solid("SolidRed", SpoutModels.SOLID_RED);
+	public static final BlockMaterial SOLID_SKYBLUE = new Solid("SolidSkyBlue", SpoutModels.SOLID_SKYBLUE);
+
 	private final Set<Class<? extends BlockComponent>> components;
 
-	public BlockMaterial(short dataMask, String name, String model, Class<? extends BlockComponent>... components){
+	private ByteBitSet occlusion = new ByteBitSet(BlockFaces.NESWBT);
+	private float hardness = 0F;
+	private byte opacity = 0xF;
+	private boolean surface = true;
+	private boolean invisible = false;
+
+	//Collision
+	private CollisionShape shape;
+	private float mass = 1;
+	private float friction = ReactDefaults.DEFAULT_FRICTION_COEFFICIENT;
+	private float restitution = ReactDefaults.DEFAULT_RESTITUTION_COEFFICIENT;
+
+	public BlockMaterial(short dataMask, String name, String model, CollisionShape shape, Class<? extends BlockComponent>... components){
 		super(dataMask, name, model);
 		this.components = ImmutableSet.copyOf(components);
+		this.shape = shape;
 	}
 
-	public BlockMaterial(String name, int data, Material parent, String model, Class<? extends BlockComponent>... components) {
+	public BlockMaterial(String name, int data, Material parent, String model, CollisionShape shape, Class<? extends BlockComponent>... components) {
 		super(name, data, parent, model);
 		this.components = ImmutableSet.copyOf(components);
+		this.shape = shape;
 	}
 
-	protected BlockMaterial(String name, short id, Class<? extends BlockComponent>... components) {
+	protected BlockMaterial(String name, short id, CollisionShape shape, Class<? extends BlockComponent>... components) {
 		super(name, id);
 		this.components = ImmutableSet.copyOf(components);
+		this.shape = shape;
 	}
 
-	protected BlockMaterial(String name, Class<? extends BlockComponent>... components) {
+	protected BlockMaterial(String name, CollisionShape shape, Class<? extends BlockComponent>... components) {
 		super(name);
 		this.components = ImmutableSet.copyOf(components);
+		this.shape = shape;
 	}
 
 	/**
 	 * Gets the block material with the given id, or null if none found
-	 * 
+	 *
 	 * @param id to get
 	 * @return block, or null if none found
 	 */
@@ -108,10 +123,10 @@ public class BlockMaterial extends Material implements Placeable {
 		return (BlockMaterial) mat;
 
 	}
-	
+
 	/**
 	 * Gets the block (sub-)material with the given id and data, or null if none found
-	 * 
+	 *
 	 * @param id to get
 	 * @return block, or null if none found
 	 */
@@ -125,7 +140,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Gets the associated block material with it's name. Case-insensitive.
-	 * 
+	 *
 	 * @param name to lookup
 	 * @return material, or null if none found
 	 */
@@ -138,42 +153,14 @@ public class BlockMaterial extends Material implements Placeable {
 		return (BlockMaterial) mat;
 	}
 
-	private ByteBitSet occlusion = new ByteBitSet(BlockFaces.NESWBT);
-	private float hardness = 0F;
-	private float friction = 0F;
-	private byte opacity = 0xF;
-	private boolean surface = true;
-	private boolean invisible = false;
-	private CollisionVolume collision = new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F);
-
 	@Override
 	public BlockMaterial getSubMaterial(short data) {
 		return (BlockMaterial) super.getSubMaterial(data);
 	}
-	
-	/**
-	 * Gets the friction of this block
-	 * 
-	 * @return friction value
-	 */
-	public float getFriction() {
-		return this.friction;
-	}
-
-	/**
-	 * Sets the friction of this block
-	 * 
-	 * @param slip friction value
-	 * @return this material
-	 */
-	public BlockMaterial setFriction(float slip) {
-		this.friction = slip;
-		return this;
-	}
 
 	/**
 	 * Gets the hardness of this block
-	 * 
+	 *
 	 * @return hardness value
 	 */
 	public float getHardness() {
@@ -182,7 +169,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Sets the hardness of this block
-	 * 
+	 *
 	 * @param hardness hardness value
 	 * @return this material
 	 */
@@ -193,16 +180,16 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Gets the amount of light this block emits
-	 * 
+	 *
 	 * @return light level
 	 */
 	public byte getLightLevel(short data) {
 		return 0;
 	}
-	
+
 	/**
 	 * Gets the amount of light this block emits
-	 * 
+	 *
 	 * @return light level
 	 */
 	public byte getLightLevel() {
@@ -211,9 +198,9 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Gets the amount of light blocked by this block.
-	 * 
+	 *
 	 * 0xF (15) represents a fully opaque block.
-	 * 
+	 *
 	 * @return opacity
 	 */
 	public byte getOpacity() {
@@ -230,9 +217,9 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Sets the amount of light blocked by this block.
-	 * 
+	 *
 	 * 0xF (15) represents a fully opaque block.
-	 * 
+	 *
 	 * @param level of opacity, a value from 0 to 15
 	 * @return this material
 	 */
@@ -249,7 +236,7 @@ public class BlockMaterial extends Material implements Placeable {
 	/**
 	 * Turns this Block Material in a fully opaque block, not letting light through from any side<br>
 	 * Sets opacity to 15 and sets occlusion to all faces
-	 * 
+	 *
 	 * @return this Block Material
 	 */
 	public BlockMaterial setOpaque() {
@@ -260,18 +247,18 @@ public class BlockMaterial extends Material implements Placeable {
 	/**
 	 * Turns this Block Material in a fully transparent block, letting light through from all sides<br>
 	 * Sets the opacity to 0 and sets occlusion to none
-	 * 
+	 *
 	 * @return this Block Material
 	 */
 	public BlockMaterial setTransparent() {
 		this.occlusion.set(BlockFaces.NONE);
 		return this.setOpacity(0);
 	}
-	
+
 	/**
 	 * Sets this Block Material as a surface material.  The height of the highest 
 	 * surface material is considered the surface height.
-	 * 
+	 *
 	 * @return this Block Material
 	 */
 	public BlockMaterial setSurface() {
@@ -281,7 +268,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Sets this Block Material as a non-surface material
-	 * 
+	 *
 	 * @return this Block Material
 	 */
 	public BlockMaterial setSky() {
@@ -292,9 +279,9 @@ public class BlockMaterial extends Material implements Placeable {
 	/**
 	 * True if this block acts as an obstacle when placing a block on it false
 	 * if not.
-	 * 
+	 *
 	 * If the block is not an obstacle, placement will replace this block.
-	 * 
+	 *
 	 * @return if this block acts as a placement obstacle
 	 */
 	public boolean isPlacementObstacle() {
@@ -304,7 +291,7 @@ public class BlockMaterial extends Material implements Placeable {
 	/**
 	 * True if this block requires physic updates when a neighbor block changes,
 	 * false if not.
-	 * 
+	 *
 	 * @return if this block requires physics updates
 	 */
 	public boolean hasPhysics() {
@@ -313,7 +300,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Called when a block near to this material is changed.<br>
-	 * 
+	 *
 	 * @param oldMaterial the previous material, or null if the update was not due to a material change
 	 * @param block that got updated
 	 * @return true if the block was updated
@@ -327,7 +314,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 * data is changed.
 	 * <br>
 	 * When triggered, all blocks in this range are queued for updating.
-	 * 
+	 *
 	 * @return the maximum range of updates
 	 */
 	public EffectRange getPhysicsRange(short data) {
@@ -340,7 +327,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 * sub-material (data & dataMask) is changed.
 	 * <br>
 	 * When triggered, all blocks in this range are queued for updating.
-	 * 
+	 *
 	 * @param data the data the block had when destroyed
 	 * @return the maximum range of updates
 	 */
@@ -351,7 +338,7 @@ public class BlockMaterial extends Material implements Placeable {
 	/**
 	 * Gets the maximum distance of any physics effect.  This is used to determine if the update can be handled by 
 	 * the region thread and not to determine if any blocks should be updated.
-	 * 
+	 *
 	 * @param data the data of the material
 	 * @return the maximum range of updates
 	 */
@@ -361,7 +348,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Performs the block destroy procedure without initial flags
-	 * 
+	 *
 	 * @param block to destroy
 	 * @param cause of the destruction
 	 * @return True if destroying was successful
@@ -372,7 +359,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Performs the block destroy procedure
-	 * 
+	 *
 	 * @param block to destroy
 	 * @param flags to initially use for destruction
 	 * @return True if destroying was successful
@@ -389,7 +376,7 @@ public class BlockMaterial extends Material implements Placeable {
 	/**
 	 * Called when this block has to be destroyed.<br>
 	 * This function performs the actual destruction of the block.
-	 * 
+	 *
 	 * @param block that got destroyed
 	 * @return true if the destruction occurred
 	 */
@@ -400,7 +387,7 @@ public class BlockMaterial extends Material implements Placeable {
 	/**
 	 * Called after this block has been destroyed.<br>
 	 * This function performs possible post-destroy operations, such as effects.
-	 * 
+	 *
 	 * @param block of the material that got destroyed
 	 * @param flags describing the destroy situation
 	 */
@@ -410,7 +397,7 @@ public class BlockMaterial extends Material implements Placeable {
 	/**
 	 * Gets all the flags associated with this Material as a Block<br>
 	 * The flags are added to the input collection
-	 * 
+	 *
 	 * @param block of this Material
 	 * @param flags to add to
 	 */
@@ -418,47 +405,9 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Gets the {@link CollisionVolume} this block has.
-	 * 
-	 * @return collision {@link CollisionVolume} this block has.
-	 */
-	public CollisionVolume getVolume() {
-		return this.collision;
-	}
-
-	/**
-	 * Sets the {@link CollisionVolume} for this block.
-	 * 
-	 * @param collision {@link CollisionVolume} to set
-	 */
-	public void setVolume(CollisionVolume collision) {
-		this.collision = collision;
-	}
-
-	/**
-	 * True if this block has collision,
-	 * false if not.
-	 * 
-	 * @return if this block has collision
-	 */
-	public boolean hasCollision() {
-		return this.collision.getStrategy() != CollisionStrategy.NOCOLLIDE;
-	}
-	
-	/**
-	 * True if this block is a solid block
-	 * false if not.
-	 * 
-	 * @return if this block has collision
-	 */
-	public boolean isSolid() {
-		return this.collision.getStrategy() == CollisionStrategy.SOLID;
-	}
-
-	/**
 	 * Gets the occluded faces of this Block Material for the data value specified<br>
 	 * Occluded faces do not let light though and require rendering behind it at those faces
-	 * 
+	 *
 	 * @param data value of the material
 	 * @return the occluded faces
 	 */
@@ -469,7 +418,7 @@ public class BlockMaterial extends Material implements Placeable {
 	/**
 	 * Sets the occludes faces of this Block Material<br>
 	 * Occluded faces do not let light though and require rendering behind it at those faces
-	 * 
+	 *
 	 * @param data of this Block Material
 	 * @param faces to make this Block Material occlude
 	 * @return this Block Material
@@ -482,7 +431,7 @@ public class BlockMaterial extends Material implements Placeable {
 	/**
 	 * Sets the occludes face of this Block Material<br>
 	 * Occluded faces do not let light though and require rendering behind it at those faces
-	 * 
+	 *
 	 * @param data of this Block Material
 	 * @param face to make this Block Material occlude
 	 * @return this Block Material
@@ -494,23 +443,12 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Gets if the a face should be rendered
-	 * 
+	 *
 	 * @param face the fact to render
 	 * @param material the material of the neighbouring block
 	 */
 	public boolean isFaceRendered(BlockFace face, BlockMaterial material) {
 		return true;
-	}
-
-	/**
-	 * Sets the collision strategy to use for this block
-	 * 
-	 * @param strategy
-	 * @return this block material
-	 */
-	public BlockMaterial setCollision(CollisionStrategy strategy) {
-		this.collision.setStrategy(strategy);
-		return this;
 	}
 
 	@Override
@@ -527,7 +465,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 * Checks the block to see if it can be created at that position<br>
 	 * Orientation-specific checks are performed in the {@link canPlace} method<br>
 	 * Use this method to see if creation is possible at a given position when not placed
-	 * 
+	 *
 	 * @param block this Block Material should be created in
 	 * @param data for the material
 	 * @param cause of this creation
@@ -541,7 +479,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 * Creates this Block Material at a block in the world<br>
 	 * Orientation-specific changes are performed in the {@link onPlacement} method<br>
 	 * Use this method to create the block at a given position when not placed
-	 * 
+	 *
 	 * @param block to create this Block Material in
 	 * @param data for the material
 	 * @param cause of this creation
@@ -562,17 +500,15 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Called when the entity collides with a block material
-	 * @param colliderPoint The point where this entity collided with the material
-	 * @param collidedPoint The point where the material was collided with the entity
-	 * @param entity The entity that collided with this block material
+	 * @param event The collision event, containing the collision information
 	 */
-	public void onCollided(Point colliderPoint, Point collidedPoint, Entity entity) {
+	public void onCollided(final EntityCollideBlockEvent event) {
 	}
-	
+
 	/**
 	 * Returns true if the material is a surface material.  The world's surface height is
 	 * defined as the y coordinate of the highest surface material in each column.
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isSurface() {
@@ -586,7 +522,7 @@ public class BlockMaterial extends Material implements Placeable {
 	public boolean isInvisible() {
 		return this.invisible;
 	}
-	
+
 	/**
 	 * Turns this material invisible and sets it as non-occluding.  Invisible blocks are not rendered.
 	 */
@@ -603,12 +539,12 @@ public class BlockMaterial extends Material implements Placeable {
 	public boolean isTransparent() {
 		return this.opacity == 0;
 	}
-	
+
 	/**
 	 * Called by the dynamic block update system.  If a material is changed into a
 	 * material that it is not compatible with, then this will automatically trigger
 	 * a block reset.
-	 * 
+	 *
 	 * @param m the other material
 	 * @return true if the two materials are compatible
 	 */
@@ -618,9 +554,9 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Helper method to create a MaterialCause.
-	 * 
+	 *
 	 * Same as using new MaterialCause(material, block)
-	 * 
+	 *
 	 * @param block location of the event
 	 * @return cause
 	 */
@@ -630,9 +566,9 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Helper method to create a MaterialCause.
-	 * 
+	 *
 	 * Same as using new MaterialCause(material, block)
-	 * 
+	 *
 	 * @param block location of the event
 	 * @return cause
 	 */
@@ -642,5 +578,89 @@ public class BlockMaterial extends Material implements Placeable {
 
 	public Set<Class<? extends BlockComponent>> getComponents() {
 		return components;
+	}
+
+	/**
+	 * Get the mass of this BlockMaterial
+	 * @return The mass
+	 */
+	public float getMass() {
+		return mass;
+	}
+
+	/**
+	 * Sets the mass of this BlockMaterial
+	 * @param mass The new mass
+	 * @throws IllegalArgumentException If provided mass is < 1f
+	 * @return This material, for chaining
+	 */
+	public BlockMaterial setMass(final float mass) {
+		if (mass < 1) {
+			throw new IllegalArgumentException("Mass must be greater than or equal to 1f");
+		}
+		this.mass = mass;
+		return this;
+	}
+
+	/**
+	 * Get the friction of this BlockMaterial
+	 * @return The friction
+	 */
+	public float getFriction() {
+		return friction;
+	}
+
+	/**
+	 * Sets the friction of this BlockMaterial
+	 * @param friction The new friction
+	 * @throws IllegalArgumentException If provided friction is < 0f
+	 * @return This material, for chaining
+	 */
+	public BlockMaterial setFriction(final float friction) {
+		if (friction < 0 || friction > 1) {
+			throw new IllegalArgumentException("Friction must be between 0 and 1 (inclusive)");
+		}
+		this.friction = friction;
+		return this;
+	}
+
+	/**
+	 * Get the restitution of this BlockMaterial
+	 * @return The restitution
+	 */
+	public float getRestitution() {
+		return restitution;
+	}
+
+	/**
+	 * Sets the restitution of this BlockMaterial
+	 * @param restitution The new restitution
+	 * @throws IllegalArgumentException If provided restitution is < 0f
+	 * @return This material, for chaining
+	 */
+	public BlockMaterial setRestitution(final float restitution) {
+		if (restitution < 0 || restitution > 1) {
+			throw new IllegalArgumentException("Restitution must be between 0 and 1 (inclusive)");
+		}
+		this.restitution = restitution;
+		return this;
+	}
+
+	/**
+	 * Gets the {@link CollisionShape} this BlockMaterial has.
+	 * @return the collision shape
+	 */
+	public CollisionShape getShape() {
+		return shape;
+	}
+
+	/**
+	 * Sets the {@link CollisionShape} this BlockMaterial has/
+	 * @param shape The new collision shape
+	 * @return This material, for chaining
+	 */
+	public BlockMaterial setShape(final CollisionShape shape) {
+		this.shape = shape;
+		return this;
 	}
 }

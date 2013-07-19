@@ -48,14 +48,14 @@ public class RecipeTreeTest {
 	@Test
 	public void treeTest() {
 		RecipeBuilder builder = new RecipeBuilder();
-		builder.setIngredient('A', BlockMaterial.SOLID).setIngredient('B', BlockMaterial.UNBREAKABLE);
+		builder.setIngredient('A', BlockMaterial.SOLID_BLUE).setIngredient('B', BlockMaterial.UNBREAKABLE);
 		builder.addRow("AAA").addRow("BBB").addRow("AAA");
-		builder.setResult(BlockMaterial.SOLID, 1);
+		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe = builder.buildShapedRecipe();
 		List<List<Material>> testIngredients = new ArrayList<List<Material>>();
-		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID, BlockMaterial.SOLID, BlockMaterial.SOLID)));
+		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE)));
 		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.UNBREAKABLE, BlockMaterial.UNBREAKABLE, BlockMaterial.UNBREAKABLE)));
-		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID, BlockMaterial.SOLID, BlockMaterial.SOLID)));
+		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE)));
 		RecipeTree tree = new RecipeTree();
 		tree.addRecipe(recipe);
 		assertSame(recipe, tree.matchShapedRecipe(testIngredients, true));
@@ -64,13 +64,13 @@ public class RecipeTreeTest {
 	@Test
 	public void treeTest2() {
 		RecipeBuilder builder = new RecipeBuilder();
-		builder.setIngredient('A', BlockMaterial.SOLID).setIngredient('B', BlockMaterial.UNBREAKABLE);
+		builder.setIngredient('A', BlockMaterial.SOLID_BLUE).setIngredient('B', BlockMaterial.UNBREAKABLE);
 		builder.addRow("BB").addRow("AA");
-		builder.setResult(BlockMaterial.SOLID, 1);
+		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe = builder.buildShapedRecipe();
 		List<List<Material>> testIngredients = new ArrayList<List<Material>>();
 		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.UNBREAKABLE, BlockMaterial.UNBREAKABLE)));
-		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID, BlockMaterial.SOLID)));
+		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE)));
 		RecipeTree tree = new RecipeTree();
 		tree.addRecipe(recipe);
 		assertSame(recipe, tree.matchShapedRecipe(testIngredients, true));
@@ -79,14 +79,14 @@ public class RecipeTreeTest {
 	@Test
 	public void treeTest3() {
 		RecipeBuilder builder = new RecipeBuilder();
-		builder.setIngredient('A', BlockMaterial.SOLID).setIngredient('B', BlockMaterial.UNBREAKABLE);
+		builder.setIngredient('A', BlockMaterial.SOLID_BLUE).setIngredient('B', BlockMaterial.UNBREAKABLE);
 		builder.addRow("BB").addRow("AA");
-		builder.setResult(BlockMaterial.SOLID, 1);
+		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe = builder.buildShapedRecipe();
 		List<List<Material>> testIngredients = new ArrayList<List<Material>>();
 		testIngredients.add(new ArrayList<Material>(Arrays.asList(null, null, (Material) null)));
 		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.UNBREAKABLE, BlockMaterial.UNBREAKABLE, null)));
-		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID, BlockMaterial.SOLID, null)));
+		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE, null)));
 		RecipeTree tree = new RecipeTree();
 		tree.addRecipe(recipe);
 		assertSame(recipe, tree.matchShapedRecipe(testIngredients, true));

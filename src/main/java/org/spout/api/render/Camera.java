@@ -30,7 +30,6 @@ import org.spout.api.math.Matrix;
 
 /**
  * Represents a Camera to be used for rendering.
- *
  */
 public interface Camera {
 	/**
@@ -46,7 +45,7 @@ public interface Camera {
 	public Matrix getView();
 	
 	/**
-	 * Update the view matrix.  
+	 * Update the view matrix.
 	 */
 	public void updateView();
 	

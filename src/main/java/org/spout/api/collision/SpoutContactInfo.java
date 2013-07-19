@@ -26,22 +26,47 @@
  */
 package org.spout.api.collision;
 
-public enum CollisionStrategy {
-	/**
-	 * Indicates that the given volume is Soft, and that it counts as colliding
-	 * with solid volumes, but doesn't hard resolve.
-	 *
-	 * Collision models should handle how softCollisions are handled.
-	 */
-	SOFT,
-	/**
-	 * Indicates that the marked Collision Volume is solid, and that other Solid
-	 * volumes should resolve their collisions
-	 */
-	SOLID,
-	/**
-	 * Indicates that the marked Collision Volume is not solid, and that it
-	 * should not collide with Solid Volumes.
-	 */
-	NOCOLLIDE
+import org.spout.api.math.ReactConverter;
+import org.spout.api.math.Vector3;
+
+import org.spout.physics.collision.ContactInfo;
+
+public class SpoutContactInfo {
+	private final ContactInfo wrapped;
+
+	public SpoutContactInfo(final ContactInfo wrapped) {
+		this.wrapped = wrapped;
+	}
+
+	public Vector3 getFirstContactPoint() {
+		return ReactConverter.toSpoutVector3(wrapped.getFirstLocalPoint());
+	}
+
+	public void setFirstContactPoint(final Vector3 vec) {
+		wrapped.setFirstLocalPoint(ReactConverter.toReactVector3(vec));
+	}
+
+	public Vector3 getSecondContactPoint() {
+		return ReactConverter.toSpoutVector3(wrapped.getSecondLocalPoint());
+	}
+
+	public void setSecondContactPoint(final Vector3 vec) {
+		wrapped.setSecondLocalPoint(ReactConverter.toReactVector3(vec));
+	}
+
+	public Vector3 getNormal() {
+		return ReactConverter.toSpoutVector3(wrapped.getNormal());
+	}
+
+	public void setNormal(final Vector3 vec) {
+		wrapped.setNormal(ReactConverter.toReactVector3(vec));
+	}
+
+	public float getPenetrationDepth() {
+		return wrapped.getPenetrationDepth();
+	}
+
+	public void setPenetrationDepth(final float pDepth) {
+		wrapped.setPenetrationDepth(pDepth);
+	}
 }

@@ -26,14 +26,12 @@
  */
 package org.spout.api.model;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
-
 
 public interface Model {
 

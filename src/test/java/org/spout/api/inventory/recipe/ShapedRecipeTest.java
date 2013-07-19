@@ -55,7 +55,7 @@ public class ShapedRecipeTest {
 		builder.addRow(' ', 'X', ' ');
 		builder.addRow('X', 'X', 'X');
 		builder.addRow(' ', 'X', ' ');
-		builder.setIngredient('X', BlockMaterial.SOLID);
+		builder.setIngredient('X', BlockMaterial.SOLID_BLUE);
 		builder.setResult(new ItemStack(BlockMaterial.AIR, 1));
 
 		final ShapedRecipe recipe = builder.buildShapedRecipe();
@@ -68,9 +68,9 @@ public class ShapedRecipeTest {
 		assertFalse(manager.matchShapedRecipe(materials) != null);
 
 		// Add ingredients
-		materials.add(Arrays.asList(new Material[] {null, BlockMaterial.SOLID, null}));
-		materials.add(Arrays.asList(new Material[] {BlockMaterial.SOLID, BlockMaterial.SOLID, BlockMaterial.SOLID}));
-		materials.add(Arrays.asList(new Material[] {null, BlockMaterial.SOLID, null}));
+		materials.add(Arrays.asList(new Material[] {null, BlockMaterial.SOLID_BLUE, null}));
+		materials.add(Arrays.asList(new Material[] {BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE}));
+		materials.add(Arrays.asList(new Material[] {null, BlockMaterial.SOLID_BLUE, null}));
 
 		// Try to craft
 		assertTrue(manager.matchShapedRecipe(materials) != null);

@@ -24,63 +24,52 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.collision;
+package org.spout.api.event.entity;
 
-import org.spout.api.math.Vector3;
+import org.spout.api.collision.SpoutContactInfo;
+import org.spout.api.entity.Entity;
+import org.spout.api.event.Cancellable;
+import org.spout.api.event.HandlerList;
 
-/**
- * Defines a Volume that can collide with another Volume
- *
- *
- */
-public abstract class CollisionVolume {
-	CollisionStrategy strat  = CollisionStrategy.SOLID;
-	
-	
-	public CollisionStrategy getStrategy() {
-		return strat;
+public abstract class EntityCollideEvent<T> extends EntityEvent implements Cancellable {
+	private static HandlerList handlers = new HandlerList();
+	private final T collided;
+	private final SpoutContactInfo info;
+
+	public EntityCollideEvent(Entity e, T collided, SpoutContactInfo info) {
+		super(e);
+		this.collided = collided;
+		this.info = info;
 	}
-	
-	public void setStrategy(CollisionStrategy strat) {
-		this.strat = strat;
+
+	/**
+	 * Returns the collided object of the event.
+	 * @return The collided object
+	 */
+	public T getCollided() {
+		return collided;
 	}
-	
-	
-	public abstract Vector3 getPosition();
-
-	public abstract CollisionVolume offset(Vector3 amount);
-	
-	
-	/**
-	 * Checks for Intersection
-	 *
-	 * @param other
-	 * @return
-	 */
-	public abstract boolean intersects(CollisionVolume other);
 
 	/**
-	 * Checks for containing
-	 *
-	 * @param other
-	 * @return
+	 * Returns a {@link SpoutContactInfo} which details all the information
+	 * concerning the collision that occurred.
+	 * @return the contact info
 	 */
-	public abstract boolean contains(CollisionVolume other);
+	public SpoutContactInfo getContactInfo() {
+		return info;
+	}
 
+	@Override
+	public void setCancelled(final boolean cancelled) {
+		super.setCancelled(cancelled);
+	}
 
-	/**
-	 * Checks if the volume contains the other Vector3.
-	 *
-	 * @param b
-	 * @return
-	 */
-	public abstract boolean containsPoint(Vector3 b);
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
 
-	/**
-	 * Defines a sweep test from one start to an end
-	 *
-	 * @param other
-	 * @return
-	 */
-	public abstract Vector3 resolve(CollisionVolume other);
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

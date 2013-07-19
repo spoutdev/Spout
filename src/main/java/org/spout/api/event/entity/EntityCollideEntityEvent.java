@@ -24,27 +24,30 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.material.basic;
+package org.spout.api.event.entity;
 
-import org.spout.api.event.Cause;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.BlockMaterial;
+import org.spout.api.collision.SpoutContactInfo;
+import org.spout.api.entity.Entity;
+import org.spout.api.event.HandlerList;
 
-public final class BasicAir extends BlockMaterial {
+public class EntityCollideEntityEvent extends EntityCollideEvent {
+	private static HandlerList handlers = new HandlerList();
 
-	@SuppressWarnings("unchecked")
-	public BasicAir() {
-		super("Air", (short) 0);
-		this.setTransparent().setInvisible();
+	public EntityCollideEntityEvent(Entity e, Entity collided, SpoutContactInfo info) {
+		super(e, collided, info);
 	}
 
 	@Override
-	public boolean isPlacementObstacle() {
-		return false;
+	public Entity getCollided() {
+		return (Entity) super.getCollided();
 	}
 
 	@Override
-	public boolean onDestroy(Block block, Cause<?> cause) {
-		return false;
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

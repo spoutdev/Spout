@@ -318,4 +318,21 @@ public final class Transform implements Serializable {
 	public Vector3 upVector() {
 		return VectorMath.transform(Vector3.UP, getRotation());
 	}
+
+	/**
+	 * Returns if this Transform is "empty"
+	 * <p>
+	 * Empty is defined by Position, {@link Point}, of the transform equaling {@link Point#invalid},
+	 * Rotation, {@link Quaternion}, of the transform equaling {@link Quaternion#IDENTITY}, and
+	 * Scale, {@link Vector3}, equaling {@link Vector3#ONE}.
+	 * @return True if empty, false if not
+	 */
+	public boolean isEmpty() {
+		try {
+			lock.lock();
+			return position.equals(Point.invalid) && rotation.equals(Quaternion.IDENTITY) && scale.equals(Vector3.ONE);
+		} finally {
+			lock.unlock();
+		}
+	}
 }

@@ -32,13 +32,13 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
 /**
- * Generates a flat world of an unbreakable material
+ * Generates a flat world of a Spout-colored material
  */
 public class FlatWorldGenerator implements WorldGenerator {
 	@Override
 	public void generate(CuboidBlockMaterialBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
 		if (chunkY < 0) {
-			blockData.flood(BlockMaterial.UNBREAKABLE);
+			blockData.flood(BlockMaterial.SOLID_BLUE);
 		}
 	}
 

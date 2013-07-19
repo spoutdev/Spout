@@ -94,7 +94,7 @@ public class InteractComponent extends EntityComponent {
 	 * @return blocks
 	 */
 	public BlockIterator getAlignedBlocks() {
-		Transform ptr = player.getScene().getTransform();
+		Transform ptr = player.getPhysics().getTransform();
 		Transform tr = new Transform();
 		tr.setRotation(QuaternionMath.rotationTo(Vector3.FORWARD, ptr.getRotation().getDirection().multiply(-1)));
 		tr.setPosition(ptr.getPosition());

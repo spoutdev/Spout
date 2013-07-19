@@ -32,8 +32,8 @@ import java.util.UUID;
 import org.spout.api.Engine;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.component.entity.NetworkComponent;
-import org.spout.api.component.entity.SceneComponent;
 import org.spout.api.datatable.ManagedMap;
+import org.spout.api.component.entity.PhysicsComponent;
 import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
@@ -169,14 +169,14 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	public void interact(final EntityInteractEvent<?> event);
 
 	/**
-	 * Gets the {@link SceneComponent} which is the representation of this Entity within space.
+	 * Gets the {@link org.spout.api.component.entity.PhysicsComponent} which is the representation of this Entity within space.
 	 * <p>
 	 * It provides the {@link Transform} which is Position, Rotation, Scale as well as physics to manipulate
 	 * the entity in respect to the environment.
 	 * </p>
 	 * @return The scene component.
 	 */
-	public SceneComponent getScene();
+	public PhysicsComponent getPhysics();
 
 	/**
 	 * Gets a {@link NetworkComponent} which holds the entities protocol lookups.

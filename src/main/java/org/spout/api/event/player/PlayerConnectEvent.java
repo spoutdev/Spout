@@ -39,10 +39,6 @@ public class PlayerConnectEvent extends Event {
 	private final String playerName;
 	private final int viewDistance;
 
-	public PlayerConnectEvent(ServerSession session, String playerName) {
-		this(session, playerName, -1);
-	}
-
 	public PlayerConnectEvent(ServerSession session, String playerName, int viewDistance) {
 		this.session = session;
 		this.playerName = playerName;

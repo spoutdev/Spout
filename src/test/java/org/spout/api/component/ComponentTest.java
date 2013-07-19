@@ -41,7 +41,7 @@ import org.spout.api.Engine;
 import org.spout.api.component.block.BlockComponent;
 import org.spout.api.component.entity.EntityComponent;
 import org.spout.api.component.entity.NetworkComponent;
-import org.spout.api.component.entity.SceneComponent;
+import org.spout.api.component.entity.PhysicsComponent;
 import org.spout.api.component.widget.WidgetComponent;
 import org.spout.api.component.world.WorldComponent;
 import org.spout.api.data.ValueHolder;
@@ -257,7 +257,7 @@ public final class ComponentTest {
 		}
 
 		@Override
-		public SceneComponent getScene() {
+		public PhysicsComponent getPhysics() {
 			return null;
 		}
 

@@ -47,11 +47,11 @@ public class ShapelessRecipeTest {
 
 	@Test
 	public void testShapelessRecipe() {
-		ItemStack solid = new ItemStack(BlockMaterial.SOLID, 1);
+		ItemStack solid = new ItemStack(BlockMaterial.SOLID_BLUE, 1);
 		RecipeBuilder builder = new RecipeBuilder().setResult(solid).addIngredient(BlockMaterial.UNBREAKABLE);
 		ShapelessRecipe recipe = builder.buildShapelessRecipe();
 		List<Material> single = Arrays.asList((Material) BlockMaterial.UNBREAKABLE);
-		List<Material> multiple = Arrays.asList((Material) BlockMaterial.UNBREAKABLE, (Material) BlockMaterial.UNBREAKABLE);
+		List<Material> multiple = Arrays.asList(BlockMaterial.UNBREAKABLE, (Material) BlockMaterial.UNBREAKABLE);
 		SimpleRecipeManager manager = new SimpleRecipeManager();
 		manager.register(recipe);
 		assertNotNull(manager.matchShapelessRecipe(single));

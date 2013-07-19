@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 import org.spout.api.faker.EngineFaker;
 
 public class InventoryTest extends EngineFaker {
-	private final Material[] mats = {BlockMaterial.AIR, BlockMaterial.SOLID, BlockMaterial.UNBREAKABLE};
+	private final Material[] mats = {BlockMaterial.AIR, BlockMaterial.SOLID_BLUE, BlockMaterial.UNBREAKABLE};
 	private final Random random = new Random();
 	private List<ItemStack> items = new ArrayList<ItemStack>(3);
 	private Inventory inventory = new Inventory(20);

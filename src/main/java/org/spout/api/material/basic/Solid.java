@@ -26,25 +26,19 @@
  */
 package org.spout.api.material.basic;
 
-import org.spout.api.event.Cause;
-import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.resource.SpoutModels;
 
-public class BasicSkyBox extends BlockMaterial {
+import org.spout.physics.collision.shape.BoxShape;
+import org.spout.physics.math.Vector3;
 
-	@SuppressWarnings("unchecked")
-	public BasicSkyBox() {
-		super("Skybox");
-		this.setTransparent();
+public class Solid extends BlockMaterial {
+	public Solid(String name, String model) {
+		super((short)0, name, model, new BoxShape(new Vector3(1f, 1f, 1f)));
+		setHardness(100);
 	}
 
-	@Override
-	public boolean isPlacementObstacle() {
-		return false;
-	}
-
-	@Override
-	public boolean onDestroy(Block block, Cause<?> cause) {
-		return false;
+	public Solid(String name) {
+		this(name, SpoutModels.DEFAULT_MODEL);
 	}
 }

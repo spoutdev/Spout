@@ -171,6 +171,12 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.spout</groupId>
+			<artifactId>react</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 		<!-- Testing only -->
 		<dependency>
 			<groupId>junit</groupId>

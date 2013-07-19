@@ -32,6 +32,7 @@ import org.spout.api.Engine;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.entity.EntityCollideEvent;
 import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.geo.cuboid.Block;
@@ -97,24 +98,9 @@ public abstract class EntityComponent extends Component {
 	}
 
 	/**
-	 * Called when the owning {@link Entity} collided with another owning Entity.
-	 * @param point the point where collision occurred.
-	 * @param entity the other entity that was collided with the owner Entity.
-	 * <p>
-	 * TODO EntityCollideEntityEvent
+	 * Called when the owning {@link Entity} has incurred a collision.
 	 */
-	public void onCollided(Point point, Entity entity) {
-
-	}
-
-	/**
-	 * Called when the owner collides with a {@link Block}.
-	 * @param point the point where collision occurred
-	 * @param block The block this owning entity was collided with
-	 * <p>
-	 * TODO EntityCollideBlockEvent
-	 */
-	public void onCollided(Point point, Block block) {
+	public void onCollided(final EntityCollideEvent<?> event) {
 
 	}
 

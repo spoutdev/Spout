@@ -114,7 +114,7 @@ public class NetworkComponent extends EntityComponent {
 			Spout.getLogger().info("Exception handling protocol event: " + npe.getClass().getSimpleName() + "\n" +
 					"    Owner: " + getOwner() + "\n" +
 					"    Chunk: " + (getOwner() != null ? getOwner().getChunk() : null) + "\n" +
-					"    Position: " + (getOwner() != null ? getOwner().getScene().getPosition() : null) + "\n" +
+					"    Position: " + (getOwner() != null ? getOwner().getPhysics().getPosition() : null) + "\n" +
 					"    Is Owner Alive: " + (getOwner() != null ? getOwner().isRemoved() : "owner is null") + "\n");
 			npe.printStackTrace();
 		}

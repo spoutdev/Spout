@@ -47,12 +47,12 @@ public class RecipeBuilderTest {
 	@Test
 	public void singleIngredientsTest() {
 		RecipeBuilder builder = new RecipeBuilder();
-		builder.addIngredient(BlockMaterial.SOLID).addIngredient(BlockMaterial.AIR);
+		builder.addIngredient(BlockMaterial.SOLID_BLUE).addIngredient(BlockMaterial.AIR);
 		builder.addIngredient(BlockMaterial.ERROR, 2);
 		builder.setResult(BlockMaterial.UNBREAKABLE, 1);
 		ShapelessRecipe recipe = builder.buildShapelessRecipe();
 		List<Material> materials = new ArrayList<Material>();
-		materials.add(BlockMaterial.SOLID);
+		materials.add(BlockMaterial.SOLID_BLUE);
 		materials.add(BlockMaterial.AIR);
 		materials.add(BlockMaterial.ERROR);
 		materials.add(BlockMaterial.ERROR);
@@ -65,16 +65,16 @@ public class RecipeBuilderTest {
 	@Test
 	public void characterIngredientsTest() {
 		RecipeBuilder builder = new RecipeBuilder();
-		builder.addIngredient(BlockMaterial.SOLID).addIngredient(BlockMaterial.UNBREAKABLE);
-		builder.addIngredient(BlockMaterial.SKYBOX);
-		builder.setResult(BlockMaterial.SOLID, 1);
+		builder.addIngredient(BlockMaterial.SOLID_BLUE).addIngredient(BlockMaterial.UNBREAKABLE);
+		builder.addIngredient(BlockMaterial.SOLID_BROWN);
+		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapelessRecipe recipe = builder.buildShapelessRecipe();
 		List<Material> testIngredients = new ArrayList<Material>();
 		List<Material> recipeIngredients = new ArrayList<Material>();
 		recipeIngredients.addAll(recipe.getIngredients());
-		testIngredients.add(BlockMaterial.SOLID);
+		testIngredients.add(BlockMaterial.SOLID_BLUE);
 		testIngredients.add(BlockMaterial.UNBREAKABLE);
-		testIngredients.add(BlockMaterial.SKYBOX);
+		testIngredients.add(BlockMaterial.SOLID_BROWN);
 		recipeIngredients.removeAll(testIngredients);
 		testIngredients.removeAll(recipe.getIngredients());
 		assertTrue(testIngredients.isEmpty());
@@ -84,15 +84,15 @@ public class RecipeBuilderTest {
 	@Test
 	public void overwritingMaterialsTest() {
 		RecipeBuilder builder = new RecipeBuilder();
-		builder.setIngredient('A', BlockMaterial.SOLID).setIngredient('B', BlockMaterial.UNBREAKABLE);
-		builder.setIngredient('B', BlockMaterial.SKYBOX).setIngredient('A', BlockMaterial.AIR);
-		builder.setResult(BlockMaterial.SOLID, 1);
+		builder.setIngredient('A', BlockMaterial.SOLID_BLUE).setIngredient('B', BlockMaterial.UNBREAKABLE);
+		builder.setIngredient('B', BlockMaterial.SOLID_BROWN).setIngredient('A', BlockMaterial.AIR);
+		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		builder.addRow("AB");
 		ShapedRecipe recipe = builder.buildShapedRecipe();
 		List<Material> testIngredients = new ArrayList<Material>();
 		List<Material> recipeIngredients = new ArrayList<Material>();
 		recipeIngredients.addAll(recipe.getIngredients());
-		testIngredients.add(BlockMaterial.SKYBOX);
+		testIngredients.add(BlockMaterial.SOLID_BROWN);
 		testIngredients.add(BlockMaterial.AIR);
 		recipeIngredients.removeAll(testIngredients);
 		testIngredients.removeAll(recipe.getIngredients());
@@ -103,14 +103,14 @@ public class RecipeBuilderTest {
 	@Test
 	public void shapedAmountsTest() {
 		RecipeBuilder builder = new RecipeBuilder();
-		builder.setIngredient('A', BlockMaterial.SOLID).setIngredient('B', BlockMaterial.UNBREAKABLE);
+		builder.setIngredient('A', BlockMaterial.SOLID_BLUE).setIngredient('B', BlockMaterial.UNBREAKABLE);
 		builder.addRow("AAA").addRow("BBB").addRow("AAA");
-		builder.setResult(BlockMaterial.SOLID, 1);
+		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe = builder.buildShapedRecipe();
 		List<Material> testIngredients = new ArrayList<Material>();
 		List<Material> recipeIngredients = new ArrayList<Material>();
 		recipeIngredients.addAll(recipe.getIngredients());
-		testIngredients.add(BlockMaterial.SOLID);
+		testIngredients.add(BlockMaterial.SOLID_BLUE);
 		testIngredients.add(BlockMaterial.UNBREAKABLE);
 		recipeIngredients.removeAll(testIngredients);
 		testIngredients.removeAll(recipe.getIngredients());
@@ -121,9 +121,9 @@ public class RecipeBuilderTest {
 	@Test
 	public void rowsTest() {
 		RecipeBuilder builder = new RecipeBuilder();
-		builder.setIngredient('A', BlockMaterial.SOLID).setIngredient('B', BlockMaterial.UNBREAKABLE);
+		builder.setIngredient('A', BlockMaterial.SOLID_BLUE).setIngredient('B', BlockMaterial.UNBREAKABLE);
 		builder.addRow("AAA").addRow("BBB").addRow("AAA");
-		builder.setResult(BlockMaterial.SOLID, 1);
+		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe = builder.buildShapedRecipe();
 		List<List<Character>> rows = recipe.getRows();
 		assertTrue(rows.get(0).get(0) == 'A');
@@ -140,9 +140,9 @@ public class RecipeBuilderTest {
 	@Test
 	public void replaceRowsTest() {
 		RecipeBuilder builder = new RecipeBuilder();
-		builder.setIngredient('A', BlockMaterial.SOLID).setIngredient('B', BlockMaterial.UNBREAKABLE);
+		builder.setIngredient('A', BlockMaterial.SOLID_BLUE).setIngredient('B', BlockMaterial.UNBREAKABLE);
 		builder.addRow("AAA").addRow("BBB").addRow("AAA").replaceRow(1, "CCC");
-		builder.setResult(BlockMaterial.SOLID, 1);
+		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe = builder.buildShapedRecipe();
 		List<List<Character>> rows = recipe.getRows();
 		assertTrue(rows.get(0).get(0) == 'A');
@@ -187,9 +187,9 @@ public class RecipeBuilderTest {
 	@Test
 	public void cloneTest() {
 		RecipeBuilder builder = new RecipeBuilder();
-		builder.setIngredient('A', BlockMaterial.SOLID).setIngredient('B', BlockMaterial.UNBREAKABLE);
+		builder.setIngredient('A', BlockMaterial.SOLID_BLUE).setIngredient('B', BlockMaterial.UNBREAKABLE);
 		builder.addRow("AAA").addRow("BBB").addRow("AAA");
-		builder.setResult(BlockMaterial.SOLID, 1);
+		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe1 = builder.buildShapedRecipe();
 		RecipeBuilder builder2 = new RecipeBuilder();
 		builder2.clone(recipe1);
@@ -197,9 +197,9 @@ public class RecipeBuilderTest {
 		ShapedRecipe recipe2 = builder2.buildShapedRecipe();
 		assertTrue(!recipe1.equals(recipe2));
 		RecipeBuilder builder3 = new RecipeBuilder();
-		builder3.setIngredient('A', BlockMaterial.SOLID).setIngredient('C', BlockMaterial.UNBREAKABLE);
+		builder3.setIngredient('A', BlockMaterial.SOLID_BLUE).setIngredient('C', BlockMaterial.UNBREAKABLE);
 		builder3.addRow("AAA").addRow("CCC").addRow("AAA");
-		builder3.setResult(BlockMaterial.SOLID, 1);
+		builder3.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe3 = builder3.buildShapedRecipe();
 		assertTrue(recipe2.equals(recipe3));
 	}

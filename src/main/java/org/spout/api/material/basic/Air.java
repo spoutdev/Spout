@@ -24,19 +24,27 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.collision;
+package org.spout.api.material.basic;
 
-public enum CollisionType {
-	/**
-	 * Indicates that one object fully contains another object
-	 */
-	Contains,
-	/**
-	 * Indicates that neither object overlap
-	 */
-	Disjoint,
-	/**
-	 * Indicates that the objects partially overlap
-	 */
-	Intersect,
+import org.spout.api.event.Cause;
+import org.spout.api.geo.cuboid.Block;
+import org.spout.api.material.BlockMaterial;
+
+public final class Air extends BlockMaterial {
+
+	@SuppressWarnings("unchecked")
+	public Air() {
+		super("Air", (short) 0, null);
+		this.setTransparent().setInvisible();
+	}
+
+	@Override
+	public boolean isPlacementObstacle() {
+		return false;
+	}
+
+	@Override
+	public boolean onDestroy(Block block, Cause<?> cause) {
+		return false;
+	}
 }
