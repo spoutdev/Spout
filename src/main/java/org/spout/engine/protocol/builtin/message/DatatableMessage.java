@@ -38,7 +38,6 @@ public abstract class DatatableMessage extends SpoutMessage {
 	private final byte[] compressedData;
 	private final DeltaMap.DeltaType type;
 
-	// TODO: protocol - allow the sending of deltas
 	public DatatableMessage(byte[] compressedData, DeltaMap.DeltaType type) {
 		this.compressedData = compressedData;
 		this.type = type;

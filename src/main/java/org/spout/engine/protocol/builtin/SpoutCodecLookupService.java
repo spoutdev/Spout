@@ -29,6 +29,7 @@ package org.spout.engine.protocol.builtin;
 import org.spout.api.protocol.CodecLookupService;
 import org.spout.engine.protocol.builtin.codec.BlockUpdateCodec;
 import org.spout.engine.protocol.builtin.codec.ChunkDataCodec;
+import org.spout.engine.protocol.builtin.codec.ChunkDatatableCodec;
 import org.spout.engine.protocol.builtin.codec.ClickRequestCodec;
 import org.spout.engine.protocol.builtin.codec.ClickResponseCodec;
 import org.spout.engine.protocol.builtin.codec.CommandCodec;
@@ -57,6 +58,7 @@ public class SpoutCodecLookupService extends CodecLookupService {
 			/* 0x08 */ bind(CuboidBlockUpdateCodec.class);
 			/* 0x09 */ bind(ClickRequestCodec.class);
 			/* 0x0A */ bind(ClickResponseCodec.class);
+			/* 0x0B */ bind(ChunkDatatableCodec.class);
 		} catch (Throwable t) {
 			throw new ExceptionInInitializerError(t);
 		}

@@ -27,10 +27,7 @@
 package org.spout.engine.protocol.builtin.handler;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 
-import org.spout.api.Client;
-import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.World;
 import org.spout.api.protocol.MessageHandler;

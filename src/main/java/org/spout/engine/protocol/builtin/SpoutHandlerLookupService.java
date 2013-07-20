@@ -30,6 +30,7 @@ import org.spout.api.protocol.HandlerLookupService;
 
 import org.spout.engine.protocol.builtin.handler.BlockUpdateMessageHandler;
 import org.spout.engine.protocol.builtin.handler.ChunkDataMessageHandler;
+import org.spout.engine.protocol.builtin.handler.ChunkDatatableMessageHandler;
 import org.spout.engine.protocol.builtin.handler.ClickRequestMessageHandler;
 import org.spout.engine.protocol.builtin.handler.ClickResponseMessageHandler;
 import org.spout.engine.protocol.builtin.handler.CommandMessageHandler;
@@ -41,6 +42,7 @@ import org.spout.engine.protocol.builtin.handler.UpdateEntityMessageHandler;
 import org.spout.engine.protocol.builtin.handler.WorldChangeMessageHandler;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
+import org.spout.engine.protocol.builtin.message.ChunkDatatableMessage;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 import org.spout.engine.protocol.builtin.message.ClickResponseMessage;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
@@ -65,6 +67,7 @@ public class SpoutHandlerLookupService extends HandlerLookupService {
 			bind(CuboidBlockUpdateMessage.class, CuboidBlockUpdateMessageHandler.class);
 			bind(ClickRequestMessage.class, ClickRequestMessageHandler.class);
 			bind(ClickResponseMessage.class, ClickResponseMessageHandler.class);
+			bind(ChunkDatatableMessage.class, ChunkDatatableMessageHandler.class);
 		} catch (Exception e) {
 			throw new ExceptionInInitializerError(e);
 		}

@@ -1919,7 +1919,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		setModified();
 	}
 
-	@Override
 	public ManagedHashMap getDataMap() {
 		return dataMap;
 	}

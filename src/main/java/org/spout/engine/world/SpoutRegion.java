@@ -96,6 +96,7 @@ import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.versioned.ChunkFiles;
+import org.spout.engine.protocol.builtin.message.ChunkDatatableMessage;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.util.thread.AsyncManager;
@@ -991,7 +992,16 @@ public class SpoutRegion extends Region implements AsyncManager {
 					SpoutChunk chunk = chunks[dx][dy][dz].get();
 					if (chunk != null) {
 						chunk.updateExpiredObservers();
+						if (Spout.getPlatform() == Platform.SERVER) {
+							if (!chunk.getDataMap().getDeltaMap().isEmpty()) {
+								for (Player entity : spoutChunk.getObservingPlayers()) {
+									entity.getSession().send(new ChunkDatatableMessage(chunk));
+								}
+								chunk.getDataMap().resetDelta();
+							}
+						}
 					}
+
 				}
 			}
 		}
