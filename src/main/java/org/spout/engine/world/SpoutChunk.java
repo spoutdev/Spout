@@ -1575,7 +1575,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 					//Does not need synchronized, the chunk is not yet accessible outside this thread
 					BlockComponentOwner get = getBlockComponentOwners().get(packed);
 					if (get == null) {
-						get = new BlockComponentOwner(dx + getBlockX(), dy + getBlockY(), dz + getBlockZ(), getWorld());
+						get = new BlockComponentOwner(getDataMap(), dx + getBlockX(), dy + getBlockY(), dz + getBlockZ(), getWorld());
 						getBlockComponentOwners().put(packed, get);
 					}
 					for (Class<? extends BlockComponent> c : bm.getComponents()) {
@@ -1603,7 +1603,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 					}
 				}
 				if (!newMaterial.getComponents().isEmpty()) {
-					BlockComponentOwner newHolder = new BlockComponentOwner(x + getBlockX(), y + getBlockY(), z + getBlockZ(), getWorld());
+					BlockComponentOwner newHolder = new BlockComponentOwner(getDataMap(), x + getBlockX(), y + getBlockY(), z + getBlockZ(), getWorld());
 					blockComponents.put(packed, newHolder);
 					for (Class<? extends BlockComponent> c : newMaterial.getComponents()) {
 						newHolder.add(c);
@@ -1619,7 +1619,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			short packed = NibbleQuadHashed.key(x, y, z, 0);
 			BlockComponentOwner value = blockComponents.get(packed);
 			if (value == null && create) {
-				value = new BlockComponentOwner(NibbleQuadHashed.key1(packed), NibbleQuadHashed.key2(packed), NibbleQuadHashed.key3(packed), getWorld());
+				value = new BlockComponentOwner(getDataMap(), NibbleQuadHashed.key1(packed), NibbleQuadHashed.key2(packed), NibbleQuadHashed.key3(packed), getWorld());
 				blockComponents.put(packed, value);
 			}
 			return value;
@@ -1920,7 +1920,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	@Override
-	public SerializableMap getDataMap() {
+	public ManagedHashMap getDataMap() {
 		return dataMap;
 	}
 

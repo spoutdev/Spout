@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Random;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spout.api.datatable.ManagedHashMap;
+import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -79,10 +80,10 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 		new ClickResponseMessage((byte) 0, (byte) 0, ClickResponseMessage.Response.ALLOW),
 		new CommandMessage("test", "hi"),
 		new CuboidBlockUpdateMessage(Vector3.ZERO, Vector3.UP, new short[0], new short[0], new byte[0], new byte[0]),
-		new EntityDatatableMessage(0, TEST_SERIALIZED_DATA),
+		new EntityDatatableMessage(0, TEST_SERIALIZED_DATA, DeltaMap.DeltaType.SET),
 		new LoginMessage("Spouty", 0),
 		new SyncedMapMessage(0, SyncedMapEvent.Action.ADD, new ArrayList<Pair<Integer, String>>()),
-		new WorldChangeMessage("world", EngineFaker.TEST_UUID, TEST_TRANSFORM, TEST_SERIALIZED_DATA),
+		new WorldChangeMessage("world", EngineFaker.TEST_UUID, TEST_TRANSFORM, TEST_SERIALIZED_DATA, DeltaMap.DeltaType.SET),
 		new UpdateEntityMessage(0, TEST_TRANSFORM, UpdateEntityMessage.UpdateAction.TRANSFORM, new NullRepositionManager())
 	};
 

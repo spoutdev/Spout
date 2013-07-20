@@ -31,14 +31,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
-import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 /**
  * EntityProtocol for the SpoutClient protocol
@@ -65,9 +63,9 @@ public class SpoutEntityProtocol implements EntityProtocol {
 		if (force || entity.getScene().isTransformDirty()) {
 			messages.add(new UpdateEntityMessage(entity.getId(), liveTransform, UpdateEntityMessage.UpdateAction.TRANSFORM, rm));
 		}
-		if (entity.getData().isDirty()) {
-			messages.add(new EntityDatatableMessage(entity.getId(), entity.getData()));
-			entity.getData().setDirty(false);
+		if (!entity.getData().getDeltaMap().isEmpty()) {
+			messages.add(new EntityDatatableMessage(entity.getId(), entity.getData().getDeltaMap()));
+			entity.getData().resetDelta();
 		}
 		return messages;
 	}

@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.spout.api.datatable.delta.DeltaMap;
 
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
@@ -53,6 +54,7 @@ public class WorldChangeCodec extends MessageCodec<WorldChangeMessage> {
 		ChannelBufferUtils.writeVector3(buffer, message.getScale());
 		buffer.writeInt(message.getCompressedData().length);
 		buffer.writeBytes(message.getCompressedData());
+		buffer.writeByte(message.getType().ordinal());
 		return buffer;
 	}
 
@@ -65,6 +67,7 @@ public class WorldChangeCodec extends MessageCodec<WorldChangeMessage> {
 		final Vector3 scale = ChannelBufferUtils.readVector3(buffer);
 		final byte[] compressedData = new byte[buffer.readInt()];
 		buffer.readBytes(compressedData);
-		return new WorldChangeMessage(worldName, worldUUID, position, rotation, scale, compressedData);
+		final DeltaMap.DeltaType type = DeltaMap.DeltaType.values()[buffer.readByte()];
+		return new WorldChangeMessage(worldName, worldUUID, position, rotation, scale, compressedData, type);
 	}
 }

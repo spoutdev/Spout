@@ -28,6 +28,7 @@ package org.spout.engine.protocol.builtin.codec;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 
@@ -42,6 +43,7 @@ public class EntityDatatableCodec extends MessageCodec<EntityDatatableMessage> {
 		buffer.writeInt(message.getEntityId());
 		buffer.writeInt(message.getCompressedData().length);
 		buffer.writeBytes(message.getCompressedData());
+		buffer.writeByte(message.getType().ordinal());
 		return buffer;
 	}
 
@@ -50,6 +52,7 @@ public class EntityDatatableCodec extends MessageCodec<EntityDatatableMessage> {
 		final int entityId = buffer.readInt();
 		final byte[] compressedData = new byte[buffer.readInt()];
 		buffer.readBytes(compressedData);
-		return new EntityDatatableMessage(entityId, compressedData);
+		final DeltaMap.DeltaType type = DeltaMap.DeltaType.values()[buffer.readByte()];
+		return new EntityDatatableMessage(entityId, compressedData, type);
 	}
 }

@@ -59,7 +59,7 @@ public class SpoutWidget extends BaseComponentOwner implements Widget {
 	private Transform2D transform = new Transform2D();
 
 	public SpoutWidget() {
-		super(new ManagedHashMap(false));
+		super(new ManagedHashMap());
 	}
 
 	@Override

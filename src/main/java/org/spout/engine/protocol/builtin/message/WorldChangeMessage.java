@@ -35,7 +35,8 @@ import org.spout.api.Client;
 import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
-import org.spout.api.datatable.SerializableMap;
+import org.spout.api.datatable.ManagedMap;
+import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -50,12 +51,12 @@ public class WorldChangeMessage extends DatatableMessage {
 	private final Quaternion rotation;
 	private final Vector3 scale;
 
-	public WorldChangeMessage(World world, Transform playerTransform, SerializableMap data) {
-		this(world.getName(), world.getUID(), playerTransform, data.serialize());
+	public WorldChangeMessage(World world, Transform playerTransform, ManagedMap data) {
+		this(world.getName(), world.getUID(), playerTransform, data.getDeltaMap().serialize(), data.getDeltaMap().getType());
 	}
 
-	public WorldChangeMessage(String worldName, UUID worldUUID, Transform playerTransform, byte[] compressedData) {
-		super(compressedData);
+	public WorldChangeMessage(String worldName, UUID worldUUID, Transform playerTransform, byte[] compressedData, DeltaMap.DeltaType type) {
+		super(compressedData, type);
 		this.worldName = worldName;
 		this.worldUUID = worldUUID;
 		// This MUST copy as a Vector3 for tests
@@ -64,8 +65,8 @@ public class WorldChangeMessage extends DatatableMessage {
 		this.scale = playerTransform.getScale();
 	}
 
-	public WorldChangeMessage(String worldName, UUID worldUUID, Vector3 position, Quaternion rotation, Vector3 scale, byte[] compressedData) {
-		super(compressedData);
+	public WorldChangeMessage(String worldName, UUID worldUUID, Vector3 position, Quaternion rotation, Vector3 scale, byte[] compressedData, DeltaMap.DeltaType type) {
+		super(compressedData, type);
 		this.worldName = worldName;
 		this.worldUUID = worldUUID;
 		this.position = position;

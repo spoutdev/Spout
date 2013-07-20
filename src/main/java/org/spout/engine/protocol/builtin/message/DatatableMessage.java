@@ -26,28 +26,30 @@
  */
 package org.spout.engine.protocol.builtin.message;
 
-import java.io.IOException;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.datatable.SerializableMap;
+
+import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.util.SpoutToStringStyle;
 
 public abstract class DatatableMessage extends SpoutMessage {
 	private final byte[] compressedData;
+	private final DeltaMap.DeltaType type;
 
 	// TODO: protocol - allow the sending of deltas
-	public DatatableMessage(byte[] compressedData) {
+	public DatatableMessage(byte[] compressedData, DeltaMap.DeltaType type) {
 		this.compressedData = compressedData;
+		this.type = type;
 	}
 
 	public byte[] getCompressedData() {
 		return compressedData;
 	}
 
-	public void decompressTo(SerializableMap data) throws IOException {
-		data.deserialize(compressedData);
+	public DeltaMap.DeltaType getType() {
+		return type;
 	}
 
 	@Override

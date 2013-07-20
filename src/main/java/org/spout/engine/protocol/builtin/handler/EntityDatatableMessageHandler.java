@@ -51,7 +51,14 @@ public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatabl
 		//Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
 		try {
 			System.out.println("Received datatable message for " + entity.toString());
-			entity.getData().deserialize(message.getCompressedData(), true);
+			switch (message.getType()) {
+				case REPLACE:
+					entity.getData().deserialize(message.getCompressedData(), true);
+					break;
+				case SET:
+					entity.getData().deserialize(message.getCompressedData(), false);
+					break;
+			} 
 		} catch (IOException e) {
 			Spout.getLogger().log(Level.SEVERE, "Exception deserializing compressed datatable", e);
 		}

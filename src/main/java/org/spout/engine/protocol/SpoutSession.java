@@ -132,7 +132,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	private final AtomicReference<UncaughtExceptionHandler> exceptionHandler;
 
-	private final SerializableMap dataMap = new ManagedHashMap(false);
+	private final SerializableMap dataMap = new ManagedHashMap();
 
 	/**
 	 * Creates a new session.
