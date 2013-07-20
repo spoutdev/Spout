@@ -57,6 +57,7 @@ public abstract class MessageHandler<T extends Message> {
 	 * @param message the message that was received
 	 */
 	public void handleServer(ServerSession session, T message) {
+		throw new UnsupportedOperationException("Tried to handle a message that did not have a handleServer implemented.");
 	}
 
 	/**
@@ -69,5 +70,6 @@ public abstract class MessageHandler<T extends Message> {
 	 * @param message the message that was received
 	 */
 	public void handleClient(ClientSession session, T message) {
+		throw new UnsupportedOperationException("Tried to handle a message that did not have a handleClient implemented.");
 	}
 }

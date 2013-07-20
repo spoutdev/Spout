@@ -282,17 +282,6 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 */
 	public abstract <T extends CuboidLightBuffer> T getLightBuffer(LightingManager<T> manager);
 
-	/**
-	 * A thread-safe map of data attached to the chunk, which will be persisted between saves.
-	 *
-	 * Can be used to attach and store any persistent chunk related data.
-	 *
-	 * @return data map
-	 */
-	@LiveRead
-	@LiveWrite
-	public abstract DefaultedMap<Serializable> getDataMap();
-
 	@Override
 	public boolean containsBlock(int x, int y, int z) {
 		return x >> BLOCKS.BITS == this.getX() && y >> BLOCKS.BITS == this.getY() && z >> BLOCKS.BITS == this.getZ();
