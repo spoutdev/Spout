@@ -91,8 +91,8 @@ public class ManagedHashMap implements ManagedMap {
 
 	@Override
 	public boolean containsValue(Object value) {
-		for (AbstractData o : map.values()) {
-			if (o.get() != null && o.get().equals(value)) {
+		for (Serializable o : map.values()) {
+			if (o != null && o.equals(value)) {
 				return true;
 			}
 		}
@@ -117,7 +117,7 @@ public class ManagedHashMap implements ManagedMap {
 		final String keyString = (String) key;
 		final T value;
 		try {
-			value = (T)map.get(keyString).get();
+			value = (T)map.get(keyString);
 		} catch (ClassCastException e) {
 			return defaultValue;
 		}
@@ -168,24 +168,14 @@ public class ManagedHashMap implements ManagedMap {
 	public Serializable putIfAbsent(String key, Serializable value) {
 		int intKey = map.getIntKey(key);
 		dirty.set(true);
-		AbstractData data = map.setIfAbsent(intKey, getAbstractDataValue(intKey, value));
-		if (data == null) {
-			return null;
-		} else {
-			return data.get();
-		}
+		return map.setIfAbsent(intKey, value);
 	}
 
 	@Override
 	public Serializable put(String key, Serializable value) {
 		int intKey = map.getIntKey(key);
 		dirty.set(true);
-		AbstractData data = map.getAndSet(intKey, getAbstractDataValue(intKey, value));
-		if (data == null) {
-			return null;
-		} else {
-			return data.get();
-		}
+		return map.getAndSet(intKey, value);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -214,7 +204,7 @@ public class ManagedHashMap implements ManagedMap {
 
 	public Serializable remove(String key) {
 		dirty.set(true);
-		return map.remove(key).get();
+		return map.remove(key);
 	}
 
 	@Override
@@ -285,18 +275,18 @@ public class ManagedHashMap implements ManagedMap {
 		Serializable next, current;
 		int index = 0;
 		int expectedAmount = map.size();
-		ArrayList<Serializable> list = new ArrayList<Serializable>();
-		ArrayList<Integer> keys = new ArrayList<Integer>();
+		ArrayList<Serializable> values = new ArrayList<Serializable>();
+		ArrayList<String> keys = new ArrayList<String>();
 		EntryIterator() {
-			for (AbstractData o : map.values()) {
-				list.add(o.get());
-				keys.add(o.getKey());
+			for (String s : map.keySet()) {
+				keys.add(s);
+				values.add(map.get(s));
 			}
 			current = null;
 			if (expectedAmount == 0) {
 				next = null;
 			} else {
-				next = list.get(index);
+				next = values.get(index);
 			}
 		}
 
@@ -313,11 +303,11 @@ public class ManagedHashMap implements ManagedMap {
 			index++;
 			current = next;
 			if (index < expectedAmount) {
-				next = list.get(index);
+				next = values.get(index);
 			} else {
 				next = null;
 			}
-			return new Entry(map.getStringKey(keys.get(index-1)), current);
+			return new Entry(keys.get(index-1), current);
 		}
 
 		@Override
@@ -365,18 +355,18 @@ public class ManagedHashMap implements ManagedMap {
 		Serializable next, current;
 		int index = 0;
 		int expectedAmount = map.size();
-		ArrayList<Serializable> list = new ArrayList<Serializable>();
-		ArrayList<Integer> keys = new ArrayList<Integer>();
+		ArrayList<Serializable> values = new ArrayList<Serializable>();
+		ArrayList<String> keys = new ArrayList<String>();
 		ValueIterator() {
-			for (AbstractData o : map.values()) {
-				list.add(o.get());
-				keys.add(o.getKey());
+			for (String s : map.keySet()) {
+				keys.add(s);
+				values.add(map.get(s));
 			}
 			if (expectedAmount > 1) {
-				current = list.get(index);
-				next = list.get(index + 1);
+				current = values.get(index);
+				next = values.get(index + 1);
 			} else if (expectedAmount > 0) {
-				current = list.get(index);
+				current = values.get(index);
 				next = null;
 			} else {
 				current = next = null;
@@ -396,7 +386,7 @@ public class ManagedHashMap implements ManagedMap {
 			index++;
 			current = next;
 			if (index < expectedAmount) {
-				next = list.get(index);
+				next = values.get(index);
 			} else {
 				next = null;
 			}
@@ -419,7 +409,7 @@ public class ManagedHashMap implements ManagedMap {
 
 	@Override
 	public String toString() {
-		StringBuilder toString = new StringBuilder("DataMap {");
+		StringBuilder toString = new StringBuilder("ManagedHashMap {");
 		for (Map.Entry<? extends String, ? extends Serializable> e : entrySet()) {
 			toString.append("(");
 			toString.append(e.getKey());
@@ -469,7 +459,7 @@ public class ManagedHashMap implements ManagedMap {
 
 	@Override
 	public byte[] serialize() {
-		return map.compress();
+		return map.serialize();
 	}
 
 	@Override
@@ -481,7 +471,7 @@ public class ManagedHashMap implements ManagedMap {
 	@Override
 	public void deserialize(byte[] data, boolean wipe) throws IOException {
 		dirty.set(true);
-		map.decompress(data, wipe);
+		map.deserialize(data, wipe);
 	}
 
 	@Override
@@ -493,31 +483,6 @@ public class ManagedHashMap implements ManagedMap {
 			throw new RuntimeException("Unable to create a deep copy", e);
 		}
 		return map;
-	}
-
-	// TODO: move this to DataRegistry
-	private final AbstractData getAbstractDataValue(int intKey, Serializable value) {
-		if (value instanceof Boolean) {
-			return new BooleanData(intKey, (Boolean)value);
-		}  else if (value instanceof Double) {
-			return new DoubleData(intKey, (Double)value);
-		} else if (value instanceof Float) {
-			return new FloatData(intKey, (Float)value);
-		} else if (value instanceof Long) {
-			return new LongData(intKey, (Long)value);
-		} else if (value instanceof Integer) {
-			return new IntegerData(intKey, (Integer)value);
-		}  else if (value instanceof Short) {
-			return new ShortData(intKey, (Short)value);
-		}  else if (value instanceof Byte) {
-			return new ByteData(intKey, (Byte)value);
-		} else if (value instanceof String) {
-			return new StringData(intKey, (String)value);
-		} else if (value instanceof Serializable) {
-			return new SerializableData(intKey, value);
-		} else {
-			return map.niltype;
-		}
 	}
 
 	/**
