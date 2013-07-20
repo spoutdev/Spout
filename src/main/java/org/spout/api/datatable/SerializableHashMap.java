@@ -96,17 +96,12 @@ public class SerializableHashMap implements SerializableMap {
 	}
 
 	public boolean containsKey(String key) {
-		return map.contains(key);
+		return map.containsKey(key);
 	}
 
 	@Override
 	public boolean containsValue(Object value) {
-		for (Serializable o : map.values()) {
-			if (o != null && o.equals(value)) {
-				return true;
-			}
-		}
-		return false;
+		return map.values().contains(value);
 	}
 
 	@Override
