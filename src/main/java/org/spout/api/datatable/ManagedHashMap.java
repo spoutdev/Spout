@@ -29,7 +29,9 @@ package org.spout.api.datatable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.datatable.delta.DeltaMap;
 
 public class ManagedHashMap extends SerializableHashMap implements ManagedMap {
@@ -38,11 +40,10 @@ public class ManagedHashMap extends SerializableHashMap implements ManagedMap {
 	private final DeltaMap delta;
 
 	public ManagedHashMap() {
-		this.delta = new DeltaMap(this, DeltaMap.DeltaType.SET);
+		this.delta = new DeltaMap(DeltaMap.DeltaType.SET);
 	}
 
 	public ManagedHashMap(ManagedHashMap parent, String key) {
-		super(parent, true);
 		this.delta = new DeltaMap(parent.delta, DeltaMap.DeltaType.SET, key);
 	}
 

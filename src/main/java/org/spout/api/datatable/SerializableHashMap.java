@@ -33,12 +33,14 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,22 +61,12 @@ import org.spout.api.util.StringToUniqueIntegerMap;
  */
 public class SerializableHashMap implements SerializableMap {
 	// This doesn't need to be persisted across restarts
-	private static final AtomicInteger nonSyncingNextId = new AtomicInteger();
+	private static final long serialVersionUID = 1L;
 	protected final ConcurrentHashMap<String, Serializable> map;
-	protected final SerializableHashMap parent;
+
 
 	public SerializableHashMap() {
 		this.map = new ConcurrentHashMap<String, Serializable>();
-		this.parent = null;
-	}
-
-	public SerializableHashMap(SerializableHashMap parent, boolean setParent) {
-		this.map = new ConcurrentHashMap<String, Serializable>();
-		if (setParent) {
-			this.parent = parent;
-		} else {
-			this.parent = null;
-		}
 	}
 
 	@Override

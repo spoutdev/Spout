@@ -30,9 +30,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Map;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import org.spout.api.datatable.SerializableHashMap;
-import org.spout.api.map.DefaultedKey;
 
 /**
  * This is a subclass of SerializableHashMap designed to mark delta elements. This is most needed for sub-maps.
@@ -46,21 +48,28 @@ import org.spout.api.map.DefaultedKey;
  */
 public class DeltaMap extends SerializableHashMap {
 	private static final long serialVersionUID = 1L;
+	private transient WeakReference<DeltaMap> reference = new WeakReference<DeltaMap>(this);
 	private DeltaType type;
 	private final String key;
-	
 
-	public DeltaMap(SerializableHashMap owner, DeltaType type) {
-		super(owner, false);
+	// If we have a parent, we aren't going to serialize it
+	protected transient final DeltaMap parent;
+	protected transient List<WeakReference<DeltaMap>> children = new ArrayList<WeakReference<DeltaMap>>();
+
+	public DeltaMap(DeltaType type) {
 		this.type = type;
 		this.key = null;
+		this.parent = null;
 	}
 
 	public DeltaMap(DeltaMap parent, DeltaType type, String key) {
-		super(parent, true);
 		this.type = type;
-		parent.put(key, this);
+		this.parent = parent;
+		this.parent.children.add(new WeakReference<DeltaMap>(this));
 		this.key = key;
+		
+		// We want to update the parent for us
+		this.parent.put(key, this);
 	}
 
 	public enum DeltaType {
@@ -85,25 +94,25 @@ public class DeltaMap extends SerializableHashMap {
 	// SerializableHashMap does not permit null values, we do. Therefore, we need to override functionality
 	@Override
 	public Serializable putIfAbsent(String key, Serializable value) {
-		if (parent != null) parent.put(this.key, this);
+		updateParent();
 		return map.putIfAbsent(key, value);
 	}
 
 	@Override
 	public Serializable put(String key, Serializable value) {
-		if (parent != null) parent.put(this.key, this);
+		updateParent();
 		return map.put(key, value);
 	}
 
 	@Override
 	public Serializable remove(String key) {
-		if (parent != null) parent.put(this.key, this);
+		updateParent();
 		return map.remove(key);
 	}
 
 	@Override
 	public void clear() {
-		if (parent != null) parent.put(this.key, this);
+		updateParent();
 		for (String key : map.keySet()) {
 			map.put(key, null);
 		}
@@ -111,12 +120,34 @@ public class DeltaMap extends SerializableHashMap {
 
 	@Override
 	public void deserialize(byte[] data, boolean wipe) throws IOException {
-		if (parent != null) parent.put(this.key, this);
+		updateParent();
 		super.deserialize(data, wipe);
+	}
+	
+	
+	private void updateParent() {
+		if (parent != null) {
+			parent.put(this.key, this);
+			parent.children.add(reference);
+		}
 	}
 
 	public void reset() {
 		type = DeltaType.SET;
 		map.clear();
+		for (Iterator<WeakReference<DeltaMap>> it = children.iterator(); it.hasNext();) {
+			WeakReference<DeltaMap> c = it.next();
+			if (c.get() == null) {
+				it.remove();
+				continue;
+			}
+			c.get().reset();
+		}
+	}
+	
+	private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+		s.defaultReadObject();
+		reference = new WeakReference<DeltaMap>(this);
+		children = new ArrayList<WeakReference<DeltaMap>>();
 	}
 }
