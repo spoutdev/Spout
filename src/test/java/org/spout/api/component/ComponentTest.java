@@ -45,6 +45,7 @@ import org.spout.api.component.entity.SceneComponent;
 import org.spout.api.component.widget.WidgetComponent;
 import org.spout.api.component.world.WorldComponent;
 import org.spout.api.data.ValueHolder;
+import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
 import org.spout.api.entity.EntitySnapshot;
@@ -89,7 +90,7 @@ public final class ComponentTest {
 		TestEntity entity = new TestEntity();
 		TestWidget widget = new TestWidget();
 		TestWorld world = new TestWorld();
-		BlockComponentOwner block = new BlockComponentOwner(0, 0, 0, world);
+		BlockComponentOwner block = new BlockComponentOwner(new ManagedHashMap(), 0, 0, 0, world);
 		//Add some components
 		GenericSubComponent c1 = base.add(GenericSubComponent.class);
 		GenericSubComponent2 c2 = base.add(GenericSubComponent2.class);

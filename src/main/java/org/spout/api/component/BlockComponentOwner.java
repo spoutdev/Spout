@@ -26,9 +26,12 @@
  */
 package org.spout.api.component;
 
+import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
+import org.spout.api.geo.cuboid.Chunk;
 
+// TODO: I don't see why we shouldn't move this to Spout
 public class BlockComponentOwner extends BaseComponentOwner {
 	/**
 	 * Stored as world, not chunk, coords
@@ -36,7 +39,8 @@ public class BlockComponentOwner extends BaseComponentOwner {
 	private final int x, y, z;
 	private final World world;
 
-	public BlockComponentOwner(int x, int y, int z, World world) {
+	public BlockComponentOwner(ManagedHashMap chunkData, int x, int y, int z, World world) {
+		super(new ManagedHashMap(chunkData, "" + (x & Chunk.BLOCKS.MASK) + ","  + (y & Chunk.BLOCKS.MASK) + ","  + (z & Chunk.BLOCKS.MASK)));
 		this.x = x;
 		this.y = y;
 		this.z = z;

@@ -60,7 +60,7 @@ public class DataMapTest {
 
 	@Test
 	public void test() throws IOException {
-		ManagedHashMap test = new ManagedHashMap();
+		SerializableHashMap test = new SerializableHashMap();
 
 		assertTrue("Map returned incorrect value for isEmpty()", test.isEmpty());
 
@@ -120,7 +120,7 @@ public class DataMapTest {
 		testMapContents(test, true);
 
 		byte[] compressed = test.serialize();
-		ManagedHashMap map = new ManagedHashMap();
+		SerializableHashMap map = new SerializableHashMap();
 		map.deserialize(compressed);
 
 		test = map;
@@ -149,7 +149,7 @@ public class DataMapTest {
 		assertTrue("Entry set size is incorrect", test.entrySet().size() == 0);
 	}
 
-	private void testMapContents(ManagedHashMap test, boolean matchRandom) {
+	private void testMapContents(SerializableHashMap test, boolean matchRandom) {
 		Set<String> keySet = test.keySet();
 
 		assertTrue("Key set size is incorrect", keySet.size() == 4);

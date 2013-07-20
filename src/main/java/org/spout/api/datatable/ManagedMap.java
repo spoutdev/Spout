@@ -26,16 +26,22 @@
  */
 package org.spout.api.datatable;
 
+import java.io.Serializable;
+
+import org.spout.api.datatable.delta.DeltaMap;
+
 /*
  * This is a {@link SerializableMap} that also manages a dirty state.
  */
 public interface ManagedMap extends SerializableMap {
 
 	/**
-	 * This will return if the map has been map has been modified since the last call to setDirty(false).
-	 * @return the dirty state of the map
+	 * This will return a map containing any modified elements.
+	 * Any sub-maps will also be DeltaMaps if applicable.
+	 *
+	 * @return the delta map
 	 */
-	boolean isDirty();
+	public DeltaMap getDeltaMap();
 
-	void setDirty(boolean dirty);
+	public void resetDelta();
 }

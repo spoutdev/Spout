@@ -31,7 +31,7 @@ import java.io.Serializable;
 
 import org.spout.api.map.DefaultedMap;
 
-public interface SerializableMap extends DefaultedMap<Serializable> {
+public interface SerializableMap extends DefaultedMap<Serializable>, Serializable {
 
 	/**
 	 * Serializes the information in this map into an array of bytes.

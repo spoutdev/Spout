@@ -28,383 +28,71 @@ package org.spout.api.datatable;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.AbstractCollection;
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.spout.api.map.DefaultedKey;
-import org.spout.api.util.StringToUniqueIntegerMap;
+import org.spout.api.datatable.delta.DeltaMap;
 
-/**
- * Manages a string keyed, serializable object hashmap that can be serialized easily
- * to an array of bytes and deserialized from an array of bytes, intended for persistence
- * and network transfers.
- * This also tracks modification and updates a dirty field accordingly.
- */
-public class ManagedHashMap implements ManagedMap {
-	// This doesn't need to be persisted across restarts
-	private static final AtomicInteger nonSyncingNextId = new AtomicInteger();
-	final GenericDatatableMap map;
-	private final AtomicBoolean dirty = new AtomicBoolean(true);
+public class ManagedHashMap extends SerializableHashMap implements ManagedMap {
+	private static final long serialVersionUID = 1L;
+
+	private final DeltaMap delta;
 
 	public ManagedHashMap() {
-		this.map = new GenericDatatableMap();
+		this.delta = new DeltaMap(this, DeltaMap.DeltaType.SET);
 	}
 
-	public ManagedHashMap(boolean sync) {
-		if (sync) {
-			this.map = new GenericDatatableMap();
-		} else {
-			this.map = new GenericDatatableMap(new StringToUniqueIntegerMap(ManagedHashMap.class.getName() + nonSyncingNextId.getAndIncrement()));
-		}
-	}
-
-	@Override
-	public int size() {
-		return map.size();
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return map.isEmpty();
-	}
-
-	@Override
-	public boolean containsKey(Object key) {
-		if (key instanceof String) {
-			return containsKey((String)key);
-		}
-		return false;
-	}
-
-	public boolean containsKey(String key) {
-		return map.contains(key);
-	}
-
-	@Override
-	public boolean containsValue(Object value) {
-		for (Serializable o : map.values()) {
-			if (o != null && o.equals(value)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public Serializable get(Object key) {
-		return get(key, null);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends Serializable> T get(Object key, T defaultValue) {
-		if (key instanceof DefaultedKey) {
-			return get((DefaultedKey<T>)key);
-		}
-		if (!(key instanceof String)) {
-			return defaultValue;
-		}
-
-		final String keyString = (String) key;
-		final T value;
-		try {
-			value = (T)map.get(keyString);
-		} catch (ClassCastException e) {
-			return defaultValue;
-		}
-
-		if (value == null) {
-			Serializable old = putIfAbsent(keyString, (Serializable) defaultValue);
-			if (old != null) {
-				return (T) old;
-			} else {
-				return defaultValue;
-			}
-		}
-
-		return value;
-	}
-
-	@Override
-	public <T extends Serializable> T get(DefaultedKey<T> key) {
-		T defaultValue = key.getDefaultValue();
-		String keyString = key.getKeyString();
-		return get(keyString, defaultValue);
-	}
-
-	@Override
-	public <T> T get(String key, Class<T> clazz) {
-		Serializable s = get(key);
-		if (s != null) {
-			try {
-				return clazz.cast(s);
-			} catch (ClassCastException ignore) { }
-		}
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends Serializable> T putIfAbsent(DefaultedKey<T> key, T value) {
-		String keyString = key.getKeyString();
-		try {
-			dirty.set(true);
-			return (T) putIfAbsent(keyString, value);
-		} catch (ClassCastException e) {
-			return null;
-		}
+	public ManagedHashMap(ManagedHashMap parent, String key) {
+		super(parent, true);
+		this.delta = new DeltaMap(parent.delta, DeltaMap.DeltaType.SET, key);
 	}
 
 	@Override
 	public Serializable putIfAbsent(String key, Serializable value) {
-		int intKey = map.getIntKey(key);
-		dirty.set(true);
-		return map.setIfAbsent(intKey, value);
+		delta.putIfAbsent(key, value);
+		return super.putIfAbsent(key, value);
 	}
 
 	@Override
 	public Serializable put(String key, Serializable value) {
-		int intKey = map.getIntKey(key);
-		dirty.set(true);
-		return map.getAndSet(intKey, value);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends Serializable> T put(DefaultedKey<T> key, T value) {
-		String keyString = key.getKeyString();
-		dirty.set(true);
-		try {
-			return (T)put(keyString, value);
-		} catch (ClassCastException e) {
-			return null;
-		}
+		delta.putIfAbsent(key, value);
+		return super.put(key, value);
 	}
 
 	@Override
-	public Serializable remove(Object key) {
-		if (key instanceof String) {
-			dirty.set(true);
-			return remove((String)key);
-		} else if (key instanceof DefaultedKey) {
-			dirty.set(true);
-			return remove(((DefaultedKey<?>)key).getKeyString());
-		}
-		return null;
-	}
-
 	public Serializable remove(String key) {
-		dirty.set(true);
+		delta.put(key, null);
 		return map.remove(key);
 	}
 
 	@Override
-	public void putAll(Map<? extends String, ? extends Serializable> m) {
-		 for (Map.Entry<? extends String, ? extends Serializable> e : m.entrySet()) {
-			 put(e.getKey(), e.getValue());
-		 }
-	}
-
-	@Override
 	public void clear() {
+		for (String s : map.keySet()) {
+			delta.setType(DeltaMap.DeltaType.REPLACE);
+			delta.clear();
+		}
 		map.clear();
 	}
 
 	@Override
-	public Set<String> keySet() {
-		return map.keySet();
+	public void deserialize(byte[] data, boolean wipe) throws IOException {
+		if (wipe) delta.setType(DeltaMap.DeltaType.REPLACE);
+		delta.deserialize(data, wipe);
+		super.deserialize(data, wipe);
+	}
+
+	/**
+	 * This will return if the map has been map has been modified since the last call to setDirty(false).
+	 *
+	 * @return the dirty state of the map
+	 */
+	@Override
+	public DeltaMap getDeltaMap() {
+		return delta;
 	}
 
 	@Override
-	public Collection<Serializable> values() {
-		return new Values();
-	}
-
-	@Override
-	public Set<java.util.Map.Entry<String, Serializable>> entrySet() {
-		return new EntrySet();
-	}
-
-	private final class EntrySet extends AbstractSet<Map.Entry<String, Serializable>> {
-		int size = map.size();
-
-		@Override
-		public Iterator<java.util.Map.Entry<String, Serializable>> iterator() {
-			return new EntryIterator();
-		}
-
-		@Override
-		public int size() {
-			return size;
-		}
-
-	}
-
-	private final class Values extends AbstractCollection<Serializable> {
-		@Override
-		public Iterator<Serializable> iterator() {
-			return new ValueIterator();
-		}
-
-		@Override
-		public int size() {
-			return map.size();
-		}
-
-		@Override
-		public boolean contains(Object o) {
-			return containsValue(o);
-		}
-
-		@Override
-		public void clear() {
-			map.clear();
-		}
-	}
-
-	private final class EntryIterator implements Iterator<Map.Entry<String, Serializable>> {
-		Serializable next, current;
-		int index = 0;
-		int expectedAmount = map.size();
-		ArrayList<Serializable> values = new ArrayList<Serializable>();
-		ArrayList<String> keys = new ArrayList<String>();
-		EntryIterator() {
-			for (String s : map.keySet()) {
-				keys.add(s);
-				values.add(map.get(s));
-			}
-			current = null;
-			if (expectedAmount == 0) {
-				next = null;
-			} else {
-				next = values.get(index);
-			}
-		}
-
-		@Override
-		public boolean hasNext() {
-			return next != null;
-		}
-
-		@Override
-		public Map.Entry<String, Serializable> next() {
-			if (map.size() != expectedAmount) {
-				throw new ConcurrentModificationException();
-			}
-			index++;
-			current = next;
-			if (index < expectedAmount) {
-				next = values.get(index);
-			} else {
-				next = null;
-			}
-			return new Entry(keys.get(index-1), current);
-		}
-
-		@Override
-		public void remove() {
-			if (current == null) {
-				throw new IllegalStateException();
-			}
-			if (map.size() != expectedAmount) {
-				throw new ConcurrentModificationException();
-			}
-			current = null;
-			dirty.set(true);
-			map.remove(keys.get(index));
-		}
-	}
-
-	private final class Entry implements Map.Entry<String, Serializable> {
-		final String key;
-		Serializable value;
-		Entry(String key, Serializable value) {
-			this.key = key;
-			this.value = value;
-		}
-
-		@Override
-		public String getKey() {
-			return key;
-		}
-
-		@Override
-		public Serializable getValue() {
-			return value;
-		}
-
-		@Override
-		public Serializable setValue(Serializable value) {
-			this.value = value;
-			ManagedHashMap.this.dirty.set(true);
-			return ManagedHashMap.this.put(key, value);
-		}
-
-	}
-
-	private final class ValueIterator implements Iterator<Serializable> {
-		Serializable next, current;
-		int index = 0;
-		int expectedAmount = map.size();
-		ArrayList<Serializable> values = new ArrayList<Serializable>();
-		ArrayList<String> keys = new ArrayList<String>();
-		ValueIterator() {
-			for (String s : map.keySet()) {
-				keys.add(s);
-				values.add(map.get(s));
-			}
-			if (expectedAmount > 1) {
-				current = values.get(index);
-				next = values.get(index + 1);
-			} else if (expectedAmount > 0) {
-				current = values.get(index);
-				next = null;
-			} else {
-				current = next = null;
-			}
-		}
-
-		@Override
-		public boolean hasNext() {
-			return next != null;
-		}
-
-		@Override
-		public Serializable next() {
-			if (map.size() != expectedAmount) {
-				throw new ConcurrentModificationException();
-			}
-			index++;
-			current = next;
-			if (index < expectedAmount) {
-				next = values.get(index);
-			} else {
-				next = null;
-			}
-			return current;
-		}
-
-		@Override
-		public void remove() {
-			if (current == null) {
-				throw new IllegalStateException();
-			}
-			if (map.size() != expectedAmount) {
-				throw new ConcurrentModificationException();
-			}
-			current = null;
-			dirty.set(true);
-			map.remove(keys.get(index));
-		}
+	public void resetDelta() {
+		delta.reset();
 	}
 
 	@Override
@@ -438,7 +126,7 @@ public class ManagedHashMap implements ManagedMap {
 			return false;
 		}
 
-		ManagedHashMap other = (ManagedHashMap)obj;
+		ManagedHashMap other = (ManagedHashMap) obj;
 		if (isEmpty() && other.isEmpty()) {
 			return true;
 		}
@@ -455,47 +143,5 @@ public class ManagedHashMap implements ManagedMap {
 			}
 		}
 		return true;
-	}
-
-	@Override
-	public byte[] serialize() {
-		return map.serialize();
-	}
-
-	@Override
-	public void deserialize(byte[] data) throws IOException {
-		dirty.set(true);
-		map.decompress(data);
-	}
-
-	@Override
-	public void deserialize(byte[] data, boolean wipe) throws IOException {
-		dirty.set(true);
-		map.deserialize(data, wipe);
-	}
-
-	@Override
-	public SerializableMap deepCopy() {
-		SerializableMap map = new ManagedHashMap();
-		try {
-			map.deserialize(serialize(), true);
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to create a deep copy", e);
-		}
-		return map;
-	}
-
-	/**
-	 * This will return if the map has been map has been modified since the last call to setDirty(false).
-	 * @return the dirty state of the map
-	 */
-	@Override
-	public boolean isDirty() {
-		return dirty.get();
-	}
-	
-	@Override
-	public void setDirty(boolean dirty) {
-		this.dirty.set(dirty);
 	}
 }
