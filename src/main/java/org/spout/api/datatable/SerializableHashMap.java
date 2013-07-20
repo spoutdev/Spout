@@ -54,7 +54,7 @@ import org.spout.api.util.StringToUniqueIntegerMap;
  * to an array of bytes and deserialized from an array of bytes, intended for persistence
  * and network transfers.
  *
- * This should not contain null values. TODO
+ * This should not contain null values.
  *
  */
 public class SerializableHashMap implements SerializableMap {
@@ -101,7 +101,7 @@ public class SerializableHashMap implements SerializableMap {
 
 	@Override
 	public boolean containsValue(Object value) {
-		return map.values().contains(value);
+		return map.containsValue(value);
 	}
 
 	@Override
@@ -170,11 +170,17 @@ public class SerializableHashMap implements SerializableMap {
 
 	@Override
 	public Serializable putIfAbsent(String key, Serializable value) {
+		if (value == null) {
+			return map.remove(key);
+		}
 		return map.putIfAbsent(key, value);
 	}
 
 	@Override
 	public Serializable put(String key, Serializable value) {
+		if (value == null) {
+			return map.remove(key);
+		}
 		return map.put(key, value);
 	}
 

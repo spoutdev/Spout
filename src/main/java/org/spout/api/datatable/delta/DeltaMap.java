@@ -41,7 +41,7 @@ import org.spout.api.map.DefaultedKey;
  * by itself, so the writeObject and readObject are implemented in this class to serialize the data.
  * 
  * This classes manages setting the delta map of parent maps.
- * This class supports null values, whereas SerializableHashMap does not. TODO
+ * This class supports null values, whereas SerializableHashMap does not.
  *
  */
 public class DeltaMap extends SerializableHashMap {
@@ -82,18 +82,20 @@ public class DeltaMap extends SerializableHashMap {
 		this.type = type;
 	}
 
+	// SerializableHashMap does not permit null values, we do. Therefore, we need to override functionality
 	@Override
 	public Serializable putIfAbsent(String key, Serializable value) {
 		if (parent != null) parent.put(this.key, this);
-		return super.putIfAbsent(key, value);
+		return map.putIfAbsent(key, value);
 	}
 
 	@Override
 	public Serializable put(String key, Serializable value) {
 		if (parent != null) parent.put(this.key, this);
-		return super.put(key, value);
+		return map.put(key, value);
 	}
 
+	@Override
 	public Serializable remove(String key) {
 		if (parent != null) parent.put(this.key, this);
 		return map.remove(key);
@@ -102,7 +104,9 @@ public class DeltaMap extends SerializableHashMap {
 	@Override
 	public void clear() {
 		if (parent != null) parent.put(this.key, this);
-		map.clear();
+		for (String key : map.keySet()) {
+			map.put(key, null);
+		}
 	}
 
 	@Override
@@ -111,20 +115,6 @@ public class DeltaMap extends SerializableHashMap {
 		super.deserialize(data, wipe);
 	}
 
-	private void writeObject(ObjectOutputStream out) throws IOException {
-		out.defaultWriteObject();
-		byte[] bytes = serialize();
-		out.writeInt(bytes.length);
-		out.write(bytes);
-	}
-
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		in.defaultReadObject();
-		byte[] bytes = new byte[in.readInt() - 1];
-		in.readFully(bytes);
-		deserialize(bytes);
-	}
-	
 	public void reset() {
 		type = DeltaType.SET;
 		map.clear();
