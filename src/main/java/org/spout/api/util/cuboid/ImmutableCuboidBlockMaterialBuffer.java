@@ -38,7 +38,7 @@ public class ImmutableCuboidBlockMaterialBuffer extends CuboidBuffer {
 		super(buffer.getBase().getFloorX(), buffer.getBase().getFloorY(), buffer.getBase().getFloorZ(), buffer.getSize().getFloorX(), buffer.getSize().getFloorY(), buffer.getSize().getFloorZ());
 		this.id = new short[buffer.id.length];
 		this.data = new short[buffer.data.length];
-		System.arraycopy(buffer.id, BlockMaterial.UNGENERATED.getId(), this.id, BlockMaterial.UNGENERATED.getId(), buffer.id.length);
+		System.arraycopy(buffer.id, 0, this.id, 0, buffer.id.length);
 		System.arraycopy(buffer.data, 0, this.data, 0, buffer.data.length);
 	}
 
