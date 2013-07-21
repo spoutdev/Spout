@@ -80,7 +80,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 		new ClickRequestMessage((byte) 0, (byte) 0, ClickRequestMessage.Action.LEFT),
 		new ClickResponseMessage((byte) 0, (byte) 0, ClickResponseMessage.Response.ALLOW),
 		new CommandMessage("test", "hi"),
-		new CuboidBlockUpdateMessage(Vector3.ZERO, Vector3.UP, new short[0], new short[0], new byte[0], new byte[0]),
+		new CuboidBlockUpdateMessage(TEST_WORLD.getUID(), Vector3.ZERO, Vector3.UP, new short[0], new short[0], new byte[0], new byte[0]),
 		new EntityDatatableMessage(0, TEST_SERIALIZED_DATA, DeltaMap.DeltaType.SET),
 		new LoginMessage("Spouty", 0),
 		new SyncedMapMessage(0, SyncedMapEvent.Action.ADD, new ArrayList<Pair<Integer, String>>()),

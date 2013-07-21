@@ -26,6 +26,8 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
@@ -33,6 +35,6 @@ import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 public class CuboidBlockUpdateMessageHandler extends MessageHandler<CuboidBlockUpdateMessage> {
 	@Override
 	public void handleClient(ClientSession session, CuboidBlockUpdateMessage message) {
-		throw new UnsupportedOperationException("Cuboid block updates have not been implemented yet!");
+		((Client) Spout.getEngine()).getWorld().setCuboid(message.getCuboid(), null);
 	}
 }

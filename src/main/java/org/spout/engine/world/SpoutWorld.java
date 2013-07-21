@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -87,6 +88,7 @@ import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
@@ -1035,16 +1037,12 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 		return parallelTaskManager;
 	}
 
-	private SpoutChunk[][][] getChunks(int x, int y, int z, CuboidBlockMaterialBuffer buffer) {
+	private SpoutChunk[][][] getChunks(final int startX, final int startY, final int startZ, CuboidBlockMaterialBuffer buffer) {
 		Vector3 size = buffer.getSize();
 
-		int startX = x;
-		int startY = y;
-		int startZ = z;
-
-		int endX = x + size.getFloorX();
-		int endY = y + size.getFloorY();
-		int endZ = z + size.getFloorZ();
+		final int endX = startX + size.getFloorX();
+		final int endY = startY + size.getFloorY();
+		final int endZ = startZ + size.getFloorZ();
 
 		Chunk start = getChunkFromBlock(startX, startY, startZ);
 		Chunk end = getChunkFromBlock(endX - 1, endY - 1, endZ - 1);
@@ -1156,15 +1154,23 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 			}
 
 			// set
+			Set<Player> observed = new HashSet<>();
 			for (int dx = 0; dx < chunks.length; dx++) {
 				SpoutChunk[][] subArray1 = chunks[dx];
 				for (int dy = 0; dy < subArray1.length; dy++) {
 					SpoutChunk[] subArray2 = subArray1[dy];
 					for (int dz = 0; dz < subArray2.length; dz++) {
+						for (Player p : subArray2[dz].getObservingPlayers()) {
+							if (observed.contains(p)) continue;
+							observed.add(p);
+							byte[] empty = new byte[chunks.length  * subArray1.length * subArray2.length];
+							p.getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
+						}
 						subArray2[dz].setCuboid(x, y, z, buffer, cause);
 					}
 				}
 			}
+			
 
 			return true;
 		} finally {
@@ -1177,12 +1183,19 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 		lockChunks(chunks);
 
 		try {
+			Set<Player> observed = new HashSet<>();
 			for (int dx = 0; dx < chunks.length; dx++) {
 				SpoutChunk[][] subArray1 = chunks[dx];
 				for (int dy = 0; dy < subArray1.length; dy++) {
 					SpoutChunk[] subArray2 = subArray1[dy];
 					for (int dz = 0; dz < subArray2.length; dz++) {
-						subArray2[dz].setCuboid(x, y, z, buffer, cause);
+						for (Player p : subArray2[dz].getObservingPlayers()) {
+							if (observed.contains(p)) continue;
+							observed.add(p);
+							byte[] empty = new byte[chunks.length  * subArray1.length * subArray2.length];
+							p.getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
+						}
+			 			subArray2[dz].setCuboid(x, y, z, buffer, cause);
 					}
 				}
 			}

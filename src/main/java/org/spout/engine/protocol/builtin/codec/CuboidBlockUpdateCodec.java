@@ -26,9 +26,11 @@
  */
 package org.spout.engine.protocol.builtin.codec;
 
+import java.util.UUID;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.MessageCodec;
+import org.spout.engine.protocol.builtin.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 
 /**
@@ -41,13 +43,13 @@ public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessag
 
 	@Override
 	public ChannelBuffer encode(CuboidBlockUpdateMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(24 + message.getBlockTypes().length * 2 + message.getBlockData().length * 2 + message.getBlockLight().length + message.getSkyLight().length);
+		ChannelBuffer buffer = ChannelBuffers.buffer(4 * 6 + message.getBlockTypes().length * 2 + message.getBlockData().length * 2 + message.getBlockLight().length + message.getSkyLight().length + ChannelBufferUtils.UUID_SIZE);
 		buffer.writeInt(message.getMinX());
 		buffer.writeInt(message.getMinY());
 		buffer.writeInt(message.getMinZ());
-		buffer.writeInt(message.getMaxX());
-		buffer.writeInt(message.getMaxY());
-		buffer.writeInt(message.getMaxZ());
+		buffer.writeInt(message.getSizeX());
+		buffer.writeInt(message.getSizeY());
+		buffer.writeInt(message.getSizeZ());
 
 		for (short s : message.getBlockTypes()) {
 			buffer.writeShort(s);
@@ -57,6 +59,7 @@ public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessag
 		}
 		buffer.writeBytes(message.getBlockLight());
 		buffer.writeBytes(message.getSkyLight());
+		ChannelBufferUtils.writeUUID(buffer, message.getWorldUUID());
 		return buffer;
 	}
 
@@ -65,12 +68,9 @@ public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessag
 		final int minX = buffer.readInt();
 		final int minY = buffer.readInt();
 		final int minZ = buffer.readInt();
-		final int maxX = buffer.readInt();
-		final int maxY = buffer.readInt();
-		final int maxZ = buffer.readInt();
-		final int sizeX = Math.abs(maxX - minX);
-		final int sizeY = Math.abs(maxY - minY);
-		final int sizeZ = Math.abs(maxZ - minZ);
+		final int sizeX = buffer.readInt();
+		final int sizeY = buffer.readInt();
+		final int sizeZ = buffer.readInt();
 		final int volume = sizeX * sizeY * sizeZ;
 		short[] blockTypes = new short[volume];
 		short[] blockData = new short[volume];
@@ -90,7 +90,8 @@ public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessag
 
 		buffer.readBytes(blockLight);
 		buffer.readBytes(skyLight);
+		final UUID world = ChannelBufferUtils.readUUID(buffer);
 
-		return new CuboidBlockUpdateMessage(minX, minY, minZ, maxX, maxY, maxZ, blockTypes, blockData, blockLight, skyLight);
+		return new CuboidBlockUpdateMessage(world, minX, minY, minZ, sizeX, sizeY, sizeZ, blockTypes, blockData, blockLight, skyLight);
 	}
 }

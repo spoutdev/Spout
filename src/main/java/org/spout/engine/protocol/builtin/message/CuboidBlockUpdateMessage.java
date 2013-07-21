@@ -26,37 +26,36 @@
  */
 package org.spout.engine.protocol.builtin.message;
 
+import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.SpoutToStringStyle;
+import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
 public class CuboidBlockUpdateMessage extends SpoutMessage {
-	private final int minX, minY, minZ;
-	private final int maxX, maxY, maxZ;
-	// These fields aren't sent across the network - just for reference
-	private transient final int sizeX, sizeY, sizeZ;
-	private final short[] blockTypes, blockData;
+	private UUID world;
 	// TODO: protocol - why do we need a blockLight AND skyLight?
 	private final byte[] blockLight, skyLight;
+	private CuboidBlockMaterialBuffer cuboid;
+	
+	public CuboidBlockUpdateMessage(UUID world, CuboidBlockMaterialBuffer cuboid, byte[] blockLight, byte[] skyLight) {
+		this.world = world;
+		this.cuboid = cuboid;
+		this.blockLight = blockLight;
+		this.skyLight = skyLight;
+	}
 
-	public CuboidBlockUpdateMessage(Vector3 min, Vector3 max, short[] blockTypes, short[] blockData, byte[] blockLight, byte[] skyLight) {
-		this(min.getFloorX(), min.getFloorY(), min.getFloorZ(),
+	public CuboidBlockUpdateMessage(UUID world, Vector3 min, Vector3 max, short[] blockTypes, short[] blockData, byte[] blockLight, byte[] skyLight) {
+		this(world, min.getFloorX(), min.getFloorY(), min.getFloorZ(),
 				max.getFloorX(), max.getFloorY(), max.getFloorZ(),
 				blockTypes, blockData, blockLight, skyLight);
 	}
 
-	public CuboidBlockUpdateMessage(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, short[] blockTypes, short[] blockData, byte[] blockLight, byte[] skyLight) {
-		this.minX = minX;
-		this.minY = minY;
-		this.minZ = minZ;
-		this.maxX = maxX;
-		this.maxY = maxY;
-		this.maxZ = maxZ;
-		this.sizeX = Math.abs(maxX - minX);
-		this.sizeY = Math.abs(maxY - minY);
-		this.sizeZ = Math.abs(maxZ - minZ);
+	public CuboidBlockUpdateMessage(UUID world, int minX, int minY, int minZ, int sizeX, int sizeY, int sizeZ, short[] blockTypes, short[] blockData, byte[] blockLight, byte[] skyLight) {
+		this.world = world;
+		cuboid = new CuboidBlockMaterialBuffer(minX, minY, minZ, sizeX, sizeY, sizeZ, blockTypes, blockData, true);
 		if (blockTypes.length != sizeX * sizeY * sizeZ) {
 			throw new IllegalArgumentException(String.format("blockTypes is not of expected size (%d instead of %d)",
 					blockTypes.length, sizeX * sizeY * sizeZ));
@@ -77,43 +76,28 @@ public class CuboidBlockUpdateMessage extends SpoutMessage {
 					skyLight.length, sizeX * sizeY * sizeZ / 2));
 		}
 
-		this.blockTypes = blockTypes;
-		this.blockData = blockData;
 		this.blockLight = blockLight;
 		this.skyLight = skyLight;
 	}
 
 	public int getMinX() {
-		return minX;
+		return cuboid.getBase().getFloorX();
 	}
 
 	public int getMinY() {
-		return minY;
+		return cuboid.getBase().getFloorY();
 	}
 
 	public int getMinZ() {
-		return minZ;
+		return cuboid.getBase().getFloorZ();
 	}
-
-	public int getMaxX() {
-		return maxX;
-	}
-
-	public int getMaxY() {
-		return maxY;
-	}
-
-	public int getMaxZ() {
-		return maxZ;
-	}
-
 
 	public short[] getBlockTypes() {
-		return blockTypes;
+		return cuboid.getRawId();
 	}
 
 	public short[] getBlockData() {
-		return blockData;
+		return cuboid.getRawData();
 	}
 
 	public byte[] getBlockLight() {
@@ -125,28 +109,29 @@ public class CuboidBlockUpdateMessage extends SpoutMessage {
 	}
 
 	public int getSizeX() {
-		return sizeX;
+		return cuboid.getSize().getFloorX();
 	}
 
 	public int getSizeY() {
-		return sizeY;
+		return cuboid.getSize().getFloorY();
 	}
 
 	public int getSizeZ() {
-		return sizeZ;
+		return cuboid.getSize().getFloorZ();
+	}
+
+	public UUID getWorldUUID() {
+		return world;
+	}
+
+	public CuboidBlockMaterialBuffer getCuboid() {
+		return cuboid;
 	}
 
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
-				.append("minX", minX)
-				.append("minY", minY)
-				.append("minZ", minZ)
-				.append("maxX", maxX)
-				.append("maxY", maxY)
-				.append("maxZ", maxZ)
-				.append("blockTypes", blockTypes)
-				.append("blockData", blockData)
+				.append("cuboid", cuboid)
 				.append("blockLight", blockLight)
 				.append("skyLight", skyLight)
 				.toString();
@@ -155,17 +140,14 @@ public class CuboidBlockUpdateMessage extends SpoutMessage {
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(39, 67)
-				.append(minX)
-				.append(minY)
-				.append(minZ)
-				.append(maxX)
-				.append(maxY)
-				.append(maxZ)
-				.append(sizeX)
-				.append(sizeY)
-				.append(sizeZ)
-				.append(blockTypes)
-				.append(blockData)
+				.append(getMinX())
+				.append(getMinY())
+				.append(getMinZ())
+				.append(getSizeX())
+				.append(getSizeY())
+				.append(getSizeZ())
+				.append(getBlockTypes())
+				.append(getBlockData())
 				.append(blockLight)
 				.append(skyLight)
 				.toHashCode();
@@ -176,17 +158,14 @@ public class CuboidBlockUpdateMessage extends SpoutMessage {
 		if (obj instanceof CuboidBlockUpdateMessage) {
 			final CuboidBlockUpdateMessage other = (CuboidBlockUpdateMessage) obj;
 			return new EqualsBuilder()
-					.append(minX, other.minX)
-					.append(minY, other.minY)
-					.append(minZ, other.minZ)
-					.append(maxX, other.maxX)
-					.append(maxY, other.maxY)
-					.append(maxZ, other.maxZ)
-					.append(sizeX, other.sizeX)
-					.append(sizeY, other.sizeY)
-					.append(sizeZ, other.sizeZ)
-					.append(blockTypes, other.blockTypes)
-					.append(blockData, other.blockData)
+					.append(getMinX(), other.getMinX())
+					.append(getMinY(), other.getMinY())
+					.append(getMinZ(), other.getMinZ())
+					.append(getSizeX(), other.getSizeX())
+					.append(getSizeY(), other.getSizeY())
+					.append(getSizeZ(), other.getSizeZ())
+					.append(getBlockTypes(), other.getBlockTypes())
+					.append(getBlockData(), other.getBlockData())
 					.append(blockLight, other.blockLight)
 					.append(skyLight, other.skyLight)
 					.isEquals();

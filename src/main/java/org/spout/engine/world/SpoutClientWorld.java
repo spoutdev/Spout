@@ -170,16 +170,6 @@ public class SpoutClientWorld extends SpoutWorld {
 	}
 
 	@Override
-	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-		throw new UnsupportedOperationException("Client is not allowed to commit a cuboid");
-	}
-
-	@Override
-	protected boolean commitCuboid(SpoutChunk[][][] chunks, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-		throw new UnsupportedOperationException("Client is not allowed to commit a cuboid");
-	}
-
-	@Override
 	public void queueChunksForGeneration(List<Vector3> chunks) {
 		throw new UnsupportedOperationException("Client is not allowed to queue chunks for generation");
 	}
