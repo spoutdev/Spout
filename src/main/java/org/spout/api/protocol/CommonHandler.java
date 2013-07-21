@@ -151,7 +151,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 			if (session.isPrimary(c)) {
 				session.dispose();
 			}
-			engine.getLogger().log(Level.WARNING, "Exception caught, closing channel: " + c + "...", e.getCause().getMessage());
+			engine.getLogger().log(Level.WARNING, "Exception caught, closing channel: " + c + "...", e.getCause());
 			c.close();
 		}
 	}

@@ -26,6 +26,7 @@
  */
 package org.spout.api.util;
 
+import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -50,6 +51,8 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 
+import static org.spout.api.util.ChannelBufferUtils.getExpandedHeight;
+import static org.spout.api.util.ChannelBufferUtils.getShifts;
 import static org.spout.api.util.ChannelBufferUtils.readParameters;
 import static org.spout.api.util.ChannelBufferUtils.readPoint;
 import static org.spout.api.util.ChannelBufferUtils.readQuaternion;
@@ -58,6 +61,8 @@ import static org.spout.api.util.ChannelBufferUtils.readStringArray;
 import static org.spout.api.util.ChannelBufferUtils.readTransform;
 import static org.spout.api.util.ChannelBufferUtils.readUUID;
 import static org.spout.api.util.ChannelBufferUtils.readVector3;
+import static org.spout.api.util.ChannelBufferUtils.readVector2;
+import static org.spout.api.util.ChannelBufferUtils.readColor;
 import static org.spout.api.util.ChannelBufferUtils.writeParameters;
 import static org.spout.api.util.ChannelBufferUtils.writePoint;
 import static org.spout.api.util.ChannelBufferUtils.writeQuaternion;
@@ -66,6 +71,8 @@ import static org.spout.api.util.ChannelBufferUtils.writeStringArray;
 import static org.spout.api.util.ChannelBufferUtils.writeTransform;
 import static org.spout.api.util.ChannelBufferUtils.writeUUID;
 import static org.spout.api.util.ChannelBufferUtils.writeVector3;
+import static org.spout.api.util.ChannelBufferUtils.writeVector2;
+import static org.spout.api.util.ChannelBufferUtils.writeColor;
 
 public class ChannelBufferUtilsTest {
 	public static final List<Parameter<?>> TEST_PARAMS = new ArrayList<Parameter<?>>();
@@ -149,5 +156,37 @@ public class ChannelBufferUtilsTest {
 		ChannelBuffer buf = ChannelBuffers.dynamicBuffer();
 		writeStringArray(buf, TEST_STRING_ARRAY);
 		assertArrayEquals(TEST_STRING_ARRAY, readStringArray(buf));
+	}
+	
+		@Test
+	public void testShifts() {
+		for (int i = 2; i < 12; ++i) {
+			final int origHeight = (int) Math.pow(2, i);
+			assertEquals(getExpandedHeight(getShifts(origHeight) - 1), origHeight);
+		}
+	}
+
+	@Test
+	public void testVector2() throws IllegalAccessException {
+		for (Field field : Vector2.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers()) && Vector2.class.isAssignableFrom(field.getType())) {
+				Vector2 vec = (Vector2) field.get(null);
+				ChannelBuffer buf = ChannelBuffers.buffer(8);
+				writeVector2(buf, vec);
+				assertEquals(vec, readVector2(buf));
+			}
+		}
+	}
+
+	@Test
+	public void testColor() throws IllegalAccessException {
+		for (Field field : Color.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers()) && Color.class.isAssignableFrom(field.getType())) {
+				Color color = (Color) field.get(null);
+				ChannelBuffer buf = ChannelBuffers.buffer(4);
+				writeColor(color, buf);
+				assertEquals(color, readColor(buf));
+			}
+		}
 	}
 }

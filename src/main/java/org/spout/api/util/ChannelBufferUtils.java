@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.util.CharsetUtil;
+
 import org.spout.api.Client;
 import org.spout.api.Platform;
 import org.spout.api.Server;
@@ -43,13 +45,11 @@ import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.Parameter;
 
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
@@ -61,11 +61,6 @@ import org.spout.nbt.stream.NBTOutputStream;
  * Contains several {@link ChannelBuffer}-related utility methods.
  */
 public final class ChannelBufferUtils {
-	/**
-	 * The UTF-8 character set.
-	 */
-	public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
-	
 	public static final int VECTOR3_SIZE = 12;
 	public static final int UUID_SIZE = 16;
 	public static final int POINT_SIZE = VECTOR3_SIZE + UUID_SIZE;
@@ -165,7 +160,7 @@ public final class ChannelBufferUtils {
 	 *                                  it is encoded.
 	 */
 	public static void writeUtf8String(ChannelBuffer buf, String str) {
-		byte[] bytes = str.getBytes(UTF_8_CHARSET);
+		byte[] bytes = str.getBytes(CharsetUtil.UTF_8);
 		if (bytes.length >= 65536) {
 			throw new IllegalArgumentException("Encoded UTF-8 string too long.");
 		}
@@ -185,12 +180,12 @@ public final class ChannelBufferUtils {
 		byte[] bytes = new byte[len];
 		buf.readBytes(bytes);
 
-		return new String(bytes, UTF_8_CHARSET);
+		return new String(bytes, CharsetUtil.UTF_8);
 	}
 
 	public static CompoundMap readCompound(ChannelBuffer buf) {
 		int len = buf.readShort();
-		if (len >= 0) {
+		if (len > 0) {
 			byte[] bytes = new byte[len];
 			buf.readBytes(bytes);
 			NBTInputStream str = null;
@@ -239,6 +234,9 @@ public final class ChannelBufferUtils {
 	}
 
 	public static int getShifts(int height) {
+		if (height == 0) {
+			return 0;
+		}
 		int shifts = 0;
 		int tempVal = height;
 		while (tempVal != 1) {
@@ -254,7 +252,7 @@ public final class ChannelBufferUtils {
 		} else if (shift >= 32) {
 			return shift;
 		}
-		return 128;
+		return 256;
 	}
 
 	public static Vector2 readVector2(ChannelBuffer buf) {
@@ -263,35 +261,29 @@ public final class ChannelBufferUtils {
 		return new Vector2(x, z);
 	}
 
-	public static void writeVector2(Vector2 vec, ChannelBuffer buf) {
+	public static void writeVector2(ChannelBuffer buf, Vector2 vec) {
 		buf.writeFloat(vec.getX());
 		buf.writeFloat(vec.getY());
 	}
 
 	public static Color readColor(ChannelBuffer buf) {
-		int red = buf.readInt();
-		int green = buf.readInt();
-		int blue = buf.readInt();
-		int alpha = buf.readInt();
-		return new Color(red, green, blue, alpha);
+		int argb = buf.readInt();
+		return new Color(argb);
 	}
 
 	public static void writeColor(Color color, ChannelBuffer buf) {
-		buf.writeInt(color.getRed());
-		buf.writeInt(color.getGreen());
-		buf.writeInt(color.getBlue());
-		buf.writeInt(color.getAlpha());
+		buf.writeInt(color.getRGB());
 	}
 
 	public static String readString(ChannelBuffer buffer) {
 		int length = buffer.readInt();
 		byte[] stringBytes = new byte[length];
 		buffer.readBytes(stringBytes);
-		return new String(stringBytes, UTF_8_CHARSET);
+		return new String(stringBytes, CharsetUtil.UTF_8);
 	}
 
 	public static void writeString(ChannelBuffer buffer, String str) {
-		byte[] stringBytes = str.getBytes(UTF_8_CHARSET);
+		byte[] stringBytes = str.getBytes(CharsetUtil.UTF_8);
 		buffer.writeInt(stringBytes.length);
 		buffer.writeBytes(stringBytes);
 	}
