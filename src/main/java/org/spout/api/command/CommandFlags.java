@@ -26,6 +26,8 @@
  */
 package org.spout.api.command;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import org.spout.api.exception.ArgumentParseException;
 
 import java.util.Arrays;
@@ -133,9 +135,16 @@ public class CommandFlags {
 		if (!match.matches()) {
 			return false;
 		}
-		it.remove();
 
 		String rawFlag = match.group("key");
+		try {
+			NumberFormat.getInstance().parse(rawFlag);
+			// If it's a number, it's not a flag
+			return false;
+		} catch (ParseException ex) {}
+
+		it.remove();
+		
 		if (rawFlag.startsWith("-")) { // Long flag in form --flag
 			rawFlag = rawFlag.substring(1);
 			handleFlag(it, rawFlag, match.group("value"));
