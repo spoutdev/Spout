@@ -46,6 +46,7 @@ import org.spout.engine.WorldFaker;
 import org.spout.engine.protocol.builtin.SpoutCodecLookupService;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
+import org.spout.engine.protocol.builtin.message.ChunkDatatableMessage;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 import org.spout.engine.protocol.builtin.message.ClickResponseMessage;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
@@ -84,7 +85,8 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 		new LoginMessage("Spouty", 0),
 		new SyncedMapMessage(0, SyncedMapEvent.Action.ADD, new ArrayList<Pair<Integer, String>>()),
 		new WorldChangeMessage("world", EngineFaker.TEST_UUID, TEST_TRANSFORM, TEST_SERIALIZED_DATA, DeltaMap.DeltaType.SET),
-		new UpdateEntityMessage(0, TEST_TRANSFORM, UpdateEntityMessage.UpdateAction.TRANSFORM, new NullRepositionManager())
+		new UpdateEntityMessage(0, TEST_TRANSFORM, UpdateEntityMessage.UpdateAction.TRANSFORM, new NullRepositionManager()),
+		new ChunkDatatableMessage("Blank", 0, 0, 0, biomeData1, DeltaMap.DeltaType.SET)
 	};
 
 	static {

@@ -39,7 +39,7 @@ public class EntityDatatableCodec extends MessageCodec<EntityDatatableMessage> {
 
 	@Override
 	public ChannelBuffer encode(EntityDatatableMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(4 + 4 + message.getCompressedData().length);
+		ChannelBuffer buffer = ChannelBuffers.buffer(4 + 4 + message.getCompressedData().length + 1);
 		buffer.writeInt(message.getEntityId());
 		buffer.writeInt(message.getCompressedData().length);
 		buffer.writeBytes(message.getCompressedData());

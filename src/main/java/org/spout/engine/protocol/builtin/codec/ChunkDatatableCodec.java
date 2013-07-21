@@ -40,7 +40,7 @@ public class ChunkDatatableCodec extends MessageCodec<ChunkDatatableMessage> {
 
 	@Override
 	public ChannelBuffer encode(ChunkDatatableMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(4 + 4 + message.getCompressedData().length);
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		ChannelBufferUtils.writeString(buffer, message.getWorld());
 		buffer.writeInt(message.getX());
 		buffer.writeInt(message.getY());
