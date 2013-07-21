@@ -460,7 +460,7 @@ public class SerializableHashMap implements SerializableMap {
 			oos.writeObject(map);
 			return out.toByteArray();
 		} catch (IOException ex) {
-			throw new IllegalStateException("Unable to compress GenericDatatableMap");
+			throw new IllegalStateException("Unable to compress SerializableMap");
 		}
 	}
 
@@ -469,6 +469,7 @@ public class SerializableHashMap implements SerializableMap {
 	 *
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public void deserialize(byte[] serializedData, boolean wipe) throws IOException{
 		if (wipe) {
 			map.clear();
@@ -476,9 +477,14 @@ public class SerializableHashMap implements SerializableMap {
 		InputStream in = new ByteArrayInputStream(serializedData);
 		ObjectInputStream ois = new ObjectInputStream(in);
 		try {
-			map.putAll((Map<? extends String, ? extends Serializable>) ois.readObject());
+			// Because it may be a map of maps, we want to UPDATE inner maps, not overwrite
+			for (Map.Entry<? extends String, ? extends Serializable> e : ((Map<? extends String, ? extends Serializable>) ois.readObject()).entrySet()) {
+				if (e.getValue() instanceof Map && map.get(e.getKey()) instanceof Map) {
+					((Map) map.get(e.getKey())).putAll((Map) e.getValue());
+				}
+			}
 		} catch (ClassNotFoundException ex) {
-			throw new IllegalStateException("Unable to decompress GenericDatatableMap");
+			throw new IllegalStateException("Unable to decompress SerializableHashMap");
 		}
 	}
 
