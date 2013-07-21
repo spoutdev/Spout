@@ -16,7 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<currentYear>2012</currentYear>
 		<apiVersion>dev-SNAPSHOT</apiVersion>
-		<lwjglVersion>2.8.5</lwjglVersion>
+		<lwjglVersion>2.9.0</lwjglVersion>
 		<buildNumber>0</buildNumber>
 	</properties>
 
