@@ -26,18 +26,17 @@
  */
 package org.spout.api.component.world;
 
-import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.model.Model;
 
 public class SkydomeComponent extends WorldComponent {
-	private final DefaultedKeyImpl<Model> SKYDOME_MODEL = new DefaultedKeyImpl<Model>("skydome", null);
+	private Model model = null;
 
 	/**
 	 * Gets the {@link Model} applied to this skydome.
 	 * @return The model or null if no model is currently set
 	 */
 	public Model getModel() {
-		return getData().get(SKYDOME_MODEL);
+		return model;
 	}
 
 	/**
@@ -45,6 +44,6 @@ public class SkydomeComponent extends WorldComponent {
 	 * @param model the new model of the skydome.
 	 */
 	public void setModel(final Model model) {
-		getData().put(SKYDOME_MODEL, model);
+		this.model = model;
 	}
 }

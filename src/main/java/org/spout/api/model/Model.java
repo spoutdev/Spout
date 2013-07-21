@@ -35,7 +35,7 @@ import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
 
 
-public interface Model extends Serializable {
+public interface Model {
 
 	public Mesh getMesh();
 
