@@ -481,6 +481,8 @@ public class SerializableHashMap implements SerializableMap {
 			for (Map.Entry<? extends String, ? extends Serializable> e : ((Map<? extends String, ? extends Serializable>) ois.readObject()).entrySet()) {
 				if (e.getValue() instanceof Map && map.get(e.getKey()) instanceof Map) {
 					((Map) map.get(e.getKey())).putAll((Map) e.getValue());
+				} else {
+					map.put(e.getKey(), e.getValue());
 				}
 			}
 		} catch (ClassNotFoundException ex) {
