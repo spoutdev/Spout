@@ -282,12 +282,12 @@ public class SpoutInputManager implements InputManager {
 		if (!redirected) {
 			boolean invert = SpoutInputConfiguration.INVERT_MOUSE.getBoolean();
 			if (dx != 0) {
-				executeDirectionBindings(getMouseDirectionBindingsFor(MouseDirection.YAW), player, (int) (PlayerInputState.MOUSE_SENSITIVITY * dx * (invert ? 1 : -1)));
+				executeDirectionBindings(getMouseDirectionBindingsFor(MouseDirection.YAW), player, (PlayerInputState.MOUSE_SENSITIVITY * dx * (invert ? 1 : -1)));
 			}
 
 			// Mouse moved on y-axis
 			if (dy != 0) {
-				executeDirectionBindings(getMouseDirectionBindingsFor(MouseDirection.PITCH), player, (int) (PlayerInputState.MOUSE_SENSITIVITY * dy * (invert ? -1 : 1)));
+				executeDirectionBindings(getMouseDirectionBindingsFor(MouseDirection.PITCH), player, (PlayerInputState.MOUSE_SENSITIVITY * dy * (invert ? -1 : 1)));
 			}
 		}
 	}
@@ -306,7 +306,7 @@ public class SpoutInputManager implements InputManager {
 		}
 	}
 
-	private void executeDirectionBindings(Set<Binding> bindings, Player player, int arg) {
+	private void executeDirectionBindings(Set<Binding> bindings, Player player, float arg) {
 		// Do bindings
 		for (Binding binding : bindings) {
 			if (binding.isAsync()) {
