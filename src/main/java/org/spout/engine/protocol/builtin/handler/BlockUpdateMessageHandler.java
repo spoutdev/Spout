@@ -43,11 +43,5 @@ public class BlockUpdateMessageHandler extends MessageHandler<BlockUpdateMessage
 		Player player = session.getPlayer();
 		Block block = player.getWorld().getBlock(message.getX(), message.getY(), message.getZ());
 		block.setMaterial(BlockMaterial.get(message.getType()), message.getData());
-		throw new UnsupportedOperationException("BlockUpdateMessage not handled yet.");
-	}
-
-	@Override
-	public void handleServer(ServerSession session, BlockUpdateMessage message) {
-		throw new UnsupportedOperationException("BlockUpdateMessage not handled yet.");
 	}
 }
