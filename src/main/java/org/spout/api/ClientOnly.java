@@ -33,7 +33,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Documented
-@Target(value = {ElementType.METHOD, ElementType.CONSTRUCTOR})
+@Target(value = {ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE})
 @Retention(value = RetentionPolicy.SOURCE)
 public @interface ClientOnly {
 	public String author() default "SpoutDev";

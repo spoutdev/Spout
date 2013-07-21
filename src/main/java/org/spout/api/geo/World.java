@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.spout.api.Engine;
+import org.spout.api.ServerOnly;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.data.DataSubject;
@@ -490,18 +491,21 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * Gets the world's spawn point
 	 * @return the spawn point
 	 */
+	@ServerOnly
 	public Transform getSpawnPoint();
 
 	/**
 	 * Sets the world's spawn point
 	 * @param transform the Transform of the spawn point
 	 */
+	@ServerOnly
 	public void setSpawnPoint(Transform transform);
 
 	/**
 	 * Gets a set of all players on active on this world
 	 * @return all players on this world
 	 */
+	@ServerOnly
 	public List<Player> getPlayers();
 
 	/**
@@ -511,7 +515,9 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * World data pertains to world age, world name, and world data maps.
 	 * </p>
 	 */
+	@ServerOnly
 	public void save();
 
+	@ServerOnly
 	public File getDirectory();
 }
