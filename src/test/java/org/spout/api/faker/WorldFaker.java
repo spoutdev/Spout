@@ -24,33 +24,32 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api;
+package org.spout.api.faker;
+
+import org.spout.api.faker.EngineFaker;
+import java.util.UUID;
 
 import org.mockito.Mockito;
-
-import org.spout.api.Engine;
+import org.spout.api.Client;
+import org.spout.api.Platform;
+import org.spout.api.Server;
 import org.spout.api.Spout;
-import org.spout.api.command.CommandManager;
+
+import org.spout.api.geo.World;
 import org.spout.api.resource.FileSystem;
 
-public class EngineFaker {
-	private final static Engine engineInstance;
+@SuppressWarnings("deprecation")
+public class WorldFaker {
+	private final static World worldInstance;
 
 	static {
-		Engine engine = Mockito.mock(Engine.class);
-		FileSystem filesystem = Mockito.mock(FileSystem.class);
-		
-		Mockito.when(filesystem.getResource(Mockito.anyString())).thenReturn(null);
-		
-		Mockito.when(engine.getPlatform()).thenReturn(Platform.SERVER);
-		Mockito.when(engine.getFileSystem()).thenReturn(filesystem);
-		Mockito.when(engine.getCommandManager()).thenReturn(new CommandManager());
+		World world = Mockito.mock(World.class);
+		Mockito.when(world.getUID()).thenReturn(EngineFaker.TEST_UUID);
 
-		Spout.setEngine(engine);
-		engineInstance = engine;
+		worldInstance = world;		
 	}
 
-	public static Engine setupEngine() {
-		return engineInstance;
+	public static World setupWorld() {
+		return worldInstance;
 	}
 }

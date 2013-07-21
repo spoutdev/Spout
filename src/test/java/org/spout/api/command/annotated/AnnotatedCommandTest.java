@@ -28,12 +28,12 @@ package org.spout.api.command.annotated;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.spout.api.EngineFaker;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandManager;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.Executor;
+import org.spout.api.faker.EngineFaker;
 
 public class AnnotatedCommandTest {
 
