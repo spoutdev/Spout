@@ -34,7 +34,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.engine.protocol.builtin.ChannelBufferUtils;
+import org.spout.api.util.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 
 public class SyncedMapCodec extends MessageCodec<SyncedMapMessage> {

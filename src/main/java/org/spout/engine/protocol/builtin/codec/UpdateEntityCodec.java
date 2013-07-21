@@ -34,7 +34,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.reposition.NullRepositionManager;
 
-import org.spout.engine.protocol.builtin.ChannelBufferUtils;
+import org.spout.api.util.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 
 import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.ADD;

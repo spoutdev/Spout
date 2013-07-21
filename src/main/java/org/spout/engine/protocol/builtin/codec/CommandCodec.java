@@ -29,7 +29,7 @@ package org.spout.engine.protocol.builtin.codec;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.engine.protocol.builtin.ChannelBufferUtils;
+import org.spout.api.util.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 
 public class CommandCodec extends MessageCodec<CommandMessage> {

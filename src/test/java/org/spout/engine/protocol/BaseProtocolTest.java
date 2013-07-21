@@ -38,12 +38,12 @@ import org.spout.api.protocol.CodecLookupService;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 
-import org.spout.engine.EngineFaker;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import org.spout.engine.faker.EngineFaker;
 
 public abstract class BaseProtocolTest {
 	private final CodecLookupService codecLookup;

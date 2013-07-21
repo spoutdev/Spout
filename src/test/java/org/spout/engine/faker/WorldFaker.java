@@ -24,18 +24,11 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine;
-
-import java.util.UUID;
+package org.spout.engine.faker;
 
 import org.mockito.Mockito;
-import org.spout.api.Client;
-import org.spout.api.Platform;
-import org.spout.api.Server;
-import org.spout.api.Spout;
 
 import org.spout.api.geo.World;
-import org.spout.api.resource.FileSystem;
 
 @SuppressWarnings("deprecation")
 public class WorldFaker {

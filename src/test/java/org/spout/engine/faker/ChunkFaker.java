@@ -30,9 +30,11 @@ import org.powermock.api.mockito.PowerMockito;
 
 import org.spout.api.geo.cuboid.Chunk;
 
+import org.spout.engine.world.SpoutChunk;
+
 public class ChunkFaker {
-	public static Chunk getChunk(int x, int y, int z) throws Exception {
-		Chunk chunk = PowerMockito.mock(Chunk.class);
+	public static SpoutChunk getChunk(int x, int y, int z) throws Exception {
+		SpoutChunk chunk = PowerMockito.mock(SpoutChunk.class);
 		PowerMockito.when(chunk, Chunk.class.getMethod("getX", (Class[]) null)).withNoArguments().thenReturn(x);
 		PowerMockito.when(chunk, Chunk.class.getMethod("getY", (Class[]) null)).withNoArguments().thenReturn(y);
 		PowerMockito.when(chunk, Chunk.class.getMethod("getZ", (Class[]) null)).withNoArguments().thenReturn(z);

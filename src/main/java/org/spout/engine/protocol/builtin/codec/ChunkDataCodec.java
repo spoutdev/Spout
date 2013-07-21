@@ -36,7 +36,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.util.bytebit.ByteBitSet;
-import org.spout.engine.protocol.builtin.ChannelBufferUtils;
+import org.spout.api.util.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 
 /**

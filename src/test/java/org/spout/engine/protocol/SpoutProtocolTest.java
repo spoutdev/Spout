@@ -29,20 +29,22 @@ package org.spout.engine.protocol;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+
 import org.apache.commons.lang3.tuple.Pair;
+
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.api.util.SyncedMapEvent;
-import org.spout.engine.EngineFaker;
-import org.spout.engine.WorldFaker;
+
+import org.spout.engine.faker.EngineFaker;
+import org.spout.engine.faker.WorldFaker;
 import org.spout.engine.protocol.builtin.SpoutCodecLookupService;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;

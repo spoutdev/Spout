@@ -24,33 +24,24 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine;
+package org.spout.engine.faker;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.mockito.Mockito;
 
-import org.spout.api.Engine;
-import org.spout.api.Engine;
-import org.spout.api.Platform;
 import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
-import org.spout.api.Spout;
+import org.spout.api.command.CommandManager;
 import org.spout.api.event.Event;
 import org.spout.api.event.EventExecutor;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.Listener;
 import org.spout.api.event.Order;
-import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
-import org.spout.api.lang.PluginDictionary;
 import org.spout.api.plugin.Plugin;
-import org.spout.api.plugin.PluginDescriptionFile;
 import org.spout.api.resource.FileSystem;
 
 @SuppressWarnings("deprecation")
@@ -65,6 +56,7 @@ public class EngineFaker {
 		Mockito.when(server.getFileSystem()).thenReturn(filesystem);
 		Mockito.when(server.getEventManager()).thenReturn(new TestEventManager());
 		Mockito.when(server.getLogger()).thenReturn(Mockito.mock(Logger.class));
+		Mockito.when(server.getCommandManager()).thenReturn(new CommandManager());
 		World setupWorld = WorldFaker.setupWorld();
 		Mockito.when(server.getWorld(TEST_UUID)).thenReturn(setupWorld);
 
