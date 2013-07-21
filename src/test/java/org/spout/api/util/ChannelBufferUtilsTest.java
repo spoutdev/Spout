@@ -28,6 +28,8 @@ package org.spout.api.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -42,10 +44,13 @@ import org.spout.api.faker.WorldFaker;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 
+import static org.spout.api.util.ChannelBufferUtils.readParameters;
 import static org.spout.api.util.ChannelBufferUtils.readPoint;
 import static org.spout.api.util.ChannelBufferUtils.readQuaternion;
 import static org.spout.api.util.ChannelBufferUtils.readString;
@@ -53,6 +58,7 @@ import static org.spout.api.util.ChannelBufferUtils.readStringArray;
 import static org.spout.api.util.ChannelBufferUtils.readTransform;
 import static org.spout.api.util.ChannelBufferUtils.readUUID;
 import static org.spout.api.util.ChannelBufferUtils.readVector3;
+import static org.spout.api.util.ChannelBufferUtils.writeParameters;
 import static org.spout.api.util.ChannelBufferUtils.writePoint;
 import static org.spout.api.util.ChannelBufferUtils.writeQuaternion;
 import static org.spout.api.util.ChannelBufferUtils.writeString;
@@ -62,9 +68,23 @@ import static org.spout.api.util.ChannelBufferUtils.writeUUID;
 import static org.spout.api.util.ChannelBufferUtils.writeVector3;
 
 public class ChannelBufferUtilsTest {
-
+	public static final List<Parameter<?>> TEST_PARAMS = new ArrayList<Parameter<?>>();
 	static {
 		EngineFaker.setupEngine();
+
+		TEST_PARAMS.add(new Parameter<Byte>(Parameter.TYPE_BYTE, 1, (byte) 33));
+		TEST_PARAMS.add(new Parameter<Short>(Parameter.TYPE_SHORT, 2, (short) 333));
+		TEST_PARAMS.add(new Parameter<Integer>(Parameter.TYPE_INT, 3, 22));
+		TEST_PARAMS.add(new Parameter<Float>(Parameter.TYPE_FLOAT, 4, 1.23F));
+		TEST_PARAMS.add(new Parameter<String>(Parameter.TYPE_STRING, 5, "Hello World"));
+		TEST_PARAMS.add(new Parameter<ItemStack>(Parameter.TYPE_ITEM, 6, new ItemStack(BlockMaterial.SOLID_SKYBLUE, 5)));
+	}
+
+	@Test
+	public void testParameters() throws Exception {
+		ChannelBuffer buf = ChannelBuffers.dynamicBuffer();
+		writeParameters(buf, TEST_PARAMS);
+		assertEquals(TEST_PARAMS, readParameters(buf));
 	}
 
 	private static final String TEST_STRING = "This is a test String \u007Aawith symbols";

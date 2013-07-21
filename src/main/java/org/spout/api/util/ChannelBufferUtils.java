@@ -74,7 +74,7 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Writes a list of parameters (e.g. mob metadata) to the buffer.
-	 * @param buf        The buffer.
+	 * @param buf The buffer.
 	 * @param parameters The parameters.
 	 */
 	@SuppressWarnings("unchecked")
@@ -82,8 +82,11 @@ public final class ChannelBufferUtils {
 		for (Parameter<?> parameter : parameters) {
 			int type = parameter.getType();
 			int index = parameter.getIndex();
+			if (index > 0x1F) {
+				throw new IllegalArgumentException("Index has a maximum of 0x1F!");
+			}
 
-			buf.writeByte(type << 5 | index);
+			buf.writeByte(type << 5 | index & 0x1F);
 
 			switch (type) {
 				case Parameter.TYPE_BYTE:
@@ -118,11 +121,11 @@ public final class ChannelBufferUtils {
 	 * @param buf The buffer.
 	 * @return The parameters.
 	 */
-	public static List<Parameter<?>> readParameters(ChannelBuffer buf) {
+	public static List<Parameter<?>> readParameters(ChannelBuffer buf) throws IOException {
 		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
 
-		for (int b = buf.readUnsignedByte(); b != 127; ) {
-			int type = (b & 0x0E) >> 5;
+		for (int b = buf.readUnsignedByte(); b != 127; b = buf.readUnsignedByte()) {
+			int type = (b & 0xE0) >> 5;
 			int index = b & 0x1F;
 
 			switch (type) {
