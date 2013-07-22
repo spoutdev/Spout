@@ -997,8 +997,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 						chunk.updateExpiredObservers();
 						if (Spout.getPlatform() == Platform.SERVER) {
 							if (!chunk.getDataMap().getDeltaMap().isEmpty()) {
-								for (Player entity : spoutChunk.getObservingPlayers()) {
-									entity.getSession().send(new ChunkDatatableMessage(chunk));
+								for (Player entity : chunk.getObservingPlayers()) {
+									((ServerNetworkSynchronizer) entity.getSession().getNetworkSynchronizer()).sendChunkDatatable(chunk);
 								}
 								chunk.getDataMap().resetDelta();
 							}

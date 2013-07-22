@@ -55,8 +55,10 @@ import org.spout.engine.component.entity.SpoutSceneComponent;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
+import org.spout.engine.protocol.builtin.message.ChunkDatatableMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
+import org.spout.engine.world.SpoutChunk;
 
 public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 	private Point lastChunkCheck =  Point.invalid;
@@ -430,5 +432,10 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 			protocol = SpoutEntityProtocol.INSTANCE;
 		}
 		return protocol;
+	}
+
+	@Override
+	public void sendChunkDatatable(Chunk c) {
+		session.send(new ChunkDatatableMessage(((SpoutChunk) c)));
 	}
 }

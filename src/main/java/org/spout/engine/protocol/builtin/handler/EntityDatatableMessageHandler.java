@@ -58,7 +58,8 @@ public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatabl
 				case SET:
 					entity.getData().deserialize(message.getCompressedData(), false);
 					break;
-			} 
+			}
+			entity.getData().resetDelta();
 		} catch (IOException e) {
 			Spout.getLogger().log(Level.SEVERE, "Exception deserializing compressed datatable", e);
 		}
