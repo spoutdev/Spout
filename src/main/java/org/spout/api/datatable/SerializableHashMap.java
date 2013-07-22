@@ -63,6 +63,7 @@ public class SerializableHashMap implements SerializableMap {
 	// This doesn't need to be persisted across restarts
 	private static final long serialVersionUID = 1L;
 	protected final ConcurrentHashMap<String, Serializable> map;
+	public static final String NILTYPE = "NULL";
 
 
 	public SerializableHashMap() {
@@ -119,7 +120,7 @@ public class SerializableHashMap implements SerializableMap {
 			return defaultValue;
 		}
 
-		if (value == null) {
+		if (value == null || NILTYPE.equals(value)) {
 			Serializable old = putIfAbsent(keyString, (Serializable) defaultValue);
 			if (old != null) {
 				return (T) old;
@@ -162,7 +163,7 @@ public class SerializableHashMap implements SerializableMap {
 
 	@Override
 	public Serializable putIfAbsent(String key, Serializable value) {
-		if (value == null) {
+		if (value == null || NILTYPE.equals(value)) {
 			return map.remove(key);
 		}
 		return map.putIfAbsent(key, value);
@@ -170,7 +171,7 @@ public class SerializableHashMap implements SerializableMap {
 
 	@Override
 	public Serializable put(String key, Serializable value) {
-		if (value == null) {
+		if (value == null || NILTYPE.equals(value)) {
 			return map.remove(key);
 		}
 		return map.put(key, value);
@@ -482,11 +483,11 @@ public class SerializableHashMap implements SerializableMap {
 				if (e.getValue() instanceof Map && map.get(e.getKey()) instanceof Map) {
 					((Map) map.get(e.getKey())).putAll((Map) e.getValue());
 				} else {
-					map.put(e.getKey(), e.getValue());
+					put(e.getKey(), e.getValue());
 				}
 			}
 		} catch (ClassNotFoundException ex) {
-			throw new IllegalStateException("Unable to decompress SerializableHashMap");
+			throw new IllegalStateException("Unable to decompress SerializableHashMap: " + ex.getMessage());
 		}
 	}
 

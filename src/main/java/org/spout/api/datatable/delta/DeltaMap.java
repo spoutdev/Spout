@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.spout.api.datatable.SerializableHashMap;
+import org.spout.api.map.DefaultedKey;
 
 /**
  * This is a subclass of SerializableHashMap designed to mark delta elements. This is most needed for sub-maps.
@@ -91,36 +92,64 @@ public class DeltaMap extends SerializableHashMap {
 		this.type = type;
 	}
 
-	// SerializableHashMap does not permit null values, we do. Therefore, we need to override functionality
+	// SerializableHashMap does not permit null values; however, we need a niltype to show a deletion
+	// Therefore, we need to override functionality:
+	// - We never allow single reads: DeltaMap is used for whole-map updates
+	// - If we add a value, update parent to notify it that it is dirty as well
+	// - Since ConcurrentHashMap does not permit null values, we need a NILTYPE
+	// - Values should never be removed from DeltaMap: if the owner removes a value, use DeltaMap.put(key, null)
+	// - If we clear this map, the type changes to REPLACE and all elements are cleared
+
+	@Override
+	public <T extends Serializable> T get(Object key, T defaultValue) {
+		throw new UnsupportedOperationException("DeltaMap must only be read in bulk.");
+	}
+
+	@Override
+	public Serializable get(Object key) {
+		throw new UnsupportedOperationException("DeltaMap must only be read in bulk.");
+	}
+
+	@Override
+	public <T extends Serializable> T get(DefaultedKey<T> key) {
+		throw new UnsupportedOperationException("DeltaMap must only be read in bulk.");
+	}
+
+	@Override
+	public <T> T get(String key, Class<T> clazz) {
+		throw new UnsupportedOperationException("DeltaMap must only be read in bulk.");
+	}
+
+	@Override
+	public Serializable remove(String key) {
+		throw new UnsupportedOperationException("Values cannot be removed from DeltaMap");
+	}
+
 	@Override
 	public Serializable putIfAbsent(String key, Serializable value) {
 		updateParent();
+		if (value == null) value = NILTYPE;
 		return map.putIfAbsent(key, value);
 	}
 
 	@Override
 	public Serializable put(String key, Serializable value) {
 		updateParent();
+		if (value == null) value = NILTYPE;
 		return map.put(key, value);
-	}
-
-	@Override
-	public Serializable remove(String key) {
-		updateParent();
-		return map.remove(key);
 	}
 
 	@Override
 	public void clear() {
 		updateParent();
-		for (String key : map.keySet()) {
-			map.put(key, null);
-		}
+		setType(DeltaMap.DeltaType.REPLACE);
+		map.clear();
 	}
 
 	@Override
 	public void deserialize(byte[] data, boolean wipe) throws IOException {
 		updateParent();
+		if (wipe) setType(DeltaType.REPLACE);
 		super.deserialize(data, wipe);
 	}
 	

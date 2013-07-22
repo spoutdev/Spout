@@ -73,4 +73,8 @@ public class ServerNullNetworkSynchronizer extends ServerNetworkSynchronizer {
 	@Override
 	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
 	}
+
+	@Override
+	public void sendChunkDatatable(Chunk c) {
+	}
 }

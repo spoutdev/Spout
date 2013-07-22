@@ -160,6 +160,8 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 
 	protected abstract Collection<Chunk> doSendChunk(Chunk c);
 
+	public abstract void sendChunkDatatable(Chunk c);
+
 	/**
 	 * Inits a chunk on the client.
 	 *

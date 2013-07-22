@@ -67,10 +67,7 @@ public class ManagedHashMap extends SerializableHashMap implements ManagedMap {
 
 	@Override
 	public void clear() {
-		for (String s : map.keySet()) {
-			delta.setType(DeltaMap.DeltaType.REPLACE);
-			delta.clear();
-		}
+		delta.clear();
 		map.clear();
 	}
 
