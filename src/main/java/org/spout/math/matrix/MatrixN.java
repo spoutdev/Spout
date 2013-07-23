@@ -585,14 +585,22 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 	 * @param size The size of the matrix, minimum of 4
 	 * @param fov The field of view in the x direction
 	 * @param aspect The aspect ratio, usually width/height
-	 * @param zNear The near plane, cannot be 0
-	 * @param zFar the far plane, zFar cannot equal zNear
+	 * @param near The near plane, cannot be 0
+	 * @param far the far plane, zFar cannot equal zNear
 	 * @return A perspective projection matrix built from the given values
 	 */
-	public static MatrixN createPerspective(int size, float fov, float aspect, float zNear, float zFar) {
-		final float yMax = zNear * TrigMath.tan(fov * (float) TrigMath.HALF_DEG_TO_RAD);
-		final float xMax = yMax * aspect;
-		return createOrthographic(size, xMax, -xMax, yMax, -yMax, zNear, zFar);
+	public static MatrixN createPerspective(int size, float fov, float aspect, float near, float far) {
+		if (size < 4) {
+			throw new IllegalArgumentException("Minimum matrix size is 4");
+		}
+		final MatrixN perspective = new MatrixN(size);
+		final float scale = 1 / TrigMath.tan(fov * (float) TrigMath.HALF_DEG_TO_RAD);
+		perspective.set(0, 0, scale / aspect);
+		perspective.set(1, 1, scale);
+		perspective.set(2, 2, (far + near) / (near - far));
+		perspective.set(2, 3, 2 * far * near / (near - far));
+		perspective.set(3, 2, -1);
+		return perspective;
 	}
 
 	// TODO: add double overload
@@ -615,18 +623,12 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 			throw new IllegalArgumentException("Minimum matrix size is 4");
 		}
 		final MatrixN orthographic = new MatrixN(size);
-		final float near2 = 2 * near;
-		final float RmL = right - left;
-		final float TmB = top - bottom;
-		final float FmN = far - near;
-		orthographic.set(0, 0, near2 / RmL);
-		orthographic.set(1, 1, near2 / TmB);
-		orthographic.set(2, 0, (right + left) / RmL);
-		orthographic.set(2, 1, (top + bottom) / TmB);
-		orthographic.set(2, 2, (-far - near) / FmN);
-		orthographic.set(3, 2, -1);
-		orthographic.set(2, 3, -near2 * far / FmN);
-		orthographic.set(3, 3, 1);
+		orthographic.set(0, 0, 2 / (right - left));
+		orthographic.set(1, 1, 2 / (top - bottom));
+		orthographic.set(2, 2, -2 / (far - near));
+		orthographic.set(0, 3, -(right + left) / (right - left));
+		orthographic.set(1, 3, -(top + bottom) / (top - bottom));
+		orthographic.set(2, 3, -(far + near) / (far - near));
 		return orthographic;
 	}
 

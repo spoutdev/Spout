@@ -646,14 +646,17 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 	 *
 	 * @param fov The field of view in the x direction
 	 * @param aspect The aspect ratio, usually width/height
-	 * @param zNear The near plane, cannot be 0
-	 * @param zFar the far plane, zFar cannot equal zNear
+	 * @param near The near plane, cannot be 0
+	 * @param far the far plane, far cannot equal near
 	 * @return A perspective projection matrix built from the given values
 	 */
-	public static Matrix4 createPerspective(float fov, float aspect, float zNear, float zFar) {
-		final float yMax = zNear * TrigMath.tan(fov * (float) TrigMath.HALF_DEG_TO_RAD);
-		final float xMax = yMax * aspect;
-		return createOrthographic(xMax, -xMax, yMax, -yMax, zNear, zFar);
+	public static Matrix4 createPerspective(float fov, float aspect, float near, float far) {
+		final float scale = 1 / TrigMath.tan(fov * (float) TrigMath.HALF_DEG_TO_RAD);
+		return new Matrix4(
+				scale / aspect, 0, 0, 0,
+				0, scale, 0, 0,
+				0, 0, (far + near) / (near - far), 2 * far * near / (near - far),
+				0, 0, -1, 1);
 	}
 
 	// TODO: add double overload
@@ -671,15 +674,11 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 	 */
 	public static Matrix4 createOrthographic(float right, float left, float top, float bottom,
 											 float near, float far) {
-		final float near2 = 2 * near;
-		final float RmL = right - left;
-		final float TmB = top - bottom;
-		final float FmN = far - near;
 		return new Matrix4(
-				near2 / RmL, 0, 0, 0,
-				0, near2 / TmB, 0, 0,
-				(right + left) / RmL, (top + bottom) / TmB, (-far - near) / FmN, -near2 * far / FmN,
-				0, 0, -1, 1);
+				2 / (right - left), 0, 0, -(right + left) / (right - left),
+				0, 2 / (top - bottom), 0, -(top + bottom) / (top - bottom),
+				0, 0, -2 / (far - near), -(far + near) / (far - near),
+				0, 0, 0, 1);
 	}
 
 	private static float det3(float m00, float m01, float m02,
