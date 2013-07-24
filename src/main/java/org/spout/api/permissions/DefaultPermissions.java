@@ -40,6 +40,8 @@ import org.spout.cereal.config.ConfigurationHolderConfiguration;
 import org.spout.cereal.config.yaml.YamlConfiguration;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -54,7 +56,7 @@ import java.util.logging.Level;
 
 public class DefaultPermissions extends ConfigurationHolderConfiguration implements Listener {
 	private final ConfigurationHolder ENABLED = new ConfigurationHolder(true, "enabled");
-	private final ConfigurationHolder DEFAULTS = new ConfigurationHolder("spout.*", "defaults");
+	private final ConfigurationHolder DEFAULTS = new ConfigurationHolder(new ArrayList<>(Arrays.asList("spout.*")), "defaults");
 
 	private final Engine engine;
 	private final YamlConfiguration config;
