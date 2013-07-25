@@ -67,6 +67,18 @@
 		<url>https://spoutdev.atlassian.net/browse/SPOUT</url>
 	</issueManagement>
 
+	<!-- Dependency repositories -->
+	<repositories>
+		<repository>
+			<id>spout-repo</id>
+			<url>http://nexus.spout.org/content/groups/public/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<!-- Project dependencies -->
 	<dependencies>
 		<!-- Testing only -->
