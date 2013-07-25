@@ -1,0 +1,8 @@
+version: 1.0
+description: Dummy Description
+website: www.example.com
+main: com.example
+load: startup
+platform: ALL
+data:
+    test_key: testData

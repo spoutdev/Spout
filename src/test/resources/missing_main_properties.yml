@@ -1,0 +1,6 @@
+name: TestProperties
+version: 2.0
+description: Dummy Description
+website: www.example.com
+authors: [JohnDoe, JaneDoe]
+platform: CLIENT

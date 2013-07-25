@@ -1,0 +1,134 @@
+/*
+ * This file is part of SpoutAPI.
+ *
+ * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * SpoutAPI is licensed under the Spout License Version 1.
+ *
+ * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
+package org.spout.api.util.map.concurrent;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Random;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class AtomicShortArrayTest {
+	private final static int LENGTH = 10000;
+
+	private AtomicShortArray array = new AtomicShortArray(LENGTH);
+
+	private short[] arrayData;
+	private int[] arrayIndex;
+
+	@Before
+	public void setUp() {
+		Random rand = new Random();
+
+		arrayData = new short[LENGTH];
+		arrayIndex = new int[LENGTH];
+
+		for (int i = 0; i < LENGTH; i++) {
+			arrayData[i] = (short)rand.nextInt();
+			arrayIndex[i] = i;
+		}
+
+		shuffle(arrayIndex);
+	}
+
+	private void shuffle(int[] deck) {
+		Random rand = new Random();
+
+		for (int placed = 0; placed < deck.length; placed++) {
+			int remaining = deck.length - placed;
+			int newIndex = rand.nextInt(remaining);
+			swap(deck, placed, newIndex + placed);
+		}
+	}
+
+	private void swap(int[] array, int i1, int i2) {
+		int temp = array[i1];
+		array[i1] = array[i2];
+		array[i2] = temp;
+	}
+
+	private void testContents(AtomicShortArray array, short[] data) {
+		Random rand = new Random();
+		for (int i = 0; i < data.length; i++) {
+			assertEquals(data[i], array.get(i));
+			short rval = (short) rand.nextInt(Short.MAX_VALUE);
+			array.set(i, rval);
+			assertEquals(rval, array.get(i));
+		}
+	}
+
+	@Test
+	public void testInitialConstr() {
+		// length = 7
+		short[] data = new short[] {0, Short.MAX_VALUE, Short.MIN_VALUE, 12, 66, -23, -661};
+		AtomicShortArray array = new AtomicShortArray(data.length, data);
+		testContents(array, data);
+		// length = 8
+		data = new short[] {0, Short.MAX_VALUE, Short.MIN_VALUE, 12, 66, -23, -661, 55};
+		array = new AtomicShortArray(data.length, data);
+		testContents(array, data);
+		// null check
+		array = new AtomicShortArray(1, null);
+		array.set(0, (short) 12);
+		assertEquals(array.get(0), (short) 12);
+		array = null;
+	}
+
+	@Test
+	public void testArray() {
+		Random rand = new Random();
+
+		for (int i = 0; i < LENGTH; i++) {
+			int index = arrayIndex[i];
+			array.set(index, arrayData[index]);
+		}
+
+		for (int i = 0; i < LENGTH; i++) {
+			assertTrue("Array data mismatch", array.get(i) == arrayData[i]);
+		}
+
+		for (int i = 0; i < LENGTH; i++) {
+			compareAndSetTrue(rand.nextInt(LENGTH), (short)rand.nextInt());
+			compareAndSetFalse(rand.nextInt(LENGTH), (short)rand.nextInt());
+		}
+
+		for (int i = 0; i < LENGTH; i++) {
+			assertTrue("Array data mismatch after compare and set updates", array.get(i) == arrayData[i]);
+		}
+	}
+
+	private void compareAndSetTrue(int index, short value) {
+		assertTrue("Compare and set attempt failed, expected value incorrect", array.compareAndSet(index, arrayData[index], value));
+		arrayData[index] = value;
+	}
+
+	private void compareAndSetFalse(int index, short value) {
+		assertTrue("Compare and set attempt succeeded when it should have failed", !array.compareAndSet(index, (short)(1 + arrayData[index]), value));
+	}
+}

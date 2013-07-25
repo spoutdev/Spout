@@ -1,0 +1,8 @@
+nextId: 3
+ids:
+  1:
+    class: org.spout.api.lang.LanguageTest
+    string: Testing %0!
+  2: 
+    class: org.spout.api.lang.LanguageTest
+    string: 'We have got %n item(s)'

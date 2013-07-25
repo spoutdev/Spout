@@ -1,0 +1,7 @@
+name: TestProperties
+version: 1.0
+description: Dummy Description
+website: www.example.com
+author: JohnDoe
+main: com.example
+load: startup
