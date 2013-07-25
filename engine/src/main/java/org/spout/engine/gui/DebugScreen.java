@@ -55,7 +55,7 @@ import org.spout.api.render.SpoutRenderMaterials;
  * color on the screen, setSprite(new Color(r, g, b, a)) to whatever you like and setSource(new Rectangle(0f, 0f, 0f, 0f)). This will render your entire sprite with the color you chose!
  */
 public class DebugScreen extends Screen implements DebugHud {
-	// The Internal Spout-dummy plugin
+	// The internal Spout-dummy plugin
 	private final SpoutMetaPlugin plugin;
 	// Spout's debug messages
 	private final Map<Integer, Widget> spoutMessages = new HashMap<Integer, Widget>();
@@ -88,7 +88,8 @@ public class DebugScreen extends Screen implements DebugHud {
 	/**
 	 * Spout can display more than one line
 	 *
-	 * @param id, arg
+	 * @param id
+	 * @param arg
 	 */
 	public void spoutUpdate(int id, String arg) {
 		if (spoutMessages.containsKey(id)) {

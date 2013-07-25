@@ -109,9 +109,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	private ParallelTaskInfo parallelInfo;
 
 	/**
-	 * Creates a new task with the specified number of ticks between consecutive calls to {@link #execute()}.
-	 *
-	 * @param ticks The number of ticks.
+	 * Creates a new task with the specified period between consecutive calls to {@link #pulse()}.
 	 */
 	public SpoutTask(TaskManager manager, Scheduler scheduler, Object owner, Runnable task, boolean sync, long delay, long period, TaskPriority priority, boolean longLife) {
 		this.taskId = nextTaskId.getAndIncrement();
