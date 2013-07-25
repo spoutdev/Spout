@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -31,8 +31,7 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 
 /**
- * A hash set that uses three 21bit integers as key, backed by a long trove
- * hashset. 1 bit is wasted.
+ * A hash set that uses three 21bit integers as key, backed by a long trove hashset. 1 bit is wasted.
  */
 public class TInt21HashSet {
 	protected final TLongSet set;
@@ -55,8 +54,6 @@ public class TInt21HashSet {
 
 	/**
 	 * Creates a new <code>TInt21HashSet</code> instance backend by <code>set</code>
-	 *
-	 * @param set
 	 */
 	public TInt21HashSet(TLongSet set) {
 		if (set == null) {
@@ -69,11 +66,11 @@ public class TInt21HashSet {
 	/**
 	 * Insert <code>key(x, y, z)</code> into the backend set.
 	 *
-	 * @see #key(int, int, int)
 	 * @param x an <code>int</code> value
 	 * @param y an <code>int</code> value
 	 * @param z an <code>int</code> value
 	 * @return <code>true</code> if the set was modified by the add operation
+	 * @see #key(int, int, int)
 	 */
 	public boolean add(int x, int y, int z) {
 		long key = key(x, y, z);
@@ -83,11 +80,11 @@ public class TInt21HashSet {
 	/**
 	 * Returns <code>true</code> if the backend set contains <code>key(x, y, z)</code>.
 	 *
-	 * @see #key(int, int, int)
 	 * @param x an <code>int</code> value
 	 * @param y an <code>int</code> value
 	 * @param z an <code>int</code> value
 	 * @return <code>true</code> if the backend set contains <code>key(x, y, z)</code.
+	 * @see #key(int, int, int)
 	 */
 	public boolean contains(int x, int y, int z) {
 		long key = key(x, y, z);
@@ -111,8 +108,7 @@ public class TInt21HashSet {
 	}
 
 	/**
-	 * Creates an iterator over the values of the set.
-	 * The iterator supports element deletion.
+	 * Creates an iterator over the values of the set. The iterator supports element deletion.
 	 *
 	 * @return an <code>TLongIterator</code> value.
 	 */
@@ -123,11 +119,11 @@ public class TInt21HashSet {
 	/**
 	 * Removes <code>key(x, y, z)</code>} from the backend set.
 	 *
-	 * @see #key(int, int, int)
 	 * @param x an <code>int</code> value
 	 * @param y an <code>int</code> value
 	 * @param z an <code>int</code> value
 	 * @return true if the backend set was modified by the remove operation.
+	 * @see #key(int, int, int)
 	 */
 	public boolean remove(int x, int y, int z) {
 		long key = key(x, y, z);
@@ -135,8 +131,7 @@ public class TInt21HashSet {
 	}
 
 	/**
-	 * Returns the number of elements in the backend set (its cardinality).
-	 * If the backend set contains more than <code>Integer.MAX_VALUE</code> elements, returns <code>Integer.MAX_VALUE</code>.
+	 * Returns the number of elements in the backend set (its cardinality). If the backend set contains more than <code>Integer.MAX_VALUE</code> elements, returns <code>Integer.MAX_VALUE</code>.
 	 *
 	 * @return the number of elements in the backend set (its cardinality).
 	 */
@@ -145,14 +140,9 @@ public class TInt21HashSet {
 	}
 
 	/**
-	 * Returns an array containing all of the elements in the backend set.
-	 * If the backend set makes any guarantees as to what order its elements are returned by its iterator, this method must return the elements in the same order.
-	 * <p>
-	 * The returned array will be "safe" in that no references to it are maintained by the backend set.
-	 * (In other words, this method must allocate a new array even if the backend set is backed by an array).
-	 * The caller is thus free to modify the returned array.
-	 * <p>
-	 * This method acts as bridge between array-based and collection-based APIs.
+	 * Returns an array containing all of the elements in the backend set. If the backend set makes any guarantees as to what order its elements are returned by its iterator, this method must return the
+	 * elements in the same order. <p> The returned array will be "safe" in that no references to it are maintained by the backend set. (In other words, this method must allocate a new array even if the
+	 * backend set is backed by an array). The caller is thus free to modify the returned array. <p> This method acts as bridge between array-based and collection-based APIs.
 	 *
 	 * @return an array containing all the elements in the backend set.
 	 */

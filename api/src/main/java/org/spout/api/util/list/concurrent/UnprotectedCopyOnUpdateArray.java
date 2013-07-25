@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,21 +33,16 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * An unprotected array that uses copy on update for array updating.  
- * The internal array is returned directly from getArray().  
- * For proper operation, this array must not be mutated. 
- * 
- * @param <T>
+ * An unprotected array that uses copy on update for array updating. The internal array is returned directly from getArray(). For proper operation, this array must not be mutated.
  */
 public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
-	
 	private final AtomicReference<T[]> ref;
 	private final Class<?> clazz;
 	private final boolean asSet;
-	
+
 	/**
 	 * Creates an empty UnprotectedCopyOnUpdateArray
-	 * 
+	 *
 	 * @param the component class
 	 */
 	public UnprotectedCopyOnUpdateArray(Class<?> clazz) {
@@ -58,10 +53,10 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 		}
 		asSet = false;
 	}
-	
+
 	/**
 	 * Creates an empty UnprotectedCopyOnUpdateArray
-	 * 
+	 *
 	 * @param the component class
 	 * @param asSet duplicate elements are rejected, if true
 	 */
@@ -73,34 +68,28 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 		}
 		this.asSet = asSet;
 	}
-	
+
 	/**
-	 * Creates an UnprotectedCopyOnUpdateArray using the given array as the initial array.<br>
-	 * <br>
-	 * This array is used directly as the internal array, so should not be mutated.
-	 * 
+	 * Creates an UnprotectedCopyOnUpdateArray using the given array as the initial array.<br> <br> This array is used directly as the internal array, so should not be mutated.
+	 *
 	 * @param the component class
-	 * @param initial
 	 */
 	public UnprotectedCopyOnUpdateArray(Class<?> clazz, T[] initial) {
 		this(clazz);
 		ref.set(initial);
 	}
-	
+
 	/**
-	 * Creates an UnprotectedCopyOnUpdateArray using the given array as the initial array.<br>
-	 * <br>
-	 * This array is used directly as the internal array, so should not be mutated.
-	 * 
+	 * Creates an UnprotectedCopyOnUpdateArray using the given array as the initial array.<br> <br> This array is used directly as the internal array, so should not be mutated.
+	 *
 	 * @param the component class
-	 * @param initial
 	 * @param asSet duplicate elements are rejected, if true
 	 */
 	public UnprotectedCopyOnUpdateArray(Class<?> clazz, T[] initial, boolean asSet) {
 		this(clazz, asSet);
 		ref.set(initial);
 	}
-	
+
 	@Override
 	public boolean add(T value) {
 		boolean success = false;
@@ -121,7 +110,7 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public int size() {
 		return ref.get().length;
@@ -153,7 +142,7 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 		return ref.get();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T2> T2[] toArray(T2[] a) {
 		return (T2[]) ref.get();
@@ -179,7 +168,7 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 			}
 			if (removed) {
 				for (; i < newArray.length; i++) {
-					newArray[i] = oldArray[j++]; 
+					newArray[i] = oldArray[j++];
 				}
 			} else {
 				if (!isEquals(o, oldArray[j])) {
@@ -188,12 +177,13 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 			}
 			success = ref.compareAndSet(oldArray, newArray);
 		}
-		return true;	}
+		return true;
+	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		@SuppressWarnings("rawtypes")
+		@SuppressWarnings ("rawtypes")
 		LinkedHashSet s = new LinkedHashSet();
 		for (Object o : c) {
 			s.add(o);
@@ -227,25 +217,24 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 		ref.set(newArray(0));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	private T[] newArray(int length) {
 		return (T[]) Array.newInstance(clazz, length);
 	}
-	
+
 	private static boolean isEquals(Object o1, Object o2) {
 		return o1 == o2 || (o1 != null && o1.equals(o2));
 	}
-	
-	private class ArrayIterator implements Iterator<T> {
 
+	private class ArrayIterator implements Iterator<T> {
 		private final T[] array;
 		int i;
-		
+
 		public ArrayIterator(T[] array) {
 			this.array = array;
 			i = 0;
 		}
-		
+
 		@Override
 		public boolean hasNext() {
 			return i < array.length;
@@ -260,7 +249,5 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
-		
 	}
-
 }

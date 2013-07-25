@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,11 +34,10 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 
-public class CubeMeshFactory{
-
-	public static OrientedMesh generateCubeMesh(Vector2 [][] uvs){
+public class CubeMeshFactory {
+	public static OrientedMesh generateCubeMesh(Vector2[][] uvs) {
 		ArrayList<OrientedMeshFace> list = new ArrayList<OrientedMeshFace>(12);
-		
+
 		Vector3 vertex0 = new Vector3(0, 0, 0);
 		Vector3 vertex1 = new Vector3(0, 1, 0);
 		Vector3 vertex2 = new Vector3(1, 1, 0);
@@ -59,7 +58,7 @@ public class CubeMeshFactory{
 		 *          /
 		 *         Z - East < WEST
 		 */
-		
+
 		v1 = Vertex.createVertexPositionNormaTexture0(vertex1, BlockFace.TOP.getOffset(), getUV(uvs, 0, 3));
 		v2 = Vertex.createVertexPositionNormaTexture0(vertex2, BlockFace.TOP.getOffset(), getUV(uvs, 0, 2));
 		v3 = Vertex.createVertexPositionNormaTexture0(vertex6, BlockFace.TOP.getOffset(), getUV(uvs, 0, 1));
@@ -101,13 +100,12 @@ public class CubeMeshFactory{
 		v4 = Vertex.createVertexPositionNormaTexture0(vertex4, BlockFace.WEST.getOffset(), getUV(uvs, 5, 1));
 		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.WEST))));
 		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.WEST))));
-		
+
 		return new OrientedMesh(list);
 	}
 
-	private static Vector2 getUV(Vector2 [][] uvs, int face, int vertex) {
+	private static Vector2 getUV(Vector2[][] uvs, int face, int vertex) {
 		int i = face % uvs.length; //Allow to render all face of a cube with a one face specified
 		return uvs[i][vertex % uvs[i].length];
 	}
-
 }

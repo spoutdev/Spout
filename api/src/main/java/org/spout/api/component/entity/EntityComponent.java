@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -35,8 +35,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.entity.EntityCollideEvent;
 import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.GenericMath;
 
 /**
@@ -58,6 +56,7 @@ public abstract class EntityComponent extends Component {
 
 	/**
 	 * Returns a deterministic random number generator
+	 *
 	 * @return random the random generator
 	 */
 	public final Random getRandom() {
@@ -72,27 +71,20 @@ public abstract class EntityComponent extends Component {
 	}
 
 	/**
-	 * Called when the owner is spawned into the {@link org.spout.api.geo.World}.
-	 * <p>
-	 * This should be used for setting up the owner with initial logic as the owner is
-	 * only spawned once. For executing logic that happens each time the owner is attached
-	 * with this EntityComponent, {@see org.spout.api.component.Component #onAttached()}.
+	 * Called when the owner is spawned into the {@link org.spout.api.geo.World}. <p> This should be used for setting up the owner with initial logic as the owner is only spawned once. For executing
+	 * logic that happens each time the owner is attached with this EntityComponent, {@see org.spout.api.component.Component #onAttached()}.
 	 */
 	public void onSpawned(final EntitySpawnEvent event) {
 	}
 
 	/**
-	 * Called when the owner comes within range of another owner with an attached {@link ObserverComponent}.
-	 * <p>
-	 * TODO EntityObservedEvent
+	 * Called when the owner comes within range of another owner with an attached {@link ObserverComponent}. <p> TODO EntityObservedEvent
 	 */
 	public void onObserved() {
 	}
 
 	/**
-	 * Called when the owner is out of range of any owners with attached {@link ObserverComponent}s.
-	 * <p>
-	 * TODO EntityUnObservedEvent
+	 * Called when the owner is out of range of any owners with attached {@link ObserverComponent}s. <p> TODO EntityUnObservedEvent
 	 */
 	public void onUnObserved() {
 	}
@@ -106,6 +98,7 @@ public abstract class EntityComponent extends Component {
 
 	/**
 	 * Called when the owner is interacted.
+	 *
 	 * @param event {@see org.spout.api.event.entity.EntityInteractEvent}
 	 */
 	public void onInteract(final EntityInteractEvent<?> event) {

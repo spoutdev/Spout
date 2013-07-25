@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,6 +32,7 @@ package org.spout.api.math;
 public class ComplexMath {
 	/**
 	 * Returns the length squared of the given Complex
+	 *
 	 * @param a The complex
 	 * @return The square of the length
 	 */
@@ -40,8 +41,8 @@ public class ComplexMath {
 	}
 
 	/**
-	 * Returns the length of the given Comlex <br/> <br/> Note: Uses
-	 * Math.sqrt.
+	 * Returns the length of the given Comlex <br/> <br/> Note: Uses Math.sqrt.
+	 *
 	 * @param a The complex
 	 * @return length of the complex
 	 */
@@ -50,8 +51,8 @@ public class ComplexMath {
 	}
 
 	/**
-	 * Constructs and returns a new Complex that is the given Complex but
-	 * with a length of 1
+	 * Constructs and returns a new Complex that is the given Complex but with a length of 1
+	 *
 	 * @param a The Complex
 	 * @return normalized Complex
 	 */
@@ -62,6 +63,7 @@ public class ComplexMath {
 
 	/**
 	 * Constructs and returns a new Complex that is A * B
+	 *
 	 * @param a The left Complex
 	 * @param b The right Complex
 	 * @return The product Complex of left times b
@@ -76,7 +78,7 @@ public class ComplexMath {
 
 	/**
 	 * Creates a Complex from an angle
-	 * @param angle
+	 *
 	 * @return The Complex representation or the angle
 	 */
 	public static Complex rotation(float angle) {
@@ -84,8 +86,8 @@ public class ComplexMath {
 	}
 
 	/**
-	 * Constructs and returns a new Complex that is rotated about the axis
-	 * and angle
+	 * Constructs and returns a new Complex that is rotated about the axis and angle
+	 *
 	 * @param a The Complex
 	 * @param angle The angle
 	 * @return The rotated Complex
@@ -96,6 +98,7 @@ public class ComplexMath {
 
 	/**
 	 * Returns the rotation between two vectors.
+	 *
 	 * @param a The first vector
 	 * @param b The second vector
 	 * @return the rotation between both vectors

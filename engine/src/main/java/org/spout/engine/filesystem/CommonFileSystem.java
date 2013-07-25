@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -52,12 +52,11 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.Executor;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.SpoutRuntimeException;
-import org.spout.api.resource.ResourceNotFoundException;
-import org.spout.api.resource.ResourcePathResolver;
 import org.spout.api.resource.FileSystem;
 import org.spout.api.resource.LoaderNotFoundException;
 import org.spout.api.resource.ResourceLoader;
-
+import org.spout.api.resource.ResourceNotFoundException;
+import org.spout.api.resource.ResourcePathResolver;
 import org.spout.engine.filesystem.path.FilePathResolver;
 import org.spout.engine.filesystem.path.JarFilePathResolver;
 import org.spout.engine.filesystem.path.ZipFilePathResolver;
@@ -71,7 +70,6 @@ public abstract class CommonFileSystem implements FileSystem {
 	public static final File UPDATES_DIRECTORY = new File("updates");
 	public static final File DATA_DIRECTORY = new File("data");
 	public static final File WORLDS_DIRECTORY = new File("worlds");
-
 	protected final Set<ResourceLoader> loaders = new HashSet<ResourceLoader>();
 	protected final Map<URI, Object> loadedResources = new HashMap<URI, Object>();
 	protected final List<ResourcePathResolver> pathResolvers = new ArrayList<ResourcePathResolver>();
@@ -79,13 +77,27 @@ public abstract class CommonFileSystem implements FileSystem {
 	protected boolean initialized;
 
 	private void createDirs() {
-		if (!PLUGINS_DIRECTORY.exists()) PLUGINS_DIRECTORY.mkdirs();
-		if (!RESOURCES_DIRECTORY.exists()) RESOURCES_DIRECTORY.mkdirs();
-		if (!CACHE_DIRECTORY.exists()) CACHE_DIRECTORY.mkdirs();
-		if (!CONFIG_DIRECTORY.exists()) CONFIG_DIRECTORY.mkdirs();
-		if (!UPDATES_DIRECTORY.exists()) UPDATES_DIRECTORY.mkdirs();
-		if (!DATA_DIRECTORY.exists()) DATA_DIRECTORY.mkdirs();
-		if (!WORLDS_DIRECTORY.exists()) WORLDS_DIRECTORY.mkdirs();
+		if (!PLUGINS_DIRECTORY.exists()) {
+			PLUGINS_DIRECTORY.mkdirs();
+		}
+		if (!RESOURCES_DIRECTORY.exists()) {
+			RESOURCES_DIRECTORY.mkdirs();
+		}
+		if (!CACHE_DIRECTORY.exists()) {
+			CACHE_DIRECTORY.mkdirs();
+		}
+		if (!CONFIG_DIRECTORY.exists()) {
+			CONFIG_DIRECTORY.mkdirs();
+		}
+		if (!UPDATES_DIRECTORY.exists()) {
+			UPDATES_DIRECTORY.mkdirs();
+		}
+		if (!DATA_DIRECTORY.exists()) {
+			DATA_DIRECTORY.mkdirs();
+		}
+		if (!WORLDS_DIRECTORY.exists()) {
+			WORLDS_DIRECTORY.mkdirs();
+		}
 	}
 
 	@Override
@@ -130,8 +142,9 @@ public abstract class CommonFileSystem implements FileSystem {
 						}
 
 						// specified plugin is not pending
-						if (!requestedInstallations.containsKey(plugin))
+						if (!requestedInstallations.containsKey(plugin)) {
 							throw new CommandException("There is no install pending for that plugin.");
+						}
 
 						// allow or disallow the specified plugin
 						if (arg.equalsIgnoreCase("allow")) {
@@ -268,7 +281,7 @@ public abstract class CommonFileSystem implements FileSystem {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	private <R> R tryCast(Object obj, String scheme) {
 		try {
 			return (R) obj;
@@ -385,7 +398,9 @@ public abstract class CommonFileSystem implements FileSystem {
 						jar = new JarFile(file);
 						if (jar.getJarEntry("properties.yml") == null && jar.getJarEntry("plugin.yml") == null) {
 							source.sendMessage("The downloaded file has no valid plugin description file, marking file to be deleted.");
-							if (!file.delete()) file.deleteOnExit();
+							if (!file.delete()) {
+								file.deleteOnExit();
+							}
 							return;
 						}
 
@@ -397,14 +412,18 @@ public abstract class CommonFileSystem implements FileSystem {
 					} finally {
 						// close the jar
 						try {
-							if (jar != null) jar.close();
+							if (jar != null) {
+								jar.close();
+							}
 						} catch (IOException e) {
 							Spout.getLogger().log(Level.WARNING, "Error closing JAR file", e);
 						}
 
 						// close the input stream
 						try {
-							if (in != null) in.close();
+							if (in != null) {
+								in.close();
+							}
 						} catch (IOException e) {
 							Spout.getLogger().log(Level.WARNING, "Error closing plugin stream", e);
 						}
@@ -423,10 +442,12 @@ public abstract class CommonFileSystem implements FileSystem {
 	@Override
 	public void requestPluginInstall(String name, URI uri) {
 		// TODO: Restrict to Spout Hub only?
-		if (name == null)
+		if (name == null) {
 			throw new IllegalArgumentException("Plugin name cannot be null");
-		if (uri == null)
+		}
+		if (uri == null) {
 			throw new IllegalArgumentException("URI cannot be null");
+		}
 		requestedInstallations.put(name, uri);
 	}
 }

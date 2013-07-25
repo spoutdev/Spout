@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -59,7 +59,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
-
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.component.entity.SpoutModelComponent;
@@ -70,7 +69,6 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
 import org.spout.engine.util.thread.snapshotable.SnapshotableInt;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutChunk;
-import org.spout.engine.world.SpoutRegion;
 
 public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = Integer.MIN_VALUE;
@@ -97,7 +95,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	private Class<? extends Component>[] initialComponents = null;
 
 	public SpoutEntity(Engine engine, Transform transform) {
-		this(engine, transform, -1, null, true, (byte[])null, (Class<? extends Component>[]) null);
+		this(engine, transform, -1, null, true, (byte[]) null, (Class<? extends Component>[]) null);
 	}
 
 	public SpoutEntity(Engine engine, Point point) {
@@ -105,11 +103,11 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	public SpoutEntity(Engine engine, Point point, boolean load) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE),  -1, null, load, (byte[])null, (Class<? extends Component>[]) null);
+		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), -1, null, load, (byte[]) null, (Class<? extends Component>[]) null);
 	}
 
 	protected SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
-		this(engine, transform, viewDistance, uid, load, (byte[])null, components);
+		this(engine, transform, viewDistance, uid, load, (byte[]) null, components);
 		this.getData().putAll(dataMap);
 	}
 
@@ -124,7 +122,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 		id.set(NOTSPAWNEDID);
 		this.engine = engine;
-		
+
 		observer.set(NOT_OBSERVING);
 		physics = (SpoutPhysicsComponent) add(PhysicsComponent.class);
 
@@ -185,7 +183,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	@Override
-	public  <T extends Component> T detach(Class<? extends Component> type) {
+	public <T extends Component> T detach(Class<? extends Component> type) {
 		if (type.equals(ModelComponent.class)) {
 			T component = super.detach(type);
 			if (getEngine() instanceof SpoutClient) {
@@ -303,7 +301,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		int cx = p.getChunkX();
 		int cy = p.getChunkY();
 		int cz = p.getChunkZ();
-		
+
 		HashSet<SpoutChunk> observing = new HashSet<SpoutChunk>((viewDistance * viewDistance * viewDistance * 3) / 2);
 		Iterator<IntVector3> itr = observer.getLive();
 		if (itr == OBSERVING) {
@@ -393,7 +391,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	public void setObserver(boolean obs) {
 		observer.set(obs ? OBSERVING : NOT_OBSERVING);
 	}
-	
+
 	@Override
 	public void setObserver(Iterator<IntVector3> custom) {
 		if (custom == null) {

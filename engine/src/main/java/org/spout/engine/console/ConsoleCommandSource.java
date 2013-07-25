@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -39,7 +39,6 @@ import org.spout.api.geo.World;
 import org.spout.api.lang.Locale;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Session;
-
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 
@@ -97,7 +96,7 @@ public class ConsoleCommandSource implements CommandSource {
 				}
 				session.send(msg);
 				break;
-	}
+		}
 	}
 
 	@Override

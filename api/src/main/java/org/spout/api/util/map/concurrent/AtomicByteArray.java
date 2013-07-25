@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -121,8 +121,7 @@ public class AtomicByteArray implements Serializable {
 	}
 
 	/**
-	 * Sets the element at the given index, but only if the previous value was
-	 * the expected value.
+	 * Sets the element at the given index, but only if the previous value was the expected value.
 	 *
 	 * @param index the index
 	 * @param expected the expected value
@@ -169,11 +168,9 @@ public class AtomicByteArray implements Serializable {
 	}
 
 	/**
-	 * Gets an array containing all the values in the array. The returned values
-	 * are not guaranteed to be from the same time instant.
+	 * Gets an array containing all the values in the array. The returned values are not guaranteed to be from the same time instant.
 	 *
-	 * If an array is provided and it is the correct length, then that array
-	 * will be used as the destination array.
+	 * If an array is provided and it is the correct length, then that array will be used as the destination array.
 	 *
 	 * @param array the provided array
 	 * @return an array containing the values in the array
@@ -207,8 +204,7 @@ public class AtomicByteArray implements Serializable {
 	}
 
 	/**
-	 * Sets an element to the given value, but the update may not happen
-	 * immediately
+	 * Sets an element to the given value, but the update may not happen immediately
 	 *
 	 * @param index the index
 	 * @param value the new value
@@ -218,8 +214,7 @@ public class AtomicByteArray implements Serializable {
 	}
 
 	/**
-	 * Sets the element at the given index, but only if the previous value was
-	 * the expected value. This may fail spuriously.
+	 * Sets the element at the given index, but only if the previous value was the expected value. This may fail spuriously.
 	 *
 	 * @param index the index
 	 * @param expected the expected value

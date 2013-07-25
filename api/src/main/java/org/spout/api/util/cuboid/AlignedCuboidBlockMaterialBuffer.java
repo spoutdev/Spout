@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,24 +30,23 @@ import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector3;
 
 public class AlignedCuboidBlockMaterialBuffer extends CuboidBlockMaterialBuffer {
-	
 	private final int xMask;
 	private final int yMask;
 	private final int zMask;
 	private final int xShift;
 	private final int yShift;
 	private final int zShift;
-	
+
 	public AlignedCuboidBlockMaterialBuffer(CuboidBlockMaterialBuffer buffer) {
 		this(buffer.baseX, buffer.baseY, buffer.baseZ, buffer.sizeX, buffer.sizeY, buffer.sizeZ, new short[buffer.id.length], new short[buffer.data.length]);
 		System.arraycopy(buffer.id, 0, id, 0, id.length);
 		System.arraycopy(buffer.data, 0, data, 0, data.length);
 	}
-	
+
 	public AlignedCuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new short[sizeX * sizeY * sizeZ], new short[sizeX * sizeY * sizeZ]);
 	}
-	
+
 	public AlignedCuboidBlockMaterialBuffer(double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
 		this((int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ);
 	}
@@ -55,7 +54,7 @@ public class AlignedCuboidBlockMaterialBuffer extends CuboidBlockMaterialBuffer 
 	public AlignedCuboidBlockMaterialBuffer(Vector3 base, Vector3 size) {
 		this(base.getX(), base.getY(), base.getZ(), size.getX(), size.getY(), size.getZ());
 	}
-	
+
 	public AlignedCuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, short[] id, short[] data) {
 		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, id, data, false);
 		if (sizeX != sizeY || sizeX != sizeZ) {
@@ -80,10 +79,9 @@ public class AlignedCuboidBlockMaterialBuffer extends CuboidBlockMaterialBuffer 
 		yShift = GenericMath.multiplyToShift(super.Yinc);
 		zShift = GenericMath.multiplyToShift(super.Zinc);
 	}
-	
+
 	/**
-	 * Gets the index for the given coords.  Unlike a normal cuboid buffer, no 
-	 * bounds checking is performed
+	 * Gets the index for the given coords.  Unlike a normal cuboid buffer, no bounds checking is performed
 	 */
 	@Override
 	public int getIndex(int x, int y, int z) {
@@ -95,5 +93,4 @@ public class AlignedCuboidBlockMaterialBuffer extends CuboidBlockMaterialBuffer 
 		z <<= zShift;
 		return x | y | z;
 	}
-
 }

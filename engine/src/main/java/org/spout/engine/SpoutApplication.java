@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -34,7 +34,6 @@ import com.beust.jcommander.Parameter;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMode;
-
 import org.spout.engine.util.argument.PlatformConverter;
 import org.spout.engine.util.argument.RenderModeConverter;
 
@@ -42,23 +41,23 @@ import org.spout.engine.util.argument.RenderModeConverter;
  * A main class for launching various platforms
  */
 public class SpoutApplication {
-	@Parameter(names = {"--platform", "-platform", "--p", "-p"}, converter = PlatformConverter.class)
+	@Parameter (names = {"--platform", "-platform", "--p", "-p"}, converter = PlatformConverter.class)
 	public Platform platform = Platform.SERVER;
-	@Parameter(names = {"--debug", "-debug", "--d", "-d"}, description = "Debug Mode")
+	@Parameter (names = {"--debug", "-debug", "--d", "-d"}, description = "Debug Mode")
 	public boolean debug = false;
-	@Parameter(names = {"--rendermode", "-rendermode", "--r", "-r"}, converter = RenderModeConverter.class, description = "Render Version.  Versions: GL11, GL20, GL30, GL40, GLES20")
+	@Parameter (names = {"--rendermode", "-rendermode", "--r", "-r"}, converter = RenderModeConverter.class, description = "Render Version.  Versions: GL11, GL20, GL30, GL40, GLES20")
 	RenderMode renderMode = RenderMode.GL30;
-	@Parameter(names = {"--ccoverride"}, description = "Override ARB_CREATE_CONTEXT for the client")
+	@Parameter (names = {"--ccoverride"}, description = "Override ARB_CREATE_CONTEXT for the client")
 	public boolean ccoverride = false;
-	@Parameter(names = {"--path"}, description = "Override path for the client")
+	@Parameter (names = {"--path"}, description = "Override path for the client")
 	public String path = null;
-	@Parameter(names = {"--protocol"}, description = "Server to connect to")
+	@Parameter (names = {"--protocol"}, description = "Server to connect to")
 	public String protocol = null;
-	@Parameter(names = {"--server"}, description = "Server to connect to")
+	@Parameter (names = {"--server"}, description = "Server to connect to")
 	public String server = null;
-	@Parameter(names = {"--port"}, description = "Server to connect to")
+	@Parameter (names = {"--port"}, description = "Server to connect to")
 	public int port = -1;
-	@Parameter(names = {"--user"}, description = "User to connect as")
+	@Parameter (names = {"--user"}, description = "User to connect as")
 	public String user = null;
 
 	public static void main(String[] args) {

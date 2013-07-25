@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,90 +26,77 @@
  */
 package org.spout.engine.util.thread;
 
-
 public interface AsyncManager {
-
 	/**
 	 * This method is called directly before preSnapshot is called
 	 */
 	public void finalizeRun();
 
 	/**
-	 * This method is called directly before copySnapshotRun and is a MONITOR
-	 * ONLY stage and no updates should be performed.<br>
-	 * <br>
-	 * It occurs after the finalize stage and before the copy snapshot stage.
+	 * This method is called directly before copySnapshotRun and is a MONITOR ONLY stage and no updates should be performed.<br> <br> It occurs after the finalize stage and before the copy snapshot
+	 * stage.
 	 */
 	public void preSnapshotRun();
 
 	/**
-	 * This method is called in order to update the snapshot at the end of each
-	 * tick
+	 * This method is called in order to update the snapshot at the end of each tick
 	 */
 	public void copySnapshotRun();
 
 	/**
 	 * This method is called in order to start a new tick
+	 *
 	 * @param delta the time since the last tick
 	 */
 	public void startTickRun(int stage, long delta);
-	
+
 	/**
-	 * This method is called to execute physics for blocks local to the Region.  
-	 * It might be called multiple times per tick
+	 * This method is called to execute physics for blocks local to the Region. It might be called multiple times per tick
+	 *
 	 * @param sequence -1 for local, 0 - 26 for which sequence
-	 * @throws InterruptedException
 	 */
 	public void runPhysics(int sequence);
-	
+
 	/**
-	 * This method is called to execute dynamic updates for blocks in the Region.  
-	 * It might be called multiple times per tick, the sequence number indicates
-	 * which lists to check
-	 * 
-	 * @param threshold
+	 * This method is called to execute dynamic updates for blocks in the Region. It might be called multiple times per tick, the sequence number indicates which lists to check
+	 *
 	 * @param sequence -1 for local, 0 - 26 for which sequence
-	 * @throws InterruptedException
 	 */
 	public void runDynamicUpdates(long threshold, int sequence);
-	
+
 	/**
-	 * This method is called to update lighting. 
-	 * It might be called multiple times per tick
+	 * This method is called to update lighting. It might be called multiple times per tick
+	 *
 	 * @param sequence -1 for local, 0 - 26 for which sequence
-	 * @throws InterruptedException
 	 */
 	public void runLighting(int sequence);
 
 	/**
 	 * Gets the sequence number associated with this manager
-	 * 
+	 *
 	 * @return the sequence number, of -1 for none
 	 */
 	public int getSequence();
-	
+
 	/**
 	 * This method is called to determine the earliest available dynamic update time
-	 * 
+	 *
 	 * @return the earliest pending dynamic block update
 	 */
 	public long getFirstDynamicUpdateTime();
 
 	/**
 	 * Gets the execution thread associated with this manager
-	 * 
-	 * @return
 	 */
 	public Thread getExecutionThread();
-	
+
 	/**
 	 * Sets the execution thread associated with this manager
 	 */
 	public void setExecutionThread(Thread t);
-	
+
 	/**
 	 * Gets the highest stage for the start tick task
 	 */
 	public int getMaxStage();
-
 }

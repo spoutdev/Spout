@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,9 +26,9 @@
  */
 package org.spout.api.util.map.concurrent.palette;
 
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.util.concurrent.atomic.AtomicInteger;
+
+import gnu.trove.set.hash.TIntHashSet;
 
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
@@ -37,7 +37,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 
 public class AtomicPaletteBlockStore implements AtomicBlockStore {
-	
 	private final int side;
 	private final int shift;
 	private final int doubleShift;
@@ -51,21 +50,19 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	private final AtomicInteger maxX = new AtomicInteger();
 	private final AtomicInteger maxY = new AtomicInteger();
 	private final AtomicInteger maxZ = new AtomicInteger();
-	
 	private final AtomicInteger minX = new AtomicInteger();
 	private final AtomicInteger minY = new AtomicInteger();
 	private final AtomicInteger minZ = new AtomicInteger();
-	
 	private final AtomicInteger dirtyBlocks = new AtomicInteger(0);
-	
+
 	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress) {
 		this(shift, storeState, compress, 10);
 	}
-	
+
 	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, short[] initial) {
 		this(shift, storeState, compress, 10, initial);
 	}
-	
+
 	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize) {
 		this.side = 1 << shift;
 		this.shift = shift;
@@ -88,7 +85,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, short[] initial) {
 		this(shift, storeState, compress, dirtySize, initial, null);
 	}
-	
+
 	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, short[] blocks, short[] data) {
 		this(shift, storeState, compress, dirtySize);
 		if (blocks != null) {
@@ -104,7 +101,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 			}
 		}
 	}
-	
+
 	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray) {
 		this(shift, storeState, compress, dirtySize);
 		if (!compress) {
@@ -112,17 +109,17 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		}
 		store.set(palette, blockArrayWidth, variableWidthBlockArray);
 	}
-	
+
 	@Override
 	public int getFullData(int x, int y, int z) {
 		return getFullData(getIndex(x, y, z));
 	}
-	
+
 	@Override
 	public int getFullData(int index) {
 		return store.get(index);
 	}
-	
+
 	@Override
 	public int getAndSetBlock(int x, int y, int z, short id, short data) {
 		int newState = BlockFullState.getPacked(id, data);
@@ -218,8 +215,8 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	@Override
 	public void compress() {
 		compress(new TIntHashSet());
-	} 
-	
+	}
+
 	@Override
 	public void compress(TIntHashSet inUseSet) {
 		store.compress(inUseSet);
@@ -245,17 +242,17 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		maxZ.set(Integer.MIN_VALUE);
 		return dirtyBlocks.getAndSet(0) > 0;
 	}
-	
+
 	@Override
 	public int getDirtyBlocks() {
 		return dirtyBlocks.get();
 	}
-	
+
 	@Override
 	public IntVector3 getMaxDirty() {
 		return new IntVector3(maxX.get(), maxY.get(), maxZ.get());
 	}
-	
+
 	@Override
 	public IntVector3 getMinDirty() {
 		return new IntVector3(minX.get(), minY.get(), minZ.get());
@@ -269,13 +266,13 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 
 		return new Vector3(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
 	}
-	
+
 	@Override
 	public int getDirtyOldState(int i) {
 		if (oldState == null || i >= dirtyBlocks.get()) {
 			return -1;
 		}
-		
+
 		return oldState[i];
 	}
 
@@ -284,20 +281,20 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		if (newState == null || i >= dirtyBlocks.get()) {
 			return -1;
 		}
-		
+
 		return newState[i];
 	}
 
 	public void markDirty(int x, int y, int z, int oldState, int newState) {
 		setAsMax(maxX, x);
 		setAsMin(minX, x);
-		
+
 		setAsMax(maxY, y);
 		setAsMin(minY, y);
-		
+
 		setAsMax(maxZ, z);
 		setAsMin(minZ, z);
-		
+
 		int index = incrementDirtyIndex();
 		if (index < dirtyX.length) {
 			dirtyX[index] = (byte) x;
@@ -309,7 +306,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 			}
 		}
 	}
-	
+
 	public int incrementDirtyIndex() {
 		boolean success = false;
 		int index = -1;
@@ -323,7 +320,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		}
 		return index;
 	}
-	
+
 	private final int getIndex(int x, int y, int z) {
 		return (y << doubleShift) + (z << shift) + x;
 	}
@@ -352,7 +349,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	public void writeUnlock() {
 		store.unlock();
 	}
-	
+
 	@Override
 	public boolean tryWriteLock() {
 		return store.tryLock();
@@ -362,7 +359,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	public boolean isBlockUniform() {
 		return store.isUniform();
 	}
-	
+
 	private void setAsMin(AtomicInteger i, int x) {
 		int old;
 		while ((old = i.get()) > x) {
@@ -371,7 +368,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 			}
 		}
 	}
-	
+
 	private void setAsMax(AtomicInteger i, int x) {
 		int old;
 		while ((old = i.get()) < x) {

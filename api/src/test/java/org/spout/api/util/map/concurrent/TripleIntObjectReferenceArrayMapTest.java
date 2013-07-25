@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,42 +26,39 @@
  */
 package org.spout.api.util.map.concurrent;
 
-import static org.junit.Assert.assertTrue;
-import gnu.trove.TCollections;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Random;
 
+import gnu.trove.TCollections;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class TripleIntObjectReferenceArrayMapTest {
 	private final static int EDGEX = 3;
 	private final static int EDGEY = 3;
 	private final static int EDGEZ = 640;
-	
 	private final static int SPEED_EDGE = 16;
 	private final static int SPEED_LENGTH = 1000;
-	
 	private final static int THREADS = 20;
 	private final static boolean PRINT_ALL_TESTS = false;
 	private final static int REPEATS = 5;
-
 	private final TripleIntObjectReferenceArrayMap<FakeObject> map = new TripleIntObjectReferenceArrayMap<FakeObject>(3);
-	
+
 	@Test
 	public void test() {
-		
+
 		FakeObject[] objects = new FakeObject[EDGEX * EDGEY * EDGEZ];
-		
+
 		int halfEdgeX = EDGEX >> 1;
 		int halfEdgeY = EDGEY >> 1;
 		int halfEdgeZ = EDGEZ >> 1;
-		
+
 		int i = 0;
-		
+
 		for (int x = 0; x < EDGEX; x++) {
 			for (int y = 0; y < EDGEY; y++) {
 				for (int z = 0; z < EDGEZ; z++) {
@@ -69,14 +66,14 @@ public class TripleIntObjectReferenceArrayMapTest {
 				}
 			}
 		}
-		
+
 		shuffle(objects);
-		
+
 		for (i = 0; i < objects.length; i++) {
 			FakeObject f = objects[i];
 			map.put(f.getX(), f.getY(), f.getZ(), f);
 		}
-		
+
 		shuffle(objects);
 
 		for (i = 0; i < objects.length; i++) {
@@ -84,7 +81,7 @@ public class TripleIntObjectReferenceArrayMapTest {
 			FakeObject m = map.get(f.getX(), f.getY(), f.getZ());
 			assertTrue("Map did not contain object got " + m + " expected " + f, m == f);
 		}
-		
+
 		for (int x = -halfEdgeX; x < halfEdgeX; x++) {
 			for (int y = -halfEdgeY; y < halfEdgeY; y++) {
 				for (int z = -halfEdgeZ; z < halfEdgeZ; z++) {
@@ -93,32 +90,32 @@ public class TripleIntObjectReferenceArrayMapTest {
 				}
 			}
 		}
-		
+
 		LinkedHashSet<FakeObject> valuesCopy = new LinkedHashSet<FakeObject>(map.valueCollection());
-		
+
 		for (int x = -halfEdgeX; x < halfEdgeX; x++) {
 			for (int y = -halfEdgeY; y < halfEdgeY; y++) {
 				for (int z = -halfEdgeZ; z < halfEdgeZ; z++) {
 					FakeObject m = map.get(x, y, z);
-					assertTrue("Values collection did not contain element for, " + x + ", " + y + ", " + z, valuesCopy.contains(m) );
+					assertTrue("Values collection did not contain element for, " + x + ", " + y + ", " + z, valuesCopy.contains(m));
 				}
 			}
 		}
-		
+
 		int rx = 1;
 		int ry = -1;
 		int rz = 2;
-		
+
 		FakeObject removed = map.remove(rx, ry, rz);
-		
+
 		valuesCopy = new LinkedHashSet<FakeObject>(map.valueCollection());
-		
-		assertTrue("Values collection did contained element for, " + rx + ", " + ry + ", " + rz + " after its removal", !valuesCopy.contains(removed) );
-		
+
+		assertTrue("Values collection did contained element for, " + rx + ", " + ry + ", " + rz + " after its removal", !valuesCopy.contains(removed));
+
 		int expectedSize = EDGEX * EDGEY * EDGEZ - 1;
 		assertTrue("Value copy is not the correct size " + expectedSize + ", got " + valuesCopy.size(), valuesCopy.size() == expectedSize);
 		assertTrue("Re-inserting value into empty slot in map did not return null", map.put(rx, ry, rz, removed) == null);
-		
+
 		boolean thrown = false;
 		try {
 			FakeObject f = objects[0];
@@ -129,7 +126,7 @@ public class TripleIntObjectReferenceArrayMapTest {
 		assertTrue("IllegalStateException was not thrown when adding the same element to the map more than once", thrown);
 
 		Random r = new Random();
-		
+
 		for (i = 0; i < objects.length; i++) {
 			int index = r.nextInt(objects.length);
 			FakeObject ref = objects[index];
@@ -138,7 +135,7 @@ public class TripleIntObjectReferenceArrayMapTest {
 			int z = ref.getZ();
 
 			FakeObject newObject = new FakeObject(x, y, z);
-			
+
 			FakeObject getObject = map.get(x, y, z);
 			assertTrue("Location " + x + ", " + y + ", " + z + " expected to have object", getObject != null);
 
@@ -154,10 +151,10 @@ public class TripleIntObjectReferenceArrayMapTest {
 			FakeObject newPut = new FakeObject(x, y, z, 1);
 			oldPut = map.put(x, y, z, newPut);
 			assertTrue("put did not return old object", oldPut == newObject);
-			
+
 			boolean success = map.remove(x, y, z, newObject);
 			assertTrue("remove(value) removed object when it didn't match", !success);
-			
+
 			success = map.remove(x, y, z, newPut);
 			assertTrue("remove(value) did not remove an object when value matched", success);
 			assertTrue("map get did not return null for empty location", map.get(x, y, z) == null);
@@ -165,76 +162,69 @@ public class TripleIntObjectReferenceArrayMapTest {
 
 			old = map.putIfAbsent(x, y, z, newObject);
 			assertTrue("putIfAbsent did not return null when adding an object", old == null);
-			
+
 			objects[index] = newObject;
 		}
-
 	}
-	
+
 	@Test
 	public void speedTest() {
-		
+
 		for (int i = 0; i < REPEATS; i++) {
 			TripleIntObjectMapTest.testMap(new TripleIntObjectReferenceArrayMap<FakeObject>(3), "AtomicReferenceArrayTree");
 
 			TripleIntObjectMapTest.testMap(new TSyncInt21TripleObjectHashMap<FakeObject>(), "TroveRWHashMap");
-			
+
 			TLongObjectMap<FakeObject> m = TCollections.synchronizedMap(new TLongObjectHashMap<FakeObject>());
 			TripleIntObjectMapTest.testMap(new TSyncInt21TripleObjectHashMap<FakeObject>(m), "TroveSyncedMap");
-			
+
 			TripleIntObjectMapTest.testMap(new ArrayMap(), "3D Array");
-			
+
 			System.out.println();
 		}
-		
 	}
-	
+
 	private static FakeObject[] shuffle(FakeObject[] a) {
-		
+
 		Random r = new Random();
-		
+
 		for (int i = 0; i < a.length; i++) {
 			int pos = r.nextInt(a.length - i) + i;
 			FakeObject temp = a[pos];
 			a[pos] = a[i];
 			a[i] = temp;
 		}
-		
+
 		return a;
 	}
-	
+
 	public static interface Map<T> {
-		
 		public T get(int x, int y, int z);
-		
 	}
-	
+
 	public static class TripleIntObjectMapTest extends Thread {
 		private final TripleIntObjectMap<FakeObject> map;
-
 		private int[] xx;
 		private int[] yy;
 		private int[] zz;
-		
+
 		public TripleIntObjectMapTest(TripleIntObjectMap<FakeObject> map) {
 			this.map = map;
-			
+
 			xx = new int[1024];
 			yy = new int[1024];
 			zz = new int[1024];
-			
+
 			Random r = new Random();
-			
+
 			int speedEdgeDiv2 = SPEED_EDGE >> 1;
 			for (int i = 0; i < 1024; i++) {
 				xx[i] = r.nextInt(SPEED_EDGE) - speedEdgeDiv2;
 				yy[i] = r.nextInt(SPEED_EDGE) - speedEdgeDiv2;
 				zz[i] = r.nextInt(SPEED_EDGE) - speedEdgeDiv2;
 			}
-			
-			
 		}
-		
+
 		@Override
 		public void run() {
 			for (int i = 0; i < SPEED_LENGTH; i++) {
@@ -286,21 +276,20 @@ public class TripleIntObjectReferenceArrayMapTest {
 				}
 			}
 		}
-		
+
 		public static long testMap(TripleIntObjectMap<FakeObject> map, String name) {
-			
+
 			initMap(map);
-			
+
 			Thread[] threads = new Thread[THREADS];
-			
+
 			for (int i = 0; i < THREADS; i++) {
 				threads[i] = new TripleIntObjectMapTest(map);
 			}
-			
+
 			return runJoin(threads, name);
-			
 		}
-		
+
 		private static long runJoin(Thread[] threads, String name) {
 			long startTime = System.nanoTime();
 			for (int t = 0; t < THREADS; t++) {
@@ -316,16 +305,14 @@ public class TripleIntObjectReferenceArrayMapTest {
 			long time = System.nanoTime() - startTime;
 
 			if (PRINT_ALL_TESTS) {
-				System.out.println(name + ": " + (time/1000000.0) + "ms (" + SPEED_LENGTH + "0 get operations)");
+				System.out.println(name + ": " + (time / 1000000.0) + "ms (" + SPEED_LENGTH + "0 get operations)");
 			}
 			return time;
 		}
 	}
-	
+
 	private static class ArrayMap implements TripleIntObjectMap<FakeObject> {
-		
 		private final int offset = SPEED_EDGE >> 1;
-		
 		FakeObject[][][] map = new FakeObject[SPEED_EDGE + 1][SPEED_EDGE + 1][SPEED_EDGE + 1];
 
 		@Override
@@ -362,20 +349,18 @@ public class TripleIntObjectReferenceArrayMapTest {
 			// TODO Auto-generated method stub
 			return null;
 		}
-		
 	}
-	
+
 	public static class FakeObject {
-		
 		private final int x;
 		private final int y;
 		private final int z;
 		private final int hash2;
-		
+
 		public FakeObject(int x, int y, int z) {
 			this(x, y, z, 0);
 		}
-		
+
 		public FakeObject(int x, int y, int z, int hash2) {
 			this.x = x;
 			this.y = y;
@@ -386,19 +371,19 @@ public class TripleIntObjectReferenceArrayMapTest {
 		public boolean test(int x, int y, int z) {
 			return this.x == x && this.y == y && this.z == z;
 		}
-		
+
 		public int getX() {
 			return x;
 		}
-		
+
 		public int getY() {
 			return y;
 		}
-		
+
 		public int getZ() {
 			return z;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			int hash = x;
@@ -406,7 +391,7 @@ public class TripleIntObjectReferenceArrayMapTest {
 			hash += hash << 5 + z;
 			return hash;
 		}
-		
+
 		@Override
 		public boolean equals(Object o) {
 			if (o == this) {
@@ -418,6 +403,5 @@ public class TripleIntObjectReferenceArrayMapTest {
 				return x == other.x && y == other.y && z == other.z && hash2 == other.hash2;
 			}
 		}
-		
 	}
 }

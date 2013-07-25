@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,22 +33,15 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.plugin.Plugin;
 
 public interface PluginDictionary {
-
 	public void save(Writer writer);
 
 	/**
 	 * Returns the translation of source into the receivers preferred language
-	 * 
-	 * @param source
-	 *            the string to translate
-	 * @param receiver
-	 *            the receiver who will see the message
-	 * @param args
-	 *            any object given will be inserted into the target string for
-	 *            each %0, %1 asf
-	 * @param foundClass
-	 *            the class that called the translation (used for determining
-	 *            which translation is correct)
+	 *
+	 * @param source the string to translate
+	 * @param receiver the receiver who will see the message
+	 * @param args any object given will be inserted into the target string for each %0, %1 asf
+	 * @param foundClass the class that called the translation (used for determining which translation is correct)
 	 * @return the translation
 	 */
 	public String tr(String source, CommandSource receiver, String foundClass, Object[] args);
@@ -70,5 +63,4 @@ public interface PluginDictionary {
 	public void setDictionary(Locale locale, LanguageDictionary dictionary);
 
 	public String getCodedSource(int id);
-
 }

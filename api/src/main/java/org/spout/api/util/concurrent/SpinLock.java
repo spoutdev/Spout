@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,15 +33,10 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 /**
-* A non-reentrant spin lock.<br>
-* <br>
-* The lock will spin 100 times before falling back to using wait/notify.
-*/
-
+ * A non-reentrant spin lock.<br> <br> The lock will spin 100 times before falling back to using wait/notify.
+ */
 public class SpinLock implements Lock {
-	
 	private static int MAX_SPINS = 100;
-	
 	private AtomicBoolean locked = new AtomicBoolean();
 	private AtomicInteger waiting = new AtomicInteger();
 
@@ -99,12 +94,12 @@ public class SpinLock implements Lock {
 	public Condition newCondition() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public boolean tryLock() {
 		return locked.compareAndSet(false, true);
 	}
-	
+
 	private void waitLock() throws InterruptedException {
 		waiting.incrementAndGet();
 		try {
@@ -117,7 +112,7 @@ public class SpinLock implements Lock {
 			waiting.decrementAndGet();
 		}
 	}
-	
+
 	@Override
 	public void unlock() {
 		if (!locked.compareAndSet(true, false)) {
@@ -129,13 +124,13 @@ public class SpinLock implements Lock {
 			}
 		}
 	}
-	
+
 	public static void dualLock(Lock a, Lock b) {
 		if (a == b) {
 			a.lock();
 			return;
 		}
-		
+
 		while (true) {
 			a.lock();
 			if (b.tryLock()) {
@@ -149,7 +144,7 @@ public class SpinLock implements Lock {
 			b.unlock();
 		}
 	}
-	
+
 	public static void dualUnlock(Lock a, Lock b) {
 		try {
 			a.unlock();
@@ -158,8 +153,6 @@ public class SpinLock implements Lock {
 				b.unlock();
 			}
 		}
-		
 	}
-
 }
 

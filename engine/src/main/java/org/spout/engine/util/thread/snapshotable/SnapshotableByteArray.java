@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -57,6 +57,7 @@ public class SnapshotableByteArray implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value in the array
+	 *
 	 * @param index to lookup
 	 * @return snapshot value
 	 */
@@ -67,6 +68,7 @@ public class SnapshotableByteArray implements Snapshotable {
 
 	/**
 	 * Gets the live value in the array
+	 *
 	 * @param index to lookup
 	 * @return live value
 	 */
@@ -79,6 +81,7 @@ public class SnapshotableByteArray implements Snapshotable {
 
 	/**
 	 * Sets the value for the next snapshot
+	 *
 	 * @param index to set at
 	 * @param value to set to
 	 */

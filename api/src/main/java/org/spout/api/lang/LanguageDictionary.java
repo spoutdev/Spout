@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,26 +32,26 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.nodes.Tag;
 
 public class LanguageDictionary {
 	private Locale locale;
 	HashMap<Integer, Object> translations = new HashMap<Integer, Object>();
-	
+
 	public LanguageDictionary(Locale locale) {
 		this.locale = locale;
 	}
-	
+
 	public void setTranslation(int id, Object object) {
 		translations.put(id, object);
 	}
-	
+
 	public String getTranslation(int id) {
 		return getTranslation(id, 0);
 	}
-	
+
 	public String getTranslation(int id, Number number) {
 		Object tr = translations.get(id);
 		if (tr instanceof String) {
@@ -62,7 +62,7 @@ public class LanguageDictionary {
 			return null;
 		}
 	}
-	
+
 	public Locale getLocale() {
 		return locale;
 	}
@@ -72,7 +72,7 @@ public class LanguageDictionary {
 		LinkedHashMap<String, Object> dump = new LinkedHashMap<String, Object>();
 		dump.put("locale", locale.getCode());
 		LinkedHashMap<Integer, Object> tr = new LinkedHashMap<Integer, Object>();
-		for (Entry<Integer, Object> e:translations.entrySet()) {
+		for (Entry<Integer, Object> e : translations.entrySet()) {
 			if (e.getValue() instanceof String) {
 				tr.put(e.getKey(), e.getValue());
 			} else if (e.getValue() instanceof LocaleNumberHandler) {

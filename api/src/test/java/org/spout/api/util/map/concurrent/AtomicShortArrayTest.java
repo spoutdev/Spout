@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,19 +26,17 @@
  */
 package org.spout.api.util.map.concurrent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class AtomicShortArrayTest {
 	private final static int LENGTH = 10000;
-
 	private AtomicShortArray array = new AtomicShortArray(LENGTH);
-
 	private short[] arrayData;
 	private int[] arrayIndex;
 
@@ -50,7 +48,7 @@ public class AtomicShortArrayTest {
 		arrayIndex = new int[LENGTH];
 
 		for (int i = 0; i < LENGTH; i++) {
-			arrayData[i] = (short)rand.nextInt();
+			arrayData[i] = (short) rand.nextInt();
 			arrayIndex[i] = i;
 		}
 
@@ -114,8 +112,8 @@ public class AtomicShortArrayTest {
 		}
 
 		for (int i = 0; i < LENGTH; i++) {
-			compareAndSetTrue(rand.nextInt(LENGTH), (short)rand.nextInt());
-			compareAndSetFalse(rand.nextInt(LENGTH), (short)rand.nextInt());
+			compareAndSetTrue(rand.nextInt(LENGTH), (short) rand.nextInt());
+			compareAndSetFalse(rand.nextInt(LENGTH), (short) rand.nextInt());
 		}
 
 		for (int i = 0; i < LENGTH; i++) {
@@ -129,6 +127,6 @@ public class AtomicShortArrayTest {
 	}
 
 	private void compareAndSetFalse(int index, short value) {
-		assertTrue("Compare and set attempt succeeded when it should have failed", !array.compareAndSet(index, (short)(1 + arrayData[index]), value));
+		assertTrue("Compare and set attempt succeeded when it should have failed", !array.compareAndSet(index, (short) (1 + arrayData[index]), value));
 	}
 }

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -54,9 +54,8 @@ public class RenderPartComponent extends WidgetComponent {
 	}
 
 	/**
-	 * Sets the bounds of the source of the render part. This is commonly used
-	 * for sprite sheets and should be left at zero for simple colored
-	 * rectangles.
+	 * Sets the bounds of the source of the render part. This is commonly used for sprite sheets and should be left at zero for simple colored rectangles.
+	 *
 	 * @param source of part
 	 */
 	public void setSource(Rectangle source) {
@@ -64,9 +63,8 @@ public class RenderPartComponent extends WidgetComponent {
 	}
 
 	/**
-	 * Returns the bounds of the source of the render part. This is commonly
-	 * used for sprite sheets and should be left at zero for simple colored
-	 * rectangles.
+	 * Returns the bounds of the source of the render part. This is commonly used for sprite sheets and should be left at zero for simple colored rectangles.
+	 *
 	 * @return source of part
 	 */
 	public Rectangle getSource() {
@@ -74,8 +72,8 @@ public class RenderPartComponent extends WidgetComponent {
 	}
 
 	/**
-	 * Sets the bounds of the actual sprite of the render material. This is
-	 * used for specifying the actual visible size of the render part.
+	 * Sets the bounds of the actual sprite of the render material. This is used for specifying the actual visible size of the render part.
+	 *
 	 * @param sprite of render part
 	 */
 	public void setSprite(Rectangle sprite) {
@@ -83,8 +81,8 @@ public class RenderPartComponent extends WidgetComponent {
 	}
 
 	/**
-	 * Returns the bounds of the actual sprite of the render material. This is
-	 * used for specifying the actual visible size of the render part.
+	 * Returns the bounds of the actual sprite of the render material. This is used for specifying the actual visible size of the render part.
+	 *
 	 * @return sprite of render part
 	 */
 	public Rectangle getSprite() {
@@ -93,6 +91,7 @@ public class RenderPartComponent extends WidgetComponent {
 
 	/**
 	 * Sets the color of this part.
+	 *
 	 * @param color of part
 	 */
 	public void setColor(Color color) {
@@ -101,6 +100,7 @@ public class RenderPartComponent extends WidgetComponent {
 
 	/**
 	 * Returns the color of this part.
+	 *
 	 * @return color of part
 	 */
 	public Color getColor() {

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,8 +26,6 @@
  */
 package org.spout.api.protocol;
 
-import static org.jboss.netty.channel.Channels.write;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -37,23 +35,24 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
+import static org.jboss.netty.channel.Channels.write;
+
 public abstract class PostprocessEncoder extends OneToOneEncoder implements ProcessorHandler {
-	
 	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<ChannelProcessor>();
 	private final AtomicBoolean locked = new AtomicBoolean(false);
 
 	@Override
 	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent evt) throws Exception {
-		
+
 		if (locked.get()) {
 			throw new IllegalStateException("Encode attempted when channel was locked");
 		}
-		
+
 		ChannelProcessor processor = this.processor.get();
 		if (processor == null) {
 			super.handleDownstream(ctx, evt);
 			if (evt instanceof MessageEvent) {
-				checkForSetupMessage(((MessageEvent)evt).getMessage());
+				checkForSetupMessage(((MessageEvent) evt).getMessage());
 			}
 		} else if (!(evt instanceof MessageEvent)) {
 			super.handleDownstream(ctx, evt);
@@ -66,7 +65,7 @@ public abstract class PostprocessEncoder extends OneToOneEncoder implements Proc
 			} else if (encodedMessage != null) {
 				if (encodedMessage instanceof ChannelBuffer) {
 					synchronized (this) {
-						encodedMessage = processor.write(ctx, (ChannelBuffer)encodedMessage);
+						encodedMessage = processor.write(ctx, (ChannelBuffer) encodedMessage);
 						write(ctx, e.getFuture(), encodedMessage, e.getRemoteAddress());
 					}
 				} else {
@@ -76,7 +75,7 @@ public abstract class PostprocessEncoder extends OneToOneEncoder implements Proc
 			checkForSetupMessage(originalMessage);
 		}
 	}
-	
+
 	private void checkForSetupMessage(Object e) {
 		if (e instanceof ProcessorSetupMessage) {
 			ProcessorSetupMessage setupMessage = (ProcessorSetupMessage) e;
@@ -92,15 +91,14 @@ public abstract class PostprocessEncoder extends OneToOneEncoder implements Proc
 			setupMessage.setProcessorHandler(this);
 		}
 	}
-	
+
 	@Override
 	public void setProcessor(ChannelProcessor processor) {
 		if (processor == null) {
 			throw new IllegalArgumentException("Processor may not be set to null");
-		} else if (!this.processor.compareAndSet(null, processor)){
+		} else if (!this.processor.compareAndSet(null, processor)) {
 			throw new IllegalArgumentException("Processor may only be set once");
 		}
 		locked.set(false);
 	}
-	
 }

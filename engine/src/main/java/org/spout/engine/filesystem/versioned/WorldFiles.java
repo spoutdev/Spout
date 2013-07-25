@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -38,7 +38,6 @@ import java.util.UUID;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.discrete.Transform;
@@ -47,9 +46,10 @@ import org.spout.api.io.nbt.UUIDTag;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.sanitation.SafeCast;
-
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.SpoutServer;
 import org.spout.engine.filesystem.CommonFileSystem;
+import org.spout.engine.world.SpoutServerWorld;
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
@@ -60,37 +60,33 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
-import org.spout.engine.SpoutServer;
-import org.spout.engine.world.SpoutServerWorld;
-
 public class WorldFiles {
-
 	public static final byte WORLD_VERSION = 2;
-	
+
 	public static SpoutServerWorld loadWorld(SpoutServer engine, WorldGenerator generator, String name) {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Unable to load world in client mode");
 		}
 		File worldDir = new File(CommonFileSystem.WORLDS_DIRECTORY, name);
-		
+
 		worldDir.mkdirs();
-		
+
 		File worldFile = new File(worldDir, "world.dat");
 
 		SpoutServerWorld world = null;
-		
+
 		File itemMapFile = new File(worldDir, "materials.dat");
 		BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
 		itemStore.load();
-		
+
 		StringToUniqueIntegerMap itemMap = new StringToUniqueIntegerMap(engine.getEngineItemMap(), itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
-		
+
 		File lightingMapFile = new File(worldDir, "lighting.dat");
 		BinaryFileStore lightingStore = new BinaryFileStore(lightingMapFile);
 		lightingStore.load();
-		
+
 		StringToUniqueIntegerMap lightingMap = new StringToUniqueIntegerMap(engine.getEngineLightingMap(), itemStore, 0, Short.MAX_VALUE, name + "lightingMap");
-		
+
 		try {
 			InputStream is = new FileInputStream(worldFile);
 			NBTInputStream ns = new NBTInputStream(is, false);
@@ -112,7 +108,6 @@ public class WorldFiles {
 
 			world = new SpoutServerWorld(name, engine, new Random().nextLong(), 0L, generator, UUID.randomUUID(), itemMap, lightingMap);
 			world.save();
-
 		} catch (IOException ioe) {
 			Spout.severe("Error reading file for world " + name, ioe);
 		}
@@ -131,23 +126,23 @@ public class WorldFiles {
 			Spout.severe("Outdated World version " + version);
 			return null;
 		}
-		
+
 		String generatorName = SafeCast.toString(NBTMapper.toTagValue(map.get("generator")), null);
 		Long seed = SafeCast.toLong(NBTMapper.toTagValue(map.get("seed")), 0);
 		byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extra_data")), null);
 		Long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0);
 		UUID uuid = UUIDTag.getValue(map.get("uuid"));
-		
+
 		if (!generatorName.equals(generator.getName())) {
 			Spout.severe("World was saved last with the generator: " + generatorName + " but is being loaded with: " + generator.getName() + " THIS MAY CAUSE WORLD CORRUPTION!");
 		}
-		
+
 		SpoutServerWorld world = new SpoutServerWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, uuid, itemMap, lightingMap);
-		
+
 		Transform t = TransformTag.getValue(world, map.get("spawn_position"));
-		
+
 		world.setSpawnPoint(t);
-		
+
 		SerializableMap dataMap = world.getData();
 		dataMap.clear();
 		try {
@@ -155,24 +150,24 @@ public class WorldFiles {
 		} catch (IOException e) {
 			Spout.severe("Could not deserialize datatable for world: " + name, e);
 		}
-		
+
 		return world;
 	}
-	
+
 	public static void saveWorld(SpoutServerWorld world) {
-		
+
 		File worldDir = new File(CommonFileSystem.WORLDS_DIRECTORY, world.getName());
-		
+
 		worldDir.mkdirs();
-		
+
 		File worldFile = new File(worldDir, "world.dat");
 
 		world.getItemMap().save();
-		
+
 		world.getLightingMap().save();
-		
+
 		CompoundMap map = saveWorldImpl(world);
-		
+
 		NBTOutputStream ns = null;
 		try {
 			OutputStream is = new FileOutputStream(worldFile);
@@ -184,15 +179,16 @@ public class WorldFiles {
 			if (ns != null) {
 				try {
 					ns.close();
-				} catch (IOException ignore) { }
+				} catch (IOException ignore) {
+				}
 			}
 		}
 	}
-	
+
 	private static CompoundMap saveWorldImpl(SpoutServerWorld world) {
-		
+
 		CompoundMap map = new CompoundMap();
-		
+
 		map.put(new ByteTag("version", WORLD_VERSION));
 		map.put(new StringTag("generator", world.getGenerator().getName()));
 		map.put(new LongTag("seed", world.getSeed()));
@@ -200,9 +196,7 @@ public class WorldFiles {
 		map.put(new LongTag("age", world.getAge()));
 		map.put(new UUIDTag("uuid", world.getUID()));
 		map.put(new TransformTag("spawn_position", world.getSpawnPoint()));
-		
+
 		return map;
-		
 	}
-	
 }

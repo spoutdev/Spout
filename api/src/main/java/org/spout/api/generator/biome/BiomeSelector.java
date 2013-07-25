@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -29,9 +29,7 @@ package org.spout.api.generator.biome;
 /**
  * Defines an abstract biome selector
  *
- * Biome Selectors provide the logic to determine if the the current x, y, z is
- * in a provided biome. They also need to override pickBiome, and return a value
- * between 0 and maxbiomes
+ * Biome Selectors provide the logic to determine if the the current x, y, z is in a provided biome. They also need to override pickBiome, and return a value between 0 and maxbiomes
  */
 public abstract class BiomeSelector {
 	protected BiomeMap parent;
@@ -41,13 +39,8 @@ public abstract class BiomeSelector {
 	}
 
 	/**
-	 * The logic to select the biome at the given x,y,z. The value must be
-	 * between 0 and maxBiomes
+	 * The logic to select the biome at the given x,y,z. The value must be between 0 and maxBiomes
 	 *
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param seed
 	 * @return the biome between 0 and maxBiomes
 	 */
 	public abstract Biome pickBiome(int x, int y, int z, long seed);

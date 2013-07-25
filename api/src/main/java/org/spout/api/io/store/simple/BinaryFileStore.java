@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -39,11 +39,9 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 /**
- * This implements a SimpleStore that is stored in memory. The save and load
- * methods can be used to write the map to a binary file.
+ * This implements a SimpleStore that is stored in memory. The save and load methods can be used to write the map to a binary file.
  */
 public class BinaryFileStore extends MemoryStore<Integer> {
-
 	private File file;
 	private boolean dirty = false;
 
@@ -51,15 +49,15 @@ public class BinaryFileStore extends MemoryStore<Integer> {
 		super();
 		this.file = file;
 	}
-	
+
 	public BinaryFileStore() {
 		this(null);
 	}
-	
+
 	public synchronized void setFile(File file) {
 		this.file = file;
 	}
-	
+
 	public synchronized File getFile() {
 		return file;
 	}
@@ -127,7 +125,7 @@ public class BinaryFileStore extends MemoryStore<Integer> {
 			try {
 				if (in != null) {
 					in.close();
-				} 
+				}
 			} catch (IOException ioe) {
 				loaded = false;
 			}
@@ -152,5 +150,4 @@ public class BinaryFileStore extends MemoryStore<Integer> {
 		dirty = true;
 		return super.set(key, value);
 	}
-
 }

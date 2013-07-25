@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -32,6 +32,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipeline;
+
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.protocol.CommonHandler;
@@ -53,6 +54,7 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 
 	/**
 	 * Gets the Engine that of this listener
+	 *
 	 * @return the Engine
 	 */
 	public Engine getEngine() {

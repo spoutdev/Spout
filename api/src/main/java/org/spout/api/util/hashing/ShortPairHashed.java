@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -28,10 +28,8 @@ package org.spout.api.util.hashing;
 
 public class ShortPairHashed {
 	/**
-	 * Squashes 2 short values into 1 int, with the first value in
-	 * the most significant bits and the second value in the least
-	 * significant bits.
-	 * 
+	 * Squashes 2 short values into 1 int, with the first value in the most significant bits and the second value in the least significant bits.
+	 *
 	 * @param key1 to squash
 	 * @param key2 to squash
 	 * @return squashed int
@@ -42,7 +40,7 @@ public class ShortPairHashed {
 
 	/**
 	 * Returns the 16 most significant bits (short) in the int value.
-	 * 
+	 *
 	 * @param composite to separate
 	 * @return the 16 most significant bits in an int
 	 */
@@ -52,7 +50,7 @@ public class ShortPairHashed {
 
 	/**
 	 * Returns the 16 least significant bits (short) in the int value.
-	 * 
+	 *
 	 * @param composite to separate
 	 * @return the 16 least significant bits in an int
 	 */

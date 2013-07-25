@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,41 +26,41 @@
  */
 package org.spout.api.util.concurrent;
 
-import static org.junit.Assert.*;
-
 import java.util.Random;
 
 import org.junit.Test;
 
-public class AtomicFloatTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+public class AtomicFloatTest {
 	@Test
 	public void test() {
 		assertEquals("Floats not equal", new AtomicFloat(0F), new AtomicFloat(0F));
-		
+
 		AtomicFloat value = new AtomicFloat(-1F);
-		
+
 		assertTrue("Float does not match expected value", 0F == value.addAndGet(1F));
-		
+
 		assertTrue("Float does not match expected value", 0F == value.getAndAdd(1F));
-		
+
 		assertTrue("Float does not match expected value", -1F == value.addAndGet(-2F));
-		
+
 		Random rand = new Random();
 		float test = rand.nextFloat();
 		value.set(test);
 		assertTrue("Float does not match expected value", test == value.get());
-		
+
 		value.lazySet(0F);
 		assertTrue("Float does not match expected value", 0F == value.get());
-		
+
 		if (value.compareAndSet(1F, 1F)) {
 			fail("Compared and set did not accurately compare the current value");
 		}
-		
+
 		if (!value.compareAndSet(0F, 1F)) {
 			fail("Compared and set did not accurately compare the current value");
 		}
 	}
-
 }

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class CachedRandomAccessFile {
-
 	private final RandomAccessFile file;
 	private long pos = 0;
 	private boolean posDirty = false;
@@ -42,7 +41,6 @@ public class CachedRandomAccessFile {
 	private final int PAGE_SHIFT;
 	private final int PAGE_SIZE;
 	private final long PAGE_MASK;
-
 	private static boolean debug = false;
 	private static AtomicLong timeUsed = new AtomicLong(0);
 	private static AtomicLong lastReport = new AtomicLong(0);
@@ -80,10 +78,10 @@ public class CachedRandomAccessFile {
 	public void writeInt(int i) throws IOException {
 		timeStart();
 		try {
-			writeCacheByte((byte)(i >> 24));
-			writeCacheByte((byte)(i >> 16));
-			writeCacheByte((byte)(i >> 8));
-			writeCacheByte((byte)(i >> 0));
+			writeCacheByte((byte) (i >> 24));
+			writeCacheByte((byte) (i >> 16));
+			writeCacheByte((byte) (i >> 8));
+			writeCacheByte((byte) (i >> 0));
 		} finally {
 			timeEnd();
 		}
@@ -115,14 +113,13 @@ public class CachedRandomAccessFile {
 			page = new byte[PAGE_SIZE];
 			long len = Math.min(file.length() - pagePosition, page.length);
 			if (len > 0) {
-				file.readFully(page, 0, (int)len);
+				file.readFully(page, 0, (int) len);
 			}
 			pages.set(pageIndex, page);
 			pos = oldPos;
 			posDirty = true;
 		}
 		return page;
-
 	}
 
 	public void seek(long pos) throws IOException {
@@ -139,8 +136,8 @@ public class CachedRandomAccessFile {
 	public void readFully(byte[] b) throws IOException {
 		timeStart();
 		try {
-			int pageIndex = (int)(pos >> PAGE_SHIFT);
-			int offset = (int)(pos & PAGE_MASK);
+			int pageIndex = (int) (pos >> PAGE_SHIFT);
+			int offset = (int) (pos & PAGE_MASK);
 			int endPageOne = Math.min(b.length + offset, PAGE_SIZE);
 
 			byte[] page = getPage(pageIndex);
@@ -174,8 +171,8 @@ public class CachedRandomAccessFile {
 	public void write(byte[] b, int off, int len) throws IOException {
 		timeStart();
 		try {
-			int pageIndex = (int)(pos >> PAGE_SHIFT);
-			int offset = (int)(pos & PAGE_MASK);
+			int pageIndex = (int) (pos >> PAGE_SHIFT);
+			int offset = (int) (pos & PAGE_MASK);
 			int endPageOne = Math.min(len + offset, PAGE_SIZE);
 
 			byte[] page = getPage(pageIndex);
@@ -212,8 +209,8 @@ public class CachedRandomAccessFile {
 	}
 
 	private void writeCacheByte(byte b) throws IOException {
-		int pageIndex = (int)(pos >> PAGE_SHIFT);
-		int offset = (int)(pos & PAGE_MASK);
+		int pageIndex = (int) (pos >> PAGE_SHIFT);
+		int offset = (int) (pos & PAGE_MASK);
 		byte[] page = getPage(pageIndex);
 		page[offset] = b;
 		if (posDirty) {
@@ -225,8 +222,8 @@ public class CachedRandomAccessFile {
 	}
 
 	private byte readCacheByte() throws IOException {
-		int pageIndex = (int)(pos >> PAGE_SHIFT);
-		int offset = (int)(pos & PAGE_MASK);
+		int pageIndex = (int) (pos >> PAGE_SHIFT);
+		int offset = (int) (pos & PAGE_MASK);
 		byte[] page = getPage(pageIndex);
 		pos++;
 		posDirty = true;
@@ -257,5 +254,4 @@ public class CachedRandomAccessFile {
 			}
 		}
 	}
-
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -36,8 +36,7 @@ import org.spout.api.Engine;
 import org.spout.api.command.Command;
 
 /**
- * A copy of {@link jline.SimpleCompletor} that uses a set of strings sourced
- * from the list of commands registered with the commands manager
+ * A copy of {@link jline.SimpleCompletor} that uses a set of strings sourced from the list of commands registered with the commands manager
  */
 public class SpoutCommandCompletor implements Completor {
 	private final Engine engine;
@@ -47,9 +46,9 @@ public class SpoutCommandCompletor implements Completor {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public int complete(String buffer, int cursor,
-						@SuppressWarnings("rawtypes")
+						@SuppressWarnings ("rawtypes")
 						List candidates) {
 		String start = (buffer == null) ? "" : buffer;
 		TreeSet<String> all = new TreeSet<String>();

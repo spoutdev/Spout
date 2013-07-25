@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -42,7 +42,7 @@ import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.engine.SpoutEngine;
 
-public class SpoutEntitySnapshot implements EntitySnapshot{
+public class SpoutEntitySnapshot implements EntitySnapshot {
 	private final WeakReference<Entity> entity;
 	private final int entityId;
 	private final UUID uniqueId;
@@ -60,7 +60,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot{
 		if (e.isRemoved()) {
 			throw new IllegalArgumentException("Can not take a snapshot of a removed entity");
 		}
-		
+
 		this.entity = new WeakReference<Entity>(e);
 		this.entityId = e.getId();
 		this.uniqueId = e.getUID();
@@ -83,7 +83,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot{
 		}
 	}
 
-	public SpoutEntitySnapshot(UUID id, Transform t, UUID worldId, int view, boolean observer, byte[] dataMap, List<Class<? extends Component>> types ) {
+	public SpoutEntitySnapshot(UUID id, Transform t, UUID worldId, int view, boolean observer, byte[] dataMap, List<Class<? extends Component>> types) {
 		this.entity = new WeakReference<Entity>(null);
 		this.entityId = -1;
 		this.uniqueId = id;
@@ -159,7 +159,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot{
 		return components;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public SpoutEntity toEntity(SpoutEngine engine) {
 		return new SpoutEntity(engine, location, viewDistance, uniqueId, false, dataMap, components.toArray(new Class[0]));
 	}

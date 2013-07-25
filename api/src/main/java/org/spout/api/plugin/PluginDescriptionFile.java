@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -126,7 +126,7 @@ public class PluginDescriptionFile {
 		List<String> unmatchedProperties = new LinkedList<String>();
 		for (Entry<String, ConfigurationNode> e : children.entrySet()) {
 			final String entry = e.getKey();
-			
+
 			boolean success = false;
 			for (ConfigurationProperty<?> property : properties) {
 				if (property.matches(entry)) {
@@ -135,7 +135,7 @@ public class PluginDescriptionFile {
 					break;
 				}
 			}
-			
+
 			if (!success) {
 				unmatchedProperties.add(entry);
 			}
@@ -183,6 +183,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns true if the plugin is an Official Spout Plugin
+	 *
 	 * @param namespace The plugin's main class namespace
 	 * @return true if an official plugin
 	 */
@@ -195,6 +196,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's name
+	 *
 	 * @return name
 	 */
 	public String getName() {
@@ -203,6 +205,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's version
+	 *
 	 * @return version
 	 */
 	public String getVersion() {
@@ -211,6 +214,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's description
+	 *
 	 * @return description
 	 */
 	public String getDescription() {
@@ -219,6 +223,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's authors
+	 *
 	 * @return authors
 	 */
 	public List<String> getAuthors() {
@@ -227,6 +232,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's website
+	 *
 	 * @return website
 	 */
 	public String getWebsite() {
@@ -235,6 +241,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns false if the plugin wants to be exempt from a reload
+	 *
 	 * @return reload
 	 */
 	public boolean allowsReload() {
@@ -243,6 +250,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's platform
+	 *
 	 * @return platform
 	 */
 	public boolean isValidPlatform(Platform platform) {
@@ -257,6 +265,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's load order
+	 *
 	 * @return load
 	 */
 	public LoadOrder getLoad() {
@@ -265,6 +274,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the path the plugins main class
+	 *
 	 * @return main
 	 */
 	public String getMain() {
@@ -273,6 +283,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's dependencies
+	 *
 	 * @return depends
 	 */
 	public List<String> getDepends() {
@@ -281,6 +292,7 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's soft dependencies
+	 *
 	 * @return softdepends
 	 */
 	public List<String> getSoftDepends() {
@@ -288,8 +300,8 @@ public class PluginDescriptionFile {
 	}
 
 	/**
-	 * Returns the plugin's fullname The fullname is formatted as follows:
-	 * [name] v[version]
+	 * Returns the plugin's fullname The fullname is formatted as follows: [name] v[version]
+	 *
 	 * @return The full name of the plugin
 	 */
 	public String getFullName() {
@@ -297,8 +309,8 @@ public class PluginDescriptionFile {
 	}
 
 	/**
-	 * Returns the locale the strings in the plugin are coded in.
-	 * Will be read from the plugins properties.yml from the field "codedlocale"
+	 * Returns the locale the strings in the plugin are coded in. Will be read from the plugins properties.yml from the field "codedlocale"
+	 *
 	 * @return the locale the plugin is coded in
 	 */
 	public Locale getCodedLocale() {
@@ -319,15 +331,21 @@ public class PluginDescriptionFile {
 
 	private static interface ConfigurationProperty<T> {
 		public String name();
+
 		public boolean matches(String key);
+
 		public T getValue();
+
 		public void setValue(T value);
+
 		public void setValue(String key, ConfigurationNode node);
+
 		public boolean isRequired();
+
 		public boolean beenUpdated();
 	}
 
-	private static abstract class AbstractProperty<T> implements ConfigurationProperty<T>{
+	private static abstract class AbstractProperty<T> implements ConfigurationProperty<T> {
 		private final String name;
 		private T value;
 		private boolean updated = false;
@@ -341,7 +359,7 @@ public class PluginDescriptionFile {
 		public String name() {
 			return name;
 		}
-	
+
 		@Override
 		public boolean matches(String key) {
 			return name.equals(key);
@@ -369,9 +387,10 @@ public class PluginDescriptionFile {
 		}
 	}
 
-	private static class BasicProperty<T> extends AbstractProperty<T> implements ConfigurationProperty<T>{
+	private static class BasicProperty<T> extends AbstractProperty<T> implements ConfigurationProperty<T> {
 		private final Class<T> clazz;
 		private final boolean required;
+
 		public BasicProperty(String name, Class<T> clazz) {
 			super(name, null);
 			this.clazz = clazz;
@@ -395,9 +414,10 @@ public class PluginDescriptionFile {
 		}
 	}
 
-	private static class RegexListProperty extends AbstractProperty<List<String>>{
+	private static class RegexListProperty extends AbstractProperty<List<String>> {
 		private final boolean required;
 		private final Pattern pattern;
+
 		public RegexListProperty(String name, String regex, boolean required) {
 			super(name, new ArrayList<String>());
 			this.pattern = Pattern.compile(regex);
@@ -409,14 +429,14 @@ public class PluginDescriptionFile {
 			return pattern.matcher(key).matches();
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings ({"unchecked", "rawtypes"})
 		@Override
 		public void setValue(String key, ConfigurationNode node) {
 			List list = node.getTypedValue(List.class);
 			if (list != null) {
-				((List)this.getValue()).addAll(list);
+				((List) this.getValue()).addAll(list);
 			} else {
-				((List)this.getValue()).add(node.getTypedValue(String.class));
+				((List) this.getValue()).add(node.getTypedValue(String.class));
 			}
 		}
 
@@ -426,7 +446,7 @@ public class PluginDescriptionFile {
 		}
 	}
 
-	private static class LocaleProperty extends AbstractProperty<Locale>{
+	private static class LocaleProperty extends AbstractProperty<Locale> {
 		public LocaleProperty(String name, Locale def) {
 			super(name, def);
 		}
@@ -443,7 +463,7 @@ public class PluginDescriptionFile {
 		}
 	}
 
-	private static class DataProperty extends AbstractProperty<Map<String, String>>{
+	private static class DataProperty extends AbstractProperty<Map<String, String>> {
 		public DataProperty(String name) {
 			super(name, new HashMap<String, String>());
 		}

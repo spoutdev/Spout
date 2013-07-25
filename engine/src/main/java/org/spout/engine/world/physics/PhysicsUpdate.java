@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -27,34 +27,34 @@
 package org.spout.engine.world.physics;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class PhysicsUpdate {
-
 	private final byte x;
 	private final byte y;
 	private final byte z;
 	private final EffectRange range;
 	private final BlockMaterial oldMaterial;
-	
+
 	public PhysicsUpdate(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial) {
-		this.x = (byte)x;
-		this.y = (byte)y;
-		this.z = (byte)z;
+		this.x = (byte) x;
+		this.y = (byte) y;
+		this.z = (byte) z;
 		this.range = range;
 		this.oldMaterial = oldMaterial;
 	}
-	
+
 	public int getX() {
 		return x & 0xFF;
 	}
-	
+
 	public int getY() {
 		return y & 0xFF;
 	}
-	
+
 	public int getZ() {
 		return z & 0xFF;
 	}
@@ -62,21 +62,19 @@ public class PhysicsUpdate {
 	public EffectRange getRange() {
 		return range;
 	}
-	
+
 	public BlockMaterial getOldMaterial() {
 		return oldMaterial;
 	}
-	
+
 	@Override
 	public String toString() {
-		 return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
-         .append("x", x)
-         .append("y", y)
-         .append("z", z)
-         .append("range", range.getClass().getName())
-		 .append("old-material", oldMaterial.getClass().getName())
-         .toString();
-
+		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
+				.append("x", x)
+				.append("y", y)
+				.append("z", z)
+				.append("range", range.getClass().getName())
+				.append("old-material", oldMaterial.getClass().getName())
+				.toString();
 	}
-	
 }

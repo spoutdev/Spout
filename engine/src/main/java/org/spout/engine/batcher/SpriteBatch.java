@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,12 +26,11 @@
  */
 package org.spout.engine.batcher;
 
-import gnu.trove.list.array.TFloatArrayList;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import gnu.trove.list.array.TFloatArrayList;
 import org.lwjgl.opengl.GL11;
 
 import org.spout.api.gui.render.RenderPart;
@@ -40,7 +39,6 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.effect.SnapshotRender;
-
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
 

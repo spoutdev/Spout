@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -36,19 +36,18 @@ import org.spout.nbt.Tag;
 import org.spout.nbt.util.NBTMapper;
 
 public class UUIDTag extends ListTag<LongTag> {
-
 	public UUIDTag(String name, UUID u) {
 		super(name, LongTag.class, UUIDToList(u));
 	}
-	
+
 	private static List<LongTag> UUIDToList(UUID u) {
 		List<LongTag> list = new ArrayList<LongTag>(2);
 		list.add(new LongTag("", u.getMostSignificantBits()));
 		list.add(new LongTag("", u.getLeastSignificantBits()));
 		return list;
 	}
-	
-	@SuppressWarnings("unchecked")
+
+	@SuppressWarnings ("unchecked")
 	public static UUID getValue(Tag<?> tag) {
 		try {
 			return getValue((ListTag<LongTag>) tag);
@@ -56,25 +55,24 @@ public class UUIDTag extends ListTag<LongTag> {
 			return null;
 		}
 	}
-	
+
 	public static UUID getValue(ListTag<LongTag> list) {
 		if (list == null) {
 			return null;
 		}
 		return getValue(list.getValue());
 	}
-	
+
 	public static UUID getValue(List<LongTag> list) {
 		if (list == null || list.size() != 2) {
 			return null;
 		}
 		Long m = NBTMapper.toTagValue(list.get(0), Long.class, null);
 		Long l = NBTMapper.toTagValue(list.get(1), Long.class, null);
-		
+
 		if (m == null || l == null) {
 			return null;
 		}
 		return new UUID(m, l);
 	}
-
 }

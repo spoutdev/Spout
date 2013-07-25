@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -135,33 +135,24 @@ public abstract class NetworkSynchronizer {
 	}
 
 	/**
-	 * Called just before the pre-snapshot stage.<br>
-	 * This stage can make changes but they should be checked to make sure they
-	 * are non-conflicting.
+	 * Called just before the pre-snapshot stage.<br> This stage can make changes but they should be checked to make sure they are non-conflicting.
 	 */
 	public void finalizeTick() {
 	}
+
 	public void preSnapshot() {
 	}
 
 	/**
 	 * Gets the viewable volume centred on the given chunk coordinates and the given view distance
-	 * 
-	 * @param cx
-	 * @param cy
-	 * @param cz
-	 * @param viewDistance
-	 * @return
 	 */
 	public Iterator<IntVector3> getViewableVolume(int cx, int cy, int cz, int viewDistance) {
 		return new OutwardIterator(cx, cy, cz, viewDistance);
 	}
-	
+
 	/**
 	 * Test if a given chunk base is in the view volume for a given player chunk base point
-	 * 
-	 * @param playerChunkBase
-	 * @param testChunkBase
+	 *
 	 * @return true if in the view volume
 	 */
 	public boolean isInViewVolume(Point playerChunkBase, Point testChunkBase, int viewDistance) {
@@ -170,8 +161,6 @@ public abstract class NetworkSynchronizer {
 
 	/**
 	 * Sets the protocol associated with this network synchronizer
-	 *
-	 * @param protocol
 	 */
 	// TODO simplify this process; shouldn't need to be set
 	public void setProtocol(Protocol protocol) {
@@ -181,16 +170,14 @@ public abstract class NetworkSynchronizer {
 			throw new IllegalStateException("Protocol may not be set twice for a network synchronizer");
 		}
 	}
-	
+
 	/**
 	 * Gets the reposition manager that converts local coordinates into remote coordinates
-	 * 
-	 * @return
 	 */
 	public RepositionManager getRepositionManager() {
 		return rm.get();
 	}
-	
+
 	public void setRepositionManager(RepositionManager rm) {
 		if (rm == null) {
 			this.rm.set(NullRepositionManager.getInstance());

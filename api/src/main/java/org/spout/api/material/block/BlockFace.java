@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,8 +26,9 @@
  */
 package org.spout.api.material.block;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.Serializable;
+
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
@@ -83,8 +84,7 @@ public enum BlockFace implements ByteBitMask, Serializable {
 	}
 
 	/**
-	 * Represents the rotation of the BlockFace in the world as a Quaternion.
-	 * This is the rotation form the west face to this face.
+	 * Represents the rotation of the BlockFace in the world as a Quaternion. This is the rotation form the west face to this face.
 	 *
 	 * @return the direction of the blockface.
 	 */
@@ -100,7 +100,7 @@ public enum BlockFace implements ByteBitMask, Serializable {
 	public Vector3 getOffset() {
 		return this.offset;
 	}
-	
+
 	/**
 	 * Represents the directional offset of this Blockface as an IntVector3.
 	 *
@@ -111,8 +111,7 @@ public enum BlockFace implements ByteBitMask, Serializable {
 	}
 
 	/**
-	 * Gets the opposite BlockFace. If this BlockFace has no opposite the method
-	 * will return itself.
+	 * Gets the opposite BlockFace. If this BlockFace has no opposite the method will return itself.
 	 *
 	 * @return the opposite BlockFace, or this if it has no opposite.
 	 */
@@ -126,8 +125,7 @@ public enum BlockFace implements ByteBitMask, Serializable {
 	}
 
 	/**
-	 * Uses a yaw angle to get the north, east, west or south face which points
-	 * into the same direction.
+	 * Uses a yaw angle to get the north, east, west or south face which points into the same direction.
 	 *
 	 * @param yaw to use
 	 * @return the block face

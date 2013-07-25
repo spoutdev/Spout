@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,42 +34,27 @@ import org.spout.api.math.GenericMath;
 import org.spout.api.util.concurrent.AtomicSequenceNumber;
 
 /**
- * Implements a store that stores {int, &lt;T&gt;} elementa.<br>
- * <br>
- * When an element is added, it is stored at an index decided by the store.<br>
- * <br>
- * The arrays used to store the elements are dynamically resized as more
- * elements are added.<br>
- * <br>
- * The number of elements added to the store may temporarily exceed the max
- * value, but only if a removal is performed shortly afterwards. The store will
- * spin lock until the number of elements is brought below the limit, so the
- * period of the violation should be short.<br>
- * <br>
- * A method is provided to test if an index is a reserved index, based on the
- * maximum lengths of the arrays. Only reserved indexes are used as element
- * indexes.<br>
+ * Implements a store that stores {int, &lt;T&gt;} elementa.<br> <br> When an element is added, it is stored at an index decided by the store.<br> <br> The arrays used to store the elements are
+ * dynamically resized as more elements are added.<br> <br> The number of elements added to the store may temporarily exceed the max value, but only if a removal is performed shortly afterwards. The
+ * store will spin lock until the number of elements is brought below the limit, so the period of the violation should be short.<br> <br> A method is provided to test if an index is a reserved index,
+ * based on the maximum lengths of the arrays. Only reserved indexes are used as element indexes.<br>
  *
  * @param <T> the type of the Object in the {int, &lt;T&gt;} pair
  */
 public final class AtomicIntArrayStore {
-
 	private final int SPINS = 10;
 	private final int MAX_FAIL_THRESHOLD = 256;
 	private final int WAIT_COUNT = 32;
 	private final int WAIT_MASK = WAIT_COUNT - 1;
 	private final int INITIAL_MIN_SIZE = 16; // the initial size to resize to
-
 	private final int maxLength;
 	private final AtomicInteger length = new AtomicInteger(0);
 	private final AtomicInteger entries = new AtomicInteger(0);
 	private final AtomicInteger scan = new AtomicInteger(0);
 	private final int reservedMask;
-
 	private final AtomicReference<boolean[]> emptyArray;
 	private final AtomicReference<AtomicIntegerArray> seqArray;
 	private final AtomicReference<int[]> intArray;
-	
 	private AtomicInteger[] waiting;
 
 	public AtomicIntArrayStore(int maxEntries) {
@@ -98,15 +83,9 @@ public final class AtomicIntArrayStore {
 	}
 
 	/**
-	 * Indicates if the given short should be reserved.<br>
-	 * <br>
-	 * Only ids where isReverved(id) returns true will be returned by the
-	 * add(...) method.<br>
-	 * <br>
-	 * Ids from (65536 - length) to 65535 are reserved. <br>
-	 * The top 2 bytes of the id are ignored.<br>
+	 * Indicates if the given short should be reserved.<br> <br> Only ids where isReverved(id) returns true will be returned by the add(...) method.<br> <br> Ids from (65536 - length) to 65535 are
+	 * reserved. <br> The top 2 bytes of the id are ignored.<br>
 	 *
-	 * @param id
 	 * @return true if the id is reserved
 	 */
 	public final boolean isReserved(int id) {
@@ -115,11 +94,7 @@ public final class AtomicIntArrayStore {
 	}
 
 	/**
-	 * Gets the int value stored at a given index.<br>
-	 * <br>
-	 * If there is no int stored at the index, then the return value is
-	 * undefined.<br>
-	 * <br>
+	 * Gets the int value stored at a given index.<br> <br> If there is no int stored at the index, then the return value is undefined.<br> <br>
 	 *
 	 * @param index the index
 	 * @return the int value
@@ -148,13 +123,8 @@ public final class AtomicIntArrayStore {
 	}
 
 	/**
-	 * Gets the sequence number associated with the element at a given index.<br>
-	 * <br>
-	 * A sequence number of DatatableSequenceNumber.UNSTABLE indicates that the
-	 * record is unstable.<br>
-	 * <br>
-	 * This method should NOT be used to test if a sequence number has changed.
-	 * Use testSequence(int index, int sequence) instead.
+	 * Gets the sequence number associated with the element at a given index.<br> <br> A sequence number of DatatableSequenceNumber.UNSTABLE indicates that the record is unstable.<br> <br> This method
+	 * should NOT be used to test if a sequence number has changed. Use testSequence(int index, int sequence) instead.
 	 *
 	 * @param index the index
 	 * @return the sequence number
@@ -164,10 +134,8 @@ public final class AtomicIntArrayStore {
 	}
 
 	/**
-	 * Tests if the sequence number has changed for a particular index.<br>
-	 * <br>
-	 * This method counts as both a volatile read and write, which is required
-	 * for confirming that no change has occurred in another thread.
+	 * Tests if the sequence number has changed for a particular index.<br> <br> This method counts as both a volatile read and write, which is required for confirming that no change has occurred in
+	 * another thread.
 	 *
 	 * @param index the index
 	 * @param expected the expected sequence number
@@ -176,28 +144,23 @@ public final class AtomicIntArrayStore {
 	public boolean testSequence(int index, int expected) {
 		return seqArray.get().compareAndSet(toInternal(index), expected, expected);
 	}
-	
+
 	/**
 	 * Tests if the location referred to by a particular index is stable
-	 * 
-	 * @param index
+	 *
 	 * @return true if stable
 	 */
 	public boolean testUnstable(int index) {
 		return testUnstableInternal(toInternal(index));
 	}
-	
+
 	private boolean testUnstableInternal(int index) {
 		int expected = AtomicSequenceNumber.UNSTABLE;
 		return seqArray.get().compareAndSet(index, expected, expected);
 	}
 
 	/**
-	 * Gets the id value stored at a given index.<br>
-	 * <br>
-	 * If there is no int stored at the index, then the return value is
-	 * undefined.<br>
-	 * <br>
+	 * Gets the id value stored at a given index.<br> <br> If there is no int stored at the index, then the return value is undefined.<br> <br>
 	 *
 	 * @param index the index
 	 * @return the int value
@@ -207,11 +170,7 @@ public final class AtomicIntArrayStore {
 	}
 
 	/**
-	 * Gets the data value stored at a given index.<br>
-	 * <br>
-	 * If there is no int stored at the index, then the return value is
-	 * undefined.<br>
-	 * <br>
+	 * Gets the data value stored at a given index.<br> <br> If there is no int stored at the index, then the return value is undefined.<br> <br>
 	 *
 	 * @param index the index
 	 * @return the int value
@@ -221,11 +180,7 @@ public final class AtomicIntArrayStore {
 	}
 
 	/**
-	 * Adds an entry to the store. The auxData parameter should be set to null
-	 * to indicate no auxiliary data.<br>
-	 * <br>
-	 * The index that is returned is guaranteed to be one of the reserved
-	 * indexes.<br>
+	 * Adds an entry to the store. The auxData parameter should be set to null to indicate no auxiliary data.<br> <br> The index that is returned is guaranteed to be one of the reserved indexes.<br>
 	 * <br>
 	 *
 	 * @param id the id
@@ -261,9 +216,7 @@ public final class AtomicIntArrayStore {
 	}
 
 	/**
-	 * Removes the array elements at the given index. The array should not be
-	 * empty at the index in question.<br>
-	 * <br>
+	 * Removes the array elements at the given index. The array should not be empty at the index in question.<br> <br>
 	 *
 	 * @param index the index
 	 * @return the int for old entry, or 0 if none
@@ -291,29 +244,22 @@ public final class AtomicIntArrayStore {
 			}
 		}
 	}
-	
+
 	/**
-	 * Attempts to lock the store.<br>
-	 * <br>
-	 * The lock will fail if the first element is already locked.  Once the first element is locked, it will keep attempting to lock the rest of the store until all elements are locked.
-	 * <br>
-	 * NOTE:  The store using spinning locks, so it must only be locked for a very short period of time
-	 * 
+	 * Attempts to lock the store.<br> <br> The lock will fail if the first element is already locked.  Once the first element is locked, it will keep attempting to lock the rest of the store until all
+	 * elements are locked. <br> NOTE:  The store using spinning locks, so it must only be locked for a very short period of time
+	 *
 	 * @return true if the store is locked
 	 */
 	public boolean tryLock() {
 		return tryLock(-1);
 	}
-	
+
 	/**
-	 * Attempts to lock the store.<br>
-	 * <br>
-	 * The lock will fail if the first element is already locked.  <br>
-	 * <br>
-	 * Once the first element is successfully locked, it will keep attempting to lock the rest of the store until all elements are locked, or the number of times it fails to lock exceeds maxFails.
-	 * <br>
-	 * NOTE:  The store using spinning locks, so it must only be locked for a very short period of time
-	 * 
+	 * Attempts to lock the store.<br> <br> The lock will fail if the first element is already locked.  <br> <br> Once the first element is successfully locked, it will keep attempting to lock the rest
+	 * of the store until all elements are locked, or the number of times it fails to lock exceeds maxFails. <br> NOTE:  The store using spinning locks, so it must only be locked for a very short period
+	 * of time
+	 *
 	 * @param maxFails the maximum number of lock failures before the method returns false
 	 * @return true if the store is locked
 	 */
@@ -328,7 +274,7 @@ public final class AtomicIntArrayStore {
 		lockedIndexes++;
 
 		int fails = 0;
-		
+
 		// Lock the remaining elements
 		for (int i = 1; i < length.get(); i++) {
 			int seq;
@@ -347,14 +293,14 @@ public final class AtomicIntArrayStore {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Unlocks the store.
 	 */
 	public void unlock() {
 		unlock(length.get());
 	}
-	
+
 	private void unlock(int lockedIndexes) {
 		for (int i = 0; i < lockedIndexes; i++) {
 			if (!seqArray.get().compareAndSet(i, AtomicSequenceNumber.UNSTABLE, AtomicSequenceNumber.get())) {
@@ -371,9 +317,10 @@ public final class AtomicIntArrayStore {
 	 */
 	private void resizeArrays() {
 		boolean locked = false;
-		while (needsResize() && !(locked = tryLock(MAX_FAIL_THRESHOLD)))
+		while (needsResize() && !(locked = tryLock(MAX_FAIL_THRESHOLD))) {
 			;
-		
+		}
+
 		if (!locked) {
 			return;
 		}
@@ -425,7 +372,6 @@ public final class AtomicIntArrayStore {
 		} finally {
 			unlock(lockedIndexes);
 		}
-
 	}
 
 	/**
@@ -481,11 +427,9 @@ public final class AtomicIntArrayStore {
 	}
 
 	/**
-	 * Indicates if the array needs resizing. An array is considered to need
-	 * resizing if it is at least 75% full.
+	 * Indicates if the array needs resizing. An array is considered to need resizing if it is at least 75% full.
 	 *
-	 * Once an array has a length of the maximum length, it is never considered
-	 * in need to resizing.
+	 * Once an array has a length of the maximum length, it is never considered in need to resizing.
 	 *
 	 * @return true if the array needs to be resized
 	 */
@@ -494,11 +438,9 @@ public final class AtomicIntArrayStore {
 		lengthThreshold -= lengthThreshold >> 2;
 		return length.get() < maxLength && entries.get() >= lengthThreshold;
 	}
-	
+
 	/**
 	 * Returns true if the array size is above minimum
-	 * 
-	 * @return
 	 */
 	public final boolean isAboveMinimumSize() {
 		return length.get() > this.INITIAL_MIN_SIZE;
@@ -540,17 +482,14 @@ public final class AtomicIntArrayStore {
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the waiting counter for the given index
-	 * 
-	 * @param index
-	 * @return
 	 */
 	public final AtomicInteger getWaiting(int index) {
 		return getWaitingInternal(toInternal(index));
 	}
-	
+
 	private final AtomicInteger getWaitingInternal(int index) {
 		return waiting[index & WAIT_MASK];
 	}

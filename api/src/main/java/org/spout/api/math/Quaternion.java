@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -57,15 +57,10 @@ public class Quaternion implements Serializable {
 	public static final Quaternion UNIT_Z = new Quaternion(0, 0, 1, 0, true);
 
 	/**
-	 * Constructs a new Quaternion with the given xyzw NOTE: This represents a
-	 * Unit Vector in 4d space. Do not use unless you know what you are doing.
-	 * If you want to create a normal rotation, use the angle/axis override.
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @param ignore Ignored. This is because float float float float should be
-	 * for angle/x,y,z
+	 * Constructs a new Quaternion with the given xyzw NOTE: This represents a Unit Vector in 4d space. Do not use unless you know what you are doing. If you want to create a normal rotation, use the
+	 * angle/axis override.
+	 *
+	 * @param ignore Ignored. This is because float float float float should be for angle/x,y,z
 	 */
 	public Quaternion(float x, float y, float z, float w, boolean ignore) {
 		this.x = x;
@@ -75,12 +70,9 @@ public class Quaternion implements Serializable {
 	}
 
 	/**
-	 * Constructs a new Quaternion that represents a given rotation around an
-	 * arbitrary axis
+	 * Constructs a new Quaternion that represents a given rotation around an arbitrary axis
+	 *
 	 * @param angle Angle, in Degrees, to rotate the axis about by
-	 * @param x-axis
-	 * @param y-axis
-	 * @param z-axis
 	 */
 	public Quaternion(float angle, float x, float y, float z) {
 		double halfAngle = Math.toRadians(angle) / 2;
@@ -92,10 +84,9 @@ public class Quaternion implements Serializable {
 	}
 
 	/**
-	 * Constructs a new Quaternion that represents a given rotation around an
-	 * arbitrary axis
+	 * Constructs a new Quaternion that represents a given rotation around an arbitrary axis
+	 *
 	 * @param angle Angle, in Degrees, to rotate the axis about by
-	 * @param axis
 	 */
 	public Quaternion(float angle, Vector3 axis) {
 		this(angle, axis.getX(), axis.getY(), axis.getZ());
@@ -110,7 +101,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the X component of the quaternion
-	 * @return
 	 */
 	public float getX() {
 		return x;
@@ -118,7 +108,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the Y component of the quaternion
-	 * @return
 	 */
 	public float getY() {
 		return y;
@@ -126,7 +115,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the Z component of the quaternion
-	 * @return
 	 */
 	public float getZ() {
 		return z;
@@ -134,7 +122,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the W component of the quaternion
-	 * @return
 	 */
 	public float getW() {
 		return w;
@@ -154,6 +141,7 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the direction this Quaternion is pointed at.
+	 *
 	 * @return direction of Quaternion
 	 */
 	public Vector3 getDirection() {
@@ -162,16 +150,13 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the length squared of the quaternion
-	 * @return
 	 */
 	public float lengthSquared() {
 		return QuaternionMath.lengthSquared(this);
 	}
 
 	/**
-	 * Returns the length of the quaternion. Note: This uses square root, so is
-	 * slowish
-	 * @return
+	 * Returns the length of the quaternion. Note: This uses square root, so is slowish
 	 */
 	public float length() {
 		return QuaternionMath.length(this);
@@ -179,7 +164,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns this quaternion but length() == 1
-	 * @return
 	 */
 	public Quaternion normalize() {
 		return QuaternionMath.normalize(this);
@@ -187,18 +171,14 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Multiplies this Quaternion by the other Quaternion
-	 * @param o
-	 * @return
 	 */
 	public Quaternion multiply(Quaternion o) {
 		return QuaternionMath.multiply(this, o);
 	}
 
 	/**
-	 * Creates and returns a new Quaternion that represnets this quaternion
-	 * rotated by the given Axis and Angle
-	 * @param angle
-	 * @param axis
+	 * Creates and returns a new Quaternion that represnets this quaternion rotated by the given Axis and Angle
+	 *
 	 * @return rotated Quaternion
 	 */
 	public Quaternion rotate(float angle, Vector3 axis) {
@@ -206,9 +186,8 @@ public class Quaternion implements Serializable {
 	}
 
 	/**
-	 * Creates and returns a new Quaternion that represnets this quaternion
-	 * rotated by the given Axis and Angle
-	 * @param angle
+	 * Creates and returns a new Quaternion that represnets this quaternion rotated by the given Axis and Angle
+	 *
 	 * @param x axis
 	 * @param y axis
 	 * @param z axis
@@ -219,11 +198,8 @@ public class Quaternion implements Serializable {
 	}
 
 	/**
-	 * Returns the angles about each axis of this quaternion stored in a Vector3
-	 * <p>
-	 * vect.X = Rotation about the X axis (Roll) vect.Y = Rotation about the Y
-	 * axis (Yaw) vect.Z = Rotation about the Z axis (Pitch)
-	 * @return
+	 * Returns the angles about each axis of this quaternion stored in a Vector3 <p> vect.X = Rotation about the X axis (Roll) vect.Y = Rotation about the Y axis (Yaw) vect.Z = Rotation about the Z axis
+	 * (Pitch)
 	 */
 	public Vector3 getAxisAngles() {
 		if (cachedAngle == null) {

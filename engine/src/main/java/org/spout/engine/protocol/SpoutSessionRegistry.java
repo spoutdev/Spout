@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,8 +33,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 
 /**
- * A list of all the sessions which provides a convenient {@link #pulse()}
- * method to pulse every session in one operation.
+ * A list of all the sessions which provides a convenient {@link #pulse()} method to pulse every session in one operation.
  */
 public final class SpoutSessionRegistry implements SessionRegistry {
 	/**
@@ -53,6 +52,7 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 
 	/**
 	 * Adds a new session.
+	 *
 	 * @param session The session to add.
 	 */
 	@Override
@@ -66,6 +66,7 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 
 	/**
 	 * Removes a session.
+	 *
 	 * @param session The session to remove.
 	 */
 	@Override

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -41,24 +41,36 @@ import org.spout.engine.protocol.builtin.codec.UpdateEntityCodec;
 import org.spout.engine.protocol.builtin.codec.WorldChangeCodec;
 
 /**
- * 
+ *
  */
 public class SpoutCodecLookupService extends CodecLookupService {
 	public SpoutCodecLookupService() {
 		super(256);
 		try {
-			/* 0x00 */ bind(LoginCodec.class);
-			/* 0x01 */ bind(SyncedMapCodec.class);
-			/* 0x02 */ bind(WorldChangeCodec.class);
-			/* 0x03 */ bind(CommandCodec.class);
-			/* 0x04 */ bind(UpdateEntityCodec.class);
-			/* 0x05 */ bind(EntityDatatableCodec.class);
-			/* 0x06 */ bind(ChunkDataCodec.class);
-			/* 0x07 */ bind(BlockUpdateCodec.class);
-			/* 0x08 */ bind(CuboidBlockUpdateCodec.class);
-			/* 0x09 */ bind(ClickRequestCodec.class);
-			/* 0x0A */ bind(ClickResponseCodec.class);
-			/* 0x0B */ bind(ChunkDatatableCodec.class);
+			/* 0x00 */
+			bind(LoginCodec.class);
+			/* 0x01 */
+			bind(SyncedMapCodec.class);
+			/* 0x02 */
+			bind(WorldChangeCodec.class);
+			/* 0x03 */
+			bind(CommandCodec.class);
+			/* 0x04 */
+			bind(UpdateEntityCodec.class);
+			/* 0x05 */
+			bind(EntityDatatableCodec.class);
+			/* 0x06 */
+			bind(ChunkDataCodec.class);
+			/* 0x07 */
+			bind(BlockUpdateCodec.class);
+			/* 0x08 */
+			bind(CuboidBlockUpdateCodec.class);
+			/* 0x09 */
+			bind(ClickRequestCodec.class);
+			/* 0x0A */
+			bind(ClickResponseCodec.class);
+			/* 0x0B */
+			bind(ChunkDatatableCodec.class);
 		} catch (Throwable t) {
 			throw new ExceptionInInitializerError(t);
 		}

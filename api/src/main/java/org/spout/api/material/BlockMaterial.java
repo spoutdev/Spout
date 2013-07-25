@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -28,6 +28,8 @@ package org.spout.api.material;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
 
 import org.spout.api.component.block.BlockComponent;
 import org.spout.api.entity.Entity;
@@ -47,44 +49,37 @@ import org.spout.api.math.Vector3;
 import org.spout.api.resource.SpoutModels;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.flag.Flag;
-
-import com.google.common.collect.ImmutableSet;
-
 import org.spout.physics.ReactDefaults;
 import org.spout.physics.collision.shape.CollisionShape;
 
 /**
  * Defines the specific characteristics of a Block
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings ("unchecked")
 public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial AIR = new Air();
 	public static final BlockMaterial UNBREAKABLE = new Solid("Unbreakable");
 	public static final BlockMaterial UNGENERATED = new Solid("Ungenerated").setInvisible();
 	public static final BlockMaterial ERROR = new Solid("Missing Plugin");
-
 	public static final BlockMaterial SOLID_BLUE = new Solid("SolidBlue", SpoutModels.SOLID_BLUE);
 	public static final BlockMaterial SOLID_BROWN = new Solid("SolidBrown", SpoutModels.SOLID_BROWN);
 	public static final BlockMaterial SOLID_GREEN = new Solid("SolidGreen", SpoutModels.SOLID_GREEN);
 	public static final BlockMaterial SOLID_LIGHTGREEN = new Solid("SolidLightGreen", SpoutModels.SOLID_LIGHTGREEN);
 	public static final BlockMaterial SOLID_RED = new Solid("SolidRed", SpoutModels.SOLID_RED);
 	public static final BlockMaterial SOLID_SKYBLUE = new Solid("SolidSkyBlue", SpoutModels.SOLID_SKYBLUE);
-
 	private final Set<Class<? extends BlockComponent>> components;
-
 	private ByteBitSet occlusion = new ByteBitSet(BlockFaces.NESWBT);
 	private float hardness = 0F;
 	private byte opacity = 0xF;
 	private boolean surface = true;
 	private boolean invisible = false;
-
 	//Collision
 	private CollisionShape shape;
 	private float mass = 1;
 	private float friction = ReactDefaults.DEFAULT_FRICTION_COEFFICIENT;
 	private float restitution = ReactDefaults.DEFAULT_RESTITUTION_COEFFICIENT;
 
-	public BlockMaterial(short dataMask, String name, String model, CollisionShape shape, Class<? extends BlockComponent>... components){
+	public BlockMaterial(short dataMask, String name, String model, CollisionShape shape, Class<? extends BlockComponent>... components) {
 		super(dataMask, name, model);
 		this.components = ImmutableSet.copyOf(components);
 		this.shape = shape;
@@ -121,7 +116,6 @@ public class BlockMaterial extends Material implements Placeable {
 		}
 
 		return (BlockMaterial) mat;
-
 	}
 
 	/**
@@ -209,6 +203,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Returns true if the block is opaque, false if not.
+	 *
 	 * @return True if opacity is 15, false if less than.
 	 */
 	public boolean isOpaque() {
@@ -234,8 +229,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Turns this Block Material in a fully opaque block, not letting light through from any side<br>
-	 * Sets opacity to 15 and sets occlusion to all faces
+	 * Turns this Block Material in a fully opaque block, not letting light through from any side<br> Sets opacity to 15 and sets occlusion to all faces
 	 *
 	 * @return this Block Material
 	 */
@@ -245,8 +239,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Turns this Block Material in a fully transparent block, letting light through from all sides<br>
-	 * Sets the opacity to 0 and sets occlusion to none
+	 * Turns this Block Material in a fully transparent block, letting light through from all sides<br> Sets the opacity to 0 and sets occlusion to none
 	 *
 	 * @return this Block Material
 	 */
@@ -256,8 +249,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Sets this Block Material as a surface material.  The height of the highest 
-	 * surface material is considered the surface height.
+	 * Sets this Block Material as a surface material.  The height of the highest surface material is considered the surface height.
 	 *
 	 * @return this Block Material
 	 */
@@ -277,8 +269,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * True if this block acts as an obstacle when placing a block on it false
-	 * if not.
+	 * True if this block acts as an obstacle when placing a block on it false if not.
 	 *
 	 * If the block is not an obstacle, placement will replace this block.
 	 *
@@ -289,8 +280,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * True if this block requires physic updates when a neighbor block changes,
-	 * false if not.
+	 * True if this block requires physic updates when a neighbor block changes, false if not.
 	 *
 	 * @return if this block requires physics updates
 	 */
@@ -309,11 +299,8 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Returns the maximum range of effect for physics updates to this material.  
-	 * This is triggered when the material is set to this material, or when the 
-	 * data is changed.
-	 * <br>
-	 * When triggered, all blocks in this range are queued for updating.
+	 * Returns the maximum range of effect for physics updates to this material. This is triggered when the material is set to this material, or when the data is changed. <br> When triggered, all blocks
+	 * in this range are queued for updating.
 	 *
 	 * @return the maximum range of updates
 	 */
@@ -322,11 +309,8 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Returns the maximum range of effect for physics updates to this material, when 
-	 * it is replaced by another material.  This is triggered when the material or 
-	 * sub-material (data & dataMask) is changed.
-	 * <br>
-	 * When triggered, all blocks in this range are queued for updating.
+	 * Returns the maximum range of effect for physics updates to this material, when it is replaced by another material.  This is triggered when the material or sub-material (data & dataMask) is
+	 * changed. <br> When triggered, all blocks in this range are queued for updating.
 	 *
 	 * @param data the data the block had when destroyed
 	 * @return the maximum range of updates
@@ -336,8 +320,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Gets the maximum distance of any physics effect.  This is used to determine if the update can be handled by 
-	 * the region thread and not to determine if any blocks should be updated.
+	 * Gets the maximum distance of any physics effect.  This is used to determine if the update can be handled by the region thread and not to determine if any blocks should be updated.
 	 *
 	 * @param data the data of the material
 	 * @return the maximum range of updates
@@ -374,8 +357,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Called when this block has to be destroyed.<br>
-	 * This function performs the actual destruction of the block.
+	 * Called when this block has to be destroyed.<br> This function performs the actual destruction of the block.
 	 *
 	 * @param block that got destroyed
 	 * @return true if the destruction occurred
@@ -385,8 +367,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Called after this block has been destroyed.<br>
-	 * This function performs possible post-destroy operations, such as effects.
+	 * Called after this block has been destroyed.<br> This function performs possible post-destroy operations, such as effects.
 	 *
 	 * @param block of the material that got destroyed
 	 * @param flags describing the destroy situation
@@ -395,8 +376,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Gets all the flags associated with this Material as a Block<br>
-	 * The flags are added to the input collection
+	 * Gets all the flags associated with this Material as a Block<br> The flags are added to the input collection
 	 *
 	 * @param block of this Material
 	 * @param flags to add to
@@ -405,8 +385,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Gets the occluded faces of this Block Material for the data value specified<br>
-	 * Occluded faces do not let light though and require rendering behind it at those faces
+	 * Gets the occluded faces of this Block Material for the data value specified<br> Occluded faces do not let light though and require rendering behind it at those faces
 	 *
 	 * @param data value of the material
 	 * @return the occluded faces
@@ -416,8 +395,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Sets the occludes faces of this Block Material<br>
-	 * Occluded faces do not let light though and require rendering behind it at those faces
+	 * Sets the occludes faces of this Block Material<br> Occluded faces do not let light though and require rendering behind it at those faces
 	 *
 	 * @param data of this Block Material
 	 * @param faces to make this Block Material occlude
@@ -429,8 +407,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Sets the occludes face of this Block Material<br>
-	 * Occluded faces do not let light though and require rendering behind it at those faces
+	 * Sets the occludes face of this Block Material<br> Occluded faces do not let light though and require rendering behind it at those faces
 	 *
 	 * @param data of this Block Material
 	 * @param face to make this Block Material occlude
@@ -462,9 +439,8 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Checks the block to see if it can be created at that position<br>
-	 * Orientation-specific checks are performed in the {@link canPlace} method<br>
-	 * Use this method to see if creation is possible at a given position when not placed
+	 * Checks the block to see if it can be created at that position<br> Orientation-specific checks are performed in the {@link canPlace} method<br> Use this method to see if creation is possible at a
+	 * given position when not placed
 	 *
 	 * @param block this Block Material should be created in
 	 * @param data for the material
@@ -476,9 +452,8 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Creates this Block Material at a block in the world<br>
-	 * Orientation-specific changes are performed in the {@link onPlacement} method<br>
-	 * Use this method to create the block at a given position when not placed
+	 * Creates this Block Material at a block in the world<br> Orientation-specific changes are performed in the {@link onPlacement} method<br> Use this method to create the block at a given position
+	 * when not placed
 	 *
 	 * @param block to create this Block Material in
 	 * @param data for the material
@@ -500,16 +475,14 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Called when the entity collides with a block material
+	 *
 	 * @param event The collision event, containing the collision information
 	 */
 	public void onCollided(final EntityCollideBlockEvent event) {
 	}
 
 	/**
-	 * Returns true if the material is a surface material.  The world's surface height is
-	 * defined as the y coordinate of the highest surface material in each column.
-	 *
-	 * @return
+	 * Returns true if the material is a surface material.  The world's surface height is defined as the y coordinate of the highest surface material in each column.
 	 */
 	public boolean isSurface() {
 		return surface;
@@ -517,6 +490,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Returns true if the block is completely invisible
+	 *
 	 * @return True if the block should never be rendered
 	 */
 	public boolean isInvisible() {
@@ -534,6 +508,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Returns true if the block is transparent, false if not.
+	 *
 	 * @return True if opacity is 0, false if more than.
 	 */
 	public boolean isTransparent() {
@@ -541,9 +516,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Called by the dynamic block update system.  If a material is changed into a
-	 * material that it is not compatible with, then this will automatically trigger
-	 * a block reset.
+	 * Called by the dynamic block update system.  If a material is changed into a material that it is not compatible with, then this will automatically trigger a block reset.
 	 *
 	 * @param m the other material
 	 * @return true if the two materials are compatible
@@ -582,6 +555,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Get the mass of this BlockMaterial
+	 *
 	 * @return The mass
 	 */
 	public float getMass() {
@@ -590,9 +564,10 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Sets the mass of this BlockMaterial
+	 *
 	 * @param mass The new mass
-	 * @throws IllegalArgumentException If provided mass is < 1f
 	 * @return This material, for chaining
+	 * @throws IllegalArgumentException If provided mass is < 1f
 	 */
 	public BlockMaterial setMass(final float mass) {
 		if (mass < 1) {
@@ -604,6 +579,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Get the friction of this BlockMaterial
+	 *
 	 * @return The friction
 	 */
 	public float getFriction() {
@@ -612,9 +588,10 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Sets the friction of this BlockMaterial
+	 *
 	 * @param friction The new friction
-	 * @throws IllegalArgumentException If provided friction is < 0f
 	 * @return This material, for chaining
+	 * @throws IllegalArgumentException If provided friction is < 0f
 	 */
 	public BlockMaterial setFriction(final float friction) {
 		if (friction < 0 || friction > 1) {
@@ -626,6 +603,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Get the restitution of this BlockMaterial
+	 *
 	 * @return The restitution
 	 */
 	public float getRestitution() {
@@ -634,9 +612,10 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Sets the restitution of this BlockMaterial
+	 *
 	 * @param restitution The new restitution
-	 * @throws IllegalArgumentException If provided restitution is < 0f
 	 * @return This material, for chaining
+	 * @throws IllegalArgumentException If provided restitution is < 0f
 	 */
 	public BlockMaterial setRestitution(final float restitution) {
 		if (restitution < 0 || restitution > 1) {
@@ -648,6 +627,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Gets the {@link CollisionShape} this BlockMaterial has.
+	 *
 	 * @return the collision shape
 	 */
 	public CollisionShape getShape() {
@@ -656,6 +636,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Sets the {@link CollisionShape} this BlockMaterial has/
+	 *
 	 * @param shape The new collision shape
 	 * @return This material, for chaining
 	 */

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,19 +26,11 @@
  */
 package org.spout.api.faker;
 
-import org.spout.api.faker.EngineFaker;
-import java.util.UUID;
-
 import org.mockito.Mockito;
-import org.spout.api.Client;
-import org.spout.api.Platform;
-import org.spout.api.Server;
-import org.spout.api.Spout;
 
 import org.spout.api.geo.World;
-import org.spout.api.resource.FileSystem;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings ("deprecation")
 public class WorldFaker {
 	private final static World worldInstance;
 
@@ -46,7 +38,7 @@ public class WorldFaker {
 		World world = Mockito.mock(World.class);
 		Mockito.when(world.getUID()).thenReturn(EngineFaker.TEST_UUID);
 
-		worldInstance = world;		
+		worldInstance = world;
 	}
 
 	public static World setupWorld() {

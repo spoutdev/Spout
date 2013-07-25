@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -28,8 +28,6 @@ package org.spout.api.command;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
-import org.spout.api.exception.ArgumentParseException;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,9 +36,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.spout.api.exception.ArgumentParseException;
+
 /**
- * Handle parsing and storing values of flags for a {@link CommandArguments}
- * Flags are stored in the same map as other command arguments in the attached CommandArguments instance.
+ * Handle parsing and storing values of flags for a {@link CommandArguments} Flags are stored in the same map as other command arguments in the attached CommandArguments instance.
  */
 public class CommandFlags {
 	public static final Pattern FLAG_REGEX = Pattern.compile("^-(?<key>-?[\\w]+)(?:=(?<value>.*))?$");
@@ -112,7 +111,7 @@ public class CommandFlags {
 		boolean anyFlags = false;
 		int oldIndex = args.index; // Make argument index invalid when parsing flags
 		args.index = args.length() + 1;
-		for (Iterator<String> it = args.getLive().iterator(); it.hasNext();) {
+		for (Iterator<String> it = args.getLive().iterator(); it.hasNext(); ) {
 			if (tryExtractFlags(it)) {
 				anyFlags = true;
 			}
@@ -122,8 +121,7 @@ public class CommandFlags {
 	}
 
 	/**
-	 * Handle a flag 'word' -- an element in the arguments list
-	 * May result in multiple flags
+	 * Handle a flag 'word' -- an element in the arguments list May result in multiple flags
 	 *
 	 * @param it The iterator to draw the arguments from
 	 * @return Whether any flags were successfully parsed
@@ -141,10 +139,11 @@ public class CommandFlags {
 			NumberFormat.getInstance().parse(rawFlag);
 			// If it's a number, it's not a flag
 			return false;
-		} catch (ParseException ex) {}
+		} catch (ParseException ex) {
+		}
 
 		it.remove();
-		
+
 		if (rawFlag.startsWith("-")) { // Long flag in form --flag
 			rawFlag = rawFlag.substring(1);
 			handleFlag(it, rawFlag, match.group("value"));
@@ -157,13 +156,9 @@ public class CommandFlags {
 	}
 
 	/**
-	 * Handles a flag.
-	 * 3 flag types:
-	 * <ul>
-	 *     <li>{@code --name=value} - These flags do not have to be defined in advance, and can replace any named positional arguments</li>
-	 *     <li>{@code -abc [value]} - These must be defined in advance, can optionally have a value. Multiple flags can be combined in one 'word'</li>
-	 *     <li>{@code --name [value]} - These must be defined in advance, can optionally have a value. Each 'word' contains one multicharacter flag name</li>
-	 * </ul>
+	 * Handles a flag. 3 flag types: <ul> <li>{@code --name=value} - These flags do not have to be defined in advance, and can replace any named positional arguments</li> <li>{@code -abc [value]} - These
+	 * must be defined in advance, can optionally have a value. Multiple flags can be combined in one 'word'</li> <li>{@code --name [value]} - These must be defined in advance, can optionally have a
+	 * value. Each 'word' contains one multicharacter flag name</li> </ul>
 	 *
 	 * @param it The iterator to source values from
 	 * @param name The name of the argument

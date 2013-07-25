@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -36,19 +36,17 @@ import org.spout.api.util.list.concurrent.RedirectableConcurrentLinkedQueue;
 import org.spout.engine.util.thread.AsyncManager;
 
 public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
-
 	private final AsyncManager taskManager;
-	
+
 	public TaskPriorityQueue(AsyncManager manager, long resolution) {
 		super(resolution);
 		taskManager = manager;
 	}
-	
+
 	/**
-	 * Gets the first pending task on the queue.  A task is considered pending if its next call time is less than or equal to the given current time.<br>
-	 * <br>
-	 * NOTE: This method should only be called from a single thread.  
-	 * 
+	 * Gets the first pending task on the queue.  A task is considered pending if its next call time is less than or equal to the given current time.<br> <br> NOTE: This method should only be called from
+	 * a single thread.
+	 *
 	 * @param currentTime the current time
 	 * @return the first pending task, or null if no task is pending
 	 */
@@ -56,10 +54,10 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 		if (Thread.currentThread() != taskManager.getExecutionThread()) {
 			throw new IllegalStateException("getPendingTask() may only be called from the thread that created the TaskPriorityQueue");
 		}
-		
+
 		return super.poll(currentTime);
 	}
-	
+
 	@Override
 	public boolean add(SpoutTask task) {
 		if (task != null) {
@@ -69,7 +67,7 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 		}
 		return super.add(task);
 	}
-		
+
 	@Override
 	public boolean redirect(SpoutTask task) {
 		return super.add(task);
@@ -86,7 +84,7 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("{");
@@ -101,7 +99,7 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 		}
 		return sb.append("}").toString();
 	}
-	
+
 	public List<SpoutTask> getTasks() {
 		List<SpoutTask> list = new ArrayList<SpoutTask>();
 		Iterator<RedirectableConcurrentLinkedQueue<SpoutTask>> iq = queueMap.values().iterator();

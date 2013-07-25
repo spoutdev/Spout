@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -29,17 +29,17 @@ package org.spout.api.util.map.concurrent.palette;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AtomicShortIntUniformBackingArray extends AtomicShortIntBackingArray {
-	
 	private final AtomicInteger store;
 
 	public AtomicShortIntUniformBackingArray(int length) {
 		this(length, (AtomicShortIntBackingArray) null);
 	}
+
 	public AtomicShortIntUniformBackingArray(AtomicShortIntBackingArray previous) {
 		this(previous.length(), previous);
 	}
-	
-	private  AtomicShortIntUniformBackingArray(int length, AtomicShortIntBackingArray previous) {
+
+	private AtomicShortIntUniformBackingArray(int length, AtomicShortIntBackingArray previous) {
 		super(length);
 		if (previous == null) {
 			store = new AtomicInteger(0);
@@ -52,7 +52,7 @@ public class AtomicShortIntUniformBackingArray extends AtomicShortIntBackingArra
 			throw new IllegalStateException("Unable to create uniform block store");
 		}
 	}
-	
+
 	public AtomicShortIntUniformBackingArray(int length, int initial) {
 		super(length);
 		store = new AtomicInteger(initial);
@@ -102,13 +102,14 @@ public class AtomicShortIntUniformBackingArray extends AtomicShortIntBackingArra
 	public boolean isPaletteMaxSize() {
 		return false;
 	}
+
 	@Override
 	public int[] getPalette() {
 		return new int[] {store.get()};
 	}
+
 	@Override
 	public int[] getBackingArray() {
 		return new int[] {};
 	}
-
 }

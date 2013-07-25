@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,12 +33,11 @@ import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.util.future.SimpleFuture;
 
 public class SpoutChunkSnapshotFuture extends SimpleFuture<ChunkSnapshot> implements Runnable {
-	
 	private final SpoutChunk chunk;
 	private final SnapshotType type;
 	private final EntityType entities;
 	private final ExtraData data;
-	
+
 	public SpoutChunkSnapshotFuture(SpoutChunk chunk, SnapshotType type, EntityType entities, ExtraData data) {
 		this.chunk = chunk;
 		this.type = type;
@@ -55,5 +54,4 @@ public class SpoutChunkSnapshotFuture extends SimpleFuture<ChunkSnapshot> implem
 			super.setThrowable(t);
 		}
 	}
-
 }

@@ -1,10 +1,10 @@
 /*
- * This file is part of Math.
+ * This file is part of Spout.
  *
  * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
- * Math is licensed under the Spout License Version 1.
+ * Spout is licensed under the Spout License Version 1.
  *
- * Math is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * Math is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,8 +34,7 @@ import org.spout.math.matrix.Matrix3;
 import org.spout.math.vector.Vector3;
 
 /**
- * Represent a quaternion of the form <code>xi + yj + zk + w</code>. The x, y, z and w components
- * are stored as floats. This class is immutable.
+ * Represent a quaternion of the form <code>xi + yj + zk + w</code>. The x, y, z and w components are stored as floats. This class is immutable.
  */
 public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
@@ -322,8 +321,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Returns a unit vector representing the direction of this quaternion, which is {@link
-	 * Vector3#FORWARD} rotated by this quaternion.
+	 * Returns a unit vector representing the direction of this quaternion, which is {@link Vector3#FORWARD} rotated by this quaternion.
 	 *
 	 * @return The vector representing the direction this quaternion is pointing to
 	 */
@@ -332,8 +330,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Returns the angles in degrees around the x, y and z axes that correspond to the rotation
-	 * represented by this quaternion.
+	 * Returns the angles in degrees around the x, y and z axes that correspond to the rotation represented by this quaternion.
 	 *
 	 * @return The angle in degrees for each axis, stored in a vector, in the corresponding component
 	 */
@@ -342,8 +339,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Returns the angles in radians around the x, y and z axes that correspond to the rotation
-	 * represented by this quaternion.
+	 * Returns the angles in radians around the x, y and z axes that correspond to the rotation represented by this quaternion.
 	 *
 	 * @return The angle in radians for each axis, stored in a vector, in the corresponding component
 	 */
@@ -371,9 +367,8 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Conjugates the quaternion. <br> Conjugation of a quaternion <code>a</code> is an operation
-	 * returning quaternion <code>a'</code> such that <code>a' * a = a * a' = |a|<sup>2</sup></code>
-	 * where <code>|a|<sup>2<sup/></code> is squared length of <code>a</code>.
+	 * Conjugates the quaternion. <br> Conjugation of a quaternion <code>a</code> is an operation returning quaternion <code>a'</code> such that <code>a' * a = a * a' = |a|<sup>2</sup></code> where
+	 * <code>|a|<sup>2<sup/></code> is squared length of <code>a</code>.
 	 *
 	 * @return the conjugated quaternion
 	 */
@@ -383,11 +378,9 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Inverts the quaternion. <br> Inversion of a quaternion <code>a</code> returns quaternion
-	 * <code>a<sup>-1</sup> = a' / |a|<sup>2</sup></code> where <code>a'</code> is {@link #conjugate()
-	 * conjugation} of <code>a</code>, and <code>|a|<sup>2</sup></code> is squared length of
-	 * <code>a</code>. <br> For any quaternions <code>a, b, c</code>, such that <code>a * b = c</code>
-	 * equations <code>a<sup>-1</sup> * c = b</code> and <code>c * b<sup>-1</sup> = a</code> are true.
+	 * Inverts the quaternion. <br> Inversion of a quaternion <code>a</code> returns quaternion <code>a<sup>-1</sup> = a' / |a|<sup>2</sup></code> where <code>a'</code> is {@link #conjugate()
+	 * conjugation} of <code>a</code>, and <code>|a|<sup>2</sup></code> is squared length of <code>a</code>. <br> For any quaternions <code>a, b, c</code>, such that <code>a * b = c</code> equations
+	 * <code>a<sup>-1</sup> * c = b</code> and <code>c * b<sup>-1</sup> = a</code> are true.
 	 *
 	 * @return the inverted quaternion
 	 */
@@ -531,8 +524,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Creates a new quaternion from the angle-axis rotation defined from the first to the second
-	 * vector.
+	 * Creates a new quaternion from the angle-axis rotation defined from the first to the second vector.
 	 *
 	 * @param from The first vector
 	 * @param to The second vector
@@ -587,8 +579,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Creates a new quaternion from the rotation double angle in degrees around the axis vector double
-	 * components.
+	 * Creates a new quaternion from the rotation double angle in degrees around the axis vector double components.
 	 *
 	 * @param angle The rotation angle in degrees
 	 * @param x The x component of the axis vector
@@ -601,8 +592,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Creates a new quaternion from the rotation double angle in radians around the axis vector double
-	 * components.
+	 * Creates a new quaternion from the rotation double angle in radians around the axis vector double components.
 	 *
 	 * @param angle The rotation angle in radians
 	 * @param x The x component of the axis vector
@@ -615,8 +605,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Creates a new quaternion from the rotation float angle in degrees around the axis vector float
-	 * components.
+	 * Creates a new quaternion from the rotation float angle in degrees around the axis vector float components.
 	 *
 	 * @param angle The rotation angle in degrees
 	 * @param x The x component of the axis vector
@@ -629,8 +618,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Creates a new quaternion from the rotation float angle in radians around the axis vector float
-	 * components.
+	 * Creates a new quaternion from the rotation float angle in radians around the axis vector float components.
 	 *
 	 * @param angle The rotation angle in radians
 	 * @param x The x component of the axis vector
@@ -645,8 +633,7 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
-	 * Creates a new quaternion from the rotation matrix. The matrix will be interpreted as a rotation
-	 * matrix even if it is not.
+	 * Creates a new quaternion from the rotation matrix. The matrix will be interpreted as a rotation matrix even if it is not.
 	 *
 	 * @param matrix The rotation matrix
 	 * @return The quaternion defined by the rotation matrix

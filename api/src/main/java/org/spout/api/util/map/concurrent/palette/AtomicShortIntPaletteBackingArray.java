@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,9 +33,7 @@ import org.spout.api.math.GenericMath;
 import org.spout.api.util.map.concurrent.AtomicVariableWidthArray;
 
 public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArray {
-	
 	private final static int CALCULATE_UNIQUE = -1;
-	
 	private final int width;
 	private final int paletteSize;
 	private final AtomicIntShortSingleUseHashMap idLookup;
@@ -47,11 +45,11 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 	public AtomicShortIntPaletteBackingArray(int length) {
 		this(null, length, false, false, CALCULATE_UNIQUE);
 	}
-	
+
 	public AtomicShortIntPaletteBackingArray(AtomicShortIntBackingArray previous, boolean expand) {
 		this(previous, previous.length(), false, expand, CALCULATE_UNIQUE);
 	}
-	
+
 	public AtomicShortIntPaletteBackingArray(AtomicShortIntBackingArray previous, int length, boolean compress, boolean expand, int unique) {
 		super(length);
 		if (previous == null) {
@@ -87,12 +85,12 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 			throw new IllegalStateException("Unable to copy old array to new array, as palette was filled, length " + length + ", paletteSize " + paletteSize + ", unique " + unique);
 		}
 	}
-	
+
 	public AtomicShortIntPaletteBackingArray(int length, int unique, int[] initial) {
 		super(length);
 		width = roundUpWidth(unique - 1);
 		int allowedPalette = AtomicShortIntPaletteBackingArray.getAllowedPalette(length);
-		paletteSize = Math.min(widthToPaletteSize(width), allowedPalette);		
+		paletteSize = Math.min(widthToPaletteSize(width), allowedPalette);
 		paletteCounter = new AtomicInteger(0);
 		maxPaletteSize = paletteSize == allowedPalette;
 		palette = new AtomicIntegerArray(paletteSize);
@@ -106,7 +104,7 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 			throw new IllegalStateException("Unable to copy old array to new array, as palette was filled, length " + length + ", paletteSize " + paletteSize + ", unique " + unique);
 		}
 	}
-	
+
 	public AtomicShortIntPaletteBackingArray(int length, int[] palette, int width, int[] variableWidthBlockArray) {
 		super(length);
 		this.width = width;
@@ -126,7 +124,7 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 	public int width() {
 		return width;
 	}
-	
+
 	@Override
 	public int getPaletteSize() {
 		return paletteSize;
@@ -136,7 +134,7 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 	public int getPaletteUsage() {
 		return paletteCounter.get();
 	}
-	
+
 	@Override
 	public boolean isPaletteMaxSize() {
 		return maxPaletteSize;
@@ -163,13 +161,11 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 		int newId = getId(update);
 		return store.compareAndSet(i, expId, newId);
 	}
-	
+
 	/**
 	 * Gets the id for the given value, allocating an id if required
-	 * 
-	 * @param value
+	 *
 	 * @return the id
-	 * @throws PaletteFullException
 	 */
 	private int getId(int value) throws PaletteFullException {
 		short id = idLookup.get(value);
@@ -188,9 +184,9 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 			return id;
 		}
 	}
-	
+
 	private static final int[] roundLookup = new int[65537];
-	
+
 	static {
 		roundLookup[0] = 0;
 		roundLookup[1] = 1;
@@ -209,16 +205,15 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 		roundLookup[8192] = 16;
 		roundLookup[16384] = 16;
 	}
-	
-	
+
 	public static int roundUpWidth(int i) {
 		return roundLookup[GenericMath.roundUpPow2(i + 1)];
 	}
-	
+
 	public static int widthToPaletteSize(int width) {
 		return 1 << width;
 	}
-	
+
 	public static int getAllowedPalette(int length) {
 		return length >> 2;
 	}
@@ -232,5 +227,4 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 	public int[] getBackingArray() {
 		return store.getPacked();
 	}
-
 }

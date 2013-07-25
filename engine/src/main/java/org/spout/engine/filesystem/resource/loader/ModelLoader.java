@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -40,7 +40,6 @@ import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
-
 import org.spout.engine.filesystem.resource.ClientModel;
 
 public class ModelLoader extends ResourceLoader {
@@ -55,29 +54,28 @@ public class ModelLoader extends ResourceLoader {
 		final Yaml yaml = new Yaml();
 		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(in));
 
-		Mesh mesh = Spout.getFileSystem().getResource((String)resourceProperties.get("Mesh"));
-		RenderMaterial material = Spout.getFileSystem().getResource((String)resourceProperties.get("Material"));
-		
+		Mesh mesh = Spout.getFileSystem().getResource((String) resourceProperties.get("Mesh"));
+		RenderMaterial material = Spout.getFileSystem().getResource((String) resourceProperties.get("Material"));
+
 		Skeleton skeleton = null;
-		
-		if(resourceProperties.containsKey("Skeleton")){
-			skeleton = Spout.getFileSystem().getResource((String)resourceProperties.get("Skeleton"));
+
+		if (resourceProperties.containsKey("Skeleton")) {
+			skeleton = Spout.getFileSystem().getResource((String) resourceProperties.get("Skeleton"));
 		}
-		
+
 		Map<String, Animation> animations = new HashMap<String, Animation>();
-		
-		if(resourceProperties.containsKey("Animation")){
-			
+
+		if (resourceProperties.containsKey("Animation")) {
+
 			Map<? extends String, ?> map = checkerMapStringObject.check(resourceProperties.get("Animation"));
-			
-			for(Entry<? extends String, ?> entry : map.entrySet()){
-				Animation animation = Spout.getFileSystem().getResource( (String) entry.getValue() );
-				
+
+			for (Entry<? extends String, ?> entry : map.entrySet()) {
+				Animation animation = Spout.getFileSystem().getResource((String) entry.getValue());
+
 				animations.put(entry.getKey(), animation);
 			}
 		}
 
 		return new ClientModel(mesh, skeleton, material, animations);
 	}
-
 }

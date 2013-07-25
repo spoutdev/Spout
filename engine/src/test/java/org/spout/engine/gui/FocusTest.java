@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -30,17 +30,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.api.mockito.PowerMockito;
+
+import org.spout.api.component.widget.ControlComponent;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
-import org.spout.api.component.widget.ControlComponent;
 import org.spout.api.plugin.Plugin;
 
 public class FocusTest {
 	Screen screen;
 	Widget widget1, widget2, widget3;
-	
-	
+
 	@Before
 	public void setup() {
 		screen = new Screen();
@@ -55,19 +55,19 @@ public class FocusTest {
 		screen.attachWidget(plugin, widget2);
 		screen.attachWidget(plugin, widget3);
 	}
-	
+
 	@Test
 	public void testTabOrder() {
 		screen.setFocus(widget1);
 		screen.nextFocus(FocusReason.PROGRAMMED);
-		
+
 		Assert.assertEquals(widget2, screen.getFocusedWidget());
-		
+
 		screen.previousFocus(FocusReason.PROGRAMMED);
-		
+
 		Assert.assertEquals(widget1, screen.getFocusedWidget());
 	}
-	
+
 	@Test
 	public void testSanityChecks() {
 		widget1.detach(ControlComponent.class);

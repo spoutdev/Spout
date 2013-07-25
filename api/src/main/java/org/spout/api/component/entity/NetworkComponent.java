@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -51,6 +51,7 @@ public class NetworkComponent extends EntityComponent {
 
 	/**
 	 * Returns the {@link EntityProtocol} for the given protocol id for this type of entity
+	 *
 	 * @param protocolId The protocol id (retrieved using {@link #getProtocolId(String)})
 	 * @return The entity protocol for the specified id.
 	 */
@@ -60,6 +61,7 @@ public class NetworkComponent extends EntityComponent {
 
 	/**
 	 * Registers {@code protocol} with this ControllerType's EntityProtocolStore
+	 *
 	 * @param protocolId The protocol id (retrieved using {@link #getProtocolId(String)})
 	 * @param protocol The protocol to set
 	 */
@@ -77,6 +79,7 @@ public class NetworkComponent extends EntityComponent {
 
 	/**
 	 * Sends a protocol event to specific players.
+	 *
 	 * @param event to send
 	 */
 	public void callProtocolEvent(ProtocolEvent event, Player... players) {
@@ -90,6 +93,7 @@ public class NetworkComponent extends EntityComponent {
 
 	/**
 	 * Sends a protocol event to players observing this holder
+	 *
 	 * @param event to send
 	 * @param ignoreHolder If true, the holder will be excluded from being sent the protocol event (only valid if the holder has a NetworkSynchronier i.e. Player)
 	 */
@@ -122,6 +126,7 @@ public class NetworkComponent extends EntityComponent {
 
 	/**
 	 * Sends a protocol event to players observing this holder and the holder itself
+	 *
 	 * @param event to send
 	 */
 	public void callProtocolEvent(ProtocolEvent event) {

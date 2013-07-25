@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -43,28 +43,23 @@ import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.AnimationPlayed;
 import org.spout.api.model.animation.Skeleton;
-
 import org.spout.engine.mesh.BaseMesh;
 
 public class SpoutAnimationComponent extends AnimationComponent {
-
 	/**
 	 * Identity matrix used on bones when no animation to play
 	 */
 	private final static Matrix identity = MatrixMath.createIdentity();
-
 	//Depend of the shader
 	public final static int ALLOWED_BONE_PER_VERTEX = 2;
 	public final static int ALLOWED_ANIMATION_PER_MESH = 2;
 	public final static int ALLOWED_BONE_PER_MESH = 10;
 	public final static int LAYOUT_WEIGHT = 4;
 	public final static int LAYOUT_ID = 5;
-
 	/**
 	 * Entity can have more than one model, this Map allow to handle a list of animation for each model
 	 */
 	private Map<Model, List<AnimationPlayed>> animations = new HashMap<Model, List<AnimationPlayed>>();
-
 	/**
 	 * Matrices array at the size of managed skeleton used to fill shader when no animation to play
 	 */
@@ -107,13 +102,15 @@ public class SpoutAnimationComponent extends AnimationComponent {
 	public void stopAnimation(Model model, AnimationPlayed animation) {
 		List<AnimationPlayed> list = animations.get(model);
 
-		if(list == null)
+		if (list == null) {
 			return;
+		}
 
 		list.remove(animation);
 
-		if(list.isEmpty())
+		if (list.isEmpty()) {
 			animations.remove(model);
+		}
 	}
 
 	@Override
@@ -193,8 +190,6 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 	/**
 	 * Update played animation whith the elapsed time
-	 * @param model
-	 * @param dt
 	 */
 	public void updateAnimation(Model model, float dt) {
 		if (animations.isEmpty()) {
@@ -211,15 +206,15 @@ public class SpoutAnimationComponent extends AnimationComponent {
 			// Recompute the current frame to play
 			ac.setCurrentFrame((int) (ac.getCurrentTime() / ac.getAnimation().getDelay()));
 
-			if (ac.getCurrentFrame() >= ac.getAnimation().getFrame()) { 
-				if (ac.isLoop()) {	// Loop animation
+			if (ac.getCurrentFrame() >= ac.getAnimation().getFrame()) {
+				if (ac.isLoop()) {    // Loop animation
 					//Reset the animation
 
 					//TODO Use a modulo to keep continuous animation nice
 
 					ac.setCurrentTime(0);
 					ac.setCurrentFrame(0);
-				}else{
+				} else {
 					finished.add(ac);
 
 					//TODO : Send a AnimationEndEvent is the loop is enabled too ?
@@ -236,7 +231,6 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 	/**
 	 * Set bone_matrix for a model for currents animations
-	 * @param model
 	 */
 	public void render(Model model) {
 		int animationCount = 0;

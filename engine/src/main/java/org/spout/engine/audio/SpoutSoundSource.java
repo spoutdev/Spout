@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -38,9 +38,29 @@ import org.spout.api.event.audio.SoundStateChangeEvent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
-import static org.lwjgl.openal.AL10.*;
-import static org.lwjgl.openal.AL11.*;
-import static org.lwjgl.BufferUtils.*;
+import static org.lwjgl.BufferUtils.createFloatBuffer;
+import static org.lwjgl.openal.AL10.AL_BUFFER;
+import static org.lwjgl.openal.AL10.AL_DIRECTION;
+import static org.lwjgl.openal.AL10.AL_FALSE;
+import static org.lwjgl.openal.AL10.AL_GAIN;
+import static org.lwjgl.openal.AL10.AL_LOOPING;
+import static org.lwjgl.openal.AL10.AL_PITCH;
+import static org.lwjgl.openal.AL10.AL_POSITION;
+import static org.lwjgl.openal.AL10.AL_SOURCE_STATE;
+import static org.lwjgl.openal.AL10.AL_TRUE;
+import static org.lwjgl.openal.AL10.AL_VELOCITY;
+import static org.lwjgl.openal.AL10.alDeleteSources;
+import static org.lwjgl.openal.AL10.alGetSource;
+import static org.lwjgl.openal.AL10.alGetSourcef;
+import static org.lwjgl.openal.AL10.alGetSourcei;
+import static org.lwjgl.openal.AL10.alSource;
+import static org.lwjgl.openal.AL10.alSourcePause;
+import static org.lwjgl.openal.AL10.alSourcePlay;
+import static org.lwjgl.openal.AL10.alSourceRewind;
+import static org.lwjgl.openal.AL10.alSourceStop;
+import static org.lwjgl.openal.AL10.alSourcef;
+import static org.lwjgl.openal.AL10.alSourcei;
+import static org.lwjgl.openal.AL11.AL_SEC_OFFSET;
 
 public class SpoutSoundSource extends SoundSource {
 	private boolean disposed;
@@ -71,28 +91,36 @@ public class SpoutSoundSource extends SoundSource {
 
 	@Override
 	protected void doPlay() {
-		if (callStateEvent(SoundState.PLAYING)) return;
+		if (callStateEvent(SoundState.PLAYING)) {
+			return;
+		}
 		assertNotDisposed();
 		alSourcePlay(id);
 	}
 
 	@Override
 	public void pause() {
-		if (callStateEvent(SoundState.PAUSED)) return;
+		if (callStateEvent(SoundState.PAUSED)) {
+			return;
+		}
 		assertNotDisposed();
 		alSourcePause(id);
 	}
 
 	@Override
 	public void stop() {
-		if (callStateEvent(SoundState.STOPPED)) return;
+		if (callStateEvent(SoundState.STOPPED)) {
+			return;
+		}
 		assertNotDisposed();
 		alSourceStop(id);
 	}
 
 	@Override
 	public void rewind() {
-		if (callStateEvent(SoundState.STOPPED)) return;
+		if (callStateEvent(SoundState.STOPPED)) {
+			return;
+		}
 		assertNotDisposed();
 		alSourceRewind(id);
 	}
@@ -104,7 +132,9 @@ public class SpoutSoundSource extends SoundSource {
 
 	@Override
 	public void dispose() {
-		if (Spout.getEventManager().callEvent(new SoundDisposeEvent(this)).isCancelled()) return;
+		if (Spout.getEventManager().callEvent(new SoundDisposeEvent(this)).isCancelled()) {
+			return;
+		}
 		assertNotDisposed();
 		alDeleteSources(id);
 		disposed = true;

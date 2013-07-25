@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -36,9 +36,8 @@ import org.spout.api.math.Vector3;
  */
 public interface Placeable {
 	/**
-	 * Called when this block is about to be placed (before {@link #onPlacement(Block, short, BlockFace, boolean)}), 
-	 * checking if placement is allowed or not.
-	 * 
+	 * Called when this block is about to be placed (before {@link #onPlacement(Block, short, BlockFace, boolean)}), checking if placement is allowed or not.
+	 *
 	 * @param block to place
 	 * @param data block data to use during placement
 	 * @param against face against the block is placed
@@ -49,10 +48,9 @@ public interface Placeable {
 	public boolean canPlace(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock, Cause<?> cause);
 
 	/**
-	 * Called when this block is placed, handling the actual placement<br>
-	 * This method should only change properties that rely on the face it is placed against, 
-	 * or in what way it is placed. All other logic should be performed in onCreate.
-	 * 
+	 * Called when this block is placed, handling the actual placement<br> This method should only change properties that rely on the face it is placed against, or in what way it is placed. All other
+	 * logic should be performed in onCreate.
+	 *
 	 * @param block to affect
 	 * @param data block data to use during placement
 	 * @param against face against the block is placed

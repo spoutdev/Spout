@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -31,10 +31,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.spout.api.component.Component;
 import org.spout.api.entity.Player;
-
-import org.spout.api.event.Cause;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -45,8 +44,6 @@ import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TaskManager;
-import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
-
 import org.spout.engine.SpoutClient;
 
 public class SpoutClientWorld extends SpoutWorld {
@@ -54,6 +51,7 @@ public class SpoutClientWorld extends SpoutWorld {
 	 * Indicates if the snapshot queue for the renderer should be populated
 	 */
 	private final AtomicBoolean renderQueueEnabled = new AtomicBoolean(false);
+
 	public SpoutClientWorld(String name, SpoutClient client, UUID uid) {
 		super(name, client, 0, 0, null, uid);
 	}
@@ -65,7 +63,7 @@ public class SpoutClientWorld extends SpoutWorld {
 	public void addChunk(int chunkX, int chunkY, int chunkZ, short[] blockIds, short[] blockData) {
 		getRegionFromBlock(chunkX, chunkY, chunkZ, LoadOption.LOAD_GEN).addChunk(chunkX, chunkY, chunkZ, blockIds, blockData).render();
 	}
-	
+
 	public void removeChunk(int chunkX, int chunkY, int chunkZ) {
 		getRegionFromBlock(chunkX, chunkY, chunkZ, LoadOption.LOAD_GEN).removeChunk(chunkX, chunkY, chunkZ);
 	}
@@ -178,8 +176,7 @@ public class SpoutClientWorld extends SpoutWorld {
 	public void queueChunkForGeneration(Vector3 chunk) {
 		throw new UnsupportedOperationException("Client is not allowed to queue chunks for generation");
 	}
-	
-	
+
 	public void enableRenderQueue() {
 		this.renderQueueEnabled.set(true);
 	}

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,15 +30,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RedirectableConcurrentLinkedQueue<T extends LongPrioritized> extends ConcurrentLinkedQueue<T> implements LongPrioritized {
-
 	private static final long serialVersionUID = 1L;
 	private final AtomicReference<ConcurrentLongPriorityQueue<T>> redirect = new AtomicReference<ConcurrentLongPriorityQueue<T>>();
 	private final long priority;
-	
+
 	public RedirectableConcurrentLinkedQueue(long priority) {
 		this.priority = priority;
 	}
-	
+
 	@Override
 	public boolean add(T e) {
 		super.add(e);
@@ -48,14 +47,14 @@ public class RedirectableConcurrentLinkedQueue<T extends LongPrioritized> extend
 		}
 		return true;
 	}
-	
+
 	public void dumpToRedirect(ConcurrentLongPriorityQueue<T> target) {
 		T next;
 		while ((next = poll()) != null) {
 			target.redirect(next);
 		}
 	}
-	
+
 	public void setRedirect(ConcurrentLongPriorityQueue<T> target) {
 		if (!redirect.compareAndSet(null, target)) {
 			throw new IllegalStateException("Redirect may not be set more than once per redirectable queue");
@@ -66,5 +65,4 @@ public class RedirectableConcurrentLinkedQueue<T extends LongPrioritized> extend
 	public long getPriority() {
 		return priority;
 	}
-	
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.util.SpoutToStringStyle;
@@ -47,13 +48,17 @@ import org.spout.engine.SpoutServer;
  */
 public class PortBindings extends AnnotatedSubclassConfiguration {
 	private final SpoutServer server;
-	@Setting({"network", "addresses"}) private List<ConfigPortBinding> portBindings;
+	@Setting ({"network", "addresses"})
+	private List<ConfigPortBinding> portBindings;
 
 	public static class ConfigPortBinding extends AnnotatedSubclassConfiguration implements PortBinding {
-		@Setting("protocol") private String protocolName;
+		@Setting ("protocol")
+		private String protocolName;
 		private transient Protocol protocol;
-		@Setting("address") private String address = "0.0.0.0";
-		@Setting("port") private int port = -1;
+		@Setting ("address")
+		private String address = "0.0.0.0";
+		@Setting ("port")
+		private int port = -1;
 
 		public ConfigPortBinding(Configuration baseConfig) {
 			super(baseConfig);

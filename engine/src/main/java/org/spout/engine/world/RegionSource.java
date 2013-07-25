@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.event.world.RegionLoadEvent;
 import org.spout.api.event.world.RegionUnloadEvent;
@@ -45,11 +44,9 @@ import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
-import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 
 public class RegionSource implements Iterable<Region> {
 	private final static int REGION_MAP_BITS = 5;
-
 	private final static AtomicInteger regionsLoaded = new AtomicInteger(0);
 	private final static AtomicInteger warnThreshold = new AtomicInteger(Integer.MAX_VALUE);
 	/**
@@ -69,7 +66,7 @@ public class RegionSource implements Iterable<Region> {
 	@DelayedWrite
 	public void removeRegion(final SpoutRegion r) {
 		TickStage.checkStage(TickStage.SNAPSHOT);
-		
+
 		if (!r.getWorld().equals(world)) {
 			return;
 		}
@@ -90,11 +87,11 @@ public class RegionSource implements Iterable<Region> {
 								throw new IllegalStateException("Failed to de-register the region from the scheduler");
 							}
 							TaskManager tm = Spout.getEngine().getParallelTaskManager();
-							SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
+							SpoutParallelTaskManager ptm = (SpoutParallelTaskManager) tm;
 							ptm.unRegisterRegion(r);
 
 							TaskManager tmWorld = world.getParallelTaskManager();
-							SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
+							SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager) tmWorld;
 							ptmWorld.unRegisterRegion(r);
 
 							if (regionsLoaded.decrementAndGet() < 0) {
@@ -102,7 +99,7 @@ public class RegionSource implements Iterable<Region> {
 							}
 
 							Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
-							
+
 							r.unlinkNeighbours();
 						} else {
 							Spout.getLogger().info("Tried to remove region " + r + " but region removal failed");
@@ -118,14 +115,12 @@ public class RegionSource implements Iterable<Region> {
 	}
 
 	/**
-	 * Gets the region associated with the region x, y, z coordinates <br/>
-	 * <p>
-	 * Will load or generate a region if requested.
-	 * @param x    the x coordinate
-	 * @param y    the y coordinate
-	 * @param z    the z coordinate
-	 * @param loadopt whether to load or generate the region if one does not exist
-	 *             at the coordinates
+	 * Gets the region associated with the region x, y, z coordinates <br/> <p> Will load or generate a region if requested.
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param loadopt whether to load or generate the region if one does not exist at the coordinates
 	 * @return region
 	 */
 	@LiveRead
@@ -134,7 +129,7 @@ public class RegionSource implements Iterable<Region> {
 		if (loadopt != LoadOption.NO_LOAD) {
 			TickStage.checkStage(~TickStage.SNAPSHOT);
 		}
-		
+
 		SpoutRegion region = (SpoutRegion) loadedRegions.get(x, y, z);
 
 		if (region != null) {
@@ -156,23 +151,23 @@ public class RegionSource implements Iterable<Region> {
 		if (current != null) {
 			return current;
 		}
-		
-		((SpoutScheduler)Spout.getScheduler()).addAsyncManager(region);
+
+		((SpoutScheduler) Spout.getScheduler()).addAsyncManager(region);
 
 		int threshold = warnThreshold.get();
 		if (regionsLoaded.getAndIncrement() > threshold) {
 			Spout.getLogger().info("Warning: number of spout regions exceeds " + threshold + " when creating (" +
-                x + ", " + y + ", " + z + ")");
+					x + ", " + y + ", " + z + ")");
 			Thread.dumpStack();
 			warnThreshold.addAndGet(10);
 		}
 
 		TaskManager tm = Spout.getEngine().getParallelTaskManager();
-		SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
+		SpoutParallelTaskManager ptm = (SpoutParallelTaskManager) tm;
 		ptm.registerRegion(region);
 
 		TaskManager tmWorld = world.getParallelTaskManager();
-		SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
+		SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager) tmWorld;
 		ptmWorld.registerRegion(region);
 
 		Spout.getEventManager().callDelayedEvent(new RegionLoadEvent(world, region));
@@ -182,6 +177,7 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * True if there is a region loaded at the region x, y, z coordinates
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -194,6 +190,7 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * Gets an unmodifiable collection of all loaded regions.
+	 *
 	 * @return collection of all regions
 	 */
 	public Collection<Region> getRegions() {

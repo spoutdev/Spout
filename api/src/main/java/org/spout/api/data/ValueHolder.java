@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -251,10 +251,8 @@ public interface ValueHolder {
 	public abstract List<?> getList(List<?> def);
 
 	/**
-	 * Return this node's value as a string list.
-	 * Note that this will not necessarily return the same collection that is in this configuration's value.
-	 * This means that changes to the return value of this method might not affect the
-	 * configuration, so after changes the value of this node should be set to this list.
+	 * Return this node's value as a string list. Note that this will not necessarily return the same collection that is in this configuration's value. This means that changes to the return value of this
+	 * method might not affect the configuration, so after changes the value of this node should be set to this list.
 	 *
 	 * @return the string list value
 	 * @see #getStringList(java.util.List)
@@ -263,10 +261,8 @@ public interface ValueHolder {
 	public List<String> getStringList();
 
 	/**
-	 * Return this node's value as a string list.
-	 * Note that this will not necessarily return the same collection that is in this configuration's value.
-	 * This means that changes to the return value of this method might not affect the
-	 * configuration, so after changes the value of this node should be set to this list.
+	 * Return this node's value as a string list. Note that this will not necessarily return the same collection that is in this configuration's value. This means that changes to the return value of this
+	 * method might not affect the configuration, so after changes the value of this node should be set to this list.
 	 *
 	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean. If this is null it will act as an empty list.
 	 * @return the string list value
@@ -275,10 +271,8 @@ public interface ValueHolder {
 	public abstract List<String> getStringList(List<String> def);
 
 	/**
-	 * Return this node's value as an integer list.
-	 * Note that this will not necessarily return the same collection that is in this configuration's value.
-	 * This means that changes to the return value of this method might not affect the
-	 * configuration, so after changes the value of this node should be set to this list.
+	 * Return this node's value as an integer list. Note that this will not necessarily return the same collection that is in this configuration's value. This means that changes to the return value of
+	 * this method might not affect the configuration, so after changes the value of this node should be set to this list.
 	 *
 	 * @return the integer list value
 	 * @see #getStringList(java.util.List)
@@ -287,10 +281,8 @@ public interface ValueHolder {
 	public List<Integer> getIntegerList();
 
 	/**
-	 * Return this node's value as a string list.
-	 * Note that this will not necessarily return the same collection that is in this value.
-	 * This means that changes to the return value of this method might not affect the
-	 * value, so after changes the value of this node should be set to this list.
+	 * Return this node's value as a string list. Note that this will not necessarily return the same collection that is in this value. This means that changes to the return value of this method might
+	 * not affect the value, so after changes the value of this node should be set to this list.
 	 *
 	 * @param def The default value, returned if this node doesn't have a set value or the value isn't a boolean. If this is null it will act as an empty list.
 	 * @return the string list value

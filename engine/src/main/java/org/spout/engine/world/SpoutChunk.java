@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,11 +26,6 @@
  */
 package org.spout.engine.world;
 
-import gnu.trove.map.TShortObjectMap;
-import gnu.trove.map.hash.TShortObjectHashMap;
-import gnu.trove.procedure.TObjectProcedure;
-import gnu.trove.procedure.TShortObjectProcedure;
-
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.lang.ref.WeakReference;
@@ -38,12 +33,12 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
@@ -53,6 +48,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import com.google.common.collect.Sets;
+import gnu.trove.map.TShortObjectMap;
+import gnu.trove.map.hash.TShortObjectHashMap;
+import gnu.trove.procedure.TObjectProcedure;
+import gnu.trove.procedure.TShortObjectProcedure;
+
 import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
@@ -60,7 +61,6 @@ import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.block.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
-import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cause;
 import org.spout.api.event.block.BlockChangeEvent;
@@ -73,7 +73,6 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.BlockComponentContainer;
 import org.spout.api.geo.cuboid.BlockContainer;
 import org.spout.api.geo.cuboid.Chunk;
-import static org.spout.api.geo.cuboid.Chunk.BLOCKS;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
@@ -115,8 +114,6 @@ import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
-import com.google.common.collect.Sets;
-
 public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<SpoutChunk>(null);
 	//Not static to allow the engine to parse values first
@@ -133,15 +130,12 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	 */
 	private final TShortObjectHashMap<BlockComponentOwner> blockComponents = new TShortObjectHashMap<BlockComponentOwner>();
 	/**
-	 * Multi-thread write access to the block store is only allowed during the
-	 * allowed stages. During the restricted stages, only the region thread may
-	 * modify the block store.
+	 * Multi-thread write access to the block store is only allowed during the allowed stages. During the restricted stages, only the region thread may modify the block store.
 	 */
 	private static final int restrictedStages = TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS;
 	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART | TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 	/**
-	 * Storage for block ids, data and auxiliary data. For blocks with data = 0
-	 * and auxiliary data = null, the block is stored as a short.
+	 * Storage for block ids, data and auxiliary data. For blocks with data = 0 and auxiliary data = null, the block is stored as a short.
 	 */
 	protected AtomicBlockStore blockStore;
 	/**
@@ -163,7 +157,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	protected final SpoutColumn column;
 	protected final AtomicBoolean columnRegistered = new AtomicBoolean(true);
 	protected final AtomicLong lastUnloadCheck = new AtomicLong();
-
 	/**
 	 * This indicates that light for this chunk was stable when loaded from disk
 	 */
@@ -189,9 +182,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	 */
 	private static ContainerFillOrder STORE_FILL_ORDER = ContainerFillOrder.XZY;
 	/**
-	 * A set of all blocks in this chunk that need a physics update in the next
-	 * tick. The coordinates in this set are relative to the <b>Region</b> containing the
-	 * chunk.
+	 * A set of all blocks in this chunk that need a physics update in the next tick. The coordinates in this set are relative to the <b>Region</b> containing the chunk.
 	 */
 	private final PhysicsQueue physicsQueue;
 	private final SpoutScheduler scheduler;
@@ -204,13 +195,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	 * A WeakReference to this chunk
 	 */
 	private final WeakReference<SpoutChunk> selfReference;
-	
 	/**
 	 * An array of light buffers associated with this Chunk
 	 */
 	private final AtomicReference<CuboidLightBuffer[]> lightBuffers = new AtomicReference<CuboidLightBuffer[]>(new CuboidLightBuffer[0]);
 	private final static CuboidLightBuffer[] lightBufferExample = new CuboidLightBuffer[0];
-	
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
 	private final ChunkSetQueueElement<SpoutChunk> unloadQueueElement;
@@ -221,22 +210,17 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	private final ChunkSetQueueElement<SpoutChunk> globalPhysicsChunkQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> dirtyChunkQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> newChunkQueueElement;
-	
 	// TODO: reimplement these?
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = true;
-
 	// TODO: remove this and replace with above;
 	private boolean firstRender = true;
-
 	private final boolean isBlank;
-	
 	// Rendering
 	private final AtomicInteger renderSequence = new AtomicInteger(0);
 	private SpoutChunkSnapshot renderSnapshotCache;
-
 	private int generationIndex = -1;
-	
+
 	protected void setIsInViewDistance(boolean value) {
 		if (value && isBlockUniform() && getBlockMaterial(0, 0, 0) == BlockMaterial.AIR) {
 			return;
@@ -276,7 +260,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] block, short[] data, ManagedHashMap map) {
 		this(world, region, x, y, z, PopulationState.UNTOUCHED, block, data, map, false, false);
 	}
-	
+
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, AtomicBlockStore blockStore, ManagedHashMap extraData) {
 		this(world, region, x, y, z, PopulationState.UNTOUCHED, extraData, false, blockStore, false);
 	}
@@ -330,7 +314,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().globalPhysicsChunkQueue, this);
 		this.dirtyChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().dirtyChunkQueue, this);
 		this.newChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().newChunkQueue, this);
-		
+
 		this.isBlank = isBlank;
 	}
 
@@ -376,7 +360,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
-		
+
 		material = material.getSubMaterial(data);
 		short dataMask = material.getDataMask();
 		data = (short) ((data & ~dataMask) | (material.getData() & dataMask));
@@ -417,15 +401,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			int x = base.getFloorX();
 			int y = base.getFloorY();
 			int z = base.getFloorZ();
-			
+
 			if (testCuboid(x, y, z, buffer)) {
 				return false;
 			}
-			
+
 			setCuboid(x, y, z, buffer, cause);
-			
+
 			return true;
-			
 		} finally {
 			blockStore.writeUnlock();
 		}
@@ -468,9 +451,8 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			blockStore.writeUnlock();
 		}
 	}
-	
-	/** 
-	 *
+
+	/**
 	 * @return true if all materials are the same
 	 */
 	public boolean testCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer) {
@@ -517,7 +499,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			blockStore.writeUnlock();
 		}
 	}
-	
+
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(boolean backBuffer) {
 		return getCuboid(getBlockX(), getBlockY(), getBlockZ(), Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, backBuffer);
@@ -527,7 +509,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz) {
 		return getCuboid(bx, by, bz, sx, sy, sz, true);
 	}
-	
+
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz, boolean backBuffer) {
 		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(bx, by, bz, sx, sy, sz, backBuffer);
@@ -578,16 +560,16 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public void resetDynamicBlock(int x, int y, int z) {
 		parentRegion.resetDynamicBlock(getBlockX(x), getBlockY(y), getBlockZ(z));
 	}
-	
+
 	@Override
 	public void resetDynamicBlocks(Chunk c) {
 		parentRegion.resetDynamicBlocks(c);
 	}
-	
+
 	public void resetDynamicBlocks() {
 		resetDynamicBlocks(this);
 	}
-	
+
 	@Override
 	public void syncResetDynamicBlock(int x, int y, int z) {
 		parentRegion.syncResetDynamicBlock(getBlockX(x), getBlockY(y), getBlockZ(z));
@@ -637,7 +619,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		return (short) blockStore.getData(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK);
 	}
 
-	
 	public void setPhysicsActive(boolean local) {
 		if (local) {
 			this.localPhysicsChunkQueueElement.add();
@@ -836,7 +817,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		parentRegion.addSnapshotFuture(future);
 		return future;
 	}
-	
+
 	private void addToRegionUnloadQueue() {
 		this.unloadQueueElement.add();
 	}
@@ -910,6 +891,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	/**
 	 * Gets observers that have expired during the most recent tick
+	 *
 	 * @return the expired observers
 	 */
 	public Set<SpoutEntity> getExpiredObservers() {
@@ -934,7 +916,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 		return compressRaw();
 	}
-	
+
 	protected boolean compressRaw() {
 		blockStore.compress();
 		return true;
@@ -1009,11 +991,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public boolean isDirtyOverflow() {
 		return blockStore.isDirtyOverflow();
 	}
-	
+
 	protected IntVector3 getMaxDirty() {
 		return blockStore.getMaxDirty();
 	}
-	
+
 	protected IntVector3 getMinDirty() {
 		return blockStore.getMinDirty();
 	}
@@ -1080,7 +1062,13 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public enum SaveState {
-		UNLOAD_SAVE, UNLOAD, SAVE, NONE, SAVING, POST_SAVED, UNLOADED;
+		UNLOAD_SAVE,
+		UNLOAD,
+		SAVE,
+		NONE,
+		SAVING,
+		POST_SAVED,
+		UNLOADED;
 
 		public boolean isSave() {
 			return this == SAVE || this == UNLOAD_SAVE;
@@ -1392,7 +1380,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		setModified();
 		return true;
 	}
-	
+
 	public void populate(Populator populator) {
 		try {
 			long time = -bean.getCurrentThreadCpuTime();
@@ -1407,7 +1395,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	private final static ConcurrentHashMap<Class<? extends Populator>, AtomicLong> populatorProfilerMap = new ConcurrentHashMap<Class<? extends Populator>, AtomicLong>();
 	private final static ThreadMXBean bean = ManagementFactory.getThreadMXBean();
-	
+
 	private void populatorAdd(Populator populator, long delta) {
 		AtomicLong i = populatorProfilerMap.get(populator.getClass());
 		if (i == null) {
@@ -1419,7 +1407,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 		i.addAndGet(delta);
 	}
-	
+
 	private final static Comparator<Entry<Class<? extends Populator>, Long>> comp = new Comparator<Entry<Class<? extends Populator>, Long>>() {
 		@Override
 		public int compare(Entry<Class<? extends Populator>, Long> o1, Entry<Class<? extends Populator>, Long> o2) {
@@ -1432,17 +1420,17 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			}
 		}
 	};
-	
+
 	public static List<Entry<Class<? extends Populator>, Long>> getProfileResults() {
-		
+
 		List<Entry<Class<? extends Populator>, Long>> list = new ArrayList<Entry<Class<? extends Populator>, Long>>(populatorProfilerMap.size());
-		
+
 		for (Entry<Class<? extends Populator>, AtomicLong> e : populatorProfilerMap.entrySet()) {
 			list.add(new AbstractMap.SimpleEntry<Class<? extends Populator>, Long>(e.getKey(), e.getValue().get()));
 		}
-		
+
 		Collections.sort(list, comp);
-		
+
 		return list;
 	}
 
@@ -1552,6 +1540,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	/**
 	 * Not thread-safe, must synchronize on access
+	 *
 	 * @return block components
 	 */
 	public TShortObjectMap<BlockComponentOwner> getBlockComponentOwners() {
@@ -1629,8 +1618,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	private final BlockComponentTickProcedure procedure = new BlockComponentTickProcedure();
+
 	private static class BlockComponentTickProcedure implements TObjectProcedure<BlockComponentOwner> {
 		private float dt;
+
 		@Override
 		public boolean execute(BlockComponentOwner component) {
 			for (Component c : component.values()) {
@@ -1910,7 +1901,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 		int wy = y + this.getBlockY();
 		column.notifyBlockChange(x, wy, z);
-		
+
 		setModified();
 	}
 
@@ -1925,7 +1916,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	protected void queueDirty() {
 		dirtyChunkQueueElement.add();
 	}
-	
+
 	protected void queueNew() {
 		newChunkQueueElement.add();
 	}
@@ -2004,22 +1995,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	/**
-	 * Called when an entity enters the chunk.
-	 * This method is NOT called for players.
-	 * <p>
-	 * This method occurs during finalizeRun
-	 * @param e
+	 * Called when an entity enters the chunk. This method is NOT called for players. <p> This method occurs during finalizeRun
 	 */
 	public void onEntityEnter(SpoutEntity e) {
 		entitiesModified.compareAndSet(false, true);
 	}
 
 	/**
-	 * Called when an entity leaves the chunk.
-	 * This method is NOT called for players.
-	 * <p>
-	 * This method occurs during finalizeRun
-	 * @param e
+	 * Called when an entity leaves the chunk. This method is NOT called for players. <p> This method occurs during finalizeRun
 	 */
 	public void onEntityLeave(SpoutEntity e) {
 		entitiesModified.compareAndSet(false, true);
@@ -2045,7 +2028,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public boolean isRendered() {
 		return rendered;
 	}
-	
+
 	public void addLightingBufferData(List<LightingManager<?>> lightManagers, List<byte[]> lightData) {
 		for (int i = 0; i < lightData.size(); i++) {
 			LightingManager<?> manager = lightManagers.get(i);
@@ -2055,7 +2038,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			setIfAbsentLightBuffer(manager.getId(), buffer);
 		}
 	}
-	
+
 	@Override
 	public CuboidLightBuffer getLightBuffer(short id) {
 		//TickStage.checkStage(TickStage.LIGHTING);
@@ -2107,7 +2090,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 		return newBuf;
 	}
-	
+
 	protected CuboidLightBuffer[] getLightBuffers() {
 		CuboidLightBuffer[] array = lightBuffers.get();
 		ArrayList<CuboidLightBuffer> list = new ArrayList<CuboidLightBuffer>(array.length);
@@ -2119,7 +2102,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 		return list.toArray(lightBufferExample);
 	}
-	
+
 	protected CuboidLightBuffer[] copyLightBuffers() {
 		CuboidLightBuffer[] live = getLightBuffers();
 		CuboidLightBuffer[] newArray = new CuboidLightBuffer[live.length];
@@ -2130,13 +2113,12 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	private class ChunkSetQueueElement<T extends Cube> extends SetQueueElement<T> {
-		
 		private final boolean validIfUnloaded;
 
 		public ChunkSetQueueElement(SetQueue<T> queue, T value) {
 			this(queue, value, false);
 		}
-		
+
 		public ChunkSetQueueElement(SetQueue<T> queue, T value, boolean validIfUnloaded) {
 			super(queue, value);
 			this.validIfUnloaded = validIfUnloaded;
@@ -2146,23 +2128,21 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		protected boolean isValid() {
 			return validIfUnloaded || isLoaded();
 		}
-		
 	}
 
 	@Override
 	public int getGenerationIndex() {
 		return generationIndex;
 	}
-	
+
 	protected void setGenerationIndex(int index) {
 		this.generationIndex = index;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends CuboidLightBuffer> T getLightBuffer(LightingManager<T> manager) {
 		return (T) getLightBuffer(manager.getId());
-		
 	}
 
 	public int getRenderSequence() {
@@ -2181,27 +2161,29 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public void touchNeighborRender(BlockFaces neigbourstoUpdate) {
-		for(BlockFace face : neigbourstoUpdate){
+		for (BlockFace face : neigbourstoUpdate) {
 			SpoutChunk chunk = getWorld().getChunk(getX() + face.getOffset().getFloorX(), getY() + face.getOffset().getFloorY(), getZ() + face.getOffset().getFloorZ(), LoadOption.NO_LOAD);
-			if (chunk != null && !chunk.isBlank) chunk.render(BlockFaces.NONE);
+			if (chunk != null && !chunk.isBlank) {
+				chunk.render(BlockFaces.NONE);
+			}
 		}
 	}
 
 	public static AtomicInteger meshesGenerated = new AtomicInteger();
-	
+
 	public void render() {
 		render(BlockFaces.BTNSWE);
 	}
-	
+
 	public void render(BlockFaces neigbourstoUpdate) {
 		ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
 
 		chunks[1][1][1] = getRenderSnapshot();
 
-		for(BlockFace face : BlockFaces.BTNSWE){
+		for (BlockFace face : BlockFaces.BTNSWE) {
 			SpoutChunk chunk = getWorld().getChunk(getX() + face.getOffset().getFloorX(), getY() + face.getOffset().getFloorY(), getZ() + face.getOffset().getFloorZ(), LoadOption.NO_LOAD);
 
-			if(chunk == null){
+			if (chunk == null) {
 				continue;
 			}
 
@@ -2215,7 +2197,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		// TODO restore original functionality
 		if (first || isDirtyOverflow() || isLightDirty()) {
 			updatedRenderMaterials = null;
-			firstRender = false; 
+			firstRender = false;
 		} else {
 			updatedRenderMaterials = new HashSet<RenderMaterial>();
 			int dirtyBlocks = getDirtyBlocks();
@@ -2228,7 +2210,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				Vector3 blockPos = getDirtyBlock(i);
 				BlockMaterial material = getBlockMaterial(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ());
 				ByteBitSet occlusion = material.getOcclusion(material.getData());
-				for(BlockFace face : BlockFace.values()){ 
+				for (BlockFace face : BlockFace.values()) {
 					if (face.equals(BlockFace.THIS)) {
 						continue;
 					}
@@ -2251,7 +2233,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		setRenderDirty(false);
 		SpoutChunkSnapshotModel model = new SpoutChunkSnapshotModel(getWorld(), getX(), getY(), getZ(), chunks, 1, updatedRenderMaterials, first, System.currentTimeMillis());
 		SpoutScheduler.addToQueue(model);
-		
+
 		touchNeighborRender(neigbourstoUpdate);
 	}
 

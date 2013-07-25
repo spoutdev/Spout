@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -35,23 +35,21 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.io.store.simple.SimpleStore;
 
 /**
  * Represents a map for mapping Strings to unique ids.
  *
- * The class supports conversion of ids between maps and allocation of new
- * unique ids for unknown Strings
+ * The class supports conversion of ids between maps and allocation of new unique ids for unknown Strings
  *
  * Conversions to and from parent/child maps are cached
  */
 public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 	private final StringToUniqueIntegerMap parent;
-
 	private final AtomicIntegerArray thisToParentMap;
 	private final AtomicIntegerArray parentToThisMap;
-
 	private final int minId;
 	private final int maxId;
 	private AtomicInteger nextId;
@@ -174,8 +172,7 @@ public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 	/**
 	 * Registers a key with the map and returns the matching id.
 	 *
-	 * The id corresponding to a key will be consistent if registered more than
-	 * once, including over restarts, subject to the persistence of the store.
+	 * The id corresponding to a key will be consistent if registered more than once, including over restarts, subject to the persistence of the store.
 	 *
 	 * @param key the key to be added
 	 * @return returns the local id, or 0 on failure
@@ -205,14 +202,13 @@ public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 	}
 
 	/**
-	 * Registers a key/id pair with the map.  If the id is already in use the method will fail.<br>
-	 * <br>
-	 * The id must be lower than the min id for the map to prevent clashing with the dynamically allocated ids
+	 * Registers a key/id pair with the map.  If the id is already in use the method will fail.<br> <br> The id must be lower than the min id for the map to prevent clashing with the dynamically
+	 * allocated ids
 	 *
 	 * @param key the key to be added
 	 * @param id the desired id to be matched to the key
 	 * @return true if the key/id pair was successfully registered
-	 * @exception IllegalArgumentException if the id >= minId
+	 * @throws IllegalArgumentException if the id >= minId
 	 */
 	public boolean register(String key, int id) {
 		if (id >= this.minId) {
@@ -225,7 +221,6 @@ public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 	/**
 	 * Gets the String corresponding to a given int.
 	 *
-	 * @param value
 	 * @return the String or null if no match
 	 */
 	@Override
@@ -235,6 +230,7 @@ public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 
 	/**
 	 * Gets the int corresponding to a given String
+	 *
 	 * @param key The key
 	 * @return The int or null if no match
 	 */
@@ -254,8 +250,7 @@ public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 	}
 
 	/**
-	 * Returns a collection of all keys for all (key, value) pairs within the
-	 * Store
+	 * Returns a collection of all keys for all (key, value) pairs within the Store
 	 *
 	 * @return returns a Collection containing all the keys
 	 */

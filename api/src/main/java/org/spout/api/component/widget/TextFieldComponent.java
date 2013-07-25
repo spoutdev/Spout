@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -140,9 +140,8 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Returns the text on the specified row. Note that this method uses the
-	 * cached text field which means not all returned text is
-	 * necessarily visible.
+	 * Returns the text on the specified row. Note that this method uses the cached text field which means not all returned text is necessarily visible.
+	 *
 	 * @param row to get text from
 	 * @return text on specified row
 	 */
@@ -164,6 +163,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Returns the bounding {@link Rectangle} for this TextField.
+	 *
 	 * @return bounding rectangle of field
 	 */
 	public Rectangle getBounds() {
@@ -172,6 +172,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Returns the {@link Color} of the field being typed into.
+	 *
 	 * @return color of field
 	 */
 	public Color getFieldColor() {
@@ -180,6 +181,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Sets the {@link Color} of the field being typed into.
+	 *
 	 * @param color of the field
 	 */
 	public void setFieldColor(Color color) {
@@ -188,6 +190,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Sets the amount of rows in the TextField.
+	 *
 	 * @param rows in the text field
 	 */
 	public void setRows(int rows) {
@@ -203,6 +206,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Returns the amount of rows in the TextField.
+	 *
 	 * @return rows of TextField
 	 */
 	public int getRows() {
@@ -211,6 +215,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Returns the height of a row in the text field.
+	 *
 	 * @return the height of a single row
 	 */
 	public float getRowHeight() {
@@ -218,9 +223,8 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Returns the maximum amount of rows permitted in this TextField. When the
-	 * user exceeds this limit the text field will begin to scroll if the
-	 * {@link #isScrollable()} call returns <b>true</b>.
+	 * Returns the maximum amount of rows permitted in this TextField. When the user exceeds this limit the text field will begin to scroll if the {@link #isScrollable()} call returns <b>true</b>.
+	 *
 	 * @return maximum amount of rows
 	 */
 	public int getMaxRows() {
@@ -228,9 +232,8 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Sets the maximum amount of rows permitted in this TextField. When the
-	 * user exceeds this limit the text field will begin to scroll if the
-	 * {@link #isScrollable()} call returns <b>true</b>.
+	 * Sets the maximum amount of rows permitted in this TextField. When the user exceeds this limit the text field will begin to scroll if the {@link #isScrollable()} call returns <b>true</b>.
+	 *
 	 * @param maxRows maximum amount of rows
 	 */
 	public void setMaxRows(int maxRows) {
@@ -239,6 +242,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Returns the width of this field.
+	 *
 	 * @return width of the field
 	 */
 	public float getWidth() {
@@ -247,6 +251,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Sets the width of this field.
+	 *
 	 * @param width of the field
 	 */
 	public void setWidth(float width) {
@@ -255,9 +260,8 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Returns the maximum amount of chars permitted on a row. A new line will
-	 * be formed once exceeding this limit if permitted by
-	 * {@link #getMaxRows()}.
+	 * Returns the maximum amount of chars permitted on a row. A new line will be formed once exceeding this limit if permitted by {@link #getMaxRows()}.
+	 *
 	 * @return maximum amount of characters permitted on a row
 	 */
 	public int getMaxChars() {
@@ -265,9 +269,8 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Sets the maximum amount of characters permitted on a row. A new line
-	 * will be formed once exceeding this limit if permitted by
-	 * {@link #getMaxRows()}.
+	 * Sets the maximum amount of characters permitted on a row. A new line will be formed once exceeding this limit if permitted by {@link #getMaxRows()}.
+	 *
 	 * @param maxChars maximum amount of characters permitted on a row
 	 */
 	public void setMaxChars(int maxChars) {
@@ -275,8 +278,8 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Whether this text field will attach a scroll bar once the maximum number
-	 * of rows is exceeded that is specified by {@link #getMaxRows()}.
+	 * Whether this text field will attach a scroll bar once the maximum number of rows is exceeded that is specified by {@link #getMaxRows()}.
+	 *
 	 * @return whether this text field is scrollable
 	 */
 	public boolean isScrollable() {
@@ -284,8 +287,8 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Sets whether this text field will attach a scroll bar once the maximum
-	 * number of rows is exceeded that is specified by {@link #getMaxRows()}.
+	 * Sets whether this text field will attach a scroll bar once the maximum number of rows is exceeded that is specified by {@link #getMaxRows()}.
+	 *
 	 * @param scrollable whether this text field should attach a scroll bar.
 	 */
 	public void setScrollable(boolean scrollable) {
@@ -293,9 +296,8 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Whether this text field should output all inputted text as the character specified in
-	 * {@link #getPasswordChar()} for viewing protection for fields that could be used for
-	 * passwords.
+	 * Whether this text field should output all inputted text as the character specified in {@link #getPasswordChar()} for viewing protection for fields that could be used for passwords.
+	 *
 	 * @return true if this is a password field
 	 */
 	public boolean isPasswordField() {
@@ -303,10 +305,7 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Sets whether this text field should output all inputted text as the character specified in
-	 * {@link #getPasswordChar()} for viewing protection for fields that could be used for
-	 * passwords.
-	 * @param passwordField
+	 * Sets whether this text field should output all inputted text as the character specified in {@link #getPasswordChar()} for viewing protection for fields that could be used for passwords.
 	 */
 	public void setPasswordField(boolean passwordField) {
 		getData().get(KEY_PASSWORD_FIELD, passwordField);
@@ -321,6 +320,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Sets the character used when {@link #isPasswordField()} returns true.
+	 *
 	 * @param passwordChar char for password field
 	 */
 	public void setPasswordChar(char passwordChar) {
@@ -332,6 +332,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Whether a user has typed within the last <b>2 seconds</b>.
+	 *
 	 * @return true if user has typed within the last two seconds
 	 */
 	public boolean isTyping() {
@@ -339,10 +340,9 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Returns the index where the text cursor is located. <b>0</b> being the
-	 * first index located before the first character of the field's text.
-	 * The cursor must always be behind a character so this index may not
-	 * exceed the last index of the text's characters.
+	 * Returns the index where the text cursor is located. <b>0</b> being the first index located before the first character of the field's text. The cursor must always be behind a character so this
+	 * index may not exceed the last index of the text's characters.
+	 *
 	 * @return index of the cursor among the text
 	 */
 	public int getCursorIndex() {
@@ -350,10 +350,9 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Sets the index where the text cursor is located. <b>0</b> being the
-	 * first index located before the first character of the field's text.
-	 * The cursor must always be behind a character so this index may not
-	 * exceed the last index of the text's characters.
+	 * Sets the index where the text cursor is located. <b>0</b> being the first index located before the first character of the field's text. The cursor must always be behind a character so this index
+	 * may not exceed the last index of the text's characters.
+	 *
 	 * @param cursorIndex index of cursor
 	 */
 	public void setCursorIndex(int cursorIndex) {
@@ -381,6 +380,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Returns the current row on which the cursor is on.
+	 *
 	 * @return row that cursor is on
 	 */
 	public int getCursorRow() {
@@ -389,6 +389,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Sets the row on which the cursor is on.
+	 *
 	 * @param cursorRow row that cursor is on
 	 */
 	public void setCursorRow(int cursorRow) {
@@ -405,6 +406,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Returns the color of the text cursor.
+	 *
 	 * @return color of text cursor
 	 */
 	public Color getCursorColor() {
@@ -413,6 +415,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Sets the color of the text cursor.
+	 *
 	 * @param color of cursor
 	 */
 	public void setCursorColor(Color color) {
@@ -421,6 +424,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Whether the cursor is visible or not.
+	 *
 	 * @return true if cursor is visible
 	 */
 	public boolean isCursorVisible() {
@@ -428,8 +432,8 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Sets whether the cursor is visible or not. This method's primary use is
-	 * to implement the blinking cursor while a user is not typing.
+	 * Sets whether the cursor is visible or not. This method's primary use is to implement the blinking cursor while a user is not typing.
+	 *
 	 * @param visible true to make the cursor visible
 	 */
 	public void setCursorVisible(boolean visible) {
@@ -439,6 +443,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Returns the color of the field's border.
+	 *
 	 * @return color of field border
 	 */
 	public Color getBorderColor() {
@@ -447,6 +452,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Sets the color of the field's border.
+	 *
 	 * @param color of the border
 	 */
 	public void setBorderColor(Color color) {
@@ -454,11 +460,9 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Returns <b>all</b> of the text in the text field. The inputted text of
-	 * this text field must be cached in the text field because
-	 * {@link org.spout.api.component.widget.LabelComponent#getText()} only
-	 * returns any <b>visible</b> text; not all text in a text field is
-	 * necessarily visible.
+	 * Returns <b>all</b> of the text in the text field. The inputted text of this text field must be cached in the text field because {@link org.spout.api.component.widget.LabelComponent#getText()} only
+	 * returns any <b>visible</b> text; not all text in a text field is necessarily visible.
+	 *
 	 * @return all of the text
 	 */
 	public String getCachedText() {

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -48,7 +48,6 @@ import org.spout.engine.renderer.shader.ClientShader;
 
 public class ClientFont extends ClientTexture implements org.spout.api.render.Font {
 	private static final long serialVersionUID = 1L;
-
 	private static final String asciiset;
 	private static final FontRenderContext DEFAULT_CONTEXT = new FontRenderContext(null, true, true);
 	private ClientRenderMaterial material;
@@ -77,14 +76,13 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 
 	private static int indexOf(char c) {
-		return (((int)c) - 32);
+		return (((int) c) - 32);
 	}
 
 	public ClientFont(Font f) {
 		super(null, 0, 0);
 		this.ttfFont = f;
 		init();
-
 	}
 
 	private void init() {
@@ -94,13 +92,13 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		vec = ttfFont.createGlyphVector(DEFAULT_CONTEXT, asciiset);
 		Rectangle2D bounds = ttfFont.getStringBounds(asciiset, DEFAULT_CONTEXT);
 
-		for (int i = 0; i < 127 - 32 ; i++) {
-			glyphBounds[i] = vec.getGlyphPixelBounds(i*2, DEFAULT_CONTEXT, 0, ttfFont.getSize());
-			glyphMetrics[i] = vec.getGlyphMetrics(i*2);
+		for (int i = 0; i < 127 - 32; i++) {
+			glyphBounds[i] = vec.getGlyphPixelBounds(i * 2, DEFAULT_CONTEXT, 0, ttfFont.getSize());
+			glyphMetrics[i] = vec.getGlyphMetrics(i * 2);
 		}
 
 		//Create the font's bitmaptexture
-		BufferedImage image = new BufferedImage((int)bounds.getWidth()+2, (int)bounds.getHeight()+2, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage((int) bounds.getWidth() + 2, (int) bounds.getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = image.createGraphics();
 		g.setColor(Color.white);
 		g.drawGlyphVector(vec, 0, ttfFont.getSize());
@@ -127,7 +125,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		super.writeGPU();
 		Map<String, Object> params = new HashMap<>();
 		params.put("Diffuse", this);
-		material = new ClientRenderMaterial((ClientShader)Spout.getFileSystem().getResource("shader://Spout/shaders/textShader.ssf"), params);
+		material = new ClientRenderMaterial((ClientShader) Spout.getFileSystem().getResource("shader://Spout/shaders/textShader.ssf"), params);
 	}
 
 	@Override
@@ -153,18 +151,19 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	public int getSpaceWidth() {
 		return spaceWidth;
 	}
-	
+
 	public float getBearingX(char c) {
 		return glyphMetrics[indexOf(c)].getLSB();
 	}
-	
+
 	public float getBearingY(char c) {
 		AffineTransform ts = vec.getGlyphTransform(asciiset.indexOf(c));
-		if (ts==null)
+		if (ts == null) {
 			return 0;
-		return (float)ts.getTranslateY();
+		}
+		return (float) ts.getTranslateY();
 	}
-	
+
 	@Override
 	public float getAdvance(char c) {
 		return glyphMetrics[indexOf(c)].getAdvanceX();

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,8 +32,7 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.geo.discrete.Point;
 
 /**
- * Called when an {@link Entity} spawns into the world.
- * Implements {@link Cancellable}. Canceling this event will prevent the entity from spawning in the world.
+ * Called when an {@link Entity} spawns into the world. Implements {@link Cancellable}. Canceling this event will prevent the entity from spawning in the world.
  */
 public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
@@ -46,6 +45,7 @@ public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Gets the location in which spawning will take place.
+	 *
 	 * @return The location where spawning will take place.
 	 */
 	public Point getPoint() {
@@ -54,6 +54,7 @@ public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Sets the location in which spawning will take place.
+	 *
 	 * @param point The new location where spawning will take place.
 	 */
 	public void setPoint(Point point) {

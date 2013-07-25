@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,10 +34,8 @@ import org.spout.api.geo.discrete.Point;
  * A Protection defines a volume within the game world that a plugin manages and protects. They are always limited to a specific world.
  */
 public abstract class Protection implements WorldSource {
-
 	private final World world;
 	private final String name;
-
 	private String exitMessage = null;
 	private String enterMessage = null;
 
@@ -48,6 +46,7 @@ public abstract class Protection implements WorldSource {
 
 	/**
 	 * The name of the region
+	 *
 	 * @return the name
 	 */
 	public String getName() {
@@ -56,7 +55,7 @@ public abstract class Protection implements WorldSource {
 
 	/**
 	 * The world that this region is in.
-	 * 
+	 *
 	 * @return the world
 	 */
 	@Override
@@ -66,16 +65,14 @@ public abstract class Protection implements WorldSource {
 
 	/**
 	 * Checks if the given point is contained within the region.
-	 * 
-	 * @param point
+	 *
 	 * @return true, if the point is contained within this Region, otherwise false.
 	 */
 	public abstract boolean contains(Point point);
 
 	/**
 	 * Checks if the given block is contained within the region.
-	 * 
-	 * @param block
+	 *
 	 * @return true, if the point is contained within this Region, otherwise false.
 	 */
 	public boolean contains(Block block) {
@@ -84,8 +81,7 @@ public abstract class Protection implements WorldSource {
 
 	/**
 	 * Checks if the given entity's position is contained within the region.
-	 * 
-	 * @param entity
+	 *
 	 * @return true, if the entity is contained within this Region, otherwise false.
 	 */
 	public boolean contains(Entity entity) {
@@ -94,7 +90,7 @@ public abstract class Protection implements WorldSource {
 
 	/**
 	 * Generally, this is sent to a player when the player enters this region.
-	 * 
+	 *
 	 * @return the enter string.
 	 */
 	public String getEnterMessage() {
@@ -103,7 +99,6 @@ public abstract class Protection implements WorldSource {
 
 	/**
 	 * Sets the enter message for this region.
-	 * @param message
 	 */
 	public void setEnterMessage(String message) {
 		this.enterMessage = message;
@@ -111,7 +106,7 @@ public abstract class Protection implements WorldSource {
 
 	/**
 	 * Generally, this is sent to a player when the player exits this region.
-	 * 
+	 *
 	 * @return the exit string.
 	 */
 	public String getExitMessage() {
@@ -120,7 +115,6 @@ public abstract class Protection implements WorldSource {
 
 	/**
 	 * Sets this region's exit message.
-	 * @param message
 	 */
 	public void setExitMessage(String message) {
 		this.exitMessage = message;

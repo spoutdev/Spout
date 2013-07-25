@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,27 +32,25 @@ import java.util.NoSuchElementException;
 import org.spout.api.math.IntVector3;
 
 /**
- * An Iterator that iterates outwards from a given central 3d integer coordinate.<br>
- * <br>
- * The Manhattan distance from the given center to the coordinates in the sequence increases monotonically and the iterator passes through all integer coordinates.
+ * An Iterator that iterates outwards from a given central 3d integer coordinate.<br> <br> The Manhattan distance from the given center to the coordinates in the sequence increases monotonically and
+ * the iterator passes through all integer coordinates.
  */
 public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> {
-	
 	private final IntVector3 center;
 	private final IntVector3 step;
 	private int distance;
 	private int endDistance;
 	private boolean hasNext;
 	private boolean first = true;
-	
+
 	public OutwardIterator() {
 		this(0, 0, 0);
 	}
-	
+
 	public OutwardIterator(int x, int y, int z) {
 		this(x, y, z, Integer.MAX_VALUE);
 	}
-	
+
 	public OutwardIterator(int x, int y, int z, int maxDistance) {
 		super(x, y, z);
 		center = new IntVector3(x, y, z);
@@ -65,10 +63,6 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 
 	/**
 	 * Resets the iterator and positions it at (x, y, z)
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
 	 */
 	public void reset(int x, int y, int z) {
 		super.setX(x);
@@ -120,7 +114,7 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 			int dx = getX() - center.getX();
 			int dy = getY() - center.getY();
 			int dz = getZ() - center.getZ();
-			
+
 			// Last block was top of layer, move to start of next layer
 			if (dx == 0 && dz == 0 && dy >= 0) {
 				setY((center.getY() << 1) - getY() - 1);
@@ -139,16 +133,16 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 					// Bottom half of layer
 					if (dy < 0) {
 						setZ(getZ() + 1);
-					// Top half of layer
+						// Top half of layer
 					} else {
 						setZ(getZ() - 1);
-					// Reached top of layer
+						// Reached top of layer
 						if (getZ() == center.getZ()) {
 							step.setX(0);
 							step.setZ(0);
 						}
 					}
-				// Change direction (50% of horizontal slice complete)
+					// Change direction (50% of horizontal slice complete)
 				} else {
 					step.setX(-1);
 					step.setZ(1);
@@ -158,7 +152,7 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 				if (dx > 0) {
 					step.setX(-1);
 					step.setZ(-1);
-				// Change direction (75% of horizontal slice compete)
+					// Change direction (75% of horizontal slice compete)
 				} else {
 					step.setX(1);
 					step.setZ(1);
@@ -171,7 +165,7 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 		}
 		return this;
 	}
-	
+
 	public int getDistance() {
 		return distance;
 	}

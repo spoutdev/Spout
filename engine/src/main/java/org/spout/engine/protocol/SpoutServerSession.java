@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -38,7 +38,6 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.ServerSession;
-
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
 
@@ -57,7 +56,7 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> i
 			return getPlayer().getDisplayName() + " has left the game";
 		}
 	}
-	
+
 	// TODO why is this not is SpoutSession
 	@Override
 	public boolean disconnect(String reason) {
@@ -133,6 +132,4 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> i
 	public ServerNetworkSynchronizer getNetworkSynchronizer() {
 		return (ServerNetworkSynchronizer) super.getNetworkSynchronizer();
 	}
-	
-	
 }

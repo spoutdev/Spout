@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -37,7 +37,6 @@ import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.util.LogicUtil;
-
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.stream.NBTInputStream;
@@ -55,24 +54,21 @@ public class ItemStack implements Serializable, Cloneable {
 	private SerializableMap auxData;
 
 	/**
-	 * Creates a new ItemStack from the specified Material of the specified
-	 * amount
+	 * Creates a new ItemStack from the specified Material of the specified amount
 	 */
 	public ItemStack(Material material, int amount) {
 		this(material, material.getData(), amount);
 	}
 
 	/**
-	 * Creates a new ItemStack from the specified Material and data of the
-	 * specified amount
+	 * Creates a new ItemStack from the specified Material and data of the specified amount
 	 */
 	public ItemStack(Material material, int data, int amount) {
 		this(material, data, amount, null);
 	}
 
 	/**
-	 * Creates a new ItemStack from the specified Material and data of the
-	 * specified amount, with the specified aux data
+	 * Creates a new ItemStack from the specified Material and data of the specified amount, with the specified aux data
 	 */
 	public ItemStack(Material material, int data, int amount, SerializableMap auxData) {
 		this.material = material;
@@ -87,6 +83,7 @@ public class ItemStack implements Serializable, Cloneable {
 
 	/**
 	 * Gets the Material of the stack
+	 *
 	 * @return the material
 	 */
 	public Material getMaterial() {
@@ -95,6 +92,7 @@ public class ItemStack implements Serializable, Cloneable {
 
 	/**
 	 * Gets the amount of the Material contained in the item stack
+	 *
 	 * @return the amount
 	 */
 	public int getAmount() {
@@ -103,6 +101,7 @@ public class ItemStack implements Serializable, Cloneable {
 
 	/**
 	 * Sets amount of the Material contained in the item stack
+	 *
 	 * @param amount the amount
 	 */
 	public ItemStack setAmount(int amount) {
@@ -112,6 +111,7 @@ public class ItemStack implements Serializable, Cloneable {
 
 	/**
 	 * Gets whether this item stack is empty
+	 *
 	 * @return whether the amount equals zero
 	 */
 	public boolean isEmpty() {
@@ -143,6 +143,7 @@ public class ItemStack implements Serializable, Cloneable {
 
 	/**
 	 * Gets the map containing the aux data for this stack
+	 *
 	 * @return the aux data
 	 */
 	public DefaultedMap<Serializable> getAuxData() {
@@ -151,6 +152,7 @@ public class ItemStack implements Serializable, Cloneable {
 
 	/**
 	 * returns a copy of the map containing the aux data for this stack
+	 *
 	 * @return the aux data
 	 */
 	public CompoundMap getNBTData() {
@@ -163,6 +165,7 @@ public class ItemStack implements Serializable, Cloneable {
 
 	/**
 	 * Sets the aux data for this stack
+	 *
 	 * @return the item stack
 	 */
 	public ItemStack setNBTData(CompoundMap nbtData) {
@@ -175,8 +178,8 @@ public class ItemStack implements Serializable, Cloneable {
 	}
 
 	/**
-	 * If the item is null or empty, null is returned, otherwise the item is
-	 * cloned
+	 * If the item is null or empty, null is returned, otherwise the item is cloned
+	 *
 	 * @param item to clone
 	 * @return null, or the cloned item
 	 */
@@ -232,17 +235,10 @@ public class ItemStack implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Gets this item stack limited by the maximum stacking size<br>
-	 * The amount of this item stack is set to contain the remaining amount<br>
-	 * The amount of the returned stack is set to be this amount or the maximum
-	 * stacking size<br><br>
-	 * <p>
-	 * For example, limiting a stack of amount 120 to a max stacking size of 64
-	 * will:
-	 * <ul>
-	 * <li>Set the amount of this item stack to 56
-	 * <li>Return an item stack with amount 64
-	 * </ul>
+	 * Gets this item stack limited by the maximum stacking size<br> The amount of this item stack is set to contain the remaining amount<br> The amount of the returned stack is set to be this amount or
+	 * the maximum stacking size<br><br> <p> For example, limiting a stack of amount 120 to a max stacking size of 64 will: <ul> <li>Set the amount of this item stack to 56 <li>Return an item stack with
+	 * amount 64 </ul>
+	 *
 	 * @return the limited stack
 	 */
 	public ItemStack limitStackSize() {
@@ -250,16 +246,9 @@ public class ItemStack implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Gets this item stack limited by the maximum size specified<br>
-	 * The amount of this item stack is set to contain the remaining amount<br>
-	 * The amount of the returned stack is set to be this amount or the maximum
-	 * amount<br><br>
-	 * <p>
-	 * For example, limiting a stack of amount 5 to a max size of 2 will:
-	 * <ul>
-	 * <li>Set the amount of this item stack to 3
-	 * <li>Return an item stack with amount 2
-	 * </ul>
+	 * Gets this item stack limited by the maximum size specified<br> The amount of this item stack is set to contain the remaining amount<br> The amount of the returned stack is set to be this amount or
+	 * the maximum amount<br><br> <p> For example, limiting a stack of amount 5 to a max size of 2 will: <ul> <li>Set the amount of this item stack to 3 <li>Return an item stack with amount 2 </ul>
+	 *
 	 * @return the limited stack
 	 */
 	public ItemStack limitSize(int maxSize) {
@@ -274,13 +263,9 @@ public class ItemStack implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Tries to stack an item on top of this item<br>
-	 * The item must have the same properties as this item stack<br>
-	 * The amount of this item is kept below the max stacking size<br><br>
-	 * <p>
-	 * The input item amount is affected<br>
-	 * If true is returned, this amount is 0, otherwise it is the amount it
-	 * didn't stack into this item
+	 * Tries to stack an item on top of this item<br> The item must have the same properties as this item stack<br> The amount of this item is kept below the max stacking size<br><br> <p> The input item
+	 * amount is affected<br> If true is returned, this amount is 0, otherwise it is the amount it didn't stack into this item
+	 *
 	 * @param item to stack
 	 * @return True if stacking was successful, False otherwise
 	 */
@@ -303,8 +288,8 @@ public class ItemStack implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Gets the maximum size this {@link ItemStack} can be using the material
-	 * it has
+	 * Gets the maximum size this {@link ItemStack} can be using the material it has
+	 *
 	 * @return the max stack size
 	 */
 	public int getMaxStackSize() {
@@ -315,8 +300,8 @@ public class ItemStack implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Gets the maximum data this {@link ItemStack} can have using the material
-	 * it has
+	 * Gets the maximum data this {@link ItemStack} can have using the material it has
+	 *
 	 * @return the max data
 	 */
 	public short getMaxData() {

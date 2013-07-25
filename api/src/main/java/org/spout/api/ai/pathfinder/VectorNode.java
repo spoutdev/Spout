@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -28,10 +28,10 @@ package org.spout.api.ai.pathfinder;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import org.spout.api.ai.AStarNode;
 import org.spout.api.math.Vector3;
-
-import com.google.common.collect.Lists;
 
 public class VectorNode extends AStarNode implements PathPoint {
 	private float blockCost = -1;
@@ -48,8 +48,9 @@ public class VectorNode extends AStarNode implements PathPoint {
 
 	@Override
 	public void addCallback(PathCallback callback) {
-		if (callbacks == null)
+		if (callbacks == null) {
 			callbacks = Lists.newArrayList();
+		}
 		callbacks.add(callback);
 	}
 
@@ -83,14 +84,17 @@ public class VectorNode extends AStarNode implements PathPoint {
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
 				for (int z = -1; z <= 1; z++) {
-					if (x == 0 && y == 0 && z == 0)
+					if (x == 0 && y == 0 && z == 0) {
 						continue;
+					}
 					Vector3 mod = location.add(x, y, z);
-					if (mod.equals(location))
+					if (mod.equals(location)) {
 						continue;
+					}
 					VectorNode sub = getNewNode(mod);
-					if (!isPassable(sub))
+					if (!isPassable(sub)) {
 						continue;
+					}
 					nodes.add(sub);
 				}
 			}
@@ -109,8 +113,9 @@ public class VectorNode extends AStarNode implements PathPoint {
 	private boolean isPassable(PathPoint mod) {
 		for (BlockExaminer examiner : examiners) {
 			boolean passable = examiner.isPassable(blockSource, mod);
-			if (!passable)
+			if (!passable) {
 				return false;
+			}
 		}
 		return true;
 	}

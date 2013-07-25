@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -34,11 +34,10 @@ import org.spout.api.scheduler.Worker;
 import org.spout.api.util.future.SimpleFuture;
 
 public class SpoutWorker implements Worker, Runnable {
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings ("rawtypes")
 	private static final Future<?> NOT_SUBMITED = new SimpleFuture();
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings ("rawtypes")
 	private static final Future<?> CANCELLED = new SimpleFuture();
-	
 	private final int id;
 	private final Object owner;
 	private final SpoutTask task;
@@ -68,7 +67,7 @@ public class SpoutWorker implements Worker, Runnable {
 		}
 		this.taskManager = taskManager;
 	}
-	
+
 	public void start(ExecutorService pool) {
 		if (thread != null) {
 			thread.start();
@@ -79,7 +78,7 @@ public class SpoutWorker implements Worker, Runnable {
 			}
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return id;
@@ -108,7 +107,7 @@ public class SpoutWorker implements Worker, Runnable {
 	public void cancel() {
 		taskManager.cancelTask(task);
 	}
-	
+
 	public void interrupt() {
 		if (thread != null) {
 			thread.interrupt();

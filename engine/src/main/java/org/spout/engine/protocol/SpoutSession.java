@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,7 +33,9 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
+
 import org.jboss.netty.channel.Channel;
+
 import org.spout.api.Server;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
@@ -51,15 +53,13 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutPlayer;
 
 /**
- * A single connection to the server, which may or may not be associated with a
- * player.
+ * A single connection to the server, which may or may not be associated with a player.
  */
 public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	/**
-	 * The number of ticks which are elapsed before a client is disconnected due
-	 * to a timeout.
+	 * The number of ticks which are elapsed before a client is disconnected due to a timeout.
 	 */
-	@SuppressWarnings("unused")
+	@SuppressWarnings ("unused")
 	private static final int TIMEOUT_TICKS = 20 * 60;
 	/**
 	 * The server this session belongs to.
@@ -105,38 +105,32 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 * The protocol for this session
 	 */
 	private final AtomicReference<Protocol> protocol;
-
 	/**
-	 * Stores if this is Connected
-	 * TODO: Probably add to SpoutAPI
+	 * Stores if this is Connected TODO: Probably add to SpoutAPI
 	 */
 	protected boolean isConnected = false;
-
 	/**
 	 * A network synchronizer that doesn't do anything, used until a real synchronizer is set.
 	 */
 	private final NetworkSynchronizer nullSynchronizer;
-
 	/**
 	 * The NetworkSynchronizer being used for this session
 	 */
 	private final AtomicReference<NetworkSynchronizer> synchronizer;
-	
 	/**
-	 * 
+	 *
 	 */
 	private final AtomicReference<NetworkSendThread> networkSendThread = new AtomicReference<NetworkSendThread>();
-
 	/**
 	 * Default uncaught exception handler
 	 */
 	private final AtomicReference<UncaughtExceptionHandler> exceptionHandler;
-
 	private final SerializableMap dataMap = new ManagedHashMap();
 
 	/**
 	 * Creates a new session.
-	 * @param engine  The server this session belongs to.
+	 *
+	 * @param engine The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
 	public SpoutSession(T engine, Channel channel, Protocol bootstrapProtocol) {
@@ -146,7 +140,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		isConnected = true;
 		this.exceptionHandler = new AtomicReference<UncaughtExceptionHandler>(new DefaultUncaughtExceptionHandler(this));
 		if (engine instanceof Server) {
-			nullSynchronizer = new ServerNullNetworkSynchronizer((ServerSession)this);
+			nullSynchronizer = new ServerNullNetworkSynchronizer((ServerSession) this);
 		} else {
 			nullSynchronizer = new ClientNullNetworkSynchronizer((ClientSession) this);
 		}
@@ -155,6 +149,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Gets the state of this session.
+	 *
 	 * @return The session's state.
 	 */
 	@Override
@@ -164,6 +159,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Sets the state of this session.
+	 *
 	 * @param state The new state.
 	 */
 	@Override
@@ -178,6 +174,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Gets the player associated with this session.
+	 *
 	 * @return The player, or {@code null} if no player is associated with it.
 	 */
 	@Override
@@ -187,9 +184,9 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Sets the player associated with this session.
+	 *
 	 * @param player The new player.
-	 * @throws IllegalStateException if there is already a player associated
-	 *                               with this session.
+	 * @throws IllegalStateException if there is already a player associated with this session.
 	 */
 	public void setPlayer(SpoutPlayer player) {
 		if (!this.player.compareAndSet(null, player)) {
@@ -199,16 +196,15 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			throw new IllegalStateException();
 		}
 	}
-	
+
 	private final static long spikeLatency = SpoutConfiguration.RECV_SPIKE_LATENCY.getLong();
 	private final static float spikeChance = SpoutConfiguration.RECV_SPIKE_CHANCE.getFloat() / 20.0F;
 	private final boolean fakeLatency = spikeChance > 0F;
-	
 	private long spikeEnd = 0;
 	private final Random r = new Random();
 
 	public void pulse() {
-		
+
 		Message message;
 
 		if (state == State.GAME) {
@@ -216,7 +212,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 				send(message);
 			}
 		}
-		
+
 		if (fakeLatency) {
 			long currentTime = System.currentTimeMillis();
 			if (currentTime < spikeEnd) {
@@ -226,14 +222,13 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 				long spike = (long) (spikeLatency * r.nextFloat());
 				spikeEnd = currentTime + spike;
 			}
-
 		}
 		while ((message = messageQueue.poll()) != null) {
 			handleMessage(message);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	private void handleMessage(Message message) {
 		MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
 		if (handler != null) {
@@ -288,6 +283,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Returns the address of this session.
+	 *
 	 * @return The remote address.
 	 */
 	@Override
@@ -307,6 +303,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Adds a message to the unprocessed queue.
+	 *
 	 * @param message The message.
 	 */
 	@Override
@@ -323,8 +320,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		// By default, just use the normal messageReceived
 		messageReceived(message);
 	}
-	
-	
 
 	@Override
 	public String getSessionId() {

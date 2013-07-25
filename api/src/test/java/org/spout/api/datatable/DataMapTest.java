@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,8 +26,6 @@
  */
 package org.spout.api.datatable;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
@@ -36,24 +34,22 @@ import java.util.Random;
 import java.util.Set;
 
 import org.junit.Test;
-import org.spout.api.map.DefaultedKeyImpl;
+
 import org.spout.api.map.DefaultedKey;
+import org.spout.api.map.DefaultedKeyImpl;
+
+import static org.junit.Assert.assertTrue;
 
 public class DataMapTest {
 	private static final int RANDOM_SEED = 37;
-
 	String intString = "Int Value";
 	int intValue = 1;
-
 	String floatString = "Float Value";
 	float floatValue = 4.5F;
-
 	String boolString = "Bool Value";
 	boolean boolValue = true;
-
 	String serialString = "Serial Value";
 	Serializable serialValue = new Random(RANDOM_SEED);
-	
 	String defaultedKeyString = "Defaulted Key";
 	Integer defaultedValue = 123;
 	Integer defaultedPutValue = 234;
@@ -66,42 +62,42 @@ public class DataMapTest {
 
 		test.put(intString, intValue);
 
-		assertTrue("Value from map key is incorrect.", (Integer)test.get(intString) == 1);
+		assertTrue("Value from map key is incorrect.", (Integer) test.get(intString) == 1);
 
 		test.put(boolString, boolValue);
 
-		assertTrue("Value from map key is incorrect.", (Boolean)test.get(boolString) == boolValue);
+		assertTrue("Value from map key is incorrect.", (Boolean) test.get(boolString) == boolValue);
 
 		test.put(floatString, floatValue);
 
-		assertTrue("Value from map key is incorrect.", (Float)test.get(floatString) == floatValue);
+		assertTrue("Value from map key is incorrect.", (Float) test.get(floatString) == floatValue);
 
 		test.put(serialString, serialValue);
-		
+
 		DefaultedKey<Integer> defaultedKey = new DefaultedKeyImpl<Integer>(defaultedKeyString, defaultedValue);
 
 		Integer getValue = test.get(defaultedKey);
-		
+
 		assertTrue("Map did not return default value when new key was added", getValue.equals(defaultedValue));
-		
+
 		Integer getValue2 = test.get(defaultedKey);
-		
+
 		assertTrue("Map did not return default value when new key was added", getValue2.equals(defaultedValue));
-		
+
 		Integer putReturnValue = test.put(defaultedKey, defaultedPutValue);
-		
+
 		assertTrue("Defaulted key did not return default value", defaultedValue.equals(putReturnValue));
-		
+
 		assertTrue("Map did not return the same instance for the same key, checking both gets", getValue == getValue2);
-		
+
 		assertTrue("Map did not return the same instance for the same key, checking get and put", getValue == putReturnValue);
-		
+
 		Integer getValue3 = test.get(defaultedKey);
 
 		assertTrue("Map did not return the correct value after put", defaultedPutValue.equals(getValue3));
-		
+
 		Random r = new Random(RANDOM_SEED);
-		Random old = (Random)test.get(serialString);
+		Random old = (Random) test.get(serialString);
 
 		assertTrue("Randoms did not generate the same value", r.nextDouble() == old.nextDouble());
 
@@ -111,7 +107,7 @@ public class DataMapTest {
 
 		assertTrue("containsValue returned the incorrect response", test.containsValue(floatValue));
 
-		assertTrue("Map did not remove and return removed value correctly", (Integer)test.remove(intString) == intValue);
+		assertTrue("Map did not remove and return removed value correctly", (Integer) test.remove(intString) == intValue);
 
 		assertTrue("Map size is incorrect", test.size() == 4);
 
@@ -128,7 +124,7 @@ public class DataMapTest {
 		assertTrue("Map size is incorrect", test.size() == 4);
 
 		testMapContents(test, false);
-		
+
 		Serializable removedValue = test.remove(defaultedKey);
 		assertTrue("Defaulted key did not remove correctly, got " + removedValue + " instead of " + defaultedPutValue, removedValue.equals(defaultedPutValue));
 
@@ -140,7 +136,7 @@ public class DataMapTest {
 
 		removedValue = test.remove(floatString);
 		assertTrue("Not present string key did not remove correctly, got " + removedValue + " instead of null", test.remove(defaultedKey) == null);
-		
+
 		test.clear();
 
 		assertTrue("Map size is incorrect", test.size() == 0);
@@ -170,12 +166,12 @@ public class DataMapTest {
 		}
 
 		assertTrue("Entry set size is incorrect", test.entrySet().size() == 4);
-		
+
 		Serializable[] valueArray = new Serializable[test.size()];
 		String[] keyArray = new String[test.size()];
-		
+
 		int i = 0;
-		
+
 		for (Map.Entry<String, Serializable> e : test.entrySet()) {
 			String key = e.getKey();
 			Serializable value = e.getValue();
@@ -187,10 +183,9 @@ public class DataMapTest {
 			}
 			assertTrue("Unknown value, [" + value + "]", value.equals(defaultedPutValue) || value.equals(floatValue) || value.equals(boolValue) || value.equals(serialValue));
 		}
-		
+
 		for (i = 0; i < keyArray.length; i++) {
-			assertTrue("Entry set error, " + keyArray[i] + " linked with " + valueArray[i] + " instead of " + test.get(keyArray[i], (Serializable)null), test.get(keyArray[i], (Serializable)null).equals(valueArray[i]));
+			assertTrue("Entry set error, " + keyArray[i] + " linked with " + valueArray[i] + " instead of " + test.get(keyArray[i], (Serializable) null), test.get(keyArray[i], (Serializable) null).equals(valueArray[i]));
 		}
-		
 	}
 }

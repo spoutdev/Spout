@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -27,17 +27,16 @@
 package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
+import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.reposition.RepositionManager;
-
 import org.spout.engine.component.entity.MovementValidatorComponent;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
+import org.spout.engine.world.SpoutWorld;
 
 import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.ADD;
 import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.TRANSFORM;
-import org.spout.engine.world.SpoutWorld;
 
 public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessage> {
 	@Override

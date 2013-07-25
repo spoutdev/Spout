@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -42,7 +42,6 @@ import org.spout.api.component.entity.EntityComponent;
 import org.spout.api.plugin.PluginClassLoader;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
-
 import org.spout.engine.filesystem.resource.ClientEntityPrefab;
 
 public class EntityPrefabLoader extends ResourceLoader {
@@ -53,7 +52,7 @@ public class EntityPrefabLoader extends ResourceLoader {
 		super("entity", "entity://Spout/fallbacks/entity.sep");
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public ClientEntityPrefab load(InputStream in) {
 		Engine engine = Spout.getEngine();

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -61,6 +61,7 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets a copy of the snapshot short array
+	 *
 	 * @return copy of the snapshot short array
 	 */
 	public short[] get() {
@@ -69,6 +70,7 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets a copy of the live short array
+	 *
 	 * @return copy of the live short array
 	 */
 	public short[] getLive() {
@@ -83,6 +85,7 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value in the array
+	 *
 	 * @param index to lookup
 	 * @return snapshot value
 	 */
@@ -93,6 +96,7 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets the live value in the array
+	 *
 	 * @param index to lookup
 	 * @return live value
 	 */
@@ -108,6 +112,7 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Sets the value for the next snapshot
+	 *
 	 * @param index to set at
 	 * @param value to set to
 	 * @return the old value

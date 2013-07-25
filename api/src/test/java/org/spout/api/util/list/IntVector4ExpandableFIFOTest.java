@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,38 +26,38 @@
  */
 package org.spout.api.util.list;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.junit.Test;
+
 import org.spout.api.math.IntVector4;
 
-public class IntVector4ExpandableFIFOTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
+public class IntVector4ExpandableFIFOTest {
 	@Test
 	public void test() {
 		for (int i = 0; i < 10; i++) {
-			testTriple();		
+			testTriple();
 		}
 	}
-	
+
 	private void testTriple() {
 		int initialSize = 16;
 		int totalRecords = 1024;
-		
+
 		IntVector4ExpandableFIFO fifo = new IntVector4ExpandableFIFO(initialSize);
-		
+
 		int[] w = new int[totalRecords];
 		int[] x = new int[totalRecords];
 		int[] y = new int[totalRecords];
 		int[] z = new int[totalRecords];
-		
+
 		Random r = new Random();
-		
+
 		for (int i = 0; i < totalRecords; i++) {
 			w[i] = r.nextInt();
 			x[i] = r.nextInt();
@@ -76,7 +76,7 @@ public class IntVector4ExpandableFIFOTest {
 			assertEquals("Y coord mismatch", y[i], v.getY());
 			assertEquals("Z coord mismatch", z[i], v.getZ());
 		}
-		
+
 		for (int i = 0; i < totalRecords; i++) {
 			w[i] = r.nextInt();
 			x[i] = r.nextInt();
@@ -95,73 +95,69 @@ public class IntVector4ExpandableFIFOTest {
 			assertEquals("Y coord mismatch", y[i], v.getY());
 			assertEquals("Z coord mismatch", z[i], v.getZ());
 		}
-		
+
 		assertEquals("Non null when reading empty FIFO", null, fifo.read());
-		
 	}
-	
+
 	@Test
 	public void testBurst() {
-		
+
 		Queue<IntVector4> input = new ConcurrentLinkedQueue<IntVector4>();
 		Queue<IntVector4> output = new ConcurrentLinkedQueue<IntVector4>();
-		
+
 		IntVector4ExpandableFIFO fifo = new IntVector4ExpandableFIFO(16);
-		
+
 		Random r = new Random();
-		
+
 		for (int i = 0; i < 20; i++) {
-			
+
 			int burst = r.nextInt(70);
-			
+
 			for (int j = 0; j < burst; j++) {
 				addRandom(input, fifo, r);
 				addRandom(input, fifo, r);
 				readRandom(output, fifo);
 			}
-			
+
 			burst = r.nextInt(35);
-			
+
 			for (int j = 0; j < burst; j++) {
 				addRandom(input, fifo, r);
 				readRandom(output, fifo);
 				readRandom(output, fifo);
 			}
-			
 		}
-		
+
 		while (readRandom(output, fifo)) {
 		}
-		
+
 		IntVector4 v;
-		
+
 		while ((v = input.poll()) != null) {
 			IntVector4 o = output.poll();
 			assertEquals("Input " + v + " does not match output " + o, v, o);
 		}
-		
 	}
-	
+
 	private void addRandom(Queue<IntVector4> input, IntVector4ExpandableFIFO fifo, Random r) {
-		
+
 		assertFalse("Fifo should never be full", fifo.isFull());
-		
+
 		IntVector4 v = new IntVector4(r.nextInt(), r.nextInt(), r.nextInt(), r.nextInt());
-		
+
 		input.add(v);
 		fifo.write(v.getW(), v.getX(), v.getY(), v.getZ());
 	}
-	
+
 	private boolean readRandom(Queue<IntVector4> output, IntVector4ExpandableFIFO fifo) {
 		IntVector4 v = fifo.read();
-		
+
 		if (v == null) {
 			return false;
 		}
-		
+
 		output.add(v);
-		
+
 		return true;
 	}
-
 }

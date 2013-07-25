@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -29,22 +29,18 @@ package org.spout.engine.renderer.shader.variables;
 import org.lwjgl.opengl.GL20;
 
 import org.spout.api.Spout;
-
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.shader.ShaderVariableNotFoundException;
 
 public abstract class ShaderVariable {
 	/**
-	 * Error levels
-	 * 0 - No message
-	 * 1 - Warn in Console
-	 * 2 - Throw Exception
+	 * Error levels 0 - No message 1 - Warn in Console 2 - Throw Exception
 	 */
 	public static final int variableError = 0;
 	int program;
 	int location;
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings ("unused")
 	public ShaderVariable(int program, String name) {
 		this.program = program;
 		//If we are an attribute, we aren't a uniform.  Don't continue

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -28,21 +28,20 @@ package org.spout.api.plugin.security;
 
 public interface Secure {
 	/**
-	 * Locks when given the correct key. Returns true if it was previously
-	 * locked
-	 * @param key
+	 * Locks when given the correct key. Returns true if it was previously locked
+	 *
 	 * @return true if it was locked
 	 */
 	public boolean lock(double key);
 
 	/**
 	 * Unlocks when given the correct key
-	 * @param key
 	 */
 	public void unlock(double key);
 
 	/**
 	 * Returns true if it is locked
+	 *
 	 * @return locked
 	 */
 	public boolean isLocked();

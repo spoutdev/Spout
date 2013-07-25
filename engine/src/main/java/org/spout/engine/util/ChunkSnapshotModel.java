@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -70,8 +70,6 @@ public class ChunkSnapshotModel {
 
 	/**
 	 * Gets the current center chunk of this model
-	 * 
-	 * @return
 	 */
 	public ChunkSnapshot getCenter() {
 		return this.center;
@@ -92,16 +90,11 @@ public class ChunkSnapshotModel {
 	}
 
 	/**
-	 * Gets the chunk at world chunk coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will
-	 * be thrown.
-	 * 
-	 * @param cx
-	 *            coordinate of the chunk
-	 * @param cy
-	 *            coordinate of the chunk
-	 * @param cz
-	 *            coordinate of the chunk
+	 * Gets the chunk at world chunk coordinates<br> Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 *
+	 * @param cx coordinate of the chunk
+	 * @param cy coordinate of the chunk
+	 * @param cz coordinate of the chunk
 	 * @return The chunk, or null if not available
 	 */
 	public ChunkSnapshot getChunk(int cx, int cy, int cz) {
@@ -109,16 +102,11 @@ public class ChunkSnapshotModel {
 	}
 
 	/**
-	 * Gets the chunk at world block coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will
-	 * be thrown.
-	 * 
-	 * @param bx
-	 *            coordinate of the block
-	 * @param by
-	 *            coordinate of the block
-	 * @param bz
-	 *            coordinate of the block
+	 * Gets the chunk at world block coordinates<br> Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 *
+	 * @param bx coordinate of the block
+	 * @param by coordinate of the block
+	 * @param bz coordinate of the block
 	 * @return The chunk, or null if not available
 	 */
 	public ChunkSnapshot getChunkFromBlock(int bx, int by, int bz) {

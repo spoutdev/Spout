@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -35,7 +35,6 @@ import org.spout.api.event.entity.EntityCollideBlockEvent;
 import org.spout.api.event.entity.EntityCollideEntityEvent;
 import org.spout.api.event.entity.EntityCollideEvent;
 import org.spout.api.geo.cuboid.Block;
-
 import org.spout.physics.body.CollisionBody;
 import org.spout.physics.collision.CollisionListener;
 import org.spout.physics.collision.ContactInfo;

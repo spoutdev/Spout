@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,12 +33,11 @@ import java.lang.management.ThreadMXBean;
 import org.spout.api.Spout;
 
 public class DeadlockMonitor extends Thread {
-	
 	public DeadlockMonitor() {
 		super("Deadlock Monitor");
 		setDaemon(true);
 	}
-	
+
 	@Override
 	public void run() {
 

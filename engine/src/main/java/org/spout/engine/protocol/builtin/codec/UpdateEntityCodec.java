@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,21 +26,14 @@
  */
 package org.spout.engine.protocol.builtin.codec;
 
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.reposition.NullRepositionManager;
-
 import org.spout.api.util.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
-
-import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.ADD;
-import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.POSITION;
-import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.REMOVE;
-import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.TRANSFORM;
 
 public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
 	public UpdateEntityCodec() {
@@ -77,7 +70,7 @@ public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
 		if (actionByte < 0 || actionByte >= UpdateEntityMessage.UpdateAction.values().length) {
 			throw new IllegalArgumentException("Unknown response ID " + actionByte);
 		}
-		
+
 		final UpdateEntityMessage.UpdateAction action = UpdateEntityMessage.UpdateAction.values()[actionByte];
 		final int entityId;
 		final Transform transform;
@@ -96,7 +89,7 @@ public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
 			default:
 				throw new IllegalArgumentException("Unknown UpdateAction!");
 		}
-		
+
 		return new UpdateEntityMessage(entityId, transform, action, NullRepositionManager.getInstance());
 	}
 }

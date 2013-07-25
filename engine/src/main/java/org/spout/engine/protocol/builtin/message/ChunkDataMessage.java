@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,10 +26,10 @@
  */
 package org.spout.engine.protocol.builtin.message;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.util.SpoutToStringStyle;
 
@@ -133,8 +133,8 @@ public class ChunkDataMessage extends SpoutMessage {
 				.append("z", z)
 				.append("blockIds", blockIds, false)
 				.append("blockData", blockData, false)
-				//.append("blockLigh", blockLight, false)
-				//.append("skyLight", skyLigh, false)
+						//.append("blockLigh", blockLight, false)
+						//.append("skyLight", skyLigh, false)
 				.append("biomeData", biomeData, false)
 				.append("biomeManagerClass", biomeManagerClass)
 				.toString();
@@ -149,8 +149,8 @@ public class ChunkDataMessage extends SpoutMessage {
 				.append(z)
 				.append(blockIds)
 				.append(blockData)
-				//.append(blockLight)
-				//.append(skyLight)
+						//.append(blockLight)
+						//.append(skyLight)
 				.append(biomeData)
 				.append(biomeManagerClass)
 				.toHashCode();
@@ -167,8 +167,8 @@ public class ChunkDataMessage extends SpoutMessage {
 					.append(z, other.z)
 					.append(blockIds, other.blockIds)
 					.append(blockData, other.blockData)
-					//.append(blockLight, other.blockLight)
-					//.append(skyLight, other.skyLight)
+							//.append(blockLight, other.blockLight)
+							//.append(skyLight, other.skyLight)
 					.append(biomeData, other.biomeData)
 					.append(biomeManagerClass, other.biomeManagerClass)
 					.isEquals();

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -25,8 +25,6 @@
  * the MIT license.
  */
 package org.spout.api.io.regionfile;
-
-import static org.junit.Assert.assertTrue;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -41,11 +39,12 @@ import org.junit.Test;
 import org.spout.api.io.bytearrayarray.BAAClosedException;
 import org.spout.api.io.bytearrayarray.ByteArrayArray;
 
+import static org.junit.Assert.assertTrue;
+
 public class SimpleRegionFileTest {
 	private static int desiredEntries = 128; // Region.REGION_SIZE * Region.REGION_SIZE *Region.REGION_SIZE;
 	private static int chunkBlocks = 128; // Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE;
 	private static String filename = "target/regionfile.dat";
-
 	private byte[][] dataCache = new byte[desiredEntries][];
 	private ByteArrayArray srf;
 
@@ -206,12 +205,12 @@ public class SimpleRegionFileTest {
 	private static byte[] createFakeChunk(int bufferSize, float nonZero) {
 		byte[] buffer = new byte[bufferSize];
 
-		int nonZeroBytes = (int)(nonZero * bufferSize);
+		int nonZeroBytes = (int) (nonZero * bufferSize);
 
 		Random r = new Random();
 
 		for (int i = 0; i < nonZeroBytes; i++) {
-			buffer[(r.nextInt() & 0x7FFFFFFF) % bufferSize] = (byte)r.nextInt();
+			buffer[(r.nextInt() & 0x7FFFFFFF) % bufferSize] = (byte) r.nextInt();
 		}
 
 		return buffer;

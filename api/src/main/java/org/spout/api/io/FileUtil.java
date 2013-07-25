@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -99,7 +99,6 @@ public class FileUtil {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -130,12 +129,10 @@ public class FileUtil {
 		}
 
 		return hash;
-
 	}
 
 	/**
-	 * Converts the String representation of a URL into its corresponding
-	 * filename.
+	 * Converts the String representation of a URL into its corresponding filename.
 	 *
 	 * @param the url to process
 	 * @return true the coresponding filename
@@ -156,8 +153,7 @@ public class FileUtil {
 	}
 
 	/**
-	 * Writes a Collection of Strings to a File, overwriting any previous file
-	 * contents.
+	 * Writes a Collection of Strings to a File, overwriting any previous file contents.
 	 *
 	 * Each String is converted into a line in the File.
 	 *
@@ -190,7 +186,6 @@ public class FileUtil {
 			} catch (IOException ioe2) {
 			}
 		}
-
 	}
 
 	/**
@@ -198,8 +193,7 @@ public class FileUtil {
 	 *
 	 * Each line in the File is converted into a String.
 	 *
-	 * Iterators on the List will iterate through the Strings in the order the
-	 * lines appear in the file
+	 * Iterators on the List will iterate through the Strings in the order the lines appear in the file
 	 *
 	 * @param the file to read
 	 * @return the Collection of Strings or null on failure
@@ -268,7 +262,7 @@ public class FileUtil {
 	 * @param outFile the target filename
 	 * @return true on success
 	 */
-	@SuppressWarnings("resource")
+	@SuppressWarnings ("resource")
 	public static boolean copy(File inFile, File outFile) {
 		if (!inFile.exists()) {
 			return false;

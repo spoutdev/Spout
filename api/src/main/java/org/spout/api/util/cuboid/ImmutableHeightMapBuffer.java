@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,7 +32,7 @@ import org.spout.api.math.Vector3;
 
 public class ImmutableHeightMapBuffer extends CuboidBuffer {
 	protected final int[] heightMap;
-	
+
 	public ImmutableHeightMapBuffer(ImmutableHeightMapBuffer buffer) {
 		super(buffer.getBase().getFloorX(), 0, buffer.getBase().getFloorZ(), buffer.getSize().getFloorX(), 1, buffer.getSize().getFloorZ());
 		this.heightMap = new int[buffer.heightMap.length];
@@ -43,14 +43,14 @@ public class ImmutableHeightMapBuffer extends CuboidBuffer {
 		super(baseX, 0, baseZ, sizeX, 1, sizeZ);
 		this.heightMap = heightMap;
 	}
-	
+
 	public ImmutableHeightMapBuffer(int baseX, int baseZ, int sizeX, int sizeZ, AtomicInteger[][] heightMap) {
 		super(baseX, 0, baseZ, sizeX, 1, sizeZ);
 		this.heightMap = new int[sizeX * sizeZ];
 		int i = 0;
 		for (int z = 0; z < sizeZ; z++) {
 			for (int x = 0; x < sizeX; x++) {
-				this.heightMap[i++] = heightMap[x][z].get(); 
+				this.heightMap[i++] = heightMap[x][z].get();
 			}
 		}
 	}
@@ -81,8 +81,7 @@ public class ImmutableHeightMapBuffer extends CuboidBuffer {
 		if (index < 0) {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + z + ") is outside the buffer");
 		}
-		
+
 		return heightMap[index];
 	}
-
 }

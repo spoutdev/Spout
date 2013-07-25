@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,34 +26,34 @@
  */
 package org.spout.api.util.list;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Random;
 
 import org.junit.Test;
+
 import org.spout.api.math.IntVector3;
 
-public class IntVector3StackTest {
+import static org.junit.Assert.assertEquals;
 
+public class IntVector3StackTest {
 	@Test
 	public void test() {
 		for (int i = 0; i < 10; i++) {
-			testTriple();		
-			testSingle();	
+			testTriple();
+			testSingle();
 		}
 	}
-	
+
 	private void testTriple() {
 		int size = 1024;
-		
+
 		IntVector3Stack stack = new IntVector3Stack(size);
-		
+
 		int[] x = new int[size];
 		int[] y = new int[size];
 		int[] z = new int[size];
-		
+
 		Random r = new Random();
-		
+
 		for (int i = 0; i < size; i++) {
 			x[i] = r.nextInt();
 			y[i] = r.nextInt();
@@ -70,9 +70,8 @@ public class IntVector3StackTest {
 			assertEquals("Y coord mismatch", y[i], v.getY());
 			assertEquals("Z coord mismatch", z[i], v.getZ());
 		}
-
 	}
-	
+
 	private void testSingle() {
 		int size = 1024;
 
@@ -100,5 +99,4 @@ public class IntVector3StackTest {
 			assertEquals("Z coord mismatch", z[i], stack.popSingle());
 		}
 	}
-
 }

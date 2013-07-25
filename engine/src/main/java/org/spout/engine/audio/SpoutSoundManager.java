@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -44,7 +44,9 @@ import org.spout.api.audio.SoundSource;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
-import static org.lwjgl.openal.AL10.*;
+import static org.lwjgl.openal.AL10.alGenSources;
+import static org.lwjgl.openal.AL10.alIsBuffer;
+import static org.lwjgl.openal.AL10.alIsSource;
 
 public class SpoutSoundManager implements SoundManager {
 	private final Set<SoundSource> sources = new HashSet<SoundSource>();

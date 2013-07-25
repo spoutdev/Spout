@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -38,8 +38,7 @@ import org.spout.api.event.object.EventableBase;
 /**
  * Represents a map for mapping Strings to unique ids.
  *
- * The class supports conversion of ids between maps and allocation of new
- * unique ids for unknown Strings
+ * The class supports conversion of ids between maps and allocation of new unique ids for unknown Strings
  *
  * Conversions to and from parent/child maps are cached
  */
@@ -49,7 +48,7 @@ public final class SyncedMapRegistry extends EventableBase<SyncedMapEvent> {
 	protected static final ConcurrentMap<String, WeakReference<SyncedStringMap>> REGISTERED_MAPS = new ConcurrentHashMap<String, WeakReference<SyncedStringMap>>();
 
 	public static SyncedStringMap get(String name) {
-		WeakReference<SyncedStringMap> ref =  REGISTERED_MAPS.get(name);
+		WeakReference<SyncedStringMap> ref = REGISTERED_MAPS.get(name);
 		if (ref != null) {
 			SyncedStringMap map = ref.get();
 			if (map == null) {
@@ -66,7 +65,7 @@ public final class SyncedMapRegistry extends EventableBase<SyncedMapEvent> {
 		}
 		String name = STRING_MAP_REGISTRATION.getString(id);
 		if (name != null) {
-			WeakReference<SyncedStringMap> ref =  REGISTERED_MAPS.get(name);
+			WeakReference<SyncedStringMap> ref = REGISTERED_MAPS.get(name);
 			if (ref != null) {
 				SyncedStringMap map = ref.get();
 				if (map == null) {
@@ -89,11 +88,11 @@ public final class SyncedMapRegistry extends EventableBase<SyncedMapEvent> {
 		}
 		return maps;
 	}
-	
+
 	public static SyncedStringMap getRegistrationMap() {
 		return STRING_MAP_REGISTRATION;
 	}
-	
+
 	public static int register(SyncedStringMap map) {
 		int id = STRING_MAP_REGISTRATION.register(map.getName());
 		REGISTERED_MAPS.put(map.getName(), new WeakReference<SyncedStringMap>(map));

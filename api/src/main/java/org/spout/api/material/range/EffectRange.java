@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -38,7 +38,7 @@ public interface EffectRange extends Iterable<IntVector3> {
 
 	/**
 	 * Gets an iterator to iterate over all blocks in the effect range.
-	 * 
+	 *
 	 * @return an effect iterator
 	 */
 	@Override
@@ -46,14 +46,14 @@ public interface EffectRange extends Iterable<IntVector3> {
 
 	/**
 	 * Configures an iterator to iterate over all blocks in the effect range.
-	 * 
+	 *
 	 * @return an effect iterator
 	 */
 	public void initEffectIterator(EffectIterator reuse);
-	
+
 	/**
 	 * Checks if the effect is contained within a Region for the given block position
-	 * 
+	 *
 	 * @param the x coordinate of the block
 	 * @param the y coordinate of the block
 	 * @param the z coordinate of the block
@@ -62,18 +62,16 @@ public interface EffectRange extends Iterable<IntVector3> {
 	public boolean isRegionLocal(int x, int y, int z);
 
 	/**
-	 * Translates this Effect Range with the offset specified<br>
-	 * Note: the returned type does not have to be the same as this class!
-	 * 
+	 * Translates this Effect Range with the offset specified<br> Note: the returned type does not have to be the same as this class!
+	 *
 	 * @param offset to translate
 	 * @return a new translated EffectRange instance
 	 */
 	public EffectRange translate(BlockFace offset);
 
 	/**
-	 * Translates this Effect Range with the offset specified<br>
-	 * Note: the returned type does not have to be the same as this class!
-	 * 
+	 * Translates this Effect Range with the offset specified<br> Note: the returned type does not have to be the same as this class!
+	 *
 	 * @param offset to translate
 	 * @return a new translated EffectRange instance
 	 */

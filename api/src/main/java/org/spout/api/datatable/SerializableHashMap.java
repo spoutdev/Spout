@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,38 +33,30 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.lang.ref.WeakReference;
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.map.DefaultedKey;
-import org.spout.api.util.StringToUniqueIntegerMap;
 
 /**
- * Manages a string keyed, serializable object hashmap that can be serialized easily
- * to an array of bytes and deserialized from an array of bytes, intended for persistence
- * and network transfers.
+ * Manages a string keyed, serializable object hashmap that can be serialized easily to an array of bytes and deserialized from an array of bytes, intended for persistence and network transfers.
  *
  * This should not contain null values.
- *
  */
 public class SerializableHashMap implements SerializableMap {
 	// This doesn't need to be persisted across restarts
 	private static final long serialVersionUID = 1L;
 	protected final ConcurrentHashMap<String, Serializable> map;
 	public static final String NILTYPE = "NULL";
-
 
 	public SerializableHashMap() {
 		this.map = new ConcurrentHashMap<String, Serializable>();
@@ -83,7 +75,7 @@ public class SerializableHashMap implements SerializableMap {
 	@Override
 	public boolean containsKey(Object key) {
 		if (key instanceof String) {
-			return containsKey((String)key);
+			return containsKey((String) key);
 		}
 		return false;
 	}
@@ -102,11 +94,11 @@ public class SerializableHashMap implements SerializableMap {
 		return get(key, null);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends Serializable> T get(Object key, T defaultValue) {
 		if (key instanceof DefaultedKey) {
-			return get((DefaultedKey<T>)key);
+			return get((DefaultedKey<T>) key);
 		}
 		if (!(key instanceof String)) {
 			return defaultValue;
@@ -115,7 +107,7 @@ public class SerializableHashMap implements SerializableMap {
 		final String keyString = (String) key;
 		final T value;
 		try {
-			value = (T)map.get(keyString);
+			value = (T) map.get(keyString);
 		} catch (ClassCastException e) {
 			return defaultValue;
 		}
@@ -145,12 +137,13 @@ public class SerializableHashMap implements SerializableMap {
 		if (s != null) {
 			try {
 				return clazz.cast(s);
-			} catch (ClassCastException ignore) { }
+			} catch (ClassCastException ignore) {
+			}
 		}
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends Serializable> T putIfAbsent(DefaultedKey<T> key, T value) {
 		String keyString = key.getKeyString();
@@ -177,12 +170,12 @@ public class SerializableHashMap implements SerializableMap {
 		return map.put(key, value);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends Serializable> T put(DefaultedKey<T> key, T value) {
 		String keyString = key.getKeyString();
 		try {
-			return (T)put(keyString, value);
+			return (T) put(keyString, value);
 		} catch (ClassCastException e) {
 			return null;
 		}
@@ -191,9 +184,9 @@ public class SerializableHashMap implements SerializableMap {
 	@Override
 	public Serializable remove(Object key) {
 		if (key instanceof String) {
-			return remove((String)key);
+			return remove((String) key);
 		} else if (key instanceof DefaultedKey) {
-			return remove(((DefaultedKey<?>)key).getKeyString());
+			return remove(((DefaultedKey<?>) key).getKeyString());
 		}
 		return null;
 	}
@@ -204,9 +197,9 @@ public class SerializableHashMap implements SerializableMap {
 
 	@Override
 	public void putAll(Map<? extends String, ? extends Serializable> m) {
-		 for (Map.Entry<? extends String, ? extends Serializable> e : m.entrySet()) {
-			 put(e.getKey(), e.getValue());
-		 }
+		for (Map.Entry<? extends String, ? extends Serializable> e : m.entrySet()) {
+			put(e.getKey(), e.getValue());
+		}
 	}
 
 	@Override
@@ -241,7 +234,6 @@ public class SerializableHashMap implements SerializableMap {
 		public int size() {
 			return size;
 		}
-
 	}
 
 	private final class Values extends AbstractCollection<Serializable> {
@@ -272,6 +264,7 @@ public class SerializableHashMap implements SerializableMap {
 		int expectedAmount = map.size();
 		ArrayList<Serializable> values = new ArrayList<Serializable>();
 		ArrayList<String> keys = new ArrayList<String>();
+
 		EntryIterator() {
 			for (String s : map.keySet()) {
 				keys.add(s);
@@ -302,7 +295,7 @@ public class SerializableHashMap implements SerializableMap {
 			} else {
 				next = null;
 			}
-			return new Entry(keys.get(index-1), current);
+			return new Entry(keys.get(index - 1), current);
 		}
 
 		@Override
@@ -321,6 +314,7 @@ public class SerializableHashMap implements SerializableMap {
 	private final class Entry implements Map.Entry<String, Serializable> {
 		final String key;
 		Serializable value;
+
 		Entry(String key, Serializable value) {
 			this.key = key;
 			this.value = value;
@@ -341,7 +335,6 @@ public class SerializableHashMap implements SerializableMap {
 			this.value = value;
 			return SerializableHashMap.this.put(key, value);
 		}
-
 	}
 
 	private final class ValueIterator implements Iterator<Serializable> {
@@ -350,6 +343,7 @@ public class SerializableHashMap implements SerializableMap {
 		int expectedAmount = map.size();
 		ArrayList<Serializable> values = new ArrayList<Serializable>();
 		ArrayList<String> keys = new ArrayList<String>();
+
 		ValueIterator() {
 			for (String s : map.keySet()) {
 				keys.add(s);
@@ -430,7 +424,7 @@ public class SerializableHashMap implements SerializableMap {
 			return false;
 		}
 
-		SerializableHashMap other = (SerializableHashMap)obj;
+		SerializableHashMap other = (SerializableHashMap) obj;
 		if (isEmpty() && other.isEmpty()) {
 			return true;
 		}
@@ -451,7 +445,6 @@ public class SerializableHashMap implements SerializableMap {
 
 	/**
 	 * This serializes only the data, as opposed to the whole object.
-	 * 
 	 */
 	@Override
 	public byte[] serialize() {
@@ -467,11 +460,10 @@ public class SerializableHashMap implements SerializableMap {
 
 	/**
 	 * This deserializes only the data, as opposed to the whole object.
-	 *
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public void deserialize(byte[] serializedData, boolean wipe) throws IOException{
+	@SuppressWarnings ("unchecked")
+	public void deserialize(byte[] serializedData, boolean wipe) throws IOException {
 		if (wipe) {
 			map.clear();
 		}
@@ -492,7 +484,7 @@ public class SerializableHashMap implements SerializableMap {
 	}
 
 	@Override
-	public void deserialize(byte[] compressedData) throws IOException{
+	public void deserialize(byte[] compressedData) throws IOException {
 		deserialize(compressedData, true);
 	}
 

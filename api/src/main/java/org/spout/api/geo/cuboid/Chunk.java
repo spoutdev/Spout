@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,7 +26,6 @@
  */
 package org.spout.api.geo.cuboid;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -43,31 +42,26 @@ import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.lighting.LightingManager;
-import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.BitSize;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
-import org.spout.api.util.thread.annotation.LiveWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 
 /**
  * Represents a cube containing 16x16x16 Blocks
  */
 public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysicsAccess {
-
 	/**
 	 * Stores the size of the amount of blocks in this Chunk
 	 */
 	public static final BitSize BLOCKS = new BitSize(4);
-
 	/**
 	 * Mask to convert a block integer coordinate into the point base
 	 */
 	public final static int POINT_BASE_MASK = -BLOCKS.SIZE;
-
 	private final int blockX;
 	private final int blockY;
 	private final int blockZ;
@@ -92,11 +86,8 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public abstract void save();
 
 	/**
-	 * Gets a snapshot of the data for the chunk.
-	 * <br/><br/>
-	 * This process may result in tearing if called during potential updates
-	 * <br/><br/>
-	 * This is the same as calling getSnapshot(BOTH, WEAK_ENTITIES, NO_EXTRA_DATA)
+	 * Gets a snapshot of the data for the chunk. <br/><br/> This process may result in tearing if called during potential updates <br/><br/> This is the same as calling getSnapshot(BOTH, WEAK_ENTITIES,
+	 * NO_EXTRA_DATA)
 	 *
 	 * @return the snapshot
 	 */
@@ -104,10 +95,8 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public abstract ChunkSnapshot getSnapshot();
 
 	/**
-	 * Gets a snapshot of the data for the chunk.
-	 * <br/><br/>
-	 * This process may result in tearing if called during potential updates
-	 * <br/><br/>
+	 * Gets a snapshot of the data for the chunk. <br/><br/> This process may result in tearing if called during potential updates <br/><br/>
+	 *
 	 * @param the type of basic snapshot information to be stored
 	 * @param entities whether to include entity data in the snapshot
 	 * @param the extra data, if any, to be stored
@@ -118,22 +107,16 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Fills the given block container with the block data for this chunk
-	 *
-	 * @param container
 	 */
 	public abstract void fillBlockContainer(BlockContainer container);
 
 	/**
 	 * Fills the given block component container with the block components for this chunk
-	 *
-	 * @param container
 	 */
 	public abstract void fillBlockComponentContainer(BlockComponentContainer container);
 
 	/**
-	 * Gets a snapshot of the data for the chunk.  The snapshot will be taken at a stable moment in the tick.
-	 * <br/><br/>
-	 * This is the same as calling getFutureSnapshot(BOTH, WEAK_ENTITIES, NO_EXTRA_DATA)
+	 * Gets a snapshot of the data for the chunk.  The snapshot will be taken at a stable moment in the tick. <br/><br/> This is the same as calling getFutureSnapshot(BOTH, WEAK_ENTITIES, NO_EXTRA_DATA)
 	 *
 	 * @return the snapshot
 	 */
@@ -152,8 +135,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public abstract Future<ChunkSnapshot> getFutureSnapshot(SnapshotType type, EntityType entites, ExtraData data);
 
 	/**
-	 * Refresh the distance between a player and the chunk, and adds the player
-	 * as an observer if not previously observing.
+	 * Refresh the distance between a player and the chunk, and adds the player as an observer if not previously observing.
 	 *
 	 * @param player the player
 	 * @return false if the player was already observing the chunk
@@ -185,45 +167,33 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public abstract boolean isLoaded();
 
 	/**
-	 * Populates the chunk with all the Populators attached to the
-	 * WorldGenerator of its world.
-	 *
-	 * @return
+	 * Populates the chunk with all the Populators attached to the WorldGenerator of its world.
 	 */
 	public abstract boolean populate();
 
 	/**
-	 * Populates the chunk with all the Populators attached to the
-	 * WorldGenerator of its world.
+	 * Populates the chunk with all the Populators attached to the WorldGenerator of its world.
 	 *
-	 * @param force forces to populate the chunk even if it already has been
-	 *            populated.
-	 * @return
+	 * @param force forces to populate the chunk even if it already has been populated.
 	 */
 	public abstract boolean populate(boolean force);
 
 	/**
-	 * Populates the chunk with all the Populators attached to the
-	 * WorldGenerator of its world.<br>
-	 * <br>
-	 * Warning: populating with force observer should not be called from within populators as it could lead to a population cascade
+	 * Populates the chunk with all the Populators attached to the WorldGenerator of its world.<br> <br> Warning: populating with force observer should not be called from within populators as it could
+	 * lead to a population cascade
 	 *
 	 * @param sync queues the population to occur at a later time
 	 * @param observe forces the chunk to be observed for population
-	 * @return
 	 */
 	public abstract void populate(boolean sync, boolean observe);
 
 	/**
-	 * Populates the chunk with all the Populators attached to the
-	 * WorldGenerator of its world.<br>
-	 * <br>
-	 * Warning: populating with force observer should not be called from within populators as it could lead to a population cascade
+	 * Populates the chunk with all the Populators attached to the WorldGenerator of its world.<br> <br> Warning: populating with force observer should not be called from within populators as it could
+	 * lead to a population cascade
 	 *
 	 * @param sync queues the population to occur at a later time
 	 * @param observe forces the chunk to be observed for population
 	 * @param priority adds the chunk to the high priority queue
-	 * @return
 	 */
 	public abstract void populate(boolean sync, boolean observe, boolean priority);
 
@@ -250,11 +220,8 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	@LiveRead
 	public abstract List<Entity> getLiveEntities();
 
-
 	/**
-	 * Gets the number of observers viewing this chunk. If the number
-	 * of observing entities falls to zero, this chunk may be reaped at
-	 * any time.
+	 * Gets the number of observers viewing this chunk. If the number of observing entities falls to zero, this chunk may be reaped at any time.
 	 *
 	 * @return number of observers
 	 */
@@ -263,6 +230,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets the observing players of this chunk (done based on the player's view distance).
+	 *
 	 * @return List containing the observing players
 	 */
 	public abstract Set<? extends Player> getObservingPlayers();
@@ -273,12 +241,11 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @return Set containing the observing players
 	 */
 	public abstract Set<? extends Entity> getObservers();
-	
+
 	/**
 	 * Gets the lighting buffer associated with the given manager
-	 * 
+	 *
 	 * @param manager the corresponding lighting manager
-	 * @return
 	 */
 	public abstract <T extends CuboidLightBuffer> T getLightBuffer(LightingManager<T> manager);
 
@@ -289,6 +256,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets the x-coordinate of this chunk as a Block coordinate
+	 *
 	 * @return the x-coordinate of the first block in this chunk
 	 */
 	public int getBlockX() {
@@ -297,6 +265,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets the y-coordinate of this chunk as a Block coordinate
+	 *
 	 * @return the y-coordinate of the first block in this chunk
 	 */
 	public int getBlockY() {
@@ -305,6 +274,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets the z-coordinate of this chunk as a Block coordinate
+	 *
 	 * @return the z-coordinate of the first block in this chunk
 	 */
 	public int getBlockZ() {
@@ -313,6 +283,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets the Block x-coordinate in the world
+	 *
 	 * @param x-coordinate within this Chunk
 	 * @return x-coordinate within the World
 	 */
@@ -322,6 +293,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets the Block x-coordinate in the world
+	 *
 	 * @param y-coordinate within this Chunk
 	 * @return y-coordinate within the World
 	 */
@@ -331,6 +303,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets the Block x-coordinate in the world
+	 *
 	 * @param z-coordinate within this Chunk
 	 * @return z-coordinate within the World
 	 */
@@ -340,6 +313,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets a random Block x-coordinate using a Random
+	 *
 	 * @param random to use
 	 * @return x-coordinate within the World in this Chunk
 	 */
@@ -349,6 +323,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets a random Block y-coordinate using a Random
+	 *
 	 * @param random to use
 	 * @return y-coordinate within the World in this Chunk
 	 */
@@ -358,6 +333,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets a random Block z-coordinate using a Random
+	 *
 	 * @param random to use
 	 * @return z-coordinate within the World in this Chunk
 	 */
@@ -367,6 +343,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets a chunk relative to this chunk
+	 *
 	 * @param offset of the chunk relative to this chunk
 	 * @param opt True to load the chunk if it is not yet loaded
 	 * @return The Chunk, or null if not loaded and load is False
@@ -377,6 +354,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets a chunk relative to this chunk, loads if needed
+	 *
 	 * @param offset of the chunk relative to this chunk
 	 * @return The Chunk
 	 */
@@ -386,6 +364,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets a chunk relative to this chunk
+	 *
 	 * @param offset of the chunk relative to this chunk
 	 * @param opt True to load the chunk if it is not yet loaded
 	 * @return The Chunk, or null if not loaded and load is False
@@ -396,32 +375,26 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets a chunk relative to this chunk, loads if needed
+	 *
 	 * @param offset of the chunk relative to this chunk
 	 * @return The Chunk
 	 */
 	public Chunk getRelative(BlockFace offset) {
 		return this.getRelative(offset.getOffset());
 	}
-	
+
 	/**
-	 * Gets the generation index for this chunk.  Only chunks generated as part of the same
-	 * bulk initialize have the same index.
-	 * 
+	 * Gets the generation index for this chunk.  Only chunks generated as part of the same bulk initialize have the same index.
+	 *
 	 * @return a unique generation id, or -1 if the chunk was loaded from disk
 	 */
 	public abstract int getGenerationIndex();
 
 	/**
-	 * Converts a point in such a way that it points to the first block (the base block) of the chunk<br>
-	 * This is similar to performing the following operation on the x, y and z coordinate:<br>
-	 * - Convert to the chunk coordinate<br>
-	 * - Multiply by chunk size
-	 *
-	 * @param p
-	 * @return
+	 * Converts a point in such a way that it points to the first block (the base block) of the chunk<br> This is similar to performing the following operation on the x, y and z coordinate:<br> - Convert
+	 * to the chunk coordinate<br> - Multiply by chunk size
 	 */
 	public static Point pointToBase(Point p) {
 		return new Point(p.getWorld(), (int) p.getX() & POINT_BASE_MASK, (int) p.getY() & POINT_BASE_MASK, (int) p.getZ() & POINT_BASE_MASK);
 	}
-
 }

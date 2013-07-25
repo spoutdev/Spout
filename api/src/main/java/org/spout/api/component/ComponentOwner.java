@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -27,6 +27,7 @@
 package org.spout.api.component;
 
 import java.util.Collection;
+
 import org.spout.api.datatable.ManagedMap;
 
 /**
@@ -34,10 +35,8 @@ import org.spout.api.datatable.ManagedMap;
  */
 public interface ComponentOwner {
 	/**
-	 * Adds the component of the specified type to the owner and returns it if it is not present.
-	 * <p>
-	 * Otherwise, it returns the component of the specified type if there was one present.
-	 * </p>
+	 * Adds the component of the specified type to the owner and returns it if it is not present. <p> Otherwise, it returns the component of the specified type if there was one present. </p>
+	 *
 	 * @param type whose component is to be added to the owner
 	 * @return the new component that was added, or the existing one if it had one
 	 */
@@ -45,6 +44,7 @@ public interface ComponentOwner {
 
 	/**
 	 * Returns the component of the specified type (or a child implementation) from the owner if it is present.
+	 *
 	 * @param type whose component is to be returned from the holder
 	 * @return the component, or null if one was not found
 	 */
@@ -52,6 +52,7 @@ public interface ComponentOwner {
 
 	/**
 	 * Returns all components of the specified type (or a child implementation).
+	 *
 	 * @param type whose components are to be returned from the owner
 	 * @return the component list.
 	 */
@@ -59,6 +60,7 @@ public interface ComponentOwner {
 
 	/**
 	 * Returns all instances of the specified type from the owner if they are present.
+	 *
 	 * @param type whose components are to be returned from the owner
 	 * @return the component list.
 	 */
@@ -66,6 +68,7 @@ public interface ComponentOwner {
 
 	/**
 	 * Returns the component of the specified type (not a child implementation) from the holder if it is present.
+	 *
 	 * @param type whose component is to be returned from the owner
 	 * @return the component, or null if one was not found.
 	 */
@@ -73,6 +76,7 @@ public interface ComponentOwner {
 
 	/**
 	 * Returns an instance of the specified type from the owner if it is present.
+	 *
 	 * @param type whose component is to be returned from the owner
 	 * @return the component, or null if one was not found
 	 */
@@ -80,6 +84,7 @@ public interface ComponentOwner {
 
 	/**
 	 * Removes the component of the specified type from the owner if it is present.
+	 *
 	 * @param type whose component is to be removed from the owner
 	 * @return the removed component, or null if there was not one
 	 */
@@ -87,12 +92,14 @@ public interface ComponentOwner {
 
 	/**
 	 * Gets all components held by the owner.
+	 *
 	 * @return A collection of held components
 	 */
 	public Collection<Component> values();
 
 	/**
 	 * Gets the {@link ManagedMap} of the owner.
+	 *
 	 * @return datatable component
 	 */
 	public ManagedMap getData();

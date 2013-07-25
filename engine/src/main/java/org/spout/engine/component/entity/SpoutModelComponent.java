@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -30,7 +30,6 @@ import org.spout.api.component.entity.ModelComponent;
 import org.spout.api.math.Matrix;
 import org.spout.api.model.Model;
 import org.spout.api.render.effect.SnapshotEntity;
-
 import org.spout.engine.mesh.BaseMesh;
 
 public class SpoutModelComponent extends ModelComponent {

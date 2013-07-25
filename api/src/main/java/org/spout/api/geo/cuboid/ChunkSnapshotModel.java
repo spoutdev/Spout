@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -27,13 +27,12 @@
 package org.spout.api.geo.cuboid;
 
 public interface ChunkSnapshotModel {
-
 	public int getX();
 
 	public int getY();
 
 	public int getZ();
-	
+
 	/**
 	 * Gets if the chunk was unloaded.  Unload models only indicate an unload occurred and contain no data.
 	 */
@@ -41,8 +40,6 @@ public interface ChunkSnapshotModel {
 
 	/**
 	 * Gets the current center chunk of this model
-	 * 
-	 * @return
 	 */
 	public ChunkSnapshot getCenter();
 
@@ -52,31 +49,21 @@ public interface ChunkSnapshotModel {
 	public void cleanUp();
 
 	/**
-	 * Gets the chunk at world chunk coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will
-	 * be thrown.
-	 * 
-	 * @param cx
-	 *            coordinate of the chunk
-	 * @param cy
-	 *            coordinate of the chunk
-	 * @param cz
-	 *            coordinate of the chunk
+	 * Gets the chunk at world chunk coordinates<br> Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 *
+	 * @param cx coordinate of the chunk
+	 * @param cy coordinate of the chunk
+	 * @param cz coordinate of the chunk
 	 * @return The chunk, or null if not available
 	 */
 	public ChunkSnapshot getChunk(int cx, int cy, int cz);
 
 	/**
-	 * Gets the chunk at world block coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will
-	 * be thrown.
-	 * 
-	 * @param bx
-	 *            coordinate of the block
-	 * @param by
-	 *            coordinate of the block
-	 * @param bz
-	 *            coordinate of the block
+	 * Gets the chunk at world block coordinates<br> Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 *
+	 * @param bx coordinate of the block
+	 * @param by coordinate of the block
+	 * @param bz coordinate of the block
 	 * @return The chunk, or null if not available
 	 */
 	public ChunkSnapshot getChunkFromBlock(int bx, int by, int bz);

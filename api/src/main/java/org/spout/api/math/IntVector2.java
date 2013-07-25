@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,9 +33,8 @@ import org.spout.api.util.StringUtil;
 /**
  * A 2-dimensional vector represented by int-precision x,y coordinates
  */
-public class IntVector2 implements Serializable{
+public class IntVector2 implements Serializable {
 	private static final long serialVersionUID = 1L;
-
 	private int x;
 	private int y;
 
@@ -46,7 +45,6 @@ public class IntVector2 implements Serializable{
 
 	/**
 	 * Sets the X coordinate
-	 * @param x
 	 */
 	public void setX(int x) {
 		this.x = x;
@@ -54,7 +52,6 @@ public class IntVector2 implements Serializable{
 
 	/**
 	 * Sets the Y coordinate
-	 * @param y
 	 */
 	public void setY(int y) {
 		this.y = y;
@@ -62,6 +59,7 @@ public class IntVector2 implements Serializable{
 
 	/**
 	 * Gets the X coordinate
+	 *
 	 * @return The X coordinate
 	 */
 	public int getX() {
@@ -70,6 +68,7 @@ public class IntVector2 implements Serializable{
 
 	/**
 	 * Gets the Y coordinate
+	 *
 	 * @return The Y coordinate
 	 */
 	public int getY() {
@@ -78,6 +77,7 @@ public class IntVector2 implements Serializable{
 
 	/**
 	 * Gets whether all of the axis in this IntVector are zero
+	 *
 	 * @return True if all axis are zero
 	 */
 	public boolean isZero() {
@@ -86,7 +86,6 @@ public class IntVector2 implements Serializable{
 
 	/**
 	 * Adds the given vector to this vector
-	 * @param other
 	 */
 	public void add(IntVector2 other) {
 		x += other.x;

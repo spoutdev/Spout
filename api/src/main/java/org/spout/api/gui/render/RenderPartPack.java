@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,8 +26,8 @@
  */
 package org.spout.api.gui.render;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.SpoutRenderMaterials;
@@ -39,15 +39,15 @@ public class RenderPartPack implements Comparable<RenderPartPack> {
 	private final List<RenderPart> parts = new ArrayList<RenderPart>();
 	private RenderMaterial material;
 	private int zIndex = 0;
-	
+
 	public RenderPartPack() {
 		this(SpoutRenderMaterials.GUI_COLOR);
 	}
-	
+
 	public RenderPartPack(RenderMaterial material) {
 		this.material = material;
 	}
-	
+
 	public void setZIndex(int zIndex) {
 		this.zIndex = zIndex;
 	}
@@ -55,7 +55,7 @@ public class RenderPartPack implements Comparable<RenderPartPack> {
 	public int getZIndex() {
 		return zIndex;
 	}
-	
+
 	public RenderMaterial getRenderMaterial() {
 		return material;
 	}
@@ -63,7 +63,7 @@ public class RenderPartPack implements Comparable<RenderPartPack> {
 	public void setRenderMaterial(RenderMaterial material) {
 		this.material = material;
 	}
-	
+
 	public int add(RenderPart part) {
 		// Last added on top
 		return add(part, parts.size());
@@ -78,15 +78,15 @@ public class RenderPartPack implements Comparable<RenderPartPack> {
 	public RenderPart get(int index) {
 		return parts.get(index);
 	}
-	
+
 	public List<RenderPart> getRenderParts() {
 		return parts;
 	}
-	
+
 	public int getSize() {
 		return parts.size();
 	}
-	
+
 	@Override
 	public int compareTo(RenderPartPack arg0) {
 		return arg0.getZIndex() - getZIndex();

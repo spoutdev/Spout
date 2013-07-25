@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -42,8 +42,8 @@ public class ClientModel implements Model {
 	public RenderMaterial material;
 	public Map<String, Animation> animations;
 
-	@SuppressWarnings("unchecked")
-	public ClientModel(Mesh mesh,RenderMaterial material) {
+	@SuppressWarnings ("unchecked")
+	public ClientModel(Mesh mesh, RenderMaterial material) {
 		this(mesh, null, material, Collections.EMPTY_MAP);
 	}
 
@@ -53,17 +53,17 @@ public class ClientModel implements Model {
 		this.material = material;
 		this.animations = animations;
 	}
-	
+
 	@Override
 	public Mesh getMesh() {
 		return mesh;
 	}
-	
+
 	@Override
 	public Skeleton getSkeleton() {
 		return skeleton;
 	}
-	
+
 	@Override
 	public RenderMaterial getRenderMaterial() {
 		return material;
@@ -73,5 +73,4 @@ public class ClientModel implements Model {
 	public Map<String, Animation> getAnimations() {
 		return animations;
 	}
-
 }

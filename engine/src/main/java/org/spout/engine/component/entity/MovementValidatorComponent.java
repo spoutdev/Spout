@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -40,8 +40,8 @@ import org.spout.api.math.Vector3;
 public class MovementValidatorComponent extends EntityComponent {
 	public static final String RECEIVED_TRANSFORM = "RECEIVED_TRANSFORM";
 	public static final DefaultedKey<Boolean> VALIDATE_MOVEMENT = new DefaultedKeyImpl<>("VALIDATE_MOVEMENT", true);
-
 	private Player player;
+
 	@Override
 	public void onAttached() {
 		if (!(getOwner() instanceof Player)) {
@@ -80,10 +80,10 @@ public class MovementValidatorComponent extends EntityComponent {
 		playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
 		Transform old = player.getSession().getDataMap().get(RECEIVED_TRANSFORM, (Transform) null);
 		if (player.getData().get(VALIDATE_MOVEMENT) && (old == null ||
-			Math.abs(old.getPosition().getX() - playerTransform.getPosition().getX()) > .2f ||
-			Math.abs(old.getPosition().getY() - playerTransform.getPosition().getY()) > .2f ||
-			Math.abs(old.getPosition().getZ() - playerTransform.getPosition().getZ()) > .2f)
-			) {
+				Math.abs(old.getPosition().getX() - playerTransform.getPosition().getX()) > .2f ||
+				Math.abs(old.getPosition().getY() - playerTransform.getPosition().getY()) > .2f ||
+				Math.abs(old.getPosition().getZ() - playerTransform.getPosition().getZ()) > .2f)
+				) {
 			player.getPhysics().setTransform(playerTransform);
 		} else {
 			((SpoutPhysicsComponent) player.getPhysics()).setTransform(old, false);

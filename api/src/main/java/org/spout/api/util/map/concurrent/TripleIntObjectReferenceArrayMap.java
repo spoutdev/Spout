@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,53 +33,30 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
- * A 3d int based Object map that is backed by AtomicReferenceArrays arranged in
- * a tree structure.<br>
- * <br>
- * The Map operates in a tree structure.  The bits variable indicates the
- * number of bits used per level of the tree.  This is used to mask the input
- * coordinates.<br>
- * <br>
- * The length of the internal arrays are determined by the bits parameter.<br>
- * <br>
- * If bits is set to 4, then each coordinate provides 4 bits for the array index.
- * That gives a total array length of 16 * 16 * 16 = 4096.<br>
- * <br>
- * Inserting a new object with a random key would probably require new arrays to 
- * be created for the entire depth of the tree.<br>
- * <br>
- * A given depth can be guaranteed by keeping ensuring that all elements are within
- * a cube that has an edge of 2 ^ (depth * bits) or smaller.  Increasing the bits 
- * variable reduces the depth of the internal tree at the expense of more memory
- * used per array.<br>
- * <br>
- * The map is thread-safe.  Map update operations can not be carried out by more
- * than one thread at the same time.  However, read operations are concurrent.<br>
- * <br>
- * The map is optimised for use where all the coordinates occur in a small number of
- * contiguous cuboids.
- * 
+ * A 3d int based Object map that is backed by AtomicReferenceArrays arranged in a tree structure.<br> <br> The Map operates in a tree structure.  The bits variable indicates the number of bits used
+ * per level of the tree.  This is used to mask the input coordinates.<br> <br> The length of the internal arrays are determined by the bits parameter.<br> <br> If bits is set to 4, then each
+ * coordinate provides 4 bits for the array index. That gives a total array length of 16 * 16 * 16 = 4096.<br> <br> Inserting a new object with a random key would probably require new arrays to be
+ * created for the entire depth of the tree.<br> <br> A given depth can be guaranteed by keeping ensuring that all elements are within a cube that has an edge of 2 ^ (depth * bits) or smaller.
+ * Increasing the bits variable reduces the depth of the internal tree at the expense of more memory used per array.<br> <br> The map is thread-safe.  Map update operations can not be carried out by
+ * more than one thread at the same time.  However, read operations are concurrent.<br> <br> The map is optimised for use where all the coordinates occur in a small number of contiguous cuboids.
+ *
  * @param <T> the value type
  */
-
 public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T> {
-	
 	private final int bits;
 	private final int doubleBits;
 	private final int bitMask;
 	private final int arraySize;
-	
 	private final AtomicReference<Entry<T>> root;
 	private final LinkedHashSet<T> values;
 	private final LinkedHashSet<LeafEntry> leafEntries;
 	private final AtomicReference<Collection<T>> valuesSnapshot = new AtomicReference<Collection<T>>(null);
-	
 	private int removed = 0;
-	
+
 	public TripleIntObjectReferenceArrayMap(int bits) {
 		this(bits, 1);
 	}
-	
+
 	private TripleIntObjectReferenceArrayMap(int bits, int depth) {
 		this.bits = bits;
 		this.doubleBits = bits << 1;
@@ -180,7 +157,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 			throw new IllegalStateException("Unable to create entry for put");
 		}
 	}
-	
+
 	@Override
 	public Collection<T> valueCollection() {
 		Collection<T> newValues = this.valuesSnapshot.get();
@@ -197,7 +174,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 			return newValues;
 		}
 	}
-	
+
 	private synchronized Entry<T> getOrCreateEntry(int x, int y, int z) {
 		Entry<T> entry = getEntryRaw(x, y, z);
 		if (entry != null) {
@@ -207,7 +184,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		int depth = entry.getDepth();
 		int shift = entry.getInitialShift();
 		Entry<T> prevEntry = null;
-		
+
 		int keyDepth = 0;
 		while (entry != null) {
 			prevEntry = entry;
@@ -218,7 +195,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 			}
 			keyDepth++;
 		}
-		
+
 		// Map must be resized if we hit a leaf node (collision) or the map was already at max depth
 		if (keyDepth > depth || prevEntry instanceof TripleIntObjectReferenceArrayMap.LeafEntry) {
 			resizeMap();
@@ -226,7 +203,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		} else if (keyDepth > depth) {
 			throw new IllegalStateException("Map has a depth that exceeds the depth variable");
 		}
-		
+
 		entry = prevEntry;
 		shift += bits;
 
@@ -248,12 +225,12 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		this.leafEntries.add(newEntry);
 		return newEntry;
 	}
-	
+
 	private synchronized void resizeMap() {
 		TripleIntObjectReferenceArrayMap.Entry<T> oldRoot = this.root.get();
 		int newDepth = oldRoot.getDepth() + 1;
 		TripleIntObjectReferenceArrayMap<T> temp = new TripleIntObjectReferenceArrayMap<T>(bits, newDepth);
-		
+
 		for (LeafEntry le : leafEntries) {
 			T value = le.getValue();
 			if (value != null) {
@@ -266,25 +243,25 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 				}
 			}
 		}
-		
+
 		if (!this.values.isEmpty()) {
 			throw new IllegalStateException("Some values were not transferred to the new map on resize");
 		}
-		
+
 		this.leafEntries.clear();
 		this.leafEntries.addAll(temp.leafEntries);
-		
+
 		this.values.addAll(temp.values);
 		if (!this.root.compareAndSet(oldRoot, temp.root.get())) {
 			throw new IllegalStateException("Old root changed while resizing");
 		}
 	}
-	
+
 	private Entry<T> getEntryRaw(int x, int y, int z) {
 		Entry<T> entry = this.root.get();
 		int depth = entry.getDepth();
 		int shift = entry.getInitialShift();
-		
+
 		for (int i = 0; i <= depth; i++) {
 			entry = entry.getSubEntry(x, y, z, shift);
 			if (entry == null) {
@@ -298,36 +275,32 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 			return null;
 		}
 	}
-	
-	
+
 	private static interface Entry<T> {
-		
 		public Entry<T> getSubEntry(int x, int y, int z, int shift);
-		
+
 		public boolean testKey(int x, int y, int z);
-		
+
 		public T getValue();
-		
+
 		public T remove();
-		
+
 		public boolean remove(T value);
-		
+
 		public T putIfAbsent(T value);
-		
+
 		public T put(T value);
-		
+
 		public int getDepth();
-		
+
 		public int getInitialShift();
-		
 	}
-	
+
 	private class AtomicReferenceArrayEntry implements Entry<T> {
-		
 		private final int depth;
 		private final int initialShift;
 		private final AtomicReferenceArray<Entry<T>> array;
-		
+
 		public AtomicReferenceArrayEntry(int depth) {
 			this.depth = depth;
 			this.array = new AtomicReferenceArray<Entry<T>>(arraySize);
@@ -378,21 +351,19 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		public T put(T value) {
 			throw new UnsupportedOperationException("The AtomicReferenceArrayEntry class does not contain key/value pairs");
 		}
-		
+
 		public boolean addNewEntry(int x, int y, int z, int shift, Entry<T> subEntry) {
 			int index = getIndex(x, y, z, shift);
 			return array.compareAndSet(index, null, subEntry);
 		}
-		
 	}
-	
+
 	private class LeafEntry implements Entry<T> {
-		
 		private final AtomicReference<T> value;
 		private final int x;
 		private final int y;
 		private final int z;
-		
+
 		public LeafEntry(int x, int y, int z) {
 			this.x = x;
 			this.y = y;
@@ -452,26 +423,25 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		public int getInitialShift() {
 			throw new UnsupportedOperationException("The LeafEntry class does not support this method");
 		}
-		
+
 		@Override
 		public String toString() {
 			return "{" + x + ", " + y + ", " + z + "}";
 		}
-		
+
 		public int getX() {
 			return x;
 		}
-		
+
 		public int getY() {
 			return y;
 		}
-		
+
 		public int getZ() {
 			return z;
 		}
-		
 	}
-	
+
 	private int getIndex(int x, int y, int z, int shift) {
 		x = x >> shift;
 		y = y >> shift;
@@ -481,5 +451,4 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		z &= bitMask;
 		return ((x & bitMask) << doubleBits) | ((y & bitMask) << bits) | (z & bitMask);
 	}
-
 }

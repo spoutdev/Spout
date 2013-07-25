@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -37,11 +37,9 @@ import org.spout.api.util.StringUtil;
 
 /**
  * Represents a Triangle for a model face
- *
  */
 public class MeshFace implements Iterable<Vertex>, Serializable {
 	private static final long serialVersionUID = 1L;
-
 	Vertex[] verts = new Vertex[3];
 
 	public MeshFace(Vertex v1, Vertex v2, Vertex v3) {
@@ -51,27 +49,25 @@ public class MeshFace implements Iterable<Vertex>, Serializable {
 	}
 
 	/**
-	 * Recalculates the normals for this triangle. All points must be 0'd before
-	 * this.
+	 * Recalculates the normals for this triangle. All points must be 0'd before this.
 	 */
 	protected void doRecalculateNormals() {
 		Vector3 trinormal = verts[0].position.subtract(verts[1].position).cross(verts[1].position.subtract(verts[2].position)).normalize();
 		verts[0].normal = verts[0].normal.add(trinormal).normalize();
 		verts[1].normal = verts[1].normal.add(trinormal).normalize();
 		verts[2].normal = verts[2].normal.add(trinormal).normalize();
-
 	}
 
 	Vector3[] getPositions() {
-		return new Vector3[]{verts[0].position, verts[1].position, verts[2].position};
+		return new Vector3[] {verts[0].position, verts[1].position, verts[2].position};
 	}
 
 	Vector3[] getNormals() {
-		return new Vector3[]{verts[0].normal, verts[1].normal, verts[2].normal};
+		return new Vector3[] {verts[0].normal, verts[1].normal, verts[2].normal};
 	}
 
 	Vector2[] getUVs() {
-		return new Vector2[]{verts[0].texCoord0, verts[1].texCoord0, verts[2].texCoord0};
+		return new Vector2[] {verts[0].texCoord0, verts[1].texCoord0, verts[2].texCoord0};
 	}
 
 	@Override
@@ -79,7 +75,7 @@ public class MeshFace implements Iterable<Vertex>, Serializable {
 		return StringUtil.toNamedString(this, verts[0], verts[1], verts[2]);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public Iterator<Vertex> iterator() {
 		return new ArrayIterator(verts);

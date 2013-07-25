@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,7 +30,6 @@ import org.spout.api.Platform;
 import org.spout.api.Spout;
 
 public abstract class MessageHandler<T extends Message> {
-	
 	/**
 	 * Handles a message. If the message is a one way method, then this method can be overriden.
 	 *
@@ -46,12 +45,11 @@ public abstract class MessageHandler<T extends Message> {
 			handleServer((ServerSession) session, message);
 		}
 	}
-	
+
 	/**
 	 * Handles a message.
 	 *
-	 * If handle is not overriden, then this method is called when a packet is
-	 * received from the client by the server.
+	 * If handle is not overriden, then this method is called when a packet is received from the client by the server.
 	 *
 	 * @param session the network session
 	 * @param message the message that was received
@@ -63,8 +61,7 @@ public abstract class MessageHandler<T extends Message> {
 	/**
 	 * Handles a message.
 	 *
-	 * If handle is not overriden, then this method is called when a packet is
-	 * received from the server by the client.
+	 * If handle is not overriden, then this method is called when a packet is received from the server by the client.
 	 *
 	 * @param session the network session
 	 * @param message the message that was received

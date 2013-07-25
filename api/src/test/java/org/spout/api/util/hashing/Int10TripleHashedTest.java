@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,22 +26,21 @@
  */
 package org.spout.api.util.hashing;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Random;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 public class Int10TripleHashedTest {
-	
 	private static final int COUNT = 1000;
 	private static final int COUNT2 = 10;
-	
+
 	@Test
 	public void test() {
-		
+
 		Random r = new Random();
-		
+
 		for (int i = 0; i < COUNT; i++) {
 			int bx = r.nextInt();
 			int by = r.nextInt();
@@ -57,8 +56,5 @@ public class Int10TripleHashedTest {
 				assertTrue("Z coord mismatch", hashed.keyZ(key) == z);
 			}
 		}
-		
-		
 	}
-
 }

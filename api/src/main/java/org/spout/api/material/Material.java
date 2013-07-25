@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -29,6 +29,7 @@ package org.spout.api.material;
 /**
  * Defines the characteristics of Blocks or Items.
  */
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -72,9 +73,6 @@ public abstract class Material extends MaterialRegistry {
 
 	/**
 	 * Creates a material with a dataMask, name
-	 * @param dataMask
-	 * @param name
-	 * @param model
 	 */
 	public Material(short dataMask, String name, String model) {
 		this.isSubMaterial = false;
@@ -90,7 +88,7 @@ public abstract class Material extends MaterialRegistry {
 			model = SpoutModels.DEFAULT_MODEL;
 		}
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			this.model = (Model)Spout.getFileSystem().getResource(model);
+			this.model = (Model) Spout.getFileSystem().getResource(model);
 		} else {
 			this.model = null;
 		}
@@ -102,7 +100,7 @@ public abstract class Material extends MaterialRegistry {
 	 * @param name of the material
 	 */
 	public Material(String name) {
-		this((short)0, name);
+		this((short) 0, name);
 	}
 
 	/**
@@ -119,7 +117,6 @@ public abstract class Material extends MaterialRegistry {
 	 * Creates and registers a sub material
 	 *
 	 * @param name of the material
-	 * @param data
 	 * @param parent material
 	 */
 	public Material(String name, int data, Material parent) {
@@ -130,9 +127,7 @@ public abstract class Material extends MaterialRegistry {
 	 * Creates and registers a sub material
 	 *
 	 * @param name of the material
-	 * @param data
 	 * @param parent material
-	 * @param model
 	 */
 	public Material(String name, int data, Material parent, String model) {
 		this.isSubMaterial = true;
@@ -148,7 +143,7 @@ public abstract class Material extends MaterialRegistry {
 			model = SpoutModels.DEFAULT_MODEL;
 		}
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			this.model = (Model)Spout.getFileSystem().getResource(model);
+			this.model = (Model) Spout.getFileSystem().getResource(model);
 		} else {
 			this.model = null;
 		}
@@ -171,7 +166,7 @@ public abstract class Material extends MaterialRegistry {
 		this.dataMask = 0;
 		this.root = this;
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			this.model = (Model)Spout.getFileSystem().getResource(SpoutModels.DEFAULT_MODEL);
+			this.model = (Model) Spout.getFileSystem().getResource(SpoutModels.DEFAULT_MODEL);
 		} else {
 			this.model = null;
 		}
@@ -180,7 +175,7 @@ public abstract class Material extends MaterialRegistry {
 	/**
 	 * Add a BatchEffect
 	 */
-	public void addMeshEffect(MeshEffect batchEffect){
+	public void addMeshEffect(MeshEffect batchEffect) {
 		meshEffects.add(batchEffect);
 	}
 
@@ -189,8 +184,7 @@ public abstract class Material extends MaterialRegistry {
 	}
 
 	/**
-	 * Gets the data value associated with this material. if this material does not have
-	 * or is not a sub material, then (getData() & getDataMask()) is equal to zero.
+	 * Gets the data value associated with this material. if this material does not have or is not a sub material, then (getData() & getDataMask()) is equal to zero.
 	 *
 	 * @return data value
 	 */
@@ -199,8 +193,7 @@ public abstract class Material extends MaterialRegistry {
 	}
 
 	/**
-	 * Gets the data mask for this material, and sub-materials.  When determining
-	 * sub-material, this mask is applied to the data before the comparison is performed.
+	 * Gets the data mask for this material, and sub-materials.  When determining sub-material, this mask is applied to the data before the comparison is performed.
 	 *
 	 * @return data mask
 	 */
@@ -261,7 +254,7 @@ public abstract class Material extends MaterialRegistry {
 	 * @return the sub material, or this material if not found
 	 */
 	public Material getSubMaterial(short data) {
-		short maskedData = (short)(data & dataMask);
+		short maskedData = (short) (data & dataMask);
 		return subMaterials.get()[maskedData];
 	}
 
@@ -396,6 +389,7 @@ public abstract class Material extends MaterialRegistry {
 
 	/**
 	 * Sets the maximum of the data value this material can have
+	 *
 	 * @param newValue the new maximum data
 	 */
 	public final void setMaxData(short newValue) {
@@ -412,8 +406,7 @@ public abstract class Material extends MaterialRegistry {
 	}
 
 	/**
-	 * Gets all the flags associated with this Material as an Item<br>
-	 * The flags are added to the input collection
+	 * Gets all the flags associated with this Material as an Item<br> The flags are added to the input collection
 	 *
 	 * @param item stack of this Material
 	 * @param flags to add to
@@ -424,13 +417,13 @@ public abstract class Material extends MaterialRegistry {
 
 	/**
 	 * Fired when this material is being rendered in the inventory
-	 *
 	 */
 	public void onInventoryRender() {
 	}
 
 	/**
 	 * Called when an entity interacts with the world while wielding this material
+	 *
 	 * @param entity that interacted
 	 * @param block that got interacted with
 	 * @param type of interaction
@@ -485,13 +478,9 @@ public abstract class Material extends MaterialRegistry {
 	public Collection<MeshEffect> getMeshEffects() {
 		return Collections.unmodifiableCollection(meshEffects);
 	}
-	
+
 	/**
-	 * Indicates that the dataMask covers the least significant bits.<br>
-	 * <br>
-	 * This method is used when verifying that the dataMask is set correctly
-	 * 
-	 * @return
+	 * Indicates that the dataMask covers the least significant bits.<br> <br> This method is used when verifying that the dataMask is set correctly
 	 */
 	public boolean hasLSBDataMask() {
 		return true;

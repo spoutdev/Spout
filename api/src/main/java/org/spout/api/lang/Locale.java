@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -37,15 +37,14 @@ public class Locale {
 	public static final Locale ENGLISH_UK = new Locale(java.util.Locale.UK, DefaultNumberHandler.class);
 	public static final Locale GERMAN_DE = new Locale(java.util.Locale.GERMANY, DefaultNumberHandler.class);
 	public static final Locale GERMAN_SW = new Locale(new java.util.Locale("de", "sw"), DefaultNumberHandler.class);
-	public static final Locale GERMAN_AT = new Locale(new java.util.Locale("de", "at") , DefaultNumberHandler.class);
+	public static final Locale GERMAN_AT = new Locale(new java.util.Locale("de", "at"), DefaultNumberHandler.class);
 	public static final Locale FRENCH_FR = new Locale(java.util.Locale.FRENCH, DefaultNumberHandler.class);
-
 	private final java.util.Locale baseLocale;
 	private final Class<? extends LocaleNumberHandler> numberHandler;
 
 	/**
-	 * Instead of using the constructor to create a locale,
-	 * use {@link #getByCode} so it returns already available instances for that language.
+	 * Instead of using the constructor to create a locale, use {@link #getByCode} so it returns already available instances for that language.
+	 *
 	 * @param baseLocale The base locale for the language
 	 */
 	public Locale(java.util.Locale baseLocale, Class<? extends LocaleNumberHandler> numberHandler) {
@@ -82,18 +81,23 @@ public class Locale {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		Locale other = (Locale) obj;
 		if (baseLocale == null) {
-			if (other.baseLocale != null)
+			if (other.baseLocale != null) {
 				return false;
-		} else if (!baseLocale.equals(other.baseLocale))
+			}
+		} else if (!baseLocale.equals(other.baseLocale)) {
 			return false;
+		}
 		return true;
 	}
 

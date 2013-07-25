@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,51 +26,48 @@
  */
 package org.spout.api.util.concurrent;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class AtomicIntegerHelperTest {
-	
 	@Test
 	public void test() {
-		
+
 		AtomicInteger i = new AtomicInteger();
-		
+
 		i.set(0xFF);
-		
+
 		assertTrue("Unable to set bits which were zero", AtomicIntegerHelper.setBit(i, 0xF00));
-		
+
 		assertEquals("Integer not correctly updated", i.get(), 0xFFF);
-		
+
 		assertFalse("Successfully set bits that were one", AtomicIntegerHelper.setBit(i, 0x0F0));
-		
+
 		assertEquals("Integer changed value", i.get(), 0xFFF);
-		
+
 		assertTrue("Unable to clear bits which were one", AtomicIntegerHelper.clearBit(i, 0x060));
-		
+
 		assertEquals("Integer not correctly updated", i.get(), 0xF9F);
-		
+
 		assertFalse("Successfully cleared bits that were zero", AtomicIntegerHelper.clearBit(i, 0x1000));
 
 		assertFalse("Successfully cleared bits that were zero", AtomicIntegerHelper.clearBit(i, 0x0040));
-		
+
 		assertEquals("Integer changed value", i.get(), 0xF9F);
-		
+
 		assertTrue("Unable to update field", AtomicIntegerHelper.setField(i, 0x0C0, 0xF80, 0x040));
-		
+
 		assertEquals("Integer not correctly updated", i.get(), 0xF5F);
-		
+
 		assertFalse("Successfully updated a field with the wrong expected value", AtomicIntegerHelper.setField(i, 0x060, 0x020, 0x000));
 
 		assertFalse("Successfully updated a field with the wrong expected value", AtomicIntegerHelper.setField(i, 0xF00, 0x0E0, 0x000));
-		
-		assertEquals("Integer changed value", i.get(), 0xF5F);
-		
-	}
 
+		assertEquals("Integer changed value", i.get(), 0xF5F);
+	}
 }

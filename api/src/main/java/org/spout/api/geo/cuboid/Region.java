@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -46,18 +46,15 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
 /**
  * Represents a cube containing 16x16x16 Chunks (256x256x256 Blocks)
  */
-public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaAccess, AreaPhysicsAccess, Iterable<Chunk>  {
-
+public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaAccess, AreaPhysicsAccess, Iterable<Chunk> {
 	/**
 	 * Stores the size of the amount of chunks in this Region
 	 */
 	public static final BitSize CHUNKS = new BitSize(4);
-
 	/**
 	 * Stores the size of the amount of blocks in this Region
 	 */
 	public static final BitSize BLOCKS = new BitSize(CHUNKS.BITS + Chunk.BLOCKS.BITS);
-
 	private final int blockX;
 	private final int blockY;
 	private final int blockZ;
@@ -77,6 +74,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the x-coordinate of this region as a Block coordinate
+	 *
 	 * @return the x-coordinate of the first block in this region
 	 */
 	public int getBlockX() {
@@ -85,6 +83,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the y-coordinate of this region as a Block coordinate
+	 *
 	 * @return the y-coordinate of the first block in this region
 	 */
 	public int getBlockY() {
@@ -93,6 +92,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the z-coordinate of this region as a Block coordinate
+	 *
 	 * @return the z-coordinate of the first block in this region
 	 */
 	public int getBlockZ() {
@@ -101,6 +101,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the x-coordinate of this region as a Chunk coordinate
+	 *
 	 * @return the x-coordinate of the first chunk in this region
 	 */
 	public int getChunkX() {
@@ -109,6 +110,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the y-coordinate of this region as a Chunk coordinate
+	 *
 	 * @return the y-coordinate of the first chunk in this region
 	 */
 	public int getChunkY() {
@@ -117,6 +119,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the z-coordinate of this region as a Chunk coordinate
+	 *
 	 * @return the z-coordinate of the first chunk in this region
 	 */
 	public int getChunkZ() {
@@ -125,6 +128,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the Block x-coordinate in the world
+	 *
 	 * @param x-coordinate within this Region
 	 * @return x-coordinate within the World
 	 */
@@ -134,6 +138,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the Block y-coordinate in the world
+	 *
 	 * @param y-coordinate within this Region
 	 * @return y-coordinate within the World
 	 */
@@ -143,6 +148,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the Block z-coordinate in the world
+	 *
 	 * @param z-coordinate within this Region
 	 * @return z-coordinate within the World
 	 */
@@ -152,6 +158,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the Chunk x-coordinate in the world
+	 *
 	 * @param x-coordinate within this Region
 	 * @return x-coordinate within the World
 	 */
@@ -161,6 +168,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the Chunk y-coordinate in the world
+	 *
 	 * @param y-coordinate within this Region
 	 * @return y-coordinate within the World
 	 */
@@ -170,6 +178,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets the Chunk z-coordinate in the world
+	 *
 	 * @param z-coordinate within this Region
 	 * @return z-coordinate within the World
 	 */
@@ -194,8 +203,8 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 	public abstract void save();
 
 	/**
-	 * Performs the nessecary tasks to unload this region from the world, and
-	 * all associated chunks.
+	 * Performs the nessecary tasks to unload this region from the world, and all associated chunks.
+	 *
 	 * @param save whether to save the region and associated data.
 	 */
 	@DelayedWrite
@@ -203,6 +212,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets all entities with the specified type.
+	 *
 	 * @param type The {@link Class} for the type.
 	 * @param type The type of entity.
 	 * @return A set of entities with the specified type.
@@ -212,6 +222,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 
 	/**
 	 * Gets an entity by its id.
+	 *
 	 * @param id The id.
 	 * @return The entity, or {@code null} if it could not be found.
 	 */
@@ -225,16 +236,17 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 	 * Gets the TaskManager associated with this region
 	 */
 	public abstract TaskManager getTaskManager();
-	
+
 	@Override
 	public Iterator<Chunk> iterator() {
 		return new ChunkIterator();
 	}
-	
+
 	private class ChunkIterator implements Iterator<Chunk> {
 		private Chunk next;
+
 		public ChunkIterator() {
-loop:
+			loop:
 			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
@@ -246,7 +258,7 @@ loop:
 				}
 			}
 		}
-		
+
 		@Override
 		public boolean hasNext() {
 			return next != null;
@@ -276,6 +288,5 @@ loop:
 		public void remove() {
 			throw new UnsupportedOperationException("Operation not supported");
 		}
-		
 	}
 }

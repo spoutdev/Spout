@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,49 +32,39 @@ import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
-import org.spout.api.plugin.PluginClassLoader;
 import org.spout.api.plugin.Plugin;
+import org.spout.api.plugin.PluginClassLoader;
 import org.spout.api.plugin.PluginManager;
 
 /**
- * Provides helper methods for translation
- * <h2>Loading translation files</h2>
- * <p>Plugins can use translation by either putting translation files into the jar-package or in their data-directory.</p>
- * <h3>Jar-File</h3>
- * <p>Put your translation files into a folder called "lang" in the root directory:
+ * Provides helper methods for translation <h2>Loading translation files</h2> <p>Plugins can use translation by either putting translation files into the jar-package or in their data-directory.</p>
+ * <h3>Jar-File</h3> <p>Put your translation files into a folder called "lang" in the root directory:
  * <pre>&lt;jar&gt;/lang/lang-&lt;countrycode&gt;.yml</pre></p>
- * <h3>Data-Directory</h3>
- * <p>Put your translation files into a folder called "lang" in your plugins data-directory:
+ * <h3>Data-Directory</h3> <p>Put your translation files into a folder called "lang" in your plugins data-directory:
  * <pre>plugins/&lt;plugin-name&gt;/lang/lang-&lt;countrycode&gt;.yml</pre></p>
- * <p>
- * Translation files in the plugins data-directory will be preferred over files in the jar
- * </p>
- * <h2>Translating strings in the code</h2>
- * <p>To translate strings, use Translation.tr().</p>
+ * <p> Translation files in the plugins data-directory will be preferred over files in the jar </p> <h2>Translating strings in the code</h2> <p>To translate strings, use Translation.tr().</p>
  * <h3>Example</h3>
  * <pre>player.sendMessage(Translation.tr("You've been teleported to %1", player, target));</pre>
- * <p>You have to pass a CommandSource object so SpoutAPI can determine the preferred target-language.</p>
- * <p><strong>TIP: </strong> use a static import:
+ * <p>You have to pass a CommandSource object so SpoutAPI can determine the preferred target-language.</p> <p><strong>TIP: </strong> use a static import:
  * <pre>import static org.spout.api.lang.Translation.tr;
- *...
- *tr("hello", player);</pre></p>
- * 
+ * ...
+ * tr("hello", player);</pre></p>
  */
 
 // TODO: ChatStyle integration
 public class Translation {
-	
-	
 	private static String foundClass = null;
 	private static final String LANG_PACKAGE = "org.spout.api.lang";
+
 	/**
 	 * Returns the translation of source into the receivers preferred language
+	 *
 	 * @param source the string to translate
 	 * @param receiver the receiver who will see the message
 	 * @param args any object given will be inserted into the target string for each %0, %1 asf
 	 * @return the translation
 	 */
-	public static String tr(String source, CommandSource receiver, Object ...args) {
+	public static String tr(String source, CommandSource receiver, Object... args) {
 		Plugin plugin = getPluginForStacktrace();
 		if (plugin == null) {
 			return source;
@@ -82,10 +72,10 @@ public class Translation {
 		PluginDictionary pldict = plugin.getDictionary();
 		return pldict.tr(source, receiver, foundClass, args);
 	}
-	
+
 	/**
-	 * Broadcasts the source string to all players on the server.<br/>
-	 * Will translate the source string into each players respective target language.
+	 * Broadcasts the source string to all players on the server.<br/> Will translate the source string into each players respective target language.
+	 *
 	 * @param source the string to translate
 	 * @param args any object given will be inserted into the target string for each %0, %1 asf
 	 */
@@ -96,10 +86,10 @@ public class Translation {
 		}
 		broadcast(source, ((Server) Spout.getEngine()).getOnlinePlayers(), args);
 	}
-	
+
 	/**
-	 * Broadcasts the source string to all CommandSources given in receivers<br/>
-	 * Will translate the source string into each CommandSoruce's respective target language.
+	 * Broadcasts the source string to all CommandSources given in receivers<br/> Will translate the source string into each CommandSoruce's respective target language.
+	 *
 	 * @param source the string to translate
 	 * @param receivers the receivers to send the message to
 	 * @param args any object given will be inserted into the target string for each %0, %1 asf
@@ -109,7 +99,7 @@ public class Translation {
 		PluginDictionary pldict = plugin.getDictionary();
 		pldict.broadcast(source, receivers, foundClass, args);
 	}
-	
+
 	//This is horrible code
 	private static Plugin getPluginForStacktrace() {
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
@@ -133,37 +123,37 @@ public class Translation {
 		}
 		return ((PluginManager) Spout.getPluginManager()).getMetaPlugin();
 	}
-	
+
 	/**
-	 * Logs the given message to the console and the logfile
-	 * The message will be translated for the console, but not the logfile (message should be in english)
+	 * Logs the given message to the console and the logfile The message will be translated for the console, but not the logfile (message should be in english)
+	 *
 	 * @param message the message to log
 	 * @param args any object given will be inserted into the target string for each %0, %1 asf
 	 */
-	public static void log(String message, Object ...args) {
+	public static void log(String message, Object... args) {
 		log(message, Level.INFO, args);
 	}
-	
+
 	/**
-	 * Logs the given message to the console and the logfile
-	 * The message will be translated for the console, but not the logfile (message should be in english)
+	 * Logs the given message to the console and the logfile The message will be translated for the console, but not the logfile (message should be in english)
+	 *
 	 * @param logLevel the logLevel to log this with
 	 * @param message the message to log
 	 * @param args any object given will be inserted into the target string for each %0, %1 asf
 	 */
-	public static void log(String message, Level logLevel, Object ...args) {
+	public static void log(String message, Level logLevel, Object... args) {
 		Spout.getLogger().log(logLevel, tr(message, Spout.getEngine().getCommandSource(), args)); // TODO split this into file and console
 	}
-	
+
 	/**
-	 * Logs the given message to the console and the logfile
-	 * The message will be translated for the console, but not the logfile (message should be in english)
+	 * Logs the given message to the console and the logfile The message will be translated for the console, but not the logfile (message should be in english)
+	 *
 	 * @param logLevel the logLevel to log this with
 	 * @param message the message to log
 	 * @param args any object given will be inserted into the target string for each %0, %1 asf
 	 * @param t an exception to print
 	 */
-	public static void log(String message, Level logLevel, Throwable t, Object ...args) {
+	public static void log(String message, Level logLevel, Throwable t, Object... args) {
 		Spout.getLogger().log(logLevel, tr(message, Spout.getEngine().getCommandSource(), args), t); // TODO split this into file and console
 	}
 }

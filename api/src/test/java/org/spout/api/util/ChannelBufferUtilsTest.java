@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,13 +34,9 @@ import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import org.spout.api.faker.EngineFaker;
-import static org.spout.api.faker.EngineFaker.TEST_UUID;
 import org.spout.api.faker.WorldFaker;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
@@ -51,8 +47,13 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
+import static org.spout.api.faker.EngineFaker.TEST_UUID;
 import static org.spout.api.util.ChannelBufferUtils.getExpandedHeight;
 import static org.spout.api.util.ChannelBufferUtils.getShifts;
+import static org.spout.api.util.ChannelBufferUtils.readColor;
 import static org.spout.api.util.ChannelBufferUtils.readParameters;
 import static org.spout.api.util.ChannelBufferUtils.readPoint;
 import static org.spout.api.util.ChannelBufferUtils.readQuaternion;
@@ -60,9 +61,9 @@ import static org.spout.api.util.ChannelBufferUtils.readString;
 import static org.spout.api.util.ChannelBufferUtils.readStringArray;
 import static org.spout.api.util.ChannelBufferUtils.readTransform;
 import static org.spout.api.util.ChannelBufferUtils.readUUID;
-import static org.spout.api.util.ChannelBufferUtils.readVector3;
 import static org.spout.api.util.ChannelBufferUtils.readVector2;
-import static org.spout.api.util.ChannelBufferUtils.readColor;
+import static org.spout.api.util.ChannelBufferUtils.readVector3;
+import static org.spout.api.util.ChannelBufferUtils.writeColor;
 import static org.spout.api.util.ChannelBufferUtils.writeParameters;
 import static org.spout.api.util.ChannelBufferUtils.writePoint;
 import static org.spout.api.util.ChannelBufferUtils.writeQuaternion;
@@ -70,12 +71,12 @@ import static org.spout.api.util.ChannelBufferUtils.writeString;
 import static org.spout.api.util.ChannelBufferUtils.writeStringArray;
 import static org.spout.api.util.ChannelBufferUtils.writeTransform;
 import static org.spout.api.util.ChannelBufferUtils.writeUUID;
-import static org.spout.api.util.ChannelBufferUtils.writeVector3;
 import static org.spout.api.util.ChannelBufferUtils.writeVector2;
-import static org.spout.api.util.ChannelBufferUtils.writeColor;
+import static org.spout.api.util.ChannelBufferUtils.writeVector3;
 
 public class ChannelBufferUtilsTest {
 	public static final List<Parameter<?>> TEST_PARAMS = new ArrayList<Parameter<?>>();
+
 	static {
 		EngineFaker.setupEngine();
 
@@ -103,14 +104,13 @@ public class ChannelBufferUtilsTest {
 		assertEquals(TEST_STRING, readString(buf));
 	}
 
-	
 	@Test
 	public void testUUID() throws Exception {
 		ChannelBuffer buf = ChannelBuffers.dynamicBuffer();
 		writeUUID(buf, TEST_UUID);
 		assertEquals(TEST_UUID, readUUID(buf));
 	}
-	
+
 	@Test
 	public void testVector3() throws IllegalAccessException {
 		for (Field field : Vector3.class.getFields()) {
@@ -123,7 +123,6 @@ public class ChannelBufferUtilsTest {
 		}
 	}
 
-	
 	private static final World TEST_WORLD = WorldFaker.setupWorld();
 	private static final Point TEST_POINT = new Point(TEST_WORLD, 0, 0, 0);
 	private static final Transform TEST_TRANSFORM = new Transform(TEST_POINT, Quaternion.IDENTITY, Vector3.ZERO);
@@ -157,8 +156,8 @@ public class ChannelBufferUtilsTest {
 		writeStringArray(buf, TEST_STRING_ARRAY);
 		assertArrayEquals(TEST_STRING_ARRAY, readStringArray(buf));
 	}
-	
-		@Test
+
+	@Test
 	public void testShifts() {
 		for (int i = 2; i < 12; ++i) {
 			final int origHeight = (int) Math.pow(2, i);

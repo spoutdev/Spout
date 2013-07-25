@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -27,18 +27,13 @@
 package org.spout.api.model.animation;
 
 public class Animation {
-
 	private String name; //Debug
-	
 	private int id;
-	
 	private final int frame;
-	
 	private final float delay;
-	
-	private final BoneTransform [][]frames;
+	private final BoneTransform[][] frames;
 
-	public Animation(Skeleton skeleton, int frame, float delay){
+	public Animation(Skeleton skeleton, int frame, float delay) {
 		frames = new BoneTransform[skeleton.getBoneSize()][frame];
 		this.frame = frame;
 		this.delay = delay;
@@ -64,10 +59,11 @@ public class Animation {
 		return delay;
 	}
 
-	public void setBoneTransform(int bone, int frame, BoneTransform transform){
-		if(frames[bone][frame] != null)
+	public void setBoneTransform(int bone, int frame, BoneTransform transform) {
+		if (frames[bone][frame] != null) {
 			throw new IllegalStateException("This bone transform is already define");
-		
+		}
+
 		frames[bone][frame] = transform;
 	}
 
@@ -77,9 +73,6 @@ public class Animation {
 
 	/**
 	 * Get BoneTransform for a gived bone and frame
-	 * @param bone
-	 * @param frame
-	 * @return
 	 */
 	public BoneTransform getBoneTransform(int bone, int frame) {
 		return frames[bone][frame];
@@ -88,11 +81,11 @@ public class Animation {
 	public void dumbAnimation(String str) {
 		System.out.println(str + "Animation : " + id);
 
-		int i = 0,j;
-		for(BoneTransform[] bones : frames){
+		int i = 0, j;
+		for (BoneTransform[] bones : frames) {
 			j = 0;
-			for(BoneTransform frame : bones){
-				System.out.println(str + "  " + i + "/" + j +" : " + frame.toString());
+			for (BoneTransform frame : bones) {
+				System.out.println(str + "  " + i + "/" + j + " : " + frame.toString());
 				j++;
 			}
 			i++;
@@ -101,10 +94,8 @@ public class Animation {
 
 	/**
 	 * Return the number of bones
-	 * @return
 	 */
 	public int getSize() {
 		return frames.length;
 	}
-
 }

@@ -1,119 +1,33 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- Project information -->
-	<name>Spout</name>
-	<groupId>org.spout</groupId>
+	<name>Spout Engine</name>
 	<artifactId>spout</artifactId>
-	<version>dev-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<url>http://www.spout.org</url>
-	<inceptionYear>2011</inceptionYear>
-	<description></description>
+	<description>Open source, multithreaded, voxel game engine and platform, written in Java.</description>
+
+	<!-- Parent information -->
+	<parent>
+		<groupId>org.spout</groupId>
+		<artifactId>spout-parent</artifactId>
+		<version>1</version>
+	</parent>
 
 	<!-- Build properties -->
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<currentYear>2012</currentYear>
-		<apiVersion>dev-SNAPSHOT</apiVersion>
-		<lwjglVersion>2.9.0</lwjglVersion>
-		<buildNumber>0</buildNumber>
+		<mainClass>${project.groupId}.engine.SpoutApplication</mainClass>
 	</properties>
-
-	<!-- Company information -->
-	<organization>
-		<name>Spout LLC</name>
-		<url>http://www.spout.org</url>
-	</organization>
-
-	<!-- License information -->
-	<licenses>
-		<license>
-			<name>Spout License Version 1</name>
-			<url>http://spout.in/licensev1</url>
-			<distribution>repo</distribution>
-			<comments>GNU Lesser General Public License Version 3, but with a provision that files are released under the MIT license 180 days after they are published.</comments>
-		</license>
-	</licenses>
-
-	<!-- Source code access -->
-	<scm>
-		<developerConnection>scm:git:git@github.com:SpoutDev/Spout.git</developerConnection>
-		<connection>scm:git:git://github.com/SpoutDev/Spout.git</connection>
-		<url>https://github.com/SpoutDev/Spout</url>
-	</scm>
-
-	<!-- Build server -->
-	<ciManagement>
-		<system>jenkins</system>
-		<url>http://build.spout.org/job/Spout</url>
-	</ciManagement>
-
-	<!-- Issue tracker -->
-	<issueManagement>
-		<system>jira</system>
-		<url>http://issues.spout.org/browse/SPOUT</url>
-	</issueManagement>
-
-	<!-- Dependency repositories -->
-	<repositories>
-		<repository>
-			<id>spout-repo</id>
-			<url>http://repo.spout.org</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
-
-	<!-- Build plugin repositories -->
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spout-repo</id>
-			<url>http://repo.spout.org</url>
-		</pluginRepository>
-	</pluginRepositories>
-
-	<!-- Distribution management -->
-	<distributionManagement>
-		<!-- Publish releases here -->
-		<repository>
-			<id>spout-releases</id>
-			<url>http://nexus.spout.org/content/repositories/releases</url>
-		</repository>
-		<!-- Publish snapshots here -->
-		<snapshotRepository>
-			<id>spout-snapshots</id>
-			<url>http://nexus.spout.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<!-- Project dependencies -->
 	<dependencies>
-		<!-- Provided by third-party -->
-		<dependency>
-			<groupId>org.teleal.cling</groupId>
-			<artifactId>cling-support</artifactId>
-			<version>1.0.5</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.fusesource.jansi</groupId>
-			<artifactId>jansi</artifactId>
-			<version>1.9</version>
-			<scope>compile</scope>
-		</dependency>
+		<!-- Include in final JAR -->
 		<dependency>
 			<groupId>com.beust</groupId>
 			<artifactId>jcommander</artifactId>
 			<version>1.30</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>jline</groupId>
-			<artifactId>jline</artifactId>
-			<version>1.0</version><!-- 2.9 available -->
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -123,63 +37,59 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.spout</groupId>
-			<artifactId>logging</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>jline</groupId>
+			<artifactId>jline</artifactId>
+			<version>1.0</version>
+			<!-- 2.11 available -->
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.fusesource.jansi</groupId>
+			<artifactId>jansi</artifactId>
+			<version>1.11</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.lwjgl.lwjgl</groupId>
 			<artifactId>lwjgl</artifactId>
-			<version>${lwjglVersion}</version>
+			<version>2.9.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.lwjgl.lwjgl</groupId>
 			<artifactId>lwjgl_util</artifactId>
-			<version>${lwjglVersion}</version>
+			<version>2.9.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.spout</groupId>
-			<artifactId>spoutapi</artifactId>
-			<version>${apiVersion}</version>
+			<artifactId>spout-logging</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- Testing only -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
+			<groupId>org.spout</groupId>
+			<artifactId>spout-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito</artifactId>
-			<version>1.5</version>
-			<scope>test</scope>
+			<groupId>org.fourthline.cling</groupId>
+			<artifactId>cling-support</artifactId>
+			<version>2.0-alpha2</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
 	<!-- Build configuration -->
 	<build>
-		<defaultGoal>clean install</defaultGoal>
-
 		<!-- Resources to include -->
 		<resources>
 			<!-- Static resources -->
 			<resource>
-				<targetPath>.</targetPath>
 				<filtering>false</filtering>
-				<directory>${basedir}</directory>
-				<includes>
-					<include>LICENSE.txt</include>
-				</includes>
-			</resource>
-			<resource>
+				<directory>src/main/resources</directory>
 				<targetPath>.</targetPath>
-				<filtering>false</filtering>
-				<directory>${basedir}/src/main/resources</directory>
 				<includes>
 					<include>**/*</include>
 				</includes>
@@ -188,76 +98,6 @@
 
 		<!-- Build plugins -->
 		<plugins>
-			<!-- License headers plugin -->
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.10.b1</version>
-				<executions>
-					<execution>
-						<configuration>
-							<properties>
-								<name>${project.name}</name>
-								<url>${project.organization.url}</url>
-								<copyright>Copyright (c) ${project.inceptionYear}-${currentYear}, ${project.organization.name}</copyright>
-							</properties>
-							<quiet>true</quiet>
-							<encoding>UTF-8</encoding>
-							<strictCheck>true</strictCheck>
-							<header>${basedir}/HEADER.txt</header>
-							<mapping>
-								<java>SLASHSTAR_STYLE</java>
-							</mapping>
-							<keywords>
-								<keyword>${project.name}</keyword>
-								<keyword>license</keyword>
-							</keywords>
-							<includes>
-								<include>src/main/java/**</include>
-								<include>src/test/java/**</include>
-							</includes>
-						</configuration>
-						<phase>clean</phase>
-						<goals>
-							<goal>format</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Release version plugin -->
-			<plugin>
-				<groupId>com.sourcesense.maven</groupId>
-				<artifactId>maven-nosnapshot-plugin</artifactId>
-				<version>0.0.7</version>
-				<executions>
-					<execution>
-						<configuration>
-							<version>${project.version}</version>
-							<propertyName>releaseVersion</propertyName>
-						</configuration>
-						<phase>initialize</phase>
-						<goals>
-							<goal>strip</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Source compiler plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.0</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-					<compilerArguments>
-						<O>-Xlint:all</O>
-						<O>-Xlint:-path</O>
-					</compilerArguments>
-					<showWarnings>true</showWarnings>
-					<showDeprecation>true</showDeprecation>
-				</configuration>
-			</plugin>
 			<!-- JAR creation plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -266,12 +106,12 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Main-Class>org.spout.engine.SpoutApplication</Main-Class>
+							<Main-Class>${mainClass}</Main-Class>
 							<Implementation-Title>${project.name}</Implementation-Title>
-							<Implementation-Version>${releaseVersion} b${buildNumber}</Implementation-Version>
+							<Implementation-Version>${project.version}-b${buildNumber}</Implementation-Version>
 							<Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-							<Specification-Title>SpoutAPI</Specification-Title>
-							<Specification-Version>${apiVersion}</Specification-Version>
+							<Specification-Title>${project.name}API</Specification-Title>
+							<Specification-Version>${project.version}-b${buildNumber}</Specification-Version>
 							<Specification-Vendor>${project.organization.name}</Specification-Vendor>
 							<Sealed>true</Sealed>
 						</manifestEntries>
@@ -290,7 +130,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.0</version>
+				<version>2.1</version>
 				<executions>
 					<execution>
 						<configuration>
@@ -324,37 +164,5 @@
 				</executions>
 			</plugin>
 		</plugins>
-
-		<!-- Plugin management -->
-		<pluginManagement>
-			<plugins>
-				<!-- Eclipse exclusions -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>com.sourcesense.maven</groupId>
-										<artifactId>maven-nosnapshot-plugin</artifactId>
-										<versionRange>[0.0.7,)</versionRange>
-										<goals>
-											<goal>strip</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute/>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
-
 </project>

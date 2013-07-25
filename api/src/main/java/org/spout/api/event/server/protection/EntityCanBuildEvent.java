@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,8 +34,8 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 
 /**
- * This {@link EntityEvent} is designed to be fired by plugins that wish to check if an entity can place the given block at the current {@link Point}.
- * Protection plugins should utilize this event to deny entities building in specific locations.
+ * This {@link EntityEvent} is designed to be fired by plugins that wish to check if an entity can place the given block at the current {@link Point}. Protection plugins should utilize this event to
+ * deny entities building in specific locations.
  */
 public class EntityCanBuildEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
@@ -50,6 +50,7 @@ public class EntityCanBuildEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * The Material data for the Block that is being placed.
+	 *
 	 * @return the material
 	 */
 	public BlockMaterial getMaterial() {
@@ -58,6 +59,7 @@ public class EntityCanBuildEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * The Point where the player is attempting to place a block.
+	 *
 	 * @return the point
 	 */
 	public Point getPoint() {

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,14 +30,14 @@ import java.net.InetSocketAddress;
 import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
+
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Player;
 
 /**
- * Represents a connection to another engine.<br/>
- * Controls the state, protocol and channels of a connection to another engine.
+ * Represents a connection to another engine.<br/> Controls the state, protocol and channels of a connection to another engine.
  */
 public interface Session {
 	/**
@@ -56,8 +56,7 @@ public interface Session {
 	public <T extends Message> void messageReceivedOnAuxChannel(Channel auxChannel, T message);
 
 	/**
-	 * Disposes of this session by destroying the associated player, if there is
-	 * one.
+	 * Disposes of this session by destroying the associated player, if there is one.
 	 */
 	public void dispose();
 
@@ -99,33 +98,36 @@ public interface Session {
 
 	/**
 	 * Sends any amount of messages to the client
+	 *
 	 * @param messages the messages to send to the client
 	 */
 	public void sendAll(Message... messages);
 
 	/**
 	 * Sends any amount of messages to the client.
+	 *
 	 * @param force if the messages are used in the identification stages of communication
 	 * @param messages the messages to send to the client
 	 */
 	public void sendAll(boolean force, Message... messages);
+
 	/**
 	 * Disconnects the player as a kick. This is equivalent to calling disconnect(reason, true)
+	 *
 	 * @param reason The reason for disconnection
 	 * @return Whether the player was actually disconnected
 	 */
 	public boolean disconnect(String reason);
 
 	/**
-	 * Disconnects the session with the specified reason. When the kick packet has been delivered,
-	 * the channel is closed.
+	 * Disconnects the session with the specified reason. When the kick packet has been delivered, the channel is closed.
 	 *
 	 * @param reason The reason for disconnection.
-	 * @param kick Whether this disconnection is caused by the player being kicked or the player quitting
-	 *             Disconnects are only cancellable when the disconnection is a kick
+	 * @param kick Whether this disconnection is caused by the player being kicked or the player quitting Disconnects are only cancellable when the disconnection is a kick
 	 * @return Whether the player was actually disconnected. This can be false if the kick event is cancelled or errors occur
 	 */
 	public boolean disconnect(boolean kick, String reason);
+
 	/**
 	 * Returns the address of this session.
 	 *
@@ -149,6 +151,7 @@ public interface Session {
 
 	/**
 	 * Gets the player associated with this session.
+	 *
 	 * @return Player
 	 */
 	public Player getPlayer();
@@ -164,10 +167,8 @@ public interface Session {
 	public void closeAuxChannel();
 
 	/**
-	 * Checks if a channel is the primary channel.  The primary channel never changes for a Session.
-	 * An auxiliary channel is used for proxy mode.
+	 * Checks if a channel is the primary channel.  The primary channel never changes for a Session. An auxiliary channel is used for proxy mode.
 	 *
-	 * @return the channel to test
 	 * @return true if the channel is the primary channel
 	 */
 	public boolean isPrimary(Channel c);
@@ -181,23 +182,17 @@ public interface Session {
 
 	public enum State {
 		/**
-		 * In the exchange handshake state, the server is waiting for the client
-		 * to send its initial handshake packet.
+		 * In the exchange handshake state, the server is waiting for the client to send its initial handshake packet.
 		 */
 		EXCHANGE_HANDSHAKE,
-
 		/**
-		 * In the exchange identification state, the server is waiting for the
-		 * client to send its identification packet.
+		 * In the exchange identification state, the server is waiting for the client to send its identification packet.
 		 */
 		EXCHANGE_IDENTIFICATION,
-
 		/**
-		 * In the exchange encryption state, the server is waiting for the
-		 * client to send its encryption response packet.
+		 * In the exchange encryption state, the server is waiting for the client to send its encryption response packet.
 		 */
 		EXCHANGE_ENCRYPTION,
-
 		/**
 		 * In the game state the session has an associated player.
 		 */
@@ -207,8 +202,7 @@ public interface Session {
 	public Engine getEngine();
 
 	/**
-	 * True if this session is open and connected.
-	 * If the session is closed, all packets will be silently ignored.
+	 * True if this session is open and connected. If the session is closed, all packets will be silently ignored.
 	 *
 	 * @return is connected
 	 */
@@ -217,7 +211,7 @@ public interface Session {
 	public interface UncaughtExceptionHandler {
 		/**
 		 * Called when an exception occurs during session handling
-		 * 
+		 *
 		 * @param message the message handler threw an exception on
 		 * @param message handler that threw the an exception handling the message
 		 * @param ex the exception
@@ -227,24 +221,23 @@ public interface Session {
 
 	/**
 	 * Gets the uncaught exception handler.
-	 * 
+	 *
 	 * <p>Note: the default exception handler is the {@link DefaultUncaughtExceptionHandler}.</p>
-	 * 
+	 *
 	 * @return exception handler
 	 */
 	public UncaughtExceptionHandler getUncaughtExceptionHandler();
 
 	/**
 	 * Sets the uncaught exception handler to be used for this session. Null values are not permitted.
-	 * 
+	 *
 	 * <p>Note: to reset the default exception handler, use the{@link DefaultUncaughtExceptionHandler}.</p>
-	 * 
-	 * @param handler
 	 */
 	public void setUncaughtExceptionHandler(UncaughtExceptionHandler handler);
 
 	public static final class DefaultUncaughtExceptionHandler implements UncaughtExceptionHandler {
 		private final Session session;
+
 		public DefaultUncaughtExceptionHandler(Session session) {
 			this.session = session;
 		}

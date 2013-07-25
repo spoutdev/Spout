@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -38,9 +38,7 @@ public class WrappedBiomeManager extends BiomeManager {
 	private final BiomeManager[][] subManagers;
 
 	/**
-	 * Construct a new WrappedBiomeManager which will wrap biome managers on
-	 * plane starting at (x, z) and ending at (x + sizeX, z + sizeZ). All
-	 * coordinates are in chunks.
+	 * Construct a new WrappedBiomeManager which will wrap biome managers on plane starting at (x, z) and ending at (x + sizeX, z + sizeZ). All coordinates are in chunks.
 	 *
 	 * @param world The world which will provide the biome data.
 	 * @param x The starting x coordinate in chunks.
@@ -73,8 +71,7 @@ public class WrappedBiomeManager extends BiomeManager {
 	/**
 	 * Gets the size of this biome manager in chunks. Returns a new Vector2.
 	 *
-	 * @return The vector representing the size of this wrapped biome manager,
-	 * in chunks.
+	 * @return The vector representing the size of this wrapped biome manager, in chunks.
 	 */
 	public Vector2 getChunkSize() {
 		return new Vector2(subManagers.length, subManagers[0].length);
@@ -83,8 +80,7 @@ public class WrappedBiomeManager extends BiomeManager {
 	/**
 	 * Gets the size of this biome manager in blocks. Returns a new Vector2.
 	 *
-	 * @return The vector representing the size of this wrapped biome manager,
-	 * in block.
+	 * @return The vector representing the size of this wrapped biome manager, in block.
 	 */
 	public Vector2 getSize() {
 		return getChunkSize().multiply(Chunk.BLOCKS.SIZE);

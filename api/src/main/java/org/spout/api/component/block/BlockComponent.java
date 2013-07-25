@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -50,6 +50,7 @@ public abstract class BlockComponent extends Component {
 
 	/**
 	 * Gets the position of this block component
+	 *
 	 * @return position
 	 */
 	public Point getPoint() {
@@ -62,8 +63,9 @@ public abstract class BlockComponent extends Component {
 	/**
 	 * Gets the {@link Block} who owns this component.
 	 *
-	 * The structure of BlockComponents differ from the other {@link ComponentOwner}s. {@link BlockComponentOwner} is what does BlockComponent
-	 * management but Block itself owns the block. To keep things easy to access, this convenience method is provided.
+	 * The structure of BlockComponents differ from the other {@link ComponentOwner}s. {@link BlockComponentOwner} is what does BlockComponent management but Block itself owns the block. To keep things
+	 * easy to access, this convenience method is provided.
+	 *
 	 * @return the block associated with the BlockComponentOwner
 	 */
 	public Block getBlock() {
@@ -75,10 +77,9 @@ public abstract class BlockComponent extends Component {
 
 	/**
 	 * Called when the owning {@link org.spout.api.geo.cuboid.Block} is collided with an {@link Entity}.
+	 *
 	 * @param point the point where collision occurred.
-	 * @param entity the entity that collided with the owner
-	 * <p>
-	 * TODO EntityCollideBlockEvent
+	 * @param entity the entity that collided with the owner <p> TODO EntityCollideBlockEvent
 	 */
 	public void onCollided(Point point, Entity entity) {
 
@@ -86,6 +87,7 @@ public abstract class BlockComponent extends Component {
 
 	/**
 	 * Called when the owner is interacted.
+	 *
 	 * @param event the event which was fired, resolved, and now passed on to the components.
 	 */
 	public void onInteract(final EntityInteractEvent<?> event) {

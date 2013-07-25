@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -30,10 +30,12 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
+
 import org.spout.api.math.Vector3;
 
 public class Vector3ArrayShaderVariable extends ShaderVariable {
 	Vector3[] value;
+
 	public Vector3ArrayShaderVariable(int program, String name, Vector3[] array) {
 		super(program, name);
 		value = array;
@@ -42,14 +44,13 @@ public class Vector3ArrayShaderVariable extends ShaderVariable {
 	@Override
 	public void assign() {
 		FloatBuffer buffer = BufferUtils.createFloatBuffer(3 * value.length);
-		for(int i = 0; i< value.length; i++){
+		for (int i = 0; i < value.length; i++) {
 			buffer.put(value[i].getX());
 			buffer.put(value[i].getY());
 			buffer.put(value[i].getZ());
 		}
 		buffer.flip();
-		
+
 		GL20.glUniform3(location, buffer);
 	}
-
 }

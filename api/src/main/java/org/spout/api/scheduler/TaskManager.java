@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,29 +34,27 @@ import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface TaskManager {
 	/**
-	 * Schedules a once off task to occur as soon as possible This task will be
-	 * executed by the main server thread.
-	 * 
+	 * Schedules a once off task to occur as soon as possible This task will be executed by the main server thread.
+	 *
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @return the task
 	 */
 	public Task scheduleSyncDelayedTask(Object plugin, Runnable task);
+
 	/**
-	 * Schedules a once off task to occur as soon as possible This task will be
-	 * executed by the main server thread.
-	 * 
+	 * Schedules a once off task to occur as soon as possible This task will be executed by the main server thread.
+	 *
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @param priority the priority of the task
 	 * @return the task
 	 */
 	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority);
-	
+
 	/**
-	 * Schedules a once off task to occur after a delay.   This task will be
-	 * executed by the main server thread
-	 * 
+	 * Schedules a once off task to occur after a delay.   This task will be executed by the main server thread
+	 *
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @param delay the delay, in ms, before the task starts
@@ -66,10 +64,8 @@ public interface TaskManager {
 	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority);
 
 	/**
-	 * Schedules a repeating task This task will be executed by the main server
-	 * thread.  The repeat will not be started if the task until the previous repeat 
-	 * has completed running.
-	 * 
+	 * Schedules a repeating task This task will be executed by the main server thread.  The repeat will not be started if the task until the previous repeat has completed running.
+	 *
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @param delay the delay, in ms, before the task starts
@@ -80,30 +76,27 @@ public interface TaskManager {
 	public Task scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority);
 
 	/**
-	 * Schedules a once off short lived task to occur as soon as possible.  This task will be
-	 * executed by a thread managed by the scheduler
-	 * 
+	 * Schedules a once off short lived task to occur as soon as possible.  This task will be executed by a thread managed by the scheduler
+	 *
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @return the task id of the task
 	 */
 	public Task scheduleAsyncTask(Object plugin, Runnable task);
-	
+
 	/**
-	 * Schedules a once off task to occur as soon as possible.  This task will be
-	 * executed by a thread managed by the scheduler
-	 * 
+	 * Schedules a once off task to occur as soon as possible.  This task will be executed by a thread managed by the scheduler
+	 *
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @param longLife indicates that the thread is long lived
 	 * @return the tas
 	 */
 	public Task scheduleAsyncTask(Object plugin, Runnable task, boolean longLife);
-	
+
 	/**
-	 * Schedules a once off short lived task to occur after a delay.  This task will be
-	 * executed by a thread managed by the scheduler.
-	 * 
+	 * Schedules a once off short lived task to occur after a delay.  This task will be executed by a thread managed by the scheduler.
+	 *
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @param delay the delay, in ms, before the task starts
@@ -111,11 +104,10 @@ public interface TaskManager {
 	 * @return the task
 	 */
 	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority);
-	
+
 	/**
-	 * Schedules a once off task to occur after a delay.  This task will be
-	 * executed by a thread managed by the scheduler.
-	 * 
+	 * Schedules a once off task to occur after a delay.  This task will be executed by a thread managed by the scheduler.
+	 *
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @param delay the delay, in ms, before the task starts
@@ -126,13 +118,9 @@ public interface TaskManager {
 	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife);
 
 	/**
-	 * Calls a method on the main thread and returns a Future object This task
-	 * will be executed by the main server thread <br/>
+	 * Calls a method on the main thread and returns a Future object This task will be executed by the main server thread <br/>
 	 *
-	 * <b>Note:</b> The Future.get() methods must NOT be called from the main
-	 * thread<br/>
-	 * <b>Note 2:</b> There is at least an average of 10ms latency until the
-	 * isDone() method returns true<br/>
+	 * <b>Note:</b> The Future.get() methods must NOT be called from the main thread<br/> <b>Note 2:</b> There is at least an average of 10ms latency until the isDone() method returns true<br/>
 	 *
 	 * @param plugin the owner of the task
 	 * @param task the Callable to execute
@@ -140,11 +128,10 @@ public interface TaskManager {
 	 * @return Future Future object related to the task
 	 */
 	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task, TaskPriority priority);
-	
+
 	/**
 	 * True if the task is an actively scheduled task
-	 * 
-	 * @param taskId
+	 *
 	 * @return actived scheduled
 	 */
 	public boolean isQueued(int taskId);
@@ -172,29 +159,24 @@ public interface TaskManager {
 	/**
 	 * Returns a list of all active workers.
 	 *
-	 * This list contains asynch tasks that are being executed by separate
-	 * threads.
+	 * This list contains asynch tasks that are being executed by separate threads.
 	 *
 	 * @return Active workers
 	 */
 	public List<Worker> getActiveWorkers();
 
 	/**
-	 * Returns a list of all pending tasks. The ordering of the tasks is not
-	 * related to their order of execution.
+	 * Returns a list of all pending tasks. The ordering of the tasks is not related to their order of execution.
 	 *
 	 * @return Active workers
 	 */
 	public List<Task> getPendingTasks();
-	
+
 	/**
-	 * Gets the up time for the scheduler.  This is the time since server started for the main schedulers and the age of the world for the Region based schedulers.<br>
-	 * <br>
-	 * It is updated once per tick.
-	 * 
+	 * Gets the up time for the scheduler.  This is the time since server started for the main schedulers and the age of the world for the Region based schedulers.<br> <br> It is updated once per tick.
+	 *
 	 * @return the up time in milliseconds
 	 */
 	@Threadsafe
 	public long getUpTime();
-
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -64,9 +64,7 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.SyncedStringMap;
-
 import org.spout.cereal.config.ConfigurationException;
-
 import org.spout.engine.command.AnnotatedCommandExecutorTest;
 import org.spout.engine.command.ClientCommands;
 import org.spout.engine.command.CommonCommands;
@@ -115,7 +113,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	private SpoutApplication arguments;
 	protected MemoryReclamationThread reclamation = null;
 	private DefaultPermissions defaultPerms;
-	
 	private SyncedStringMap engineItemMap = null;
 
 	public SpoutEngine() {
@@ -144,7 +141,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			new TicklockMonitor().start();
 			new DeadlockMonitor().start();
 		}
-        
+
 		// Must register protocol on init or client session can't happen
 		Protocol.registerProtocol(new SpoutProtocol());
 		if (Protocol.getProtocol("Spout") == null) {
@@ -170,7 +167,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		}
 
 		scheduler.scheduleSyncRepeatingTask(this, getSessionTask(), 50, 50, TaskPriority.CRITICAL);
-		
+
 		//Setup the Material Registry
 		engineItemMap = MaterialRegistry.setupRegistry();
 
@@ -303,6 +300,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	/**
 	 * Used to allow subclasses submit final tasks before stopping the scheduler
+	 *
 	 * @param message to send
 	 * @param stopScheduler true if should stop scheduler
 	 * @return true if successfully stopped
@@ -476,6 +474,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	/**
 	 * Gets the item map used across all worlds on the engine
+	 *
 	 * @return engine map
 	 */
 	public StringToUniqueIntegerMap getEngineItemMap() {

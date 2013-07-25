@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -37,7 +37,6 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.ReactConverter;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
-
 import org.spout.engine.world.SpoutRegion;
 import org.spout.physics.body.MobileRigidBody;
 import org.spout.physics.body.RigidBody;
@@ -45,9 +44,7 @@ import org.spout.physics.body.RigidBodyMaterial;
 import org.spout.physics.collision.shape.CollisionShape;
 
 /**
- * The Spout implementation of {@link org.spout.api.component.entity.PhysicsComponent}.
- * <p/>
- * //TODO: Physics rotation setters
+ * The Spout implementation of {@link org.spout.api.component.entity.PhysicsComponent}. <p/> //TODO: Physics rotation setters
  */
 public class SpoutPhysicsComponent extends PhysicsComponent {
 	//Spout
@@ -281,7 +278,6 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		return this;
 	}
 
-
 	@Override
 	public float getFriction() {
 		return material.getFriction();
@@ -309,7 +305,6 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		material.setRestitution(restitution);
 		return this;
 	}
-
 
 	@Override
 	public Vector3 getMovementVelocity() {
@@ -362,10 +357,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	/**
-	 * Called before the simulation is polled for an update.
-	 * <p>
-	 * This aligns the body's transform with Spout's if someone moves without physics.
-	 * </p>
+	 * Called before the simulation is polled for an update. <p> This aligns the body's transform with Spout's if someone moves without physics. </p>
 	 */
 	public void onPrePhysicsTick() {
 		if (body == null) {
@@ -376,11 +368,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	/**
-	 * Called after the simulation was polled for an update.
-	 * <p>
-	 * This updates Spout's live with the transform of the body. The render transform is updated
-	 * with interpolation from the body
-	 * </p>
+	 * Called after the simulation was polled for an update. <p> This updates Spout's live with the transform of the body. The render transform is updated with interpolation from the body </p>
 	 */
 	public void onPostPhysicsTick(float dt) {
 		if (body != null) {
@@ -392,9 +380,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	/**
-	 * Interpolates the live transform and sets the output to the render transform.
-	 * <p/>
-	 * This is necessary for smooth rendering.
+	 * Interpolates the live transform and sets the output to the render transform. <p/> This is necessary for smooth rendering.
 	 */
 	public void interpolateAndSetRender(float dt) {
 		//Only interpolate if same world

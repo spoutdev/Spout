@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -41,18 +41,15 @@ import org.spout.api.event.server.service.ServiceUnregisterEvent;
 import org.spout.api.plugin.Plugin;
 
 /**
- * Manages services and service providers. Services are an interface specifying
- * a list of methods that a provider must implement. Providers are
- * implementations of these services. A provider can be queried from the
- * services manager in order to use a service (if one is available). If multiple
- * plugins register a service, then the service with the highest priority takes
- * precedence.
+ * Manages services and service providers. Services are an interface specifying a list of methods that a provider must implement. Providers are implementations of these services. A provider can be
+ * queried from the services manager in order to use a service (if one is available). If multiple plugins register a service, then the service with the highest priority takes precedence.
  */
 public class ServiceManager {
 	private final Map<Class<?>, List<ServiceProvider<?>>> providers = new HashMap<Class<?>, List<ServiceProvider<?>>>();
 
 	/**
 	 * Register a provider of a service.
+	 *
 	 * @param <T> Provider
 	 * @param service service class
 	 * @param provider provider to register
@@ -80,6 +77,7 @@ public class ServiceManager {
 
 	/**
 	 * Unregister all the providers registered by a particular plugin.
+	 *
 	 * @param plugin to unregister for
 	 */
 	public void unregisterAll(Plugin plugin) {
@@ -116,6 +114,7 @@ public class ServiceManager {
 
 	/**
 	 * Unregister a particular provider for a particular service.
+	 *
 	 * @param service to unregister
 	 * @param provider of service
 	 */
@@ -159,6 +158,7 @@ public class ServiceManager {
 
 	/**
 	 * Unregister a particular provider.
+	 *
 	 * @param provider to unregister
 	 */
 	public void unregister(Object provider) {
@@ -194,13 +194,13 @@ public class ServiceManager {
 	}
 
 	/**
-	 * Queries for a provider. This may return if no provider has been
-	 * registered for a service. The highest priority provider is returned.
+	 * Queries for a provider. This may return if no provider has been registered for a service. The highest priority provider is returned.
+	 *
 	 * @param <T> type of service
 	 * @param service to load
 	 * @return provider or null
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public <T> T load(Class<T> service) {
 		synchronized (providers) {
 			List<ServiceProvider<?>> registered = providers.get(service);
@@ -215,13 +215,13 @@ public class ServiceManager {
 	}
 
 	/**
-	 * Queries for a provider registration. This may return if no provider has
-	 * been registered for a service.
+	 * Queries for a provider registration. This may return if no provider has been registered for a service.
+	 *
 	 * @param <T> type of service
 	 * @param service to get provider of
 	 * @return provider registration or null
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public <T> ServiceProvider<T> getRegistration(Class<T> service) {
 		synchronized (providers) {
 			List<ServiceProvider<?>> registered = providers.get(service);
@@ -237,6 +237,7 @@ public class ServiceManager {
 
 	/**
 	 * Get registrations of providers for a plugin.
+	 *
 	 * @param plugin to get registrations for
 	 * @return provider registration or null
 	 */
@@ -257,13 +258,13 @@ public class ServiceManager {
 	}
 
 	/**
-	 * Get registrations of providers for a service. The returned list is
-	 * unmodifiable.
+	 * Get registrations of providers for a service. The returned list is unmodifiable.
+	 *
 	 * @param <T> type of service
 	 * @param service to get registrations for
 	 * @return list of registrations
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public <T> Collection<ServiceProvider<T>> getRegistrations(Class<T> service) {
 		synchronized (providers) {
 			List<ServiceProvider<?>> registered = providers.get(service);
@@ -283,8 +284,8 @@ public class ServiceManager {
 	}
 
 	/**
-	 * Get a list of known services. A service is known if it has registered
-	 * providers for it.
+	 * Get a list of known services. A service is known if it has registered providers for it.
+	 *
 	 * @return list of known services
 	 */
 	public Collection<Class<?>> getKnownServices() {
@@ -292,9 +293,8 @@ public class ServiceManager {
 	}
 
 	/**
-	 * Returns whether a provider has been registered for a service. Do not
-	 * check this first only to call <code>load(service)</code> later, as that
-	 * would be a non-thread safe situation.
+	 * Returns whether a provider has been registered for a service. Do not check this first only to call <code>load(service)</code> later, as that would be a non-thread safe situation.
+	 *
 	 * @param <T> service
 	 * @param service service to check
 	 * @return whether there has been a registered provider
@@ -304,8 +304,7 @@ public class ServiceManager {
 	}
 
 	/**
-	 * Represents various priorities of a provider. The highest priority takes
-	 * precedence when getting a service priority.
+	 * Represents various priorities of a provider. The highest priority takes precedence when getting a service priority.
 	 */
 	public enum ServicePriority {
 		Lowest,

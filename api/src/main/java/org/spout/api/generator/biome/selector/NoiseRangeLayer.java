@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,18 +33,14 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A layer split into several ranges of noise values provided by an extending
- * class via implementation of {@link #getNoiseValue(int, int, int, int)}. Each
- * range has an element assigned to it. If the elements are not added already
- * sorted, they must be sorted at least once before use using
- * {@link #sortElements()}.
+ * A layer split into several ranges of noise values provided by an extending class via implementation of {@link #getNoiseValue(int, int, int, int)}. Each range has an element assigned to it. If the
+ * elements are not added already sorted, they must be sorted at least once before use using {@link #sortElements()}.
  */
 public abstract class NoiseRangeLayer implements BiomeSelectorLayer {
 	protected final List<ElementRange> ranges = new ArrayList<ElementRange>();
 
 	/**
-	 * Adds an element to the layer within the range specified by minimum and
-	 * maximum.
+	 * Adds an element to the layer within the range specified by minimum and maximum.
 	 *
 	 * @param element The element to be added.
 	 * @param min The minimum of the range.
@@ -88,11 +84,8 @@ public abstract class NoiseRangeLayer implements BiomeSelectorLayer {
 	}
 
 	/**
-	 * Sorts the added ranged elements from smallest to largest using the
-	 * minimums and maximums. An element is smaller than another if either its
-	 * minimum or maximum is smaller to the other's corresponding minimum or
-	 * maximum. It is equal to the other is both their maximums and minimums are
-	 * equal. Else it is larger.
+	 * Sorts the added ranged elements from smallest to largest using the minimums and maximums. An element is smaller than another if either its minimum or maximum is smaller to the other's
+	 * corresponding minimum or maximum. It is equal to the other is both their maximums and minimums are equal. Else it is larger.
 	 *
 	 * @return The layer itself for chained calls.
 	 */
@@ -102,8 +95,7 @@ public abstract class NoiseRangeLayer implements BiomeSelectorLayer {
 	}
 
 	/**
-	 * Returns the noise value at the specified coordinates using the provided
-	 * seed.
+	 * Returns the noise value at the specified coordinates using the provided seed.
 	 *
 	 * @param x The x coordinate.
 	 * @param y The y coordinate.
@@ -125,8 +117,7 @@ public abstract class NoiseRangeLayer implements BiomeSelectorLayer {
 	}
 
 	/**
-	 * Represent a ranged element defined by a minimum and maximum and an
-	 * element.
+	 * Represent a ranged element defined by a minimum and maximum and an element.
 	 */
 	public static class ElementRange implements Comparable<ElementRange> {
 		private final LayeredBiomeSelectorElement element;
@@ -134,8 +125,7 @@ public abstract class NoiseRangeLayer implements BiomeSelectorLayer {
 		private final float max;
 
 		/**
-		 * Constructs a new ranged element from the element and its minimum and
-		 * maximum.
+		 * Constructs a new ranged element from the element and its minimum and maximum.
 		 *
 		 * @param element The element for the range.
 		 * @param min The minimum of the range.

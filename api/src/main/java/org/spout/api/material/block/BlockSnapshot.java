@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -60,6 +60,7 @@ public class BlockSnapshot {
 
 	/**
 	 * Gets the x-coordinate of this Block snapshot
+	 *
 	 * @return the x-coordinate
 	 */
 	public int getX() {
@@ -68,14 +69,16 @@ public class BlockSnapshot {
 
 	/**
 	 * Gets the y-coordinate of this Block snapshot
+	 *
 	 * @return the y-coordinate
 	 */
 	public int getY() {
 		return this.y;
 	}
-	
+
 	/**
 	 * Gets the z-coordinate of this Block snapshot
+	 *
 	 * @return the z-coordinate
 	 */
 	public int getZ() {
@@ -84,13 +87,13 @@ public class BlockSnapshot {
 
 	/**
 	 * Gets the world this Block snapshot is in
-	 * 
+	 *
 	 * @return the World
 	 */
 	public World getWorld() {
 		return this.world;
 	}
-	
+
 	/**
 	 * Gets which block corresponding to the snapshot
 	 *
@@ -126,7 +129,7 @@ public class BlockSnapshot {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof BlockSnapshot) {
-			BlockSnapshot other = (BlockSnapshot)o;
+			BlockSnapshot other = (BlockSnapshot) o;
 			return other.x == x && other.y == y && other.z == z && other.material.equals(material) && other.data == data;
 		}
 		return false;

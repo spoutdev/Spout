@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -31,24 +31,20 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
+
 import org.spout.api.Spout;
 import org.spout.api.protocol.Message;
 import org.spout.engine.SpoutConfiguration;
 
 public class NetworkSendThread {
-
 	private final static int QUEUE_ID_MASK = 7;
-	
 	private final static long minimumLatency = SpoutConfiguration.SEND_LATENCY.getLong();
 	private final static long spikeLatency = SpoutConfiguration.SEND_SPIKE_LATENCY.getLong();
 	private final static float spikeChance = SpoutConfiguration.SEND_SPIKE_CHANCE.getFloat() / 10.0F;
-
 	private final int poolIndex;
-
-	private final AtomicReference<ChannelQueueThread[]> channelQueues = new  AtomicReference<ChannelQueueThread[]>();
-
+	private final AtomicReference<ChannelQueueThread[]> channelQueues = new AtomicReference<ChannelQueueThread[]>();
 	private final AtomicReference<ChannelQueueThread[]> interruptedQueues = new AtomicReference<ChannelQueueThread[]>();
-	
+
 	public NetworkSendThread(int poolIndex) {
 		this.poolIndex = poolIndex;
 		channelQueues.set(new ChannelQueueThread[0]);
@@ -110,9 +106,7 @@ public class NetworkSendThread {
 	}
 
 	private static class ChannelQueueThread extends Thread {
-		
 		private long nextSpikeCheck = 0L;
-
 		private final LinkedBlockingQueue<QueueNode> queue = new LinkedBlockingQueue<QueueNode>();
 
 		public ChannelQueueThread(int poolIndex, int channelId) {
@@ -191,7 +185,6 @@ public class NetworkSendThread {
 				handle(node);
 			}
 		}
-
 	}
 
 	private static class QueueNode {
@@ -218,11 +211,9 @@ public class NetworkSendThread {
 		public Message getMessage() {
 			return message;
 		}
-		
+
 		public long getCreationTime() {
 			return creation;
 		}
-
 	}
-
 }

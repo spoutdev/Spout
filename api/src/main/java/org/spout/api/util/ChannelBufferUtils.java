@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,7 +30,6 @@ import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -50,7 +49,6 @@ import org.spout.api.material.Material;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
-
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.Tag;
@@ -69,10 +67,11 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Writes a list of parameters (e.g. mob metadata) to the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @param parameters The parameters.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public static void writeParameters(ChannelBuffer buf, List<Parameter<?>> parameters) {
 		for (Parameter<?> parameter : parameters) {
 			int type = parameter.getType();
@@ -113,6 +112,7 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Reads a list of parameters from the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @return The parameters.
 	 */
@@ -154,10 +154,10 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Writes a UTF-8 string to the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @param str The string.
-	 * @throws IllegalArgumentException if the string is too long <em>after</em>
-	 *                                  it is encoded.
+	 * @throws IllegalArgumentException if the string is too long <em>after</em> it is encoded.
 	 */
 	public static void writeUtf8String(ChannelBuffer buf, String str) {
 		byte[] bytes = str.getBytes(CharsetUtil.UTF_8);
@@ -171,6 +171,7 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Reads a UTF-8 encoded string from the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @return The string.
 	 */
@@ -337,9 +338,9 @@ public final class ChannelBufferUtils {
 			}
 		}
 		if (world == null) {
-			throw new IllegalArgumentException("Unknown world with UUID " + uuid 
-				+ (Spout.getPlatform() == Platform.CLIENT ? "Client UUID: " + ((Client)Spout.getEngine()).getWorld().getUID() 
-					+ " World: " + ((Client)Spout.getEngine()).getWorld().getName() : ""));
+			throw new IllegalArgumentException("Unknown world with UUID " + uuid
+					+ (Spout.getPlatform() == Platform.CLIENT ? "Client UUID: " + ((Client) Spout.getEngine()).getWorld().getUID()
+					+ " World: " + ((Client) Spout.getEngine()).getWorld().getName() : ""));
 		}
 
 		final float x = buffer.readFloat();

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -35,21 +35,20 @@ import org.spout.api.command.annotated.Platform;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
-
 import org.spout.engine.SpoutEngine;
 
 /**
  * Commands relating to messaging
  */
-public class MessagingCommands  {
+public class MessagingCommands {
 	private final SpoutEngine engine;
 
 	public MessagingCommands(SpoutEngine engine) {
 		this.engine = engine;
 	}
 
-	@CommandDescription(aliases = {"tell", "msg"}, usage = "<target> <message>", desc = "Tell a message to a specific user")
-	@Permissible("spout.command.tell")
+	@CommandDescription (aliases = {"tell", "msg"}, usage = "<target> <message>", desc = "Tell a message to a specific user")
+	@Permissible ("spout.command.tell")
 	public void tell(CommandSource source, CommandArguments args) throws CommandException {
 		Player player = args.popPlayer("player");
 		String message = args.popRemainingStrings("message");
@@ -62,9 +61,9 @@ public class MessagingCommands  {
 		}
 	}
 
-	@CommandDescription(aliases = {"emote", "me", "action"}, usage = "<action>", desc = "Emote in the third person")
-	@Permissible("spout.command.emote")
-	@Platform({org.spout.api.Platform.SERVER, org.spout.api.Platform.PROXY})
+	@CommandDescription (aliases = {"emote", "me", "action"}, usage = "<action>", desc = "Emote in the third person")
+	@Permissible ("spout.command.emote")
+	@Platform ({org.spout.api.Platform.SERVER, org.spout.api.Platform.PROXY})
 	public void emote(CommandSource source, CommandArguments args) throws ArgumentParseException {
 		((Server) engine).broadcastMessage("* " + source.getName() + " " + args.popRemainingStrings("action"));
 	}

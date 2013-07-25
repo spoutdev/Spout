@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -31,16 +31,16 @@ import org.spout.engine.world.SpoutRegion;
 public class RegionIdPair {
 	private final int taskId;
 	private final SpoutRegion region;
-	
+
 	public RegionIdPair(int id, SpoutRegion r) {
 		this.taskId = id;
 		this.region = r;
 	}
-	
+
 	public final SpoutRegion getRegion() {
 		return region;
 	}
-	
+
 	public final int getTaskId() {
 		return taskId;
 	}

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -47,7 +47,6 @@ public class BlockIterator implements Iterator<Block> {
 	private final Vector3 direction;
 	// Max distance
 	private final float range;
-	
 	// Current position
 	private int X, Y, Z;
 	// Step in blocks
@@ -56,7 +55,6 @@ public class BlockIterator implements Iterator<Block> {
 	private float tDeltaX, tDeltaY, tDeltaZ;
 	// Current distance
 	private float tMaxX, tMaxY, tMaxZ;
-	
 	// The face the ray enter by
 	private BlockFace face;
 
@@ -67,7 +65,6 @@ public class BlockIterator implements Iterator<Block> {
 	 * @param origin The starting position of the trace
 	 * @param direction The direction of the trace
 	 * @param maxDistance This is the maximum distance in blocks for the trace.
-	 *
 	 */
 	public BlockIterator(World world, Vector3 origin, Vector3 direction, float maxDistance) {
 		this.world = world;
@@ -76,14 +73,13 @@ public class BlockIterator implements Iterator<Block> {
 		this.range = maxDistance;
 		reset();
 	}
-	
+
 	/**
 	 * Constructs the BlockIterator
 	 *
 	 * @param world The world to use for tracing
 	 * @param pos of the starting transformation of the trace
 	 * @param maxDistance This is the maximum distance in blocks for the trace.
-	 *
 	 */
 	public BlockIterator(World world, Transform pos, float maxDistance) {
 		this.world = world;
@@ -92,7 +88,7 @@ public class BlockIterator implements Iterator<Block> {
 		this.range = maxDistance;
 		reset();
 	}
-	
+
 	/**
 	 * Constructs the BlockIterator
 	 *
@@ -104,15 +100,15 @@ public class BlockIterator implements Iterator<Block> {
 		if (!from.getWorld().equals(to.getWorld())) {
 			throw new IllegalArgumentException("Cannot iterate between worlds.");
 		}
-		
+
 		this.world = from.getWorld();
 		this.origin = from;
 		this.direction = to.subtract(from).normalize();
 		this.range = (float) from.distance(to);
-		
+
 		reset();
 	}
-	
+
 	/**
 	 * Reset the iterator
 	 */
@@ -120,19 +116,19 @@ public class BlockIterator implements Iterator<Block> {
 		X = origin.getFloorX();
 		Y = origin.getFloorY();
 		Z = origin.getFloorZ();
-		
+
 		float dx = direction.getX();
 		float dy = direction.getY();
 		float dz = direction.getZ();
-		
+
 		stepX = dx > 0 ? 1 : -1;
 		stepY = dy > 0 ? 1 : -1;
 		stepZ = dz > 0 ? 1 : -1;
-		
+
 		tDeltaX = (dx == 0f) ? Float.MAX_VALUE : Math.abs(1f / dx);
 		tDeltaY = (dy == 0f) ? Float.MAX_VALUE : Math.abs(1f / dy);
 		tDeltaZ = (dz == 0f) ? Float.MAX_VALUE : Math.abs(1f / dz);
-		
+
 		tMaxX = (dx == 0f) ? Float.MAX_VALUE : Math.abs((X + (dx > 0 ? 1 : 0) - origin.getX()) / dx);
 		tMaxY = (dy == 0f) ? Float.MAX_VALUE : Math.abs((Y + (dy > 0 ? 1 : 0) - origin.getY()) / dy);
 		tMaxZ = (dz == 0f) ? Float.MAX_VALUE : Math.abs((Z + (dz > 0 ? 1 : 0) - origin.getZ()) / dz);
@@ -173,10 +169,10 @@ public class BlockIterator implements Iterator<Block> {
 	public void remove() {
 		throw new UnsupportedOperationException("Block removal is not supported by this iterator");
 	}
-	
+
 	/**
-	 * Get the targeted block if there is one.
-	 * Then reset the iterator (but not the block face)
+	 * Get the targeted block if there is one. Then reset the iterator (but not the block face)
+	 *
 	 * @return Block
 	 */
 	public Block getTarget(boolean invisible) {
@@ -203,6 +199,7 @@ public class BlockIterator implements Iterator<Block> {
 
 	/**
 	 * Get the face hit by the ray.
+	 *
 	 * @return BlockFace
 	 */
 	public BlockFace getBlockFace() {

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -41,15 +41,14 @@ public class TypeChecker<T> {
 		this.clazz = clazz;
 	}
 
-
 	/**
-	 * Creates a type checker that only checks the root type.
-	 * For Maps and Collections, please use {@link #tMap tMap}, {@link #tCollection tCollection}, {@link #tList tList}, {@link #tSet tSet} or {@link #tQueue tQueue}
+	 * Creates a type checker that only checks the root type. For Maps and Collections, please use {@link #tMap tMap}, {@link #tCollection tCollection}, {@link #tList tList}, {@link #tSet tSet} or {@link
+	 * #tQueue tQueue}
 	 *
 	 * @param type The class to check against
 	 * @return a type checker for the specified class
 	 */
-	@SuppressWarnings("unchecked") // Conversion from TypeChecker<SpecificType> to TypeChecker<T> can only be unchecked. Type checking is done with clazz == SpecificType.class beforehand.
+	@SuppressWarnings ("unchecked") // Conversion from TypeChecker<SpecificType> to TypeChecker<T> can only be unchecked. Type checking is done with clazz == SpecificType.class beforehand.
 	public static <T> TypeChecker<T> tSimple(Class<T> type) {
 		// First, check some common cases, and return faster specialized type checkers:
 		if (type == Object.class) {
@@ -110,7 +109,6 @@ public class TypeChecker<T> {
 		return new TypeChecker<T>(type);
 	}
 
-
 	/**
 	 * Creates a recursing type checker for a {@link Collection}.
 	 *
@@ -130,7 +128,6 @@ public class TypeChecker<T> {
 	public static <T> TypeChecker<Collection<? extends T>> tCollection(TypeChecker<? extends T> elementChecker) {
 		return new CollectionTypeChecker<T, Collection<? extends T>>(Collection.class, elementChecker);
 	}
-
 
 	/**
 	 * Creates a recursing type checker for a {@link List}.
@@ -152,7 +149,6 @@ public class TypeChecker<T> {
 		return new CollectionTypeChecker<T, List<? extends T>>(List.class, elementChecker);
 	}
 
-
 	/**
 	 * Creates a recursing type checker for a {@link Set}.
 	 *
@@ -173,7 +169,6 @@ public class TypeChecker<T> {
 		return new CollectionTypeChecker<T, Set<? extends T>>(Set.class, elementChecker);
 	}
 
-
 	/**
 	 * Creates a recursing type checker for a {@link Queue}.
 	 *
@@ -193,7 +188,6 @@ public class TypeChecker<T> {
 	public static <T> TypeChecker<Queue<? extends T>> tQueue(TypeChecker<? extends T> elementChecker) {
 		return new CollectionTypeChecker<T, Queue<? extends T>>(Queue.class, elementChecker);
 	}
-
 
 	/**
 	 * Creates a recursing type checker for a {@link Map}.
@@ -239,7 +233,6 @@ public class TypeChecker<T> {
 		return new MapTypeChecker<K, V, Map<? extends K, ? extends V>>(Map.class, keyChecker, valueChecker);
 	}
 
-
 	/**
 	 * Checks and casts an object to the specified type.
 	 *
@@ -252,8 +245,7 @@ public class TypeChecker<T> {
 	}
 
 	/**
-	 * Checks and casts an object to the specified type.
-	 * If casting fails, a default value is returned.
+	 * Checks and casts an object to the specified type. If casting fails, a default value is returned.
 	 *
 	 * @param object The object to be checked
 	 * @param defaultValue The default value to be returned if casting fails
@@ -279,8 +271,7 @@ public class TypeChecker<T> {
 	}
 
 	/**
-	 * Checks and casts an object to the specified type.
-	 * If casting fails, a default value is returned.
+	 * Checks and casts an object to the specified type. If casting fails, a default value is returned.
 	 *
 	 * @param tag The Tag containing the object to be checked
 	 * @param defaultValue The default value to be returned if casting fails

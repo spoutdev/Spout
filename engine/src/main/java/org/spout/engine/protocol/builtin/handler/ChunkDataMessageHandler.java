@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -30,8 +30,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.World;
-import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
+import org.spout.api.protocol.MessageHandler;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 import org.spout.engine.world.SpoutClientWorld;
 
@@ -48,7 +48,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			try {
 				Class<?> testClass = Class.forName(message.getBiomeManagerClass());
 				if (!BiomeManager.class.isAssignableFrom(testClass)) {
-					throw new IllegalArgumentException("Biome manager class "+ testClass + " is not a BiomeManager");
+					throw new IllegalArgumentException("Biome manager class " + testClass + " is not a BiomeManager");
 				}
 				managerClass = testClass.asSubclass(BiomeManager.class);
 			} catch (ClassNotFoundException e) {

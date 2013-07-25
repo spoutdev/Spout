@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -30,17 +30,15 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import org.spout.api.Spout;
-import static org.spout.api.datatable.delta.DeltaMap.DeltaType.REPLACE;
-import static org.spout.api.datatable.delta.DeltaMap.DeltaType.SET;
-import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
+import org.spout.api.protocol.MessageHandler;
 import org.spout.engine.protocol.builtin.message.ChunkDatatableMessage;
 import org.spout.engine.world.SpoutChunk;
 
 public class ChunkDatatableMessageHandler extends MessageHandler<ChunkDatatableMessage> {
 	@Override
 	public void handleClient(ClientSession session, ChunkDatatableMessage message) {
-		if(!session.hasPlayer()) {
+		if (!session.hasPlayer()) {
 			throw new IllegalStateException("Message sent when session has no player");
 		}
 		SpoutChunk c = (SpoutChunk) message.getChunk();
@@ -53,7 +51,7 @@ public class ChunkDatatableMessageHandler extends MessageHandler<ChunkDatatableM
 				case SET:
 					c.getDataMap().deserialize(message.getCompressedData(), false);
 					break;
-			} 
+			}
 		} catch (IOException e) {
 			Spout.getLogger().log(Level.SEVERE, "Exception deserializing compressed datatable", e);
 		}

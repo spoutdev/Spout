@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -44,7 +44,7 @@ import org.spout.api.geo.World;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.resource.FileSystem;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings ("deprecation")
 public class EngineFaker {
 	public static final UUID TEST_UUID = UUID.fromString("86981616-5a22-4a5a-8a7c-c6675ff5672a");
 	private final static Server engineInstance;
@@ -70,10 +70,11 @@ public class EngineFaker {
 	public static Server setupEngine() {
 		return engineInstance;
 	}
-	
+
 	public static void main(String[] args) {
-		
+
 	}
+
 	private static class TestPlugin extends Plugin {
 		public static TestPlugin instance;
 	}

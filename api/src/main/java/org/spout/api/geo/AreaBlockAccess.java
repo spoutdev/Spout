@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -88,42 +88,32 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Cause<?> source);
 
 	/**
-	 * Sets the given bits in the data for the block at (x, y, z)<br>
-	 * <br>
-	 * newData = oldData | (bits)
+	 * Sets the given bits in the data for the block at (x, y, z)<br> <br> newData = oldData | (bits)
 	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param bits the bits to set
-	 * @Param cause of the change, or null if non-specific cause
 	 * @return the old data for the block
 	 */
 	@LiveWrite
 	public short setBlockDataBits(int x, int y, int z, int bits, Cause<?> source);
 
 	/**
-	 * Sets the given bits in the data for the block at (x, y, z)<br>
-	 * <br>
-	 * newData = oldData | (bits)
-	 * <br>or<br>
-	 * newData = oldData & ~(bits)
+	 * Sets the given bits in the data for the block at (x, y, z)<br> <br> newData = oldData | (bits) <br>or<br> newData = oldData & ~(bits)
 	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param bits the bits to set or clear
 	 * @param set true to set, false to clear
-	 * @Param cause of the change, or null if non-specific cause
 	 * @return the old data for the block
 	 */
 	@LiveWrite
 	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Cause<?> source);
 
 	/**
-	 * Clears the given bits in the data for the block at (x, y, z)<br>
-	 * <br>
-	 * newData = oldData & (~bits)
+	 * Clears the given bits in the data for the block at (x, y, z)<br> <br> newData = oldData & (~bits)
 	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
@@ -136,11 +126,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	public short clearBlockDataBits(int x, int y, int z, int bits, Cause<?> source);
 
 	/**
-	 * Gets the data field from the block at (x, y, z)<br>
-	 * <br>
-	 * field = (data & bits) >> (shift)<br>
-	 * <br>
-	 * The shift value used shifts the least significant non-zero bit of bits to the LSB position
+	 * Gets the data field from the block at (x, y, z)<br> <br> field = (data & bits) >> (shift)<br> <br> The shift value used shifts the least significant non-zero bit of bits to the LSB position
 	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
@@ -164,11 +150,8 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	public boolean isBlockDataBitSet(int x, int y, int z, int bits);
 
 	/**
-	 * Sets the data field for the block at (x, y, z).  This is the reverse operation to the getBlockDataField method.<br>
-	 * <br>
-	 * newData = ((value << shift) & bits) | (oldData & (~bits))<br>
-	 * <br>
-	 * The shift value used shifts the least significant non-zero bit of bits to the LSB position
+	 * Sets the data field for the block at (x, y, z).  This is the reverse operation to the getBlockDataField method.<br> <br> newData = ((value << shift) & bits) | (oldData & (~bits))<br> <br> The
+	 * shift value used shifts the least significant non-zero bit of bits to the LSB position
 	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
@@ -183,18 +166,14 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	public int setBlockDataField(int x, int y, int z, int bits, int value, Cause<?> source);
 
 	/**
-	 * Adds a value to the data field for the block at (x, y, z).  This is the reverse operation to the getBlockDataField method.<br>
-	 * <br>
-	 * newData = (((oldData + (value << shift)) & bits) | (oldData & ~bits))<br>
-	 * <br>
-	 * The shift value used shifts the least significant non-zero bit of bits to the LSB position
+	 * Adds a value to the data field for the block at (x, y, z).  This is the reverse operation to the getBlockDataField method.<br> <br> newData = (((oldData + (value << shift)) & bits) | (oldData &
+	 * ~bits))<br> <br> The shift value used shifts the least significant non-zero bit of bits to the LSB position
 	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param bits the bits of the field
 	 * @param value to add to the value of the field
-	 * @Param cause of the change, or null if non-specific cause
 	 * @return the old value of the field
 	 */
 	@LiveWrite
@@ -241,18 +220,18 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@Threadsafe
 	public Block getBlock(Vector3 position);
-	
+
 	/**
 	 * Atomically sets the cuboid volume to the values inside of the cuboid buffer, if the contents of the buffer's backbuffer matches the world.
-	 * @param buffer
+	 *
 	 * @param cause that is setting the cuboid volume
 	 */
 	@Threadsafe
 	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause);
-	
+
 	/**
 	 * Atomically sets the cuboid volume to the values inside of the cuboid buffer.
-	 * @param buffer
+	 *
 	 * @param cause that is setting the cuboid volume
 	 */
 	@Threadsafe
@@ -260,10 +239,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 
 	/**
 	 * Atomically sets the cuboid volume to the values inside of the cuboid buffer with the base located at the given coords
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param buffer
+	 *
 	 * @param cause that is setting the cuboid volume
 	 */
 	@Threadsafe
@@ -271,25 +247,24 @@ public interface AreaBlockAccess extends AreaBlockSource {
 
 	/**
 	 * Gets the CuboidLightBuffer for a given id.
-	 * 
+	 *
 	 * @param id the id for the buffer
 	 */
 	@Threadsafe
 	public CuboidLightBuffer getLightBuffer(short id);
-	
+
 	/**
 	 * Atomically gets the cuboid volume
-	 * 
+	 *
 	 * @param backBuffer true for a buffer with a back buffer
 	 */
 	@Threadsafe
 	public CuboidBlockMaterialBuffer getCuboid(boolean backBuffer);
-	
+
 	/**
-	 * Atomically gets the cuboid volume with the base located at the given coords of the given size.<br>
-	 * The buffer returned contains a back buffer
-	 * <br>
-	 * Note: The block at the base coordinate is inside the buffer
+	 * Atomically gets the cuboid volume with the base located at the given coords of the given size.<br> The buffer returned contains a back buffer <br> Note: The block at the base coordinate is inside
+	 * the buffer
+	 *
 	 * @param bx base x-coordinate
 	 * @param by base y-coordinate
 	 * @param bz base z-coordinate
@@ -299,11 +274,10 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@Threadsafe
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz);
-	
+
 	/**
-	 * Atomically gets the cuboid volume with the base located at the given coords of the given size.<br>
-	 * <br>
-	 * Note: The block at the base coordinate is inside the buffer
+	 * Atomically gets the cuboid volume with the base located at the given coords of the given size.<br> <br> Note: The block at the base coordinate is inside the buffer
+	 *
 	 * @param bx base x-coordinate
 	 * @param by base y-coordinate
 	 * @param bz base z-coordinate
@@ -314,25 +288,22 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@Threadsafe
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz, boolean backBuffer);
-	
+
 	/**
-	 * Atomically gets the cuboid volume with the base located at the given coords and the size of the given buffer.<br>
-	 * <br>
-	 * Note: The block at the base coordinate is inside the 
+	 * Atomically gets the cuboid volume with the base located at the given coords and the size of the given buffer.<br> <br> Note: The block at the base coordinate is inside the
+	 *
 	 * @param bx base x-coordinate
 	 * @param by base y-coordinate
 	 * @param bz base z-coordinate
-	 * @param buffer
 	 */
 	@Threadsafe
 	public void getCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer);
 
 	/**
 	 * Atomically gets the cuboid volume contained within the given buffer
-	 * 
+	 *
 	 * @param buffer the buffer
 	 */
 	@Threadsafe
 	public void getCuboid(CuboidBlockMaterialBuffer buffer);
-
 }

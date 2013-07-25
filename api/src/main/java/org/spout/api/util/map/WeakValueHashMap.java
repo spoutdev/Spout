@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,23 +33,16 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * Implements a weak value reference HashMap that removes entries 
- * from the map once the value has been garbage collected.<br>
- * <br>
- * The queue is polled whenever an entry is added or removed from the map
+ * Implements a weak value reference HashMap that removes entries from the map once the value has been garbage collected.<br> <br> The queue is polled whenever an entry is added or removed from the
+ * map
  */
 public class WeakValueHashMap<K, V> {
-	
 	private final ReferenceQueue<V> referenceQueue = new ReferenceQueue<V>();
-	
 	protected final HashMap<K, KeyReference> map = new HashMap<K, KeyReference>();
 
 	/**
-	 * Puts the given key, value pair into the map.  Any expired keys are 
-	 * automatically flushed.
-	 * 
-	 * @param key
-	 * @param value
+	 * Puts the given key, value pair into the map.  Any expired keys are automatically flushed.
+	 *
 	 * @return the old value, or null if the key didn't map to a value
 	 */
 	public V put(K key, V value) {
@@ -64,30 +57,25 @@ public class WeakValueHashMap<K, V> {
 
 	/**
 	 * Gets the value associated with the given key.<br>
-	 * 
-	 * This method does not cause keys to be flushed.  It is intended for use when 
-	 * iterating over the keyset.  Removing a key while iterating would cause a 
-	 * ConcurrentModificationException.  It is recommended that a manual call is 
-	 * made to flushKeys once the iteration is completed.
-	 * 
-	 * @param key
+	 *
+	 * This method does not cause keys to be flushed.  It is intended for use when iterating over the keyset.  Removing a key while iterating would cause a ConcurrentModificationException.  It is
+	 * recommended that a manual call is made to flushKeys once the iteration is completed.
+	 *
 	 * @return the value associated with the value, or null
 	 */
 	public V safeGet(K key) {
 		return get(key, false);
 	}
-	
+
 	/**
-	 * Gets the value associated with the given key.Any expired keys are 
-	 * automatically flushed.
-	 * 
-	 * @param key
+	 * Gets the value associated with the given key.Any expired keys are automatically flushed.
+	 *
 	 * @return the value associated with the value, or null
 	 */
 	public V get(K key) {
 		return get(key, true);
 	}
-	
+
 	private V get(K key, boolean flushKeys) {
 		if (flushKeys) {
 			flushKeys();
@@ -99,23 +87,18 @@ public class WeakValueHashMap<K, V> {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Gets the set of all keys in the map.  Some keys in the set may be expired
-	 * 
-	 * @return
 	 */
 	public Set<K> keySet() {
 		return map.keySet();
 	}
-	
+
 	/**
-	 * Flushes all expired keys.  Keys associated with values that have been garbage
-	 * collected are considered expired.<br>
-	 * <br>
-	 * This method is automatically called by the get and put methods.
+	 * Flushes all expired keys.  Keys associated with values that have been garbage collected are considered expired.<br> <br> This method is automatically called by the get and put methods.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public void flushKeys() {
 		KeyReference ref;
 		while ((ref = (KeyReference) referenceQueue.poll()) != null) {
@@ -126,20 +109,17 @@ public class WeakValueHashMap<K, V> {
 			}
 		}
 	}
-	
-	protected class KeyReference extends WeakReference<V> {
 
+	protected class KeyReference extends WeakReference<V> {
 		private final K key;
-		
+
 		public KeyReference(K key, V referent, ReferenceQueue<? super V> q) {
 			super(referent, q);
 			this.key = key;
 		}
-		
+
 		public K getKey() {
 			return key;
 		}
-		
 	}
-	
 }

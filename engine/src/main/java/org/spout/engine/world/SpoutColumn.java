@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -52,7 +52,6 @@ public class SpoutColumn {
 	 * Stores the size of the amount of blocks in this Column
 	 */
 	public static BitSize BLOCKS = Chunk.BLOCKS;
-
 	private final SpoutWorld world;
 	private final int x;
 	private final int z;
@@ -72,24 +71,24 @@ public class SpoutColumn {
 	public SpoutColumn(InputStream in, SpoutWorld world, int x, int z) {
 		this(in, null, world, x, z);
 	}
-	
-	public 	SpoutColumn(int[][] heights, SpoutWorld world, int x, int z) {
+
+	public SpoutColumn(int[][] heights, SpoutWorld world, int x, int z) {
 		this(null, heights, world, x, z);
 	}
-	
+
 	private SpoutColumn(InputStream in, int[][] heights, SpoutWorld world, int x, int z) {
-		
+
 		if (heights != null && in != null) {
 			throw new IllegalArgumentException("Both heights and input stream were non-null");
 		}
-		
+
 		this.world = world;
 		this.x = x;
 		this.z = z;
 		this.heightMap = new AtomicInteger[BLOCKS.SIZE][BLOCKS.SIZE];
 		this.dirtyArray = new AtomicBoolean[BLOCKS.SIZE][BLOCKS.SIZE];
 		this.topmostBlocks = new BlockMaterial[BLOCKS.SIZE][BLOCKS.SIZE];
-		
+
 		this.heightDirtyQueue = new ColumnSetQueueElement(world.getColumnDirtyQueue(x >> Region.CHUNKS.BITS, z >> Region.CHUNKS.BITS), this);
 
 		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
@@ -107,13 +106,13 @@ public class SpoutColumn {
 		//Could not load biomes from column, so calculate them
 		if (biomes.get() == null) {
 			if (world.getGenerator() instanceof BiomeGenerator) {
-				BiomeGenerator generator = (BiomeGenerator)world.getGenerator();
+				BiomeGenerator generator = (BiomeGenerator) world.getGenerator();
 				setBiomeManager(generator.generateBiomes(x, z, world));
 			}
 		}
 		copySnapshot();
 	}
-	
+
 	public void copySnapshot() {
 		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
 			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
@@ -136,7 +135,7 @@ public class SpoutColumn {
 						Chunk c = world.getChunkFromBlock(wxx, y, wzz, LoadOption.LOAD_ONLY);
 						BlockMaterial bm = null;
 						if (c != null) {
-							 bm = c.getBlockMaterial(wx + xx, y, wz + zz);
+							bm = c.getBlockMaterial(wx + xx, y, wz + zz);
 						}
 						topmostBlocks[xx][zz] = bm;
 					}
@@ -178,7 +177,7 @@ public class SpoutColumn {
 			activeChunks.decrementAndGet();
 		}
 	}
-	
+
 	public synchronized void syncSave() {
 		OutputStream out = world.getHeightMapOutputStream(x, z);
 		try {
@@ -194,7 +193,7 @@ public class SpoutColumn {
 	public boolean activeChunks() {
 		return activeChunks.get() > 0;
 	}
-	
+
 	public int getSurfaceHeight(int x, int z) {
 		final int height = getAtomicInteger(x, z).get();
 		if (height != Integer.MIN_VALUE) {
@@ -202,7 +201,6 @@ public class SpoutColumn {
 			return height;
 		}
 		return getGeneratorHeight(x, z);
-
 	}
 
 	public BlockMaterial getTopmostBlock(int x, int z) {
@@ -341,7 +339,7 @@ public class SpoutColumn {
 	private AtomicBoolean getDirtyFlag(int x, int z) {
 		return dirtyArray[x & BLOCKS.MASK][z & BLOCKS.MASK];
 	}
-	
+
 	public int fillDirty(int pos, int x[], int[] newHeight, int[] oldHeight, int[] z, int minY, int maxY) {
 		TickStage.checkStage(TickStage.LIGHTING);
 		int bx = getX() << BLOCKS.BITS;
@@ -365,7 +363,7 @@ public class SpoutColumn {
 		}
 		return pos;
 	}
-	
+
 	public int getDirtyColumns() {
 		TickStage.checkStage(TickStage.LIGHTING);
 		return Math.min(256, dirtyColumns.get());
@@ -378,33 +376,32 @@ public class SpoutColumn {
 		getDirtyFlag(x, z).set(true);
 		setDirty();
 	}
-	
+
 	public void setDirty() {
 		dirty.set(true);
 	}
-	
+
 	public BiomeManager getBiomeManager() {
 		return biomes.get();
 	}
-	
+
 	public boolean setBiomeManager(BiomeManager manager) {
 		if (biomes.compareAndSet(null, manager)) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	public ImmutableHeightMapBuffer getHeightMapBuffer() {
 		return new ImmutableHeightMapBuffer(getX() << BLOCKS.BITS, getZ() << BLOCKS.BITS, SpoutColumn.BLOCKS.SIZE, SpoutColumn.BLOCKS.SIZE, heightMap);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "SpoutColumn{ " + getX() + ", " + getZ() + "}";
 	}
-	
+
 	private class ColumnSetQueueElement extends SetQueueElement<SpoutColumn> {
-		
 		public ColumnSetQueueElement(SetQueue<SpoutColumn> queue, SpoutColumn value) {
 			super(queue, value);
 		}
@@ -413,7 +410,5 @@ public class SpoutColumn {
 		protected boolean isValid() {
 			return true;
 		}
-		
 	}
-	
 }

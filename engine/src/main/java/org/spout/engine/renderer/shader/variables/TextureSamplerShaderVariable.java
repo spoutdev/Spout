@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -34,7 +34,6 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
-
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.filesystem.resource.ClientTexture;
 
@@ -48,7 +47,7 @@ public class TextureSamplerShaderVariable extends ShaderVariable {
 		super(program, name);
 		set(texture);
 	}
-	
+
 	public ClientTexture getTexture() {
 		return texture;
 	}
@@ -75,7 +74,6 @@ public class TextureSamplerShaderVariable extends ShaderVariable {
 
 	@Override
 	public void assign() {
-		
-		
+
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -39,7 +39,6 @@ import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.util.access.AccessManager;
 import org.spout.api.util.access.BanType;
-
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
@@ -54,8 +53,8 @@ public class ServerCommands extends CommonCommands {
 		return (SpoutServer) super.getEngine();
 	}
 
-	@CommandDescription(aliases = "worlds", desc = "Lists the worlds currently loaded")
-	@Permissible("spout.command.worlds")
+	@CommandDescription (aliases = "worlds", desc = "Lists the worlds currently loaded")
+	@Permissible ("spout.command.worlds")
 	public void worlds(CommandSource source, CommandArguments args) throws CommandException {
 		args.assertCompletelyParsed();
 
@@ -65,53 +64,52 @@ public class ServerCommands extends CommonCommands {
 		}
 	}
 
-	@CommandDescription(aliases = "whitelist", desc = "Add, remove, list, or toggle players on the whitelist.", usage = "<add|remove|list|on|off> [player] [reason]")
-	@Permissible("spout.command.whitelist")
+	@CommandDescription (aliases = "whitelist", desc = "Add, remove, list, or toggle players on the whitelist.", usage = "<add|remove|list|on|off> [player] [reason]")
+	@Permissible ("spout.command.whitelist")
 	public void whitelist(CommandSource source, CommandArguments args) throws CommandException {
 		String action = args.popString("action");
 		AccessManager accessManager = getEngine().getAccessManager();
 
-			if (action.equalsIgnoreCase("list")) {
-				Collection<String> c = accessManager.getWhitelistedPlayers();
-				String[] whitelisted = c.toArray(new String[c.size()]);
-				StringBuilder message = new StringBuilder("Whitelisted (" + whitelisted.length + "): ");
-				for (int i = 0; i < whitelisted.length; i++) {
-					message.append(whitelisted[i]);
-					if (i != whitelisted.length - 1) {
-						message.append(", ");
-					}
-				}
-				source.sendMessage(message.toString());
-			} else if (action.equalsIgnoreCase("on")) {
-				SpoutConfiguration.WHITELIST_ENABLED.setValue(true);
-				accessManager.setWhitelistEnabled(true);
-				source.sendMessage("Toggled whitelist on.");
-			} else if (action.equalsIgnoreCase("off")) {
-				SpoutConfiguration.WHITELIST_ENABLED.setValue(false);
-				accessManager.setWhitelistEnabled(false);
-				source.sendMessage("Toggled whitelist off.");
-			} else {
-				String target = args.popString("target");
-				if (action.equalsIgnoreCase("add")) {
-					accessManager.whitelist(target);
-					source.sendMessage("Added player '" + target + "' to the whitelist.");
-				}
-
-				if (action.equalsIgnoreCase("remove")) {
-					accessManager.unwhitelist(target);
-					source.sendMessage("Removed player '" + target + "' from the whitelist.");
-				}
-
-				if (action.equalsIgnoreCase("remove")) {
-					accessManager.unwhitelist(target, true, args.popRemainingStrings("reason"));
+		if (action.equalsIgnoreCase("list")) {
+			Collection<String> c = accessManager.getWhitelistedPlayers();
+			String[] whitelisted = c.toArray(new String[c.size()]);
+			StringBuilder message = new StringBuilder("Whitelisted (" + whitelisted.length + "): ");
+			for (int i = 0; i < whitelisted.length; i++) {
+				message.append(whitelisted[i]);
+				if (i != whitelisted.length - 1) {
+					message.append(", ");
 				}
 			}
+			source.sendMessage(message.toString());
+		} else if (action.equalsIgnoreCase("on")) {
+			SpoutConfiguration.WHITELIST_ENABLED.setValue(true);
+			accessManager.setWhitelistEnabled(true);
+			source.sendMessage("Toggled whitelist on.");
+		} else if (action.equalsIgnoreCase("off")) {
+			SpoutConfiguration.WHITELIST_ENABLED.setValue(false);
+			accessManager.setWhitelistEnabled(false);
+			source.sendMessage("Toggled whitelist off.");
+		} else {
+			String target = args.popString("target");
+			if (action.equalsIgnoreCase("add")) {
+				accessManager.whitelist(target);
+				source.sendMessage("Added player '" + target + "' to the whitelist.");
+			}
 
+			if (action.equalsIgnoreCase("remove")) {
+				accessManager.unwhitelist(target);
+				source.sendMessage("Removed player '" + target + "' from the whitelist.");
+			}
+
+			if (action.equalsIgnoreCase("remove")) {
+				accessManager.unwhitelist(target, true, args.popRemainingStrings("reason"));
+			}
+		}
 	}
 
-	@CommandDescription(aliases = "banlist", usage = "[--ips]", flags = {@Flag(aliases = {"ips", "i"})},
+	@CommandDescription (aliases = "banlist", usage = "[--ips]", flags = {@Flag (aliases = {"ips", "i"})},
 			desc = "Shows banned players or ips.")
-	@Permissible("spout.command.banlist")
+	@Permissible ("spout.command.banlist")
 	public void banList(CommandSource source, CommandArguments args) throws CommandException {
 		BanType type = args.has("ips") ? BanType.IP : BanType.PLAYER;
 		AccessManager accessManager = getEngine().getAccessManager();
@@ -128,9 +126,8 @@ public class ServerCommands extends CommonCommands {
 		source.sendMessage(message.toString());
 	}
 
-
-	@CommandDescription(aliases = "ban", usage = "<player> [reason]", desc = "Ban a player")
-	@Permissible("spout.command.ban")
+	@CommandDescription (aliases = "ban", usage = "<player> [reason]", desc = "Ban a player")
+	@Permissible ("spout.command.ban")
 	public void ban(CommandSource source, CommandArguments args) throws CommandException {
 		String player = args.popString("player");
 		if (args.hasMore()) {
@@ -141,9 +138,8 @@ public class ServerCommands extends CommonCommands {
 		source.sendMessage("Banned player '" + player + "' from the server.");
 	}
 
-
-	@CommandDescription(aliases = "unban", usage = "<player>", desc = "Unban a player")
-	@Permissible("spout.command.unban")
+	@CommandDescription (aliases = "unban", usage = "<player>", desc = "Unban a player")
+	@Permissible ("spout.command.unban")
 	public void unban(CommandSource source, CommandArguments args) throws CommandException {
 		String player = args.popString("player");
 		args.assertCompletelyParsed();
@@ -152,9 +148,8 @@ public class ServerCommands extends CommonCommands {
 		source.sendMessage("Unbanned player '" + player + "' from the server.");
 	}
 
-
-	@CommandDescription(aliases = "ban-ip", usage = "<address> [reason]", desc = "Ban an IP address")
-	@Permissible("spout.command.banip")
+	@CommandDescription (aliases = "ban-ip", usage = "<address> [reason]", desc = "Ban an IP address")
+	@Permissible ("spout.command.banip")
 	public void banIp(CommandSource source, CommandArguments args) throws CommandException {
 		if (source instanceof Player) {
 			getEngine().getLogger().info(((Player) source).getAddress().getHostAddress());
@@ -170,9 +165,8 @@ public class ServerCommands extends CommonCommands {
 		source.sendMessage("Banned IP address '" + address + "' from the server.");
 	}
 
-
-	@CommandDescription(aliases = "unban-ip", usage = "<address>", desc = "Unban an IP address")
-	@Permissible("spout.command.unbanip")
+	@CommandDescription (aliases = "unban-ip", usage = "<address>", desc = "Unban an IP address")
+	@Permissible ("spout.command.unbanip")
 	public void unbanIp(CommandSource source, CommandArguments args) throws CommandException {
 		String address = args.popString("address");
 		args.assertCompletelyParsed();
@@ -181,9 +175,8 @@ public class ServerCommands extends CommonCommands {
 		source.sendMessage("Unbanned IP address '" + address + "' from the server");
 	}
 
-
-	@CommandDescription(aliases = "kick", usage = "<player> [message]", desc = "Kick a player")
-	@Permissible("spout.command.kick")
+	@CommandDescription (aliases = "kick", usage = "<player> [message]", desc = "Kick a player")
+	@Permissible ("spout.command.kick")
 	public void kick(CommandSource source, CommandArguments args) throws CommandException {
 		Player player = args.popPlayer("player");
 		String message = args.popRemainingStrings("message", "You have been kicked from the server.");
@@ -198,8 +191,8 @@ public class ServerCommands extends CommonCommands {
 		}
 	}
 
-	@CommandDescription(aliases = {"players", "who", "list"}, desc = "List all online players")
-	@Permissible("spout.command.players")
+	@CommandDescription (aliases = {"players", "who", "list"}, desc = "List all online players")
+	@Permissible ("spout.command.players")
 	public void list(CommandSource source, CommandArguments args) throws CommandException {
 		args.assertCompletelyParsed();
 
@@ -217,7 +210,7 @@ public class ServerCommands extends CommonCommands {
 		source.sendMessage(onlineMsg.toString());
 	}
 
-	@CommandDescription(aliases = "disconnect", desc = "Disconnect the client from the server", usage = "[message]")
+	@CommandDescription (aliases = "disconnect", desc = "Disconnect the client from the server", usage = "[message]")
 	public void disconnectClient(CommandSource source, CommandArguments args) throws CommandException {
 		String message = args.popRemainingStrings("message", "Oops!");
 
@@ -226,7 +219,7 @@ public class ServerCommands extends CommonCommands {
 		}
 	}
 
-	@CommandDescription(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!")
+	@CommandDescription (aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!")
 	public void serverSay(CommandSource source, CommandArguments args) throws CommandException {
 		String message = args.popRemainingStrings("message", source.getName() + " has nothing to say!");
 

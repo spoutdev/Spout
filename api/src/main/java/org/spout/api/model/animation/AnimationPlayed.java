@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -29,66 +29,63 @@ package org.spout.api.model.animation;
 import org.spout.api.math.Matrix;
 
 public class AnimationPlayed {
-
 	private Animation animation;
 	private float speed = 1f;
 	private boolean loop = false;
 	private Matrix[] matrices = null;
-	
 	private int currentFrame = 0;
 	private float currentTime = 0;
-	
-	public AnimationPlayed(Animation animation, boolean loop){
+
+	public AnimationPlayed(Animation animation, boolean loop) {
 		this.animation = animation;
 		this.loop = loop;
 	}
-	
+
 	public Animation getAnimation() {
 		return animation;
 	}
-	
+
 	public void setAnimation(Animation animation) {
 		this.animation = animation;
 	}
-	
+
 	public float getSpeed() {
 		return speed;
 	}
-	
+
 	public void setSpeed(float speed) {
 		this.speed = speed;
 	}
-	
+
 	public boolean isLoop() {
 		return loop;
 	}
-	
+
 	public void setLoop(boolean loop) {
 		this.loop = loop;
 	}
-	
+
 	public Matrix[] getMatrices() {
 		return matrices;
 	}
-	
+
 	public void setMatrices(Matrix[] matrices) {
 		this.matrices = matrices;
 	}
-	
+
 	public int getCurrentFrame() {
 		return currentFrame;
 	}
-	
+
 	public void setCurrentFrame(int currentFrame) {
 		this.currentFrame = currentFrame;
 	}
-	
+
 	public float getCurrentTime() {
 		return currentTime;
 	}
-	
+
 	public void setCurrentTime(float currentTime) {
 		this.currentTime = currentTime;
 	}
-	
 }

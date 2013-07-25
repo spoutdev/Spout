@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -50,21 +50,13 @@ import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutParallelTaskManager implements TaskManager {
-	
 	private final Engine engine;
-	
 	private final Collection<World> world;
-	
 	private final AtomicLong upTime;
-	
 	private final TSyncIntObjectMap<ParallelTaskInfo> activeTasks = new TSyncIntObjectHashMap<ParallelTaskInfo>();
-	
 	private final ConcurrentLinkedQueue<SpoutRegion> newRegions = new ConcurrentLinkedQueue<SpoutRegion>();
-
 	private final ConcurrentLinkedQueue<SpoutRegion> deadRegions = new ConcurrentLinkedQueue<SpoutRegion>();
-	
 	private final ConcurrentLinkedQueue<SpoutTask> newTasks = new ConcurrentLinkedQueue<SpoutTask>();
-	
 	private final Scheduler scheduler;
 
 	public SpoutParallelTaskManager(Engine engine) {
@@ -76,10 +68,10 @@ public class SpoutParallelTaskManager implements TaskManager {
 		this.world = null;
 		this.scheduler = engine.getScheduler();
 	}
-	
+
 	public SpoutParallelTaskManager(Scheduler scheduler, SpoutWorld w) {
 		if (w == null) {
-			throw new IllegalArgumentException("World cannot be set to null");	
+			throw new IllegalArgumentException("World cannot be set to null");
 		}
 		upTime = new AtomicLong(0);
 		this.engine = null;
@@ -92,12 +84,12 @@ public class SpoutParallelTaskManager implements TaskManager {
 	public Task scheduleSyncDelayedTask(Object plugin, Runnable task) {
 		return scheduleSyncDelayedTask(plugin, task, TaskPriority.CRITICAL);
 	}
-	
+
 	@Override
 	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
 		return scheduleSyncDelayedTask(plugin, task, 0, priority);
 	}
-	
+
 	@Override
 	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return scheduleSyncRepeatingTask(plugin, task, delay, -1, priority);
@@ -117,7 +109,7 @@ public class SpoutParallelTaskManager implements TaskManager {
 	public Task scheduleAsyncTask(Object plugin, Runnable task) {
 		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 	}
-	
+
 	@Override
 	public Task scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
 		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
@@ -127,12 +119,12 @@ public class SpoutParallelTaskManager implements TaskManager {
 	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
 		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 	}
-	
+
 	@Override
 	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task, TaskPriority priority) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-	
+
 	public void heartbeat(long delta) {
 		if (engine != null) {
 			TickStage.checkStage(TickStage.TICKSTART);
@@ -154,9 +146,9 @@ public class SpoutParallelTaskManager implements TaskManager {
 			}
 			Collection<? extends World> worlds = (this.world == null) ? engine.getWorlds() : world;
 			for (World w : worlds) {
-				SpoutWorld sw = (SpoutWorld)w;
+				SpoutWorld sw = (SpoutWorld) w;
 				for (Region r : sw.getRegions()) {
-					info.add((SpoutRegion)r);
+					info.add((SpoutRegion) r);
 				}
 			}
 		}
@@ -166,15 +158,17 @@ public class SpoutParallelTaskManager implements TaskManager {
 			}
 		}
 		while ((region = deadRegions.poll()) != null) {
-			while (newRegions.remove(region))
+			while (newRegions.remove(region)) {
 				;
+			}
 			for (ParallelTaskInfo info : activeTasks.values(ParallelTaskInfo.EMPTY_ARRAY)) {
-				while (info.remove(region))
+				while (info.remove(region)) {
 					;
+				}
 			}
 		}
 	}
-	
+
 	protected Task schedule(SpoutTask task) {
 		ParallelTaskInfo info = new ParallelTaskInfo(task);
 		if (task.getPeriod() > 0) {
@@ -183,11 +177,11 @@ public class SpoutParallelTaskManager implements TaskManager {
 		newTasks.add(task);
 		return task;
 	}
-	
+
 	public void registerRegion(SpoutRegion r) {
 		newRegions.add(r);
 	}
-	
+
 	public void unRegisterRegion(SpoutRegion r) {
 		TickStage.checkStage(TickStage.SNAPSHOT);
 		deadRegions.add(r);
@@ -222,7 +216,7 @@ public class SpoutParallelTaskManager implements TaskManager {
 			}
 		}
 	}
-	
+
 	@Override
 	public void cancelAllTasks() {
 		int[] keys = activeTasks.keys();
@@ -244,7 +238,7 @@ public class SpoutParallelTaskManager implements TaskManager {
 	public List<Task> getPendingTasks() {
 		throw new UnsupportedOperationException("The operation is not supported");
 	}
-	
+
 	@Override
 	public long getUpTime() {
 		return upTime.get();
@@ -254,5 +248,4 @@ public class SpoutParallelTaskManager implements TaskManager {
 	public boolean isQueued(int taskId) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-
 }

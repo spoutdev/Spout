@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -58,7 +58,7 @@ public final class AnnotatedCommandExecutorFactory {
 				return false;
 			}
 			if ((CommandSource.class.isAssignableFrom(params[0]) || CommandSource.class.isAssignableFrom(params[1])) &&
-					(CommandArguments.class.equals(params[0]) || CommandArguments.class.equals(params[1])))	{
+					(CommandArguments.class.equals(params[0]) || CommandArguments.class.equals(params[1]))) {
 				return true;
 			} else {
 				Spout.warn("Unable to register " + method.getName() + " as a command, method parameters must be CommandSource and CommandArguments");
@@ -166,6 +166,7 @@ public final class AnnotatedCommandExecutorFactory {
 
 	/**
 	 * Registers all the defined commands by method in this class.
+	 *
 	 * @param instance the object containing the commands
 	 */
 	public static AnnotatedCommandExecutor create(Object instance) {
@@ -174,6 +175,7 @@ public final class AnnotatedCommandExecutorFactory {
 
 	/**
 	 * Registers all the defined commands by method in this class.
+	 *
 	 * @param commands the class containing the static commands
 	 */
 	public static AnnotatedCommandExecutor create(Class<?> commands) {

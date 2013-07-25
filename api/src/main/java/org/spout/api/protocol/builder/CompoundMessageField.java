@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,11 +32,10 @@ import java.util.List;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 public class CompoundMessageField extends MessageFieldImpl {
-	
 	private final MessageField[] fields;
 	private final MessageField[] fieldsCompressed;
 	private final int fixedLength;
-	
+
 	public CompoundMessageField(MessageField[] fields) {
 		this.fields = fields;
 		this.fieldsCompressed = compressFields(fields);
@@ -48,12 +47,12 @@ public class CompoundMessageField extends MessageFieldImpl {
 			fixedLength = -1;
 		}
 	}
-	
+
 	@Override
 	public int getFixedLength() {
 		return fixedLength;
 	}
-	
+
 	@Override
 	public MessageField getCompressed() {
 		if (fieldsCompressed.length == 1) {
@@ -76,7 +75,7 @@ public class CompoundMessageField extends MessageFieldImpl {
 		}
 		return length;
 	}
-	
+
 	public int skip(ChannelBuffer buffer, int[] indexArray) {
 		int length = 0;
 		int j = 0;
@@ -86,7 +85,7 @@ public class CompoundMessageField extends MessageFieldImpl {
 		}
 		return length;
 	}
-	
+
 	@Override
 	public int getLength(ChannelBuffer buffer) {
 		int startPosition = buffer.readerIndex();
@@ -122,11 +121,11 @@ public class CompoundMessageField extends MessageFieldImpl {
 			fields[i].transfer(sourceBuffer, targetBuffer);
 		}
 	}
-	
+
 	public int getSubFieldCount() {
 		return fields.length;
 	}
-	
+
 	public static MessageField[] compressFields(MessageField[] fields) {
 		List<MessageField> compressedArray = new ArrayList<MessageField>();
 		int i = 0;
@@ -151,5 +150,4 @@ public class CompoundMessageField extends MessageFieldImpl {
 		}
 		return compressedArray.toArray(new MessageField[0]);
 	}
-
 }

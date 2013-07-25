@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -29,18 +29,13 @@ package org.spout.engine.util;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * Stores a 3 int triple.
- * <p>
- * Objects of this type can be used in HashMaps.
- * <p>
- * TripleInt.NULL can be added to HashMaps that don't support null objects/
+ * Stores a 3 int triple. <p> Objects of this type can be used in HashMaps. <p> TripleInt.NULL can be added to HashMaps that don't support null objects/
  */
 public class TripleInt {
 	public final static TripleInt NULL = new TripleInt(0, 0, 0);
 	public final int x;
 	public final int y;
 	public final int z;
-	
 	/**
 	 * Hashcode caching
 	 */

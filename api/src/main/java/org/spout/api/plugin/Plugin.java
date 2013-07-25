@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -35,7 +35,6 @@ import org.spout.api.Engine;
 import org.spout.api.exception.SpoutRuntimeException;
 import org.spout.api.lang.JavaPluginDictionary;
 import org.spout.api.lang.PluginDictionary;
-import org.spout.api.protocol.Protocol;
 import org.spout.api.util.Named;
 
 public abstract class Plugin implements Named {
@@ -60,7 +59,9 @@ public abstract class Plugin implements Named {
 		this.file = file;
 		this.classLoader = classLoader;
 		this.logger = new PluginLogger(this);
-		if (file != null) this.dictionary = new JavaPluginDictionary(this);
+		if (file != null) {
+			this.dictionary = new JavaPluginDictionary(this);
+		}
 	}
 
 	/**
@@ -88,12 +89,8 @@ public abstract class Plugin implements Named {
 	}
 
 	/**
-	 * Returns the {@link URI} location of the plugin's update. If the plugin
-	 * does not have an update available this method should return null. This
-	 * method will be called during startup; after all plugin have been loaded.
-	 * If the plugin does have an update, it will be added to the queue of
-	 * requested installations and will have to be confirmed by the server
-	 * administrator.
+	 * Returns the {@link URI} location of the plugin's update. If the plugin does not have an update available this method should return null. This method will be called during startup; after all plugin
+	 * have been loaded. If the plugin does have an update, it will be added to the queue of requested installations and will have to be confirmed by the server administrator.
 	 *
 	 * @return plugin update
 	 */
@@ -103,6 +100,7 @@ public abstract class Plugin implements Named {
 
 	/**
 	 * Returns the engine object
+	 *
 	 * @return engine
 	 */
 	public final Engine getEngine() {
@@ -111,6 +109,7 @@ public abstract class Plugin implements Named {
 
 	/**
 	 * Returns the plugin's description
+	 *
 	 * @return description
 	 */
 	public final PluginDescriptionFile getDescription() {
@@ -123,6 +122,7 @@ public abstract class Plugin implements Named {
 
 	/**
 	 * Returns the plugin's loader
+	 *
 	 * @return loader
 	 */
 	public final PluginLoader getPluginLoader() {
@@ -131,6 +131,7 @@ public abstract class Plugin implements Named {
 
 	/**
 	 * Returns the plugin's data folder
+	 *
 	 * @return folder that contains the plugin's data
 	 */
 	public final File getDataFolder() {
@@ -139,6 +140,7 @@ public abstract class Plugin implements Named {
 
 	/**
 	 * Returns a File that is the plugin's jar file.
+	 *
 	 * @return jar file
 	 */
 	public final File getFile() {
@@ -147,6 +149,7 @@ public abstract class Plugin implements Named {
 
 	/**
 	 * Returns true if the plugins is enabled
+	 *
 	 * @return enabled
 	 */
 	public final boolean isEnabled() {
@@ -155,6 +158,7 @@ public abstract class Plugin implements Named {
 
 	/**
 	 * Returns the plugin's logger
+	 *
 	 * @return logger
 	 */
 	public final Logger getLogger() {
@@ -176,10 +180,12 @@ public abstract class Plugin implements Named {
 	 * @param file to add
 	 */
 	public final void loadLibrary(File file) {
-		if (!file.exists())
+		if (!file.exists()) {
 			throw new IllegalArgumentException("Specified file must exist.");
-		if (!file.getPath().endsWith(".jar"))
+		}
+		if (!file.getPath().endsWith(".jar")) {
 			throw new IllegalArgumentException("Invalid library file.");
+		}
 		try {
 			classLoader.addURL(file.toURI().toURL());
 		} catch (MalformedURLException e) {

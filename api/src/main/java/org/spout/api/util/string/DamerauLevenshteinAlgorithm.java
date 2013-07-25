@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -51,35 +51,19 @@ import java.util.Map;
  */
 
 /**
- * The Damerau-Levenshtein Algorithm is an extension to the Levenshtein
- * Algorithm which solves the edit distance problem between a source string and
- * a target string with the following operations:
- * 
- * <ul>
- * <li>Character Insertion</li>
- * <li>Character Deletion</li>
- * <li>Character Replacement</li>
- * <li>Adjacent Character Swap</li>
- * </ul>
- * 
- * Note that the adjacent character swap operation is an edit that may be
- * applied when two adjacent characters in the source string match two adjacent
- * characters in the target string, but in reverse order, rather than a general
- * allowance for adjacent character swaps.
- * <p>
- * 
- * This implementation allows the client to specify the costs of the various
- * edit operations with the restriction that the cost of two swap operations
- * must not be less than the cost of a delete operation followed by an insert
- * operation. This restriction is required to preclude two swaps involving the
- * same character being required for optimality which, in turn, enables a fast
- * dynamic programming solution.
- * <p>
- * 
- * The running time of the Damerau-Levenshtein algorithm is O(n*m) where n is
- * the length of the source string and m is the length of the target string.
- * This implementation consumes O(n*m) space.
- * 
+ * The Damerau-Levenshtein Algorithm is an extension to the Levenshtein Algorithm which solves the edit distance problem between a source string and a target string with the following operations:
+ *
+ * <ul> <li>Character Insertion</li> <li>Character Deletion</li> <li>Character Replacement</li> <li>Adjacent Character Swap</li> </ul>
+ *
+ * Note that the adjacent character swap operation is an edit that may be applied when two adjacent characters in the source string match two adjacent characters in the target string, but in reverse
+ * order, rather than a general allowance for adjacent character swaps. <p>
+ *
+ * This implementation allows the client to specify the costs of the various edit operations with the restriction that the cost of two swap operations must not be less than the cost of a delete
+ * operation followed by an insert operation. This restriction is required to preclude two swaps involving the same character being required for optimality which, in turn, enables a fast dynamic
+ * programming solution. <p>
+ *
+ * The running time of the Damerau-Levenshtein algorithm is O(n*m) where n is the length of the source string and m is the length of the target string. This implementation consumes O(n*m) space.
+ *
  * @author Kevin L. Stern
  */
 public class DamerauLevenshteinAlgorithm {
@@ -87,18 +71,14 @@ public class DamerauLevenshteinAlgorithm {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param deleteCost
-	 *            the cost of deleting a character.
-	 * @param insertCost
-	 *            the cost of inserting a character.
-	 * @param replaceCost
-	 *            the cost of replacing a character.
-	 * @param swapCost
-	 *            the cost of swapping two adjacent characters.
+	 *
+	 * @param deleteCost the cost of deleting a character.
+	 * @param insertCost the cost of inserting a character.
+	 * @param replaceCost the cost of replacing a character.
+	 * @param swapCost the cost of swapping two adjacent characters.
 	 */
 	public DamerauLevenshteinAlgorithm(int deleteCost, int insertCost,
-			int replaceCost, int swapCost) {
+									   int replaceCost, int swapCost) {
 		/*
 		 * Required to facilitate the premise to the algorithm that two swaps of
 		 * the same character are never required for optimality.
@@ -113,8 +93,7 @@ public class DamerauLevenshteinAlgorithm {
 	}
 
 	/**
-	 * Compute the Damerau-Levenshtein distance between the specified source
-	 * string and the specified target string.
+	 * Compute the Damerau-Levenshtein distance between the specified source string and the specified target string.
 	 */
 	public int execute(String source, String target) {
 		int[][] table = new int[source.length()][target.length()];

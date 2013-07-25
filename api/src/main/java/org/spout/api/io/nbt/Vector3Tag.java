@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -36,11 +36,10 @@ import org.spout.nbt.Tag;
 import org.spout.nbt.util.NBTMapper;
 
 public class Vector3Tag extends ListTag<FloatTag> {
-
 	public Vector3Tag(String name, Vector3 v) {
 		super(name, FloatTag.class, vector3ToList(v));
 	}
-	
+
 	private static List<FloatTag> vector3ToList(Vector3 v) {
 		List<FloatTag> list = new ArrayList<FloatTag>(3);
 		list.add(new FloatTag("", v.getX()));
@@ -48,8 +47,8 @@ public class Vector3Tag extends ListTag<FloatTag> {
 		list.add(new FloatTag("", v.getZ()));
 		return list;
 	}
-	
-	@SuppressWarnings("unchecked")
+
+	@SuppressWarnings ("unchecked")
 	public static Vector3 getValue(Tag<?> tag) {
 		try {
 			return getValue((ListTag<FloatTag>) tag);
@@ -57,14 +56,14 @@ public class Vector3Tag extends ListTag<FloatTag> {
 			return null;
 		}
 	}
-	
+
 	public static Vector3 getValue(ListTag<FloatTag> list) {
 		if (list == null) {
 			return null;
 		}
 		return getValue(list.getValue());
 	}
-	
+
 	public static Vector3 getValue(List<FloatTag> list) {
 		if (list == null || list.size() != 3) {
 			return null;
@@ -72,12 +71,11 @@ public class Vector3Tag extends ListTag<FloatTag> {
 		Float x = NBTMapper.toTagValue(list.get(0), Float.class, null);
 		Float y = NBTMapper.toTagValue(list.get(1), Float.class, null);
 		Float z = NBTMapper.toTagValue(list.get(2), Float.class, null);
-		
+
 		if (x == null || y == null || z == null) {
 			return null;
 		}
-		
+
 		return new Vector3(x, y, z);
 	}
-
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -29,10 +29,10 @@ package org.spout.engine.protocol;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
+
 import org.spout.api.geo.World;
 import org.spout.api.protocol.ClientNetworkSynchronizer;
 import org.spout.api.protocol.ClientSession;
-import org.spout.api.protocol.Message;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.engine.SpoutClient;
@@ -45,6 +45,7 @@ import org.spout.engine.world.SpoutWorld;
  */
 public class SpoutClientSession extends SpoutSession<SpoutClient> implements ClientSession {
 	private final AtomicReference<SpoutWorld> activeWorld = new AtomicReference<SpoutWorld>();
+
 	/**
 	 * Creates a new session.
 	 *
@@ -116,6 +117,4 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 	public ClientNetworkSynchronizer getNetworkSynchronizer() {
 		return (ClientNetworkSynchronizer) super.getNetworkSynchronizer();
 	}
-	
-	
 }

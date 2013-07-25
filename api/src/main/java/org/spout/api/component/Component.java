@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -53,6 +53,7 @@ public abstract class Component implements Tickable {
 
 	/**
 	 * Attaches to a component owner.
+	 *
 	 * @param owner the component owner to attach to
 	 * @return true if successful
 	 */
@@ -63,6 +64,7 @@ public abstract class Component implements Tickable {
 
 	/**
 	 * Gets the component owner that owns this component.
+	 *
 	 * @return the component owner
 	 */
 	public ComponentOwner getOwner() {
@@ -86,6 +88,7 @@ public abstract class Component implements Tickable {
 
 	/**
 	 * Specifies whether or not this component can be detached, after it has already been attached to an owner..
+	 *
 	 * @return true if it can be detached
 	 */
 	public boolean isDetachable() {
@@ -93,17 +96,14 @@ public abstract class Component implements Tickable {
 	}
 
 	/**
-	 * Called when the owner is set to be synchronized.
-	 * <p>
-	 * This method is READ ONLY. You cannot update in this method.
+	 * Called when the owner is set to be synchronized. <p> This method is READ ONLY. You cannot update in this method.
 	 */
 	public void onSync() {
 	}
 
 	/**
-	 * Gets the {@link SerializableMap} which a ComponentOwner always has
-	 * <p>
-	 * This is merely a convenience method.
+	 * Gets the {@link SerializableMap} which a ComponentOwner always has <p> This is merely a convenience method.
+	 *
 	 * @return SerializableMap of the owner
 	 */
 	public final SerializableMap getData() {

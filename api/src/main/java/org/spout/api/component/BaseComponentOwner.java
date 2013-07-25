@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -54,8 +54,7 @@ public class BaseComponentOwner implements ComponentOwner {
 	}
 
 	/**
-	 * For use de-serializing a list of components all at once,
-	 * without having to worry about dependencies
+	 * For use de-serializing a list of components all at once, without having to worry about dependencies
 	 */
 	protected void add(Class<? extends Component>... components) {
 		HashSet<Component> added = new HashSet<Component>();
@@ -78,6 +77,7 @@ public class BaseComponentOwner implements ComponentOwner {
 
 	/**
 	 * Adds a component to the map
+	 *
 	 * @param type to add
 	 * @param attach whether to call the component onAttached
 	 * @return instantiated component
@@ -88,12 +88,13 @@ public class BaseComponentOwner implements ComponentOwner {
 
 	/**
 	 * Adds a component to the map
+	 *
 	 * @param key the component class used as the lookup key
 	 * @param type of component to instantiate
 	 * @param attach whether to call the component onAttached
 	 * @return instantiated component
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	protected final <T extends Component> T add(Class<T> key, Class<? extends Component> type, boolean attach) {
 		if (type == null || key == null) {
 			return null;
@@ -141,7 +142,7 @@ public class BaseComponentOwner implements ComponentOwner {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends Component> T detach(Class<? extends Component> type) {
 		Preconditions.checkNotNull(type);
@@ -161,7 +162,7 @@ public class BaseComponentOwner implements ComponentOwner {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends Component> T get(Class<T> type) {
 		Preconditions.checkNotNull(type);
@@ -182,7 +183,7 @@ public class BaseComponentOwner implements ComponentOwner {
 		return component;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends Component> T getExact(Class<T> type) {
 		Preconditions.checkNotNull(type);
@@ -191,7 +192,7 @@ public class BaseComponentOwner implements ComponentOwner {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends Component> Collection<T> getAll(Class<T> type) {
 		Preconditions.checkNotNull(type);
@@ -206,7 +207,7 @@ public class BaseComponentOwner implements ComponentOwner {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends Object> Collection<T> getAllOfType(Class<T> type) {
 		Preconditions.checkNotNull(type);
@@ -233,7 +234,7 @@ public class BaseComponentOwner implements ComponentOwner {
 		return data;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	private <T> T findComponent(Class<T> type) {
 		Preconditions.checkNotNull(type);
 		synchronized (components) {

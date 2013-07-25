@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -28,14 +28,14 @@ package org.spout.api.ai.pathfinder;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import org.spout.api.ai.Plan;
 import org.spout.api.ai.pathfinder.PathPoint.PathCallback;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.math.Vector3;
-
-import com.google.common.collect.Lists;
 
 public class Path implements Plan<Entity> {
 	private int index = 0;
@@ -49,8 +49,9 @@ public class Path implements Plan<Entity> {
 		// TODO: possibly expose cullability in an API
 		List<PathEntry> path = Lists.newArrayList();
 		for (VectorNode node : unfiltered) {
-			if (node.callbacks != null)
+			if (node.callbacks != null) {
 				continue;
+			}
 			Vector3 vector = node.location;
 			path.add(new PathEntry(vector, node.callbacks));
 		}
@@ -68,8 +69,9 @@ public class Path implements Plan<Entity> {
 
 	@Override
 	public void update(Entity entity) {
-		if (isComplete())
+		if (isComplete()) {
 			return;
+		}
 		PathEntry entry = path[index];
 		if (entry.hasCallbacks()) {
 			Block block = entry.getBlockUsingWorld(entity.getWorld());

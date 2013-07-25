@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -30,7 +30,7 @@ import org.mockito.Mockito;
 
 import org.spout.api.geo.World;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings ("deprecation")
 public class WorldFaker {
 	private final static World worldInstance;
 
@@ -38,7 +38,7 @@ public class WorldFaker {
 		World world = Mockito.mock(World.class);
 		Mockito.when(world.getUID()).thenReturn(EngineFaker.TEST_UUID);
 
-		worldInstance = world;		
+		worldInstance = world;
 	}
 
 	public static World setupWorld() {

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -49,41 +49,38 @@ public abstract class WorldComponent extends Component {
 	}
 
 	/**
-	 * Called when an {@link org.spout.api.entity.Entity} enters the owning {@link World}.
-	 * <p>
-	 * This is only fired when the entity enters this owning world from another owning world. If you want to
+	 * Called when an {@link org.spout.api.entity.Entity} enters the owning {@link World}. <p> This is only fired when the entity enters this owning world from another owning world. If you want to
 	 * perform logic on a spawning entity for this owning world, {@see #onSpawn(org.spout.api.event.entity.EntitySpawnEvent)}.
+	 *
 	 * @param event see {@link org.spout.api.event.world.EntityEnterWorldEvent}
 	 */
 	public void onEnter(final EntityEnterWorldEvent event) {
 	}
 
 	/**
-	 * Called when an {@link org.spout.api.entity.Entity} exits the owning {@link World} for another.
-	 * <p>
-	 * This is only fired when the entity will leave this owning world for another owning world. If you want to perform
-	 * logic on a de-spawning entity, {@see #onDespawn(org.spout.api.event.entity.EntityDespawnEvent)}.
+	 * Called when an {@link org.spout.api.entity.Entity} exits the owning {@link World} for another. <p> This is only fired when the entity will leave this owning world for another owning world. If you
+	 * want to perform logic on a de-spawning entity, {@see #onDespawn(org.spout.api.event.entity.EntityDespawnEvent)}.
+	 *
 	 * @param event see {@link org.spout.api.event.world.EntityExitWorldEvent}
 	 */
 	public void onExit(final EntityExitWorldEvent event) {
 	}
 
 	/**
-	 * Called when an {@link org.spout.api.entity.Entity} spawns in the owning {@link World}.
-	 * <p>
-	 * This is only fired when the entity is initially spawned into the owning world. If you want to perform login
-	 * on an entity coming from another world, {@see #onEnter(org.spout.api.event.entity.EntityChangeWorldEvent)} or
-	 * if you want to perform logic on an entity being loaded, {@see EntityComponent#onAttached()}.
+	 * Called when an {@link org.spout.api.entity.Entity} spawns in the owning {@link World}. <p> This is only fired when the entity is initially spawned into the owning world. If you want to perform
+	 * login on an entity coming from another world, {@see #onEnter(org.spout.api.event.entity.EntityChangeWorldEvent)} or if you want to perform logic on an entity being loaded, {@see
+	 * EntityComponent#onAttached()}.
+	 *
 	 * @param event see {@link org.spout.api.event.entity.EntitySpawnEvent}
 	 */
 	public void onSpawn(final EntitySpawnEvent event) {
 	}
 
 	/**
-	 * Called when an {@link org.spout.api.entity.Entity} de-spawns from the owning {@link World}.
-	 * <p>
-	 * This is only fired when the entity is de-spawned from the owning world ({@see org.spout.api.component.entity.EntityComponent#onDetached()}.
-	 * If you want to perform logic on an entity moving from this owning world to another owning world, {@see #onExit(org.spout.api.event.entity.EntityChangeWorldEvent)}.
+	 * Called when an {@link org.spout.api.entity.Entity} de-spawns from the owning {@link World}. <p> This is only fired when the entity is de-spawned from the owning world ({@see
+	 * org.spout.api.component.entity.EntityComponent#onDetached()}. If you want to perform logic on an entity moving from this owning world to another owning world, {@see
+	 * #onExit(org.spout.api.event.entity.EntityChangeWorldEvent)}.
+	 *
 	 * @param event {@see org.spout.api.event.entity.EntitySpawnEvent}
 	 */
 	public void onDespawn(final EntityDespawnEvent event) {

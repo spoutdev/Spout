@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -69,7 +69,9 @@ public class LabelComponent extends WidgetComponent {
 		float screenHeight = ((Client) Spout.getEngine()).getResolution().getY();
 
 		for (char c : getText().toCharArray()) {
-			if (!font.isValidChar(c)) continue; // invalid char for the font
+			if (!font.isValidChar(c)) {
+				continue; // invalid char for the font
+			}
 			if (c == ' ') {
 				xCursor += font.getSpaceWidth() / screenWidth;
 			} else if (c == '\n') {
@@ -96,6 +98,7 @@ public class LabelComponent extends WidgetComponent {
 
 	/**
 	 * Sets the font of the label.
+	 *
 	 * @param font of label
 	 */
 	public void setFont(Font font) {
@@ -105,6 +108,7 @@ public class LabelComponent extends WidgetComponent {
 
 	/**
 	 * Returns the font of the label
+	 *
 	 * @return font of label
 	 */
 	public Font getFont() {
@@ -113,6 +117,7 @@ public class LabelComponent extends WidgetComponent {
 
 	/**
 	 * Returns the text on the label.
+	 *
 	 * @return text on label
 	 */
 	public String getText() {
@@ -121,6 +126,7 @@ public class LabelComponent extends WidgetComponent {
 
 	/**
 	 * Sets the text on the label
+	 *
 	 * @param text on label
 	 */
 	public void setText(String text) {
@@ -147,6 +153,7 @@ public class LabelComponent extends WidgetComponent {
 
 	/**
 	 * Adds a character.
+	 *
 	 * @param c character to add
 	 */
 	public void append(char c) {
@@ -155,6 +162,7 @@ public class LabelComponent extends WidgetComponent {
 
 	/**
 	 * Adds a string to the end of this label.
+	 *
 	 * @param str string to add
 	 */
 	public void append(String str) {
@@ -170,6 +178,7 @@ public class LabelComponent extends WidgetComponent {
 
 	/**
 	 * Returns the color of the text.
+	 *
 	 * @return text of color
 	 */
 	public Color getColor() {
@@ -178,6 +187,7 @@ public class LabelComponent extends WidgetComponent {
 
 	/**
 	 * Sets the color of the text
+	 *
 	 * @param color of text
 	 */
 	public void setColor(Color color) {
@@ -186,8 +196,8 @@ public class LabelComponent extends WidgetComponent {
 	}
 
 	/**
-	 * Whether the specified char can be added to the label with the current
-	 * font.
+	 * Whether the specified char can be added to the label with the current font.
+	 *
 	 * @param c char to check
 	 * @return true if char can be added to label
 	 */

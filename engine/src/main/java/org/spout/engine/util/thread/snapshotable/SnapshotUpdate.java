@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -61,6 +61,7 @@ public class SnapshotUpdate<T> {
 
 	/**
 	 * Indicates if this update is an addition or removal
+	 *
 	 * @return true for additions
 	 */
 	public boolean isAdd() {
@@ -69,6 +70,7 @@ public class SnapshotUpdate<T> {
 
 	/**
 	 * Indicates if this is an indexed operation
+	 *
 	 * @return true for indexed operations
 	 */
 	public boolean isIndexed() {
@@ -77,6 +79,7 @@ public class SnapshotUpdate<T> {
 
 	/**
 	 * Gets the object
+	 *
 	 * @return the object
 	 */
 	public T getObject() {
@@ -85,7 +88,6 @@ public class SnapshotUpdate<T> {
 
 	/**
 	 * Gets the index
-	 * @return
 	 */
 	public int getIndex() {
 		if (!isIndexed()) {

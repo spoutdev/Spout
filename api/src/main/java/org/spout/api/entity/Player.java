@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,13 +34,13 @@ import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.NetworkSynchronizer;
-import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface Player extends CommandSource, Entity {
 	/**
 	 * Gets the player's name. This method is thread-safe.
+	 *
 	 * @return the player's name
 	 */
 	@Override
@@ -49,6 +49,7 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Gets the player's display name. This method is thread-safe.
+	 *
 	 * @return the player's display name
 	 */
 	@Threadsafe
@@ -56,6 +57,7 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Sets the player's display name. This method is thread-safe.
+	 *
 	 * @param name the player's new display name
 	 */
 	@Threadsafe
@@ -63,25 +65,28 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Gets the ServerNetworkSynchronizer associated with this player.<br>
+	 *
 	 * @return the synchronizer
 	 */
 	public NetworkSynchronizer getNetworkSynchronizer();
 
 	/**
 	 * Gets the session associated with the Player.
+	 *
 	 * @return the session, or null if the player is offline
 	 */
 	public Session getSession();
 
 	/**
 	 * Gets if the player is online
+	 *
 	 * @return true if online
 	 */
 	public boolean isOnline();
 
 	/**
-	 * Gets the sessions address This is equivalent to
-	 * getSession().getAddress().getAddress();
+	 * Gets the sessions address This is equivalent to getSession().getAddress().getAddress();
+	 *
 	 * @return The session's address
 	 */
 	public InetAddress getAddress();
@@ -93,6 +98,7 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Kicks the player for the given reason.
+	 *
 	 * @param reason the message to send to the player.
 	 */
 	public void kick(String reason);
@@ -104,12 +110,14 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Bans the player for the given reason.
+	 *
 	 * @param kick whether to kick or not
 	 */
 	public void ban(boolean kick);
 
 	/**
 	 * Bans the player for the given reason.
+	 *
 	 * @param kick whether to kick or not
 	 * @param reason for ban
 	 */
@@ -117,32 +125,34 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Gets the current input state of the player
+	 *
 	 * @return current input state
 	 */
 	public PlayerInputState input();
 
 	/**
 	 * Teleports the player to the given location and inform's the player's client
+	 *
 	 * @param loc the new location
 	 */
 	public void teleport(Point loc);
 
 	/**
 	 * Teleports the player to the given position and direction and inform's the player's client
+	 *
 	 * @param loc the new location
 	 */
 	public void teleport(Transform transform);
 
 	/**
 	 * Immediately saves the players state to disk
+	 *
 	 * @return true if successful
 	 */
 	public boolean save();
 
 	/**
 	 * If an entity is set as invisible, it will not be sent to the client.
-	 * @param entity
-	 * @param visible
 	 */
 	public void setVisible(Entity entity, boolean visible);
 
@@ -154,7 +164,7 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Creates an immutable snapshot of the player state at the time the method is called
-	 * 
+	 *
 	 * @return immutable snapshot
 	 */
 	@Override

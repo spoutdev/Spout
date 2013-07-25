@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -31,14 +31,14 @@ import java.util.logging.Level;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
-import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ClientSession;
+import org.spout.api.protocol.MessageHandler;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 
 public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatableMessage> {
 	@Override
 	public void handleClient(ClientSession session, EntityDatatableMessage message) {
-		if(!session.hasPlayer()) {
+		if (!session.hasPlayer()) {
 			throw new IllegalStateException("Message sent when session has no player");
 		}
 		Entity entity;

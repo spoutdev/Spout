@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,15 +33,14 @@ import java.util.List;
 
 public class LogicUtil {
 	/**
-	 * Removes duplicate values by using the objects' equals function<br>
-	 * Note that this function does not use a Set, because no hashcode is used.
-	 * 
+	 * Removes duplicate values by using the objects' equals function<br> Note that this function does not use a Set, because no hashcode is used.
+	 *
 	 * @param input collection
 	 * @return the input collection
 	 */
 	public static <T extends Collection<?>> T removeDuplicates(T input) {
 		List<Object> unique = new ArrayList<Object>();
-		for (Iterator<?> iter = input.iterator(); iter.hasNext();) {
+		for (Iterator<?> iter = input.iterator(); iter.hasNext(); ) {
 			Object next = iter.next();
 			if (unique.contains(next)) {
 				iter.remove();
@@ -54,6 +53,7 @@ public class LogicUtil {
 
 	/**
 	 * Checks if the object equals one of the other objects given
+	 *
 	 * @param object to check
 	 * @param objects to use equals against
 	 * @return True if one of the objects equal the object
@@ -69,9 +69,7 @@ public class LogicUtil {
 
 	/**
 	 * Checks if object a and b are both null or are equal
-	 * 
-	 * @param a
-	 * @param b
+	 *
 	 * @return if both null or equal
 	 */
 	public static boolean bothNullOrEqual(Object a, Object b) {
@@ -80,6 +78,7 @@ public class LogicUtil {
 
 	/**
 	 * Gets if a bit is set in an integer value
+	 *
 	 * @param value to get it of
 	 * @param bit to check
 	 * @return True if the bit is set
@@ -90,6 +89,7 @@ public class LogicUtil {
 
 	/**
 	 * Sets a single bit in a byte value
+	 *
 	 * @param value to set a bit of
 	 * @param bit to set
 	 * @param state to enable or disable the bit
@@ -101,6 +101,7 @@ public class LogicUtil {
 
 	/**
 	 * Sets a single bit in a short value
+	 *
 	 * @param value to set a bit of
 	 * @param bit to set
 	 * @param state to enable or disable the bit
@@ -112,6 +113,7 @@ public class LogicUtil {
 
 	/**
 	 * Sets a single bit in an integer value
+	 *
 	 * @param value to set a bit of
 	 * @param bit to set
 	 * @param state to enable or disable the bit

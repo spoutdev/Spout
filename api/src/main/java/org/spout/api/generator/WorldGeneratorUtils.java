@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -43,13 +43,11 @@ public class WorldGeneratorUtils {
 	/**
 	 * Returns the particular seed a Random should use for a position
 	 *
-	 * The meaning of the x, y and z coordinates can be determined by the
-	 * generator.
+	 * The meaning of the x, y and z coordinates can be determined by the generator.
 	 *
 	 * This gives consistent results for world generation.
 	 *
-	 * The extra seed allows multiple Randoms to be returned for the same
-	 * position for use by populators and different stages of generation.
+	 * The extra seed allows multiple Randoms to be returned for the same position for use by populators and different stages of generation.
 	 *
 	 * @param world the World
 	 * @param x the x coordinate
@@ -64,13 +62,11 @@ public class WorldGeneratorUtils {
 	/**
 	 * Returns the particular seed a Random should use for a position
 	 *
-	 * The meaning of the x, y and z coordinates can be determined by the
-	 * generator.
+	 * The meaning of the x, y and z coordinates can be determined by the generator.
 	 *
 	 * This gives consistent results for world generation.
 	 *
-	 * The extra seed allows multiple Randoms to be returned for the same
-	 * position for use by populators and different stages of generation.
+	 * The extra seed allows multiple Randoms to be returned for the same position for use by populators and different stages of generation.
 	 *
 	 * @param seed the original seed
 	 * @param x the x coordinate
@@ -90,11 +86,9 @@ public class WorldGeneratorUtils {
 	/**
 	 * Gets a pre-seeded random for a particular position.
 	 *
-	 * The meaning of the x, y and z coordinates can be determined by the
-	 * generator.
+	 * The meaning of the x, y and z coordinates can be determined by the generator.
 	 *
-	 * The extra seed allows multiple Randoms to be returned for the same
-	 * position for use by populators and different stages of generation.
+	 * The extra seed allows multiple Randoms to be returned for the same position for use by populators and different stages of generation.
 	 *
 	 * @param world the World
 	 * @param x the x coordinate
@@ -110,11 +104,9 @@ public class WorldGeneratorUtils {
 	/**
 	 * Gets a pre-seeded random for a particular position.
 	 *
-	 * The meaning of the x, y and z coordinates can be determined by the
-	 * generator.
+	 * The meaning of the x, y and z coordinates can be determined by the generator.
 	 *
-	 * The extra seed allows multiple Randoms to be returned for the same
-	 * position for use by populators and different stages of generation.
+	 * The extra seed allows multiple Randoms to be returned for the same position for use by populators and different stages of generation.
 	 *
 	 * @param seed the original seed
 	 * @param x the x coordinate
@@ -132,16 +124,13 @@ public class WorldGeneratorUtils {
 	/**
 	 * Seeds an array of Randoms for a cuboid of positions.
 	 *
-	 * The meaning of the x, y and z coordinates can be determined by the
-	 * generator.
+	 * The meaning of the x, y and z coordinates can be determined by the generator.
 	 *
 	 * The indexes for the array are arranged as array[x][y][z].
 	 *
-	 * array[sizeX][sizeY][sizeZ] is Random corresponding to the the given
-	 * central position.
+	 * array[sizeX][sizeY][sizeZ] is Random corresponding to the the given central position.
 	 *
-	 * The array is a 3d array of size (2 * sizeX + 1, 2 * sizeY + 1, 2 * sizeZ
-	 * + 1)
+	 * The array is a 3d array of size (2 * sizeX + 1, 2 * sizeY + 1, 2 * sizeZ + 1)
 	 *
 	 * @param world the World containing the Chunk
 	 * @param x the x coordinate for the centre of the array
@@ -173,16 +162,13 @@ public class WorldGeneratorUtils {
 	/**
 	 * Gets an array of Randoms for a cuboid of positions.
 	 *
-	 * The meaning of the x, y and z coordinates can be determined by the
-	 * generator.
+	 * The meaning of the x, y and z coordinates can be determined by the generator.
 	 *
 	 * The indexes for the array are arranged as array[x][y][z].
 	 *
-	 * array[sizeX][sizeY][sizeZ] is Random corresponding to the the given
-	 * central position.
+	 * array[sizeX][sizeY][sizeZ] is Random corresponding to the the given central position.
 	 *
-	 * The array is a 3d array of size (2 * sizeX + 1, 2 * sizeY + 1, 2 * sizeZ
-	 * + 1)
+	 * The array is a 3d array of size (2 * sizeX + 1, 2 * sizeY + 1, 2 * sizeZ + 1)
 	 *
 	 * @param array The array of randoms to seed
 	 * @param world the World containing the Chunk
@@ -217,14 +203,12 @@ public class WorldGeneratorUtils {
 	 *
 	 * @param noiseGenerator The noise generator module
 	 * @param xSize The size of the 1D map
-	 * @param samplingRate The sampling rate to use. xSize % samplingRate must
-	 * return 0.
+	 * @param samplingRate The sampling rate to use. xSize % samplingRate must return 0.
 	 * @param x The x coord
 	 * @param y The y coord
 	 * @param z The z coord
-	 * @throws IllegalArgumentException if the noise generator is null, the
-	 * samplign rate is zero, or xSize % samplingRate doesn't return 0
 	 * @return The noise map
+	 * @throws IllegalArgumentException if the noise generator is null, the samplign rate is zero, or xSize % samplingRate doesn't return 0
 	 */
 	public static double[] fastNoise(Module noiseGenerator, int xSize, int samplingRate, int x, int y, int z) {
 		if (noiseGenerator == null) {
@@ -251,21 +235,17 @@ public class WorldGeneratorUtils {
 	}
 
 	/**
-	 * Generates a 2D noise map using reduced sampling and bilinear
-	 * interpolation.
+	 * Generates a 2D noise map using reduced sampling and bilinear interpolation.
 	 *
 	 * @param noiseGenerator The noise generator module
 	 * @param xSize The x size of the 2D map
 	 * @param zSize The z size of the 2D map
-	 * @param samplingRate The sampling rate to use. xSize % samplingRate and
-	 * zSize % samplingRate must return 0.
+	 * @param samplingRate The sampling rate to use. xSize % samplingRate and zSize % samplingRate must return 0.
 	 * @param x The x coord
 	 * @param y The y coord
 	 * @param z The z coord
-	 * @throws IllegalArgumentException if the noise generator is null, the
-	 * samplign rate is zero, or xSize % samplingRate or zSize % samplingRate
-	 * doesn't return 0
 	 * @return The noise map
+	 * @throws IllegalArgumentException if the noise generator is null, the samplign rate is zero, or xSize % samplingRate or zSize % samplingRate doesn't return 0
 	 */
 	public static double[][] fastNoise(Module noiseGenerator, int xSize, int zSize, int samplingRate, int x, int y, int z) {
 		if (noiseGenerator == null) {
@@ -302,25 +282,21 @@ public class WorldGeneratorUtils {
 	}
 
 	/**
-	 * Generates a 3D noise map using reduced sampling and trilinear
-	 * interpolation.
+	 * Generates a 3D noise map using reduced sampling and trilinear interpolation.
 	 *
 	 * @param noiseGenerator The noise generator module
 	 * @param xSize The x size of the 3D map
 	 * @param ySize The y size of the 3D map
 	 * @param zSize The z size of the 3D map
-	 * @param samplingRate The sampling rate to use. xSize % samplingRate, ySize
-	 * % samplingRate and zSize % samplingRate must return 0.
+	 * @param samplingRate The sampling rate to use. xSize % samplingRate, ySize % samplingRate and zSize % samplingRate must return 0.
 	 * @param x The x coord
 	 * @param y The y coord
 	 * @param z The z coord
-	 * @throws IllegalArgumentException if the noise generator is null, the
-	 * samplign rate is zero, or xSize % samplingRate, ySize % samplingRate or
-	 * zSize % samplingRate doesn't return 0
 	 * @return The noise map
+	 * @throws IllegalArgumentException if the noise generator is null, the samplign rate is zero, or xSize % samplingRate, ySize % samplingRate or zSize % samplingRate doesn't return 0
 	 */
 	public static double[][][] fastNoise(Module noiseGenerator, int xSize, int ySize, int zSize,
-			int samplingRate, int x, int y, int z) {
+										 int samplingRate, int x, int y, int z) {
 		if (noiseGenerator == null) {
 			throw new IllegalArgumentException("noiseGenerator cannot be null");
 		}

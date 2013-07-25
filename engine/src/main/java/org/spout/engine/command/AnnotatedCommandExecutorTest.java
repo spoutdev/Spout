@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,7 +33,7 @@ import org.spout.api.exception.ArgumentParseException;
 
 public class AnnotatedCommandExecutorTest {
 	public static final class RootExecutor {
-		@CommandDescription(aliases = "root", desc = "Root command")
+		@CommandDescription (aliases = "root", desc = "Root command")
 		public void root(CommandSource source, CommandArguments args) throws ArgumentParseException {
 			String argStr = args.popRemainingStrings("args");
 			source.sendMessage("Executed root command 'root " + argStr + "'.");
@@ -41,7 +41,7 @@ public class AnnotatedCommandExecutorTest {
 	}
 
 	public static final class ChildExecutor {
-		@CommandDescription(aliases = "child", desc = "Child command")
+		@CommandDescription (aliases = "child", desc = "Child command")
 		public void child(CommandSource source, CommandArguments args) throws ArgumentParseException {
 			args.assertCompletelyParsed();
 			source.sendMessage("Executed child command 'root " + args.getString("args") + "'.");

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -31,28 +31,23 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 
 /**
- * This class implements a Cuboid buffer wrapper.  Each sub-buffer must be exactly one
- * chunk in size.
+ * This class implements a Cuboid buffer wrapper.  Each sub-buffer must be exactly one chunk in size.
  */
 public class LocalRegionChunkHeightMapBufferWrapper extends ImmutableHeightMapBuffer {
-	
 	private static final int SINGLE = Region.BLOCKS.SIZE;
 	private static final int TRIPLE = SINGLE * 3;
-	
 	private final Region r;
 	private final LoadOption loadOpt;
-	
 	protected final int cTx;
 	protected final int cTz;
 	protected final int cSx;
 	protected final int cSz;
-	
 	private final ImmutableHeightMapBuffer[][] cache;
 
 	public LocalRegionChunkHeightMapBufferWrapper(Region r, LoadOption loadOpt) {
 		this(r.getBlockX() - SINGLE, r.getBlockZ() - SINGLE, TRIPLE, TRIPLE, r, loadOpt);
 	}
-	
+
 	private LocalRegionChunkHeightMapBufferWrapper(int bx, int bz, int sx, int sz, Region r, LoadOption loadOpt) {
 		super(bx, bz, sx, sz, (int[]) null);
 		this.cTx = (bx + sx) >> Chunk.BLOCKS.BITS;
@@ -66,16 +61,12 @@ public class LocalRegionChunkHeightMapBufferWrapper extends ImmutableHeightMapBu
 
 	/**
 	 * Gets the sub-buffer corresponding to the given block location.
-	 * 
-	 * @param x
-	 * @param z
-	 * @return
 	 */
 	private ImmutableHeightMapBuffer getHeightMapBuffer(int x, int z) {
 		int cx = (x - baseX) >> Chunk.BLOCKS.BITS;
 		int cz = (z - baseZ) >> Chunk.BLOCKS.BITS;
 		if (cx < 0 || cz < 0 || cx >= cSx || cz >= cSz) {
-			throw new IllegalArgumentException("Chunk Coordinate (" + cx + ", " + cz + ") is outside the buffer");	
+			throw new IllegalArgumentException("Chunk Coordinate (" + cx + ", " + cz + ") is outside the buffer");
 		}
 		ImmutableHeightMapBuffer o = cache[cx][cz];
 		if (o != null) {
@@ -88,7 +79,7 @@ public class LocalRegionChunkHeightMapBufferWrapper extends ImmutableHeightMapBu
 		cache[cx][cz] = o;
 		return o;
 	}
-	
+
 	/**
 	 * Clears the cache containing sub-buffers.
 	 */
@@ -106,10 +97,10 @@ public class LocalRegionChunkHeightMapBufferWrapper extends ImmutableHeightMapBu
 		}
 		int cx = (x - baseX - Region.BLOCKS.SIZE) >> Chunk.BLOCKS.BITS;
 		int cz = (z - baseZ - Region.BLOCKS.SIZE) >> Chunk.BLOCKS.BITS;
-		
+
 		return r.getLocalHeightMap(cx, cz, loadOpt);
 	}
-	
+
 	@Override
 	public int get(int x, int z) {
 		return getHeightMapBuffer(x, z).get(x, z);

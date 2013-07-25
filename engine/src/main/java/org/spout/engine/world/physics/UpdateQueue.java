@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,18 +26,17 @@
  */
 package org.spout.engine.world.physics;
 
+import java.util.ArrayList;
+
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TByteArrayList;
-
-import java.util.ArrayList;
+import gnu.trove.list.array.TIntArrayList;
 
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.map.TByteShortByteKeyedObjectHashMap;
 
 public class UpdateQueue {
-
 	private final TByteShortByteKeyedObjectHashMap<TIntList> map = new TByteShortByteKeyedObjectHashMap<TIntList>();
 	private final TByteArrayList xArray = new TByteArrayList();
 	private final TByteArrayList yArray = new TByteArrayList();
@@ -56,10 +55,10 @@ public class UpdateQueue {
 			while (i.hasNext()) {
 				int index = i.next();
 				if (
-						(xArray.get(index) & 0xFF) == (x & 0xFF) && 
-						(yArray.get(index) & 0xFF) == (y & 0xFF) && 
-						(zArray.get(index) & 0xFF) == (z & 0xFF) &&
-						materials.get(index) == oldMaterial
+						(xArray.get(index) & 0xFF) == (x & 0xFF) &&
+								(yArray.get(index) & 0xFF) == (y & 0xFF) &&
+								(zArray.get(index) & 0xFF) == (z & 0xFF) &&
+								materials.get(index) == oldMaterial
 						) {
 					return;
 				}
@@ -74,7 +73,7 @@ public class UpdateQueue {
 		int size = xArray.size();
 		if (size > maxSize) {
 			maxSize = size;
-		} 
+		}
 		list.add(size);
 		xArray.add((byte) x);
 		yArray.add((byte) y);
@@ -88,7 +87,7 @@ public class UpdateQueue {
 
 	/**
 	 * Gets the next x coordinate.  This method updates the internal array indexes and should only be called if hasNext returns true
-	 * 
+	 *
 	 * @return the next x coordinate
 	 */
 	public int getX() {
@@ -98,7 +97,7 @@ public class UpdateQueue {
 		y = yArray.removeAt(index) & 0xFF;
 		z = zArray.removeAt(index) & 0xFF;
 		oldMaterial = materials.remove(index);
-		
+
 		if (maxSize > 10 && index < (maxSize >> 1)) {
 			xArray.trimToSize();
 			yArray.trimToSize();
@@ -106,7 +105,7 @@ public class UpdateQueue {
 			materials.trimToSize();
 			maxSize = xArray.size();
 		}
-		
+
 		TIntList list = map.get(x, y & 0xFF, z);
 		if (list == null || !list.remove(index)) {
 			throw new IllegalStateException("Index was not in list, or list was null");
@@ -122,19 +121,19 @@ public class UpdateQueue {
 		}
 		return x;
 	}
-	
+
 	/**
 	 * Gets the y coordinate
-	 * 
+	 *
 	 * @return the y coordinate
 	 */
 	public int getY() {
 		return y;
 	}
-	
+
 	/**
 	 * Gets the z coordinate
-	 * 
+	 *
 	 * @return the z coordinate
 	 */
 	public int getZ() {
@@ -143,11 +142,10 @@ public class UpdateQueue {
 
 	/**
 	 * Gets the old material
-	 * 
+	 *
 	 * @return the old material
 	 */
 	public BlockMaterial getOldMaterial() {
 		return oldMaterial;
 	}
-
 }

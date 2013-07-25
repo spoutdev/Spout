@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -32,8 +32,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
-import org.spout.api.Platform;
 
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.material.BlockMaterial;
@@ -43,8 +43,6 @@ import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.sanitation.SafeCast;
-
-import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.world.SpoutColumn;
 import org.spout.engine.world.SpoutServerWorld;
@@ -60,9 +58,8 @@ import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
 public class ColumnFiles {
-	
 	public static final int COLUMN_VERSION = 2;
-	
+
 	public static void readColumn(InputStream in, SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks) {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Unable to read column in client mode");
@@ -101,7 +98,7 @@ public class ColumnFiles {
 			}
 
 			loadColumn(column, lowestY, highestY, topmostBlocks, map);
-			
+
 			if (converted) {
 				column.setDirty();
 			}
@@ -109,13 +106,13 @@ public class ColumnFiles {
 			Spout.getLogger().severe("Error reading column height-map for column" + column.getX() + ", " + column.getZ());
 		}
 	}
-	
+
 	private static void loadColumn(SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks, CompoundMap map) {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Unable to load column in client mode");
-		}	
+		}
 		int[] heights = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("heights")), null);
-				
+
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
 			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
 				column.getAtomicInteger(x, z).set(heights[NibblePairHashed.intKey(x, z)]);
@@ -131,7 +128,7 @@ public class ColumnFiles {
 		boolean warning = false;
 		byte[] validMaterial = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("valid_material")), null);
 		int[] topmostMaterial = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("topmost_material")), null);
-		
+
 		if (validMaterial == null || topmostMaterial == null) {
 			Spout.getLogger().severe("Topmost block arrays missing when reading column");
 			initColumn(column, lowestY, highestY, topmostBlocks);
@@ -167,12 +164,12 @@ public class ColumnFiles {
 
 		BiomeManager manager = null;
 		String biomeManagerClass = SafeCast.toString(NBTMapper.toTagValue(map.get("biome_manager")), null);
-		byte[] biomes = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("biomes")), null); 
-		
+		byte[] biomes = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("biomes")), null);
+
 		if (biomeManagerClass != null && biomes != null) {
 			//Attempt to create the biome manager class from the class name
 			try {
-				@SuppressWarnings("unchecked")
+				@SuppressWarnings ("unchecked")
 				Class<? extends BiomeManager> clazz = (Class<? extends BiomeManager>) Class.forName(biomeManagerClass);
 				Class<?>[] params = {int.class, int.class};
 				manager = clazz.getConstructor(params).newInstance(column.getX(), column.getZ());
@@ -211,19 +208,20 @@ public class ColumnFiles {
 			if (NBTStream != null) {
 				try {
 					NBTStream.close();
-				} catch (IOException ignore) { }
+				} catch (IOException ignore) {
+				}
 			}
 		}
 	}
-	
+
 	private static CompoundMap saveColumn(SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks) {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Unable to save column in client mode");
 		}
 		CompoundMap map = new CompoundMap();
-		
+
 		map.put(new ByteTag("version", (byte) COLUMN_VERSION));
-		
+
 		int[] heights = new int[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
 
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
@@ -232,15 +230,15 @@ public class ColumnFiles {
 				heights[key] = column.getAtomicInteger(x, z).get();
 			}
 		}
-		
+
 		map.put(new IntArrayTag("heights", heights));
 
 		map.put(new IntTag("lowest_y", lowestY.get()));
 		map.put(new IntTag("highest_y", highestY.get()));
-		
+
 		byte[] validMaterial = new byte[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
 		int[] topmostMaterial = new int[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
-		
+
 		StringToUniqueIntegerMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
 		StringToUniqueIntegerMap itemMap;
 		itemMap = ((SpoutServerWorld) column.getWorld()).getItemMap();
@@ -267,17 +265,12 @@ public class ColumnFiles {
 			map.put(new StringTag("biome_manager", manager.getClass().getName()));
 			map.put(new ByteArrayTag("biomes", manager.serialize()));
 		}
-		
-		return map;
 
+		return map;
 	}
-	
+
 	/**
-	 * Converts from version 1 to version 2<br>
-	 * <br>
-	 * Adds a highestY field
-	 * @param map
-	 * @return
+	 * Converts from version 1 to version 2<br> <br> Adds a highestY field
 	 */
 	private static CompoundMap convertV1V2(CompoundMap map) {
 		map.put(new IntTag("highest_y", Integer.MIN_VALUE));

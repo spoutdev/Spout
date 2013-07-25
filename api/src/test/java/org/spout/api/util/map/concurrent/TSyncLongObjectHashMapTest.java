@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,8 +26,6 @@
  */
 package org.spout.api.util.map.concurrent;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,9 +33,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class TSyncLongObjectHashMapTest {
 	private final static int LENGTH = 10000;
@@ -45,10 +44,8 @@ public class TSyncLongObjectHashMapTest {
 	private final static int TEST_COUNT = 2;
 	private final static int mask = 0x7F;
 	private final static int invMask = -1 - mask;
-
 	private final static boolean PRINT_AVERAGES = false;
 	private final static boolean PRINT_ALL_TESTS = false;
-
 	public final static long[] readBuffer = new long[LENGTH];
 	public final static long[] writeBuffer = new long[LENGTH];
 	public final static int[] writeData = new int[LENGTH];
@@ -67,7 +64,7 @@ public class TSyncLongObjectHashMapTest {
 		}
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings ("unused")
 	@Test
 	public void testMap() {
 		long trove = 0;
@@ -105,12 +102,11 @@ public class TSyncLongObjectHashMapTest {
 
 		if (PRINT_AVERAGES) {
 			System.out.println("--- Averages ---");
-			System.out.println("Trove: " + (trove / 1000000.0)/TEST_COUNT + "ms");
-			System.out.println("TroveRW: " + (troverw / 1000000.0)/TEST_COUNT + "ms");
-			System.out.println("Java: " + (java / 1000000.0)/TEST_COUNT + "ms");
-			System.out.println("Reference: " + (reference / 1000000.0)/TEST_COUNT + "ms");
+			System.out.println("Trove: " + (trove / 1000000.0) / TEST_COUNT + "ms");
+			System.out.println("TroveRW: " + (troverw / 1000000.0) / TEST_COUNT + "ms");
+			System.out.println("Java: " + (java / 1000000.0) / TEST_COUNT + "ms");
+			System.out.println("Reference: " + (reference / 1000000.0) / TEST_COUNT + "ms");
 		}
-
 	}
 
 	private static long runJoin(Thread[] threads, String name) {
@@ -128,19 +124,16 @@ public class TSyncLongObjectHashMapTest {
 		long time = System.nanoTime() - startTime;
 
 		if (PRINT_ALL_TESTS) {
-			System.out.println(name + ": " + (time/1000000.0) + "ms");
+			System.out.println(name + ": " + (time / 1000000.0) + "ms");
 		}
 		return time;
 	}
 
 	public static class TroveMap extends Thread {
 		public static TLongObjectMap<Integer> map;
-
 		public static AtomicInteger count = new AtomicInteger(LENGTH);
-
 		public int[] buffer = new int[LENGTH];
 		public Integer[] buffer2 = new Integer[LENGTH];
-
 		Random rand;
 
 		public TroveMap(long seed) {
@@ -171,12 +164,9 @@ public class TSyncLongObjectHashMapTest {
 
 	public static class TroveReadWriteMap extends Thread {
 		public static TSyncLongObjectHashMap<Integer> map;
-
 		public static AtomicInteger count = new AtomicInteger(LENGTH);
-
 		public int[] buffer = new int[LENGTH];
 		public Integer[] buffer2 = new Integer[LENGTH];
-
 		Random rand;
 
 		public TroveReadWriteMap(long seed) {
@@ -205,12 +195,9 @@ public class TSyncLongObjectHashMapTest {
 
 	public static class JavaMap extends Thread {
 		public static ConcurrentHashMap<Long, Integer> map;
-
 		public static AtomicInteger count = new AtomicInteger(LENGTH);
-
 		public int[] buffer = new int[LENGTH];
 		public Integer[] buffer2 = new Integer[LENGTH];
-
 		Random rand;
 
 		public JavaMap(long seed) {
@@ -240,10 +227,8 @@ public class TSyncLongObjectHashMapTest {
 
 	public static class ReferenceMap extends Thread {
 		public static AtomicInteger count = new AtomicInteger(LENGTH);
-
 		public int[] buffer = new int[LENGTH];
 		public Integer[] buffer2 = new Integer[LENGTH];
-
 		Random rand;
 
 		public ReferenceMap(long seed) {

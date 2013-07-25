@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -38,7 +38,6 @@ import org.spout.api.util.StringUtil;
  */
 public class IntVector3 extends IntVector2 {
 	private static final long serialVersionUID = 1L;
-
 	private int z;
 
 	public IntVector3(BlockFace face) {
@@ -56,7 +55,6 @@ public class IntVector3 extends IntVector2 {
 
 	/**
 	 * Sets the Z coordinate
-	 * @param z
 	 */
 	public void setZ(int z) {
 		this.z = z;
@@ -64,6 +62,7 @@ public class IntVector3 extends IntVector2 {
 
 	/**
 	 * Gets the Z coordinate
+	 *
 	 * @return The Z coordinate
 	 */
 	public int getZ() {
@@ -72,7 +71,6 @@ public class IntVector3 extends IntVector2 {
 
 	/**
 	 * Sets this vector equal to the given vector
-	 * @param other
 	 */
 	public void set(IntVector3 v) {
 		setX(v.getX());
@@ -96,7 +94,6 @@ public class IntVector3 extends IntVector2 {
 
 	/**
 	 * Adds the given vector to this vector
-	 * @param other
 	 */
 	public void add(IntVector3 other) {
 		super.add(other);
@@ -111,7 +108,7 @@ public class IntVector3 extends IntVector2 {
 	public IntVector3 copy() {
 		return new IntVector3(getX(), getY(), getZ());
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {

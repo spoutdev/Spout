@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -36,11 +36,10 @@ import org.spout.nbt.Tag;
 import org.spout.nbt.util.NBTMapper;
 
 public class QuaternionTag extends ListTag<FloatTag> {
-
 	public QuaternionTag(String name, Quaternion q) {
 		super(name, FloatTag.class, quaternionToList(q));
 	}
-	
+
 	private static List<FloatTag> quaternionToList(Quaternion q) {
 		List<FloatTag> list = new ArrayList<FloatTag>(4);
 		list.add(new FloatTag("", q.getX()));
@@ -49,8 +48,8 @@ public class QuaternionTag extends ListTag<FloatTag> {
 		list.add(new FloatTag("", q.getW()));
 		return list;
 	}
-	
-	@SuppressWarnings("unchecked")
+
+	@SuppressWarnings ("unchecked")
 	public static Quaternion getValue(Tag<?> tag) {
 		try {
 			return getValue((ListTag<FloatTag>) tag);
@@ -58,14 +57,14 @@ public class QuaternionTag extends ListTag<FloatTag> {
 			return null;
 		}
 	}
-	
+
 	public static Quaternion getValue(ListTag<FloatTag> list) {
 		if (list == null) {
 			return null;
 		}
 		return getValue(list.getValue());
 	}
-	
+
 	public static Quaternion getValue(List<FloatTag> list) {
 		if (list == null || list.size() != 4) {
 			return null;
@@ -79,5 +78,4 @@ public class QuaternionTag extends ListTag<FloatTag> {
 		}
 		return new Quaternion(x, y, z, w, true);
 	}
-
 }

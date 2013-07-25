@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,7 +32,6 @@ import java.io.Serializable;
 import org.spout.api.map.DefaultedMap;
 
 public interface SerializableMap extends DefaultedMap<Serializable>, Serializable {
-
 	/**
 	 * Serializes the information in this map into an array of bytes.
 	 *
@@ -43,20 +42,19 @@ public interface SerializableMap extends DefaultedMap<Serializable>, Serializabl
 	public byte[] serialize();
 
 	/**
-	 * Deserializes the array of information into the contents of the map.
-	 * This will wipe all previous data in the map.
+	 * Deserializes the array of information into the contents of the map. This will wipe all previous data in the map.
 	 *
-	 * @throws IOException if an error in deserialization occurred
 	 * @param data to deserialize
+	 * @throws IOException if an error in deserialization occurred
 	 */
 	public void deserialize(byte[] data) throws IOException;
 
 	/**
 	 * Deserializes the array of information into the contents of the map.
 	 *
-	 * @throws IOException if an error in deserialization occurred
 	 * @param data to deserialize
 	 * @param wipe true if the previous data in the map should be wiped
+	 * @throws IOException if an error in deserialization occurred
 	 */
 	public void deserialize(byte[] data, boolean wipe) throws IOException;
 
@@ -67,13 +65,11 @@ public interface SerializableMap extends DefaultedMap<Serializable>, Serializabl
 	 */
 	public SerializableMap deepCopy();
 
-	 /**
-	  * Returns the value to which the specified key is mapped,
-	  * or {@code null} if this map contains no mapping for the key,
-	  * or the value is not a type or subtype of the given class.
-
-	  * @param key the key whose associated value is to be returned
-	  * @return the value to which the specified key is mapped, or {@code null} if this map contains no mapping for the key
-	  */
+	/**
+	 * Returns the value to which the specified key is mapped, or {@code null} if this map contains no mapping for the key, or the value is not a type or subtype of the given class.
+	 *
+	 * @param key the key whose associated value is to be returned
+	 * @return the value to which the specified key is mapped, or {@code null} if this map contains no mapping for the key
+	 */
 	public <T> T get(String key, Class<T> clazz);
 }

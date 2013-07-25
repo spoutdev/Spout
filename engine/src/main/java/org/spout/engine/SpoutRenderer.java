@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -30,7 +30,6 @@ import java.awt.Canvas;
 import java.util.HashMap;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
@@ -44,6 +43,7 @@ import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.Util;
 
+import org.spout.api.Spout;
 import org.spout.api.component.world.SkydomeComponent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.gui.FullScreen;
@@ -58,10 +58,7 @@ import org.spout.api.math.Vector2;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.shader.Shader;
-import org.spout.api.Spout;
-
 import org.spout.engine.batcher.SpriteBatch;
-import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.filesystem.resource.ClientRenderMaterial;
 import org.spout.engine.filesystem.resource.ClientRenderTexture;
 import org.spout.engine.gui.DebugScreen;
@@ -78,7 +75,6 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
 public class SpoutRenderer {
-
 	private static final TIntObjectHashMap<String> GL_TYPE_NAMES = new TIntObjectHashMap<>();
 	private final SpoutClient client;
 	private DebugScreen debugScreen;
@@ -92,12 +88,10 @@ public class SpoutRenderer {
 	private WorldRenderer worldRenderer;
 	private boolean wireframe = false;
 	private Matrix ident = MatrixMath.createIdentity();
-
 	// Screen texture
 	private SpriteBatch screenBatcher;
 	private ClientRenderTexture t;
 	private ClientRenderMaterial mat;
-
 	// Reflected world FBO
 	// This will need the stencil buffer
 	private boolean useReflexion = false; // Set this to true to experiment
@@ -119,7 +113,7 @@ public class SpoutRenderer {
 		this.entityRenderer = new EntityRenderer();
 
 		this.ccoverride = ccoverride;
-		
+
 		worldRenderer = new WorldRenderer();
 	}
 
@@ -199,6 +193,7 @@ public class SpoutRenderer {
 	public void updateRender(long limit) {
 		worldRenderer.update(limit);
 	}
+
 	long guiTime, worldTime, entityTime;
 
 	public void render(float dt) {
@@ -214,7 +209,6 @@ public class SpoutRenderer {
 
 			if (camera != null) {
 				camera.updateReflectedView();
-
 
 				if (skydome != null && skydome.getModel() != null) {
 					skydome.getModel().getRenderMaterial().getShader().setUniform("View", camera.getRotation());
@@ -305,7 +299,7 @@ public class SpoutRenderer {
 			debugScreen.spoutUpdate(id++, "Buffer: " + worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch);
 			debugScreen.spoutUpdate(id++, "Mesh batch queue size: " + ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer().getBatchWaiting());
 		}
-		
+
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
 				((SpoutWidget) widget).render();

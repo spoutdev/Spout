@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -29,23 +29,19 @@ package org.spout.api.util.list;
 import org.spout.api.math.IntVector3;
 
 public class IntVector3FIFO {
-	
 	protected int[] array;
 	protected int write;
 	protected int read;
-	
+
 	public IntVector3FIFO(int size) {
 		this.array = new int[size * 3];
 		this.read = 0;
 		this.write = 0;
 	}
-	
+
 	/**
 	 * Writes the 3 coordinates to the FIFO
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
+	 *
 	 * @return true if the FIFO is full
 	 */
 	public boolean write(int x, int y, int z) {
@@ -59,30 +55,26 @@ public class IntVector3FIFO {
 		}
 		return write == maxWrite;
 	}
-	
+
 	/**
 	 * Gets if the FIFO is full
-	 * 
+	 *
 	 * @return true if the fifo is full
 	 */
 	public boolean isFull() {
 		int maxWrite = read + array.length;
 		return write == maxWrite;
 	}
-	
+
 	/**
 	 * Writes the integer vector to the FIFO
-	 * 
-	 * @param v
 	 */
 	public void write(IntVector3 v) {
 		write(v.getX(), v.getY(), v.getZ());
 	}
-	
+
 	/**
 	 * Reads a triple integer from the FIFO
-	 * 
-	 * @return
 	 */
 	public IntVector3 read() {
 		if (write > read) {
@@ -95,7 +87,7 @@ public class IntVector3FIFO {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Clears the FIFO
 	 */
@@ -103,5 +95,4 @@ public class IntVector3FIFO {
 		read = 0;
 		write = 0;
 	}
-
 }

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -38,42 +38,34 @@ public class Parameter<T> {
 	 * The id which represents a byte parameter.
 	 */
 	public static final int TYPE_BYTE = 0;
-
 	/**
 	 * The id which represents a short parameter.
 	 */
 	public static final int TYPE_SHORT = 1;
-
 	/**
 	 * The id which represents an integer parameter.
 	 */
 	public static final int TYPE_INT = 2;
-
 	/**
 	 * The id which represents a float parameter.
 	 */
 	public static final int TYPE_FLOAT = 3;
-
 	/**
 	 * The id which represents a string parameter.
 	 */
 	public static final int TYPE_STRING = 4;
-
 	/**
 	 * The id which represents an item parameter.
 	 */
 	public static final int TYPE_ITEM = 5;
-
 	/**
 	 * The type of parameter.
 	 */
 	private final int type;
-
 	/**
 	 * The index.
 	 */
 	private final int index;
-
 	/**
 	 * The value.
 	 */
@@ -123,7 +115,7 @@ public class Parameter<T> {
 	public String toString() {
 		return "Parameter{type=" + type + ",index=" + index + ",value=" + value + "}";
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(19, 91).append(type).append(index).append(value).toHashCode();

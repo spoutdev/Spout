@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -92,11 +92,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	public SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance) {
-		this(engine, name, transform, viewDistance, null, true, (byte[])null, (Class<? extends Component>[]) null);
+		this(engine, name, transform, viewDistance, null, true, (byte[]) null, (Class<? extends Component>[]) null);
 	}
 
 	protected SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
-		this(engine, name, transform, viewDistance, uid, load, (byte[])null, components);
+		this(engine, name, transform, viewDistance, uid, load, (byte[]) null, components);
 		this.getData().putAll(dataMap);
 	}
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,23 +33,21 @@ import org.jboss.netty.channel.socket.ServerSocketChannel;
 import org.jboss.netty.channel.socket.SocketChannelConfig;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
-public class SpoutNioServerSocketChannel extends NioServerSocketChannelFactory{
-
+public class SpoutNioServerSocketChannel extends NioServerSocketChannelFactory {
 	public SpoutNioServerSocketChannel(Executor boss, Executor worker) {
 		super(boss, worker);
 	}
 
 	@Override
-	 public ServerSocketChannel newChannel(ChannelPipeline pipeline) {
+	public ServerSocketChannel newChannel(ChannelPipeline pipeline) {
 		ServerSocketChannel channel = super.newChannel(pipeline);
 		channel.getConfig().setPerformancePreferences(0, 2, 1);
 		if (channel.getConfig() instanceof SocketChannelConfig) {
-			((SocketChannelConfig)channel.getConfig()).setTrafficClass(24);
-			((SocketChannelConfig)channel.getConfig()).setTcpNoDelay(true);
+			((SocketChannelConfig) channel.getConfig()).setTrafficClass(24);
+			((SocketChannelConfig) channel.getConfig()).setTcpNoDelay(true);
 		} else {
 			//TODO: fix
 		}
 		return channel;
-    }
-
+	}
 }

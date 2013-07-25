@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,24 +33,22 @@ import org.spout.api.tickable.BasicTickable;
 
 /**
  * Defines a common implementation for a SignalInterface. If you need to use this as a delegate because your class already extends something else, use SignalObjectDelegate.
- *
  */
 public class SignalObject extends BasicTickable implements SignalInterface {
-	
 	private HashMap<String, Signal> signals = new HashMap<String, Signal>();
-	
+
 	protected void registerSignal(Signal signal) {
 		signals.put(signal.getName(), signal);
 	}
-	
-	protected void emit(String signal, Object ...arguments) {
+
+	protected void emit(String signal, Object... arguments) {
 		Signal signalO = signals.get(signal);
 		if (signalO != null) {
 			signalO.emit(this, arguments);
 		}
 	}
-	
-	protected void emit(Signal signal, Object ...arguments) {
+
+	protected void emit(Signal signal, Object... arguments) {
 		signal.emit(this, arguments);
 	}
 
@@ -88,7 +86,7 @@ public class SignalObject extends BasicTickable implements SignalInterface {
 
 	@Override
 	public void unsubscribe(Object receiver) {
-		for (Signal signal:signals.values()) {
+		for (Signal signal : signals.values()) {
 			signal.unsubscribe(receiver);
 		}
 	}

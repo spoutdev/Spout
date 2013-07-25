@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -27,9 +27,11 @@
 package org.spout.engine.protocol.builtin.message;
 
 import java.util.UUID;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.math.Vector3;
 import org.spout.api.util.SpoutToStringStyle;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
@@ -39,7 +41,7 @@ public class CuboidBlockUpdateMessage extends SpoutMessage {
 	// TODO: protocol - why do we need a blockLight AND skyLight?
 	private final byte[] blockLight, skyLight;
 	private CuboidBlockMaterialBuffer cuboid;
-	
+
 	public CuboidBlockUpdateMessage(UUID world, CuboidBlockMaterialBuffer cuboid, byte[] blockLight, byte[] skyLight) {
 		this.world = world;
 		this.cuboid = cuboid;

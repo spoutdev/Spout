@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -30,6 +30,7 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+
 import org.spout.api.math.Matrix;
 import org.spout.engine.renderer.shader.variables.Mat4ShaderVariable;
 
@@ -37,7 +38,7 @@ public class BasicShader extends ClientShader {
 	FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
 
 	public BasicShader() {
-	 
+
 	}
 
 	@Override
@@ -55,14 +56,14 @@ public class BasicShader extends ClientShader {
 			} else {
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 			}
-			
+
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			matrixBuffer.clear();
 			matrixBuffer.put(getProjectionMatrix().toArray());
 			matrixBuffer.flip();
 
 			GL11.glLoadMatrix(matrixBuffer);
-			
+
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 			matrixBuffer.clear();
 			matrixBuffer.put(getModelViewMatrix().multiply(getViewMatrix()).toArray());
@@ -73,7 +74,7 @@ public class BasicShader extends ClientShader {
 			super.assign();
 		}
 	}
-	
+
 	public void setModelViewMatrix(Matrix mat) {
 		setUniform("Model", mat);
 	}

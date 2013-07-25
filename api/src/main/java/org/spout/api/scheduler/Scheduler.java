@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,15 +32,13 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface Scheduler extends TaskManager {
-
 	/**
-	 * Gets the snapshot lock. This lock can be used by async threads to
-	 * readlock stable snapshot data.
+	 * Gets the snapshot lock. This lock can be used by async threads to readlock stable snapshot data.
 	 *
 	 * @return the snapshot lock
 	 */
 	public SnapshotLock getSnapshotLock();
-	
+
 	/**
 	 * Gets the amount of time since the beginning of the current tick.
 	 *
@@ -56,32 +54,23 @@ public interface Scheduler extends TaskManager {
 	 */
 	@Threadsafe
 	public long getRemainingTickTime();
-	
+
 	/**
-	 * Determines if the server is under heavy load.<br>
-	 * <br>
-	 * The server is considered under heavy load if the previous tick went over time, or if the current tick has gone over time.
+	 * Determines if the server is under heavy load.<br> <br> The server is considered under heavy load if the previous tick went over time, or if the current tick has gone over time.
 	 *
 	 * @return true if the server is under heavy load
 	 */
 	@Threadsafe
 	public boolean isServerOverloaded();
-	
+
 	/**
 	 * Runs a Runnable during a safe moment in the tick.  This method locks the snapshot lock while running the task.
-	 * 
-	 * @param plugin
-	 * @param task
 	 */
 	@Threadsafe
 	public void safeRun(final Plugin plugin, final Runnable task);
-	
+
 	/**
 	 * Calls a Callable during a safe moment in the tick.  This method locks the snapshot lock while running the task.
-	 * 
-	 * @param plugin
-	 * @param task
-	 * @return
 	 */
 	@Threadsafe
 	public <T> T safeCall(final Plugin plugin, final Callable<T> task);

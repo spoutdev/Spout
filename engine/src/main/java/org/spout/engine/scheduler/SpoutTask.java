@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -87,35 +87,30 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * A flag indicating if the task is actually executing
 	 */
 	private final AtomicBoolean executing;
-	
 	/**
 	 * Indicates if the task is being deferred and when it started
 	 */
 	private long deferBegin = -1;
-
 	/**
 	 * The manager associated with this task
 	 */
 	private final TaskManager manager;
-	
 	/**
 	 * The scheduler for the engine
 	 */
 	private final Scheduler scheduler;
-
 	/**
 	 * Indicates that the task is long lived
 	 */
 	private final boolean longLife;
-	
 	/**
 	 * Info about sub-tasks
 	 */
 	private ParallelTaskInfo parallelInfo;
 
 	/**
-	 * Creates a new task with the specified number of ticks between consecutive
-	 * calls to {@link #execute()}.
+	 * Creates a new task with the specified number of ticks between consecutive calls to {@link #execute()}.
+	 *
 	 * @param ticks The number of ticks.
 	 */
 	public SpoutTask(TaskManager manager, Scheduler scheduler, Object owner, Runnable task, boolean sync, long delay, long period, TaskPriority priority, boolean longLife) {
@@ -366,9 +361,11 @@ public class SpoutTask implements Task, LongPrioritized {
 		return nextCallTime.get();
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings ("unused")
 	private static enum QueueState {
-		QUEUED, UNQUEUED, DEAD;
+		QUEUED,
+		UNQUEUED,
+		DEAD;
 
 		public boolean isDead() {
 			return this == DEAD;

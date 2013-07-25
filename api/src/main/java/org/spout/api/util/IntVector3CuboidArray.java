@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,8 +30,7 @@ import java.util.Iterator;
 
 import org.spout.api.math.IntVector3;
 
-public class IntVector3CuboidArray extends IntVector3 implements Iterable<IntVector3>, Iterator<IntVector3>{
-	
+public class IntVector3CuboidArray extends IntVector3 implements Iterable<IntVector3>, Iterator<IntVector3> {
 	private final int[] bx;
 	private final int[] by;
 	private final int[] bz;
@@ -43,7 +42,7 @@ public class IntVector3CuboidArray extends IntVector3 implements Iterable<IntVec
 	private int x;
 	private int y;
 	private int z;
-	
+
 	public IntVector3CuboidArray(int[] bx, int[] by, int[] bz, int[] ty, int length, boolean inclusive) {
 		this(bx, by, bz, new int[length], ty, new int[length], length);
 		for (int i = 0; i < length; i++) {
@@ -59,7 +58,7 @@ public class IntVector3CuboidArray extends IntVector3 implements Iterable<IntVec
 			}
 		}
 	}
-	
+
 	public IntVector3CuboidArray(int[] bx, int[] by, int[] bz, int sx, int sy, int sz, int length) {
 		this(bx, by, bz, new int[length], new int[length], new int[length], length);
 		for (int i = 0; i < bx.length; i++) {
@@ -68,7 +67,7 @@ public class IntVector3CuboidArray extends IntVector3 implements Iterable<IntVec
 			this.tz[i] = bz[i] + sz;
 		}
 	}
-	
+
 	public IntVector3CuboidArray(int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int length) {
 		super(0, 0, 0);
 		this.bx = bx;
@@ -104,12 +103,12 @@ public class IntVector3CuboidArray extends IntVector3 implements Iterable<IntVec
 					if (pos < length) {
 						x = bx[pos];
 						y = by[pos];
-						z = bz[pos]; 
+						z = bz[pos];
 					}
 				}
 			}
 		}
-		
+
 		return this;
 	}
 
@@ -128,5 +127,4 @@ public class IntVector3CuboidArray extends IntVector3 implements Iterable<IntVec
 		}
 		return this;
 	}
-
 }

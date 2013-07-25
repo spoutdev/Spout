@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -27,9 +27,9 @@
 package org.spout.api.geo.discrete;
 
 import java.io.Serializable;
-import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.geo.World;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
@@ -40,14 +40,14 @@ import org.spout.api.util.StringUtil;
 import org.spout.api.util.concurrent.SpinLock;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
-@ThreadSafe
+@Threadsafe
 public final class Transform implements Serializable {
 	private static final long serialVersionUID = 2L;
-
 	private final transient SpinLock lock = new SpinLock();
-	private Point position; 
+	private Point position;
 	private Quaternion rotation;
 	private Vector3 scale;
+
 	public Transform() {
 		this(Point.invalid, Quaternion.IDENTITY, Vector3.ONE);
 	}
@@ -165,8 +165,7 @@ public final class Transform implements Serializable {
 	}
 
 	/**
-	 * Atomically sets the value of this transform to the value of another
-	 * transform
+	 * Atomically sets the value of this transform to the value of another transform
 	 *
 	 * @param transform the other transform
 	 * @return this transform
@@ -210,9 +209,6 @@ public final class Transform implements Serializable {
 	/**
 	 * Atomically sets this point to the given components
 	 *
-	 * @param p
-	 * @param r
-	 * @param s
 	 * @return this transform
 	 */
 	@Threadsafe
@@ -249,7 +245,7 @@ public final class Transform implements Serializable {
 
 	/**
 	 * Gets a String representation of this transform
-	 * 
+	 *
 	 * Note: unsafe, could return torn values
 	 *
 	 * @return the string
@@ -287,9 +283,8 @@ public final class Transform implements Serializable {
 
 	/**
 	 * Returns the 4x4 matrix that represents this transform object
-	 * @return
 	 */
-	public Matrix toMatrix(){
+	public Matrix toMatrix() {
 		Matrix translate = MatrixMath.createTranslated(getPosition());
 		Matrix rotate = MatrixMath.createRotated(getRotation());
 		Matrix scale = MatrixMath.createScaled(getScale());
@@ -298,7 +293,6 @@ public final class Transform implements Serializable {
 
 	/**
 	 * Returns a unit vector that points in the forward direction of this transform
-	 * @return
 	 */
 	public Vector3 forwardVector() {
 		return VectorMath.transform(Vector3.FORWARD, getRotation());
@@ -313,18 +307,15 @@ public final class Transform implements Serializable {
 
 	/**
 	 * Returns a unit vector that points up in relation to this transform
-	 * @return
 	 */
 	public Vector3 upVector() {
 		return VectorMath.transform(Vector3.UP, getRotation());
 	}
 
 	/**
-	 * Returns if this Transform is "empty"
-	 * <p>
-	 * Empty is defined by Position, {@link Point}, of the transform equaling {@link Point#invalid},
-	 * Rotation, {@link Quaternion}, of the transform equaling {@link Quaternion#IDENTITY}, and
-	 * Scale, {@link Vector3}, equaling {@link Vector3#ONE}.
+	 * Returns if this Transform is "empty" <p> Empty is defined by Position, {@link Point}, of the transform equaling {@link Point#invalid}, Rotation, {@link Quaternion}, of the transform equaling
+	 * {@link Quaternion#IDENTITY}, and Scale, {@link Vector3}, equaling {@link Vector3#ONE}.
+	 *
 	 * @return True if empty, false if not
 	 */
 	public boolean isEmpty() {

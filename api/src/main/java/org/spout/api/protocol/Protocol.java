@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -37,17 +37,16 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.netty.buffer.ChannelBuffer;
+
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.exception.UnknownPacketException;
 import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.SyncedStringMap;
 
 public abstract class Protocol {
 	private static final ConcurrentHashMap<String, Protocol> map = new ConcurrentHashMap<String, Protocol>();
-
 	private final SyncedStringMap dynamicPacketLookup;
 	private final CodecLookupService codecLookup;
 	private final HandlerLookupService handlerLookup;
@@ -90,8 +89,7 @@ public abstract class Protocol {
 	}
 
 	/**
-	 * The default port is the port used when autogenerating default bindings for this
-	 * protocol and in the client when no port is given.
+	 * The default port is the port used when autogenerating default bindings for this protocol and in the client when no port is given.
 	 *
 	 * @return The default port
 	 */
@@ -141,8 +139,8 @@ public abstract class Protocol {
 	}
 
 	/**
-	 * Read a packet header from the buffer. If a codec is not available and packet length is known, skip ahead in the buffer and return null.
-	 * If packet length is not known, throw a {@link org.spout.api.exception.UnknownPacketException}
+	 * Read a packet header from the buffer. If a codec is not available and packet length is known, skip ahead in the buffer and return null. If packet length is not known, throw a {@link
+	 * org.spout.api.exception.UnknownPacketException}
 	 *
 	 * @param buf The buffer to read from
 	 * @return The correct codec
@@ -184,18 +182,16 @@ public abstract class Protocol {
 	public abstract Message getIntroductionMessage(String playerName, InetSocketAddress addr);
 
 	/**
-	 * Set up the initial data for the given session.
-	 * This method is called in between {@link org.spout.api.event.player.PlayerLoginEvent}
-	 * and {@link org.spout.api.event.player.PlayerJoinEvent}. Game plugins should have set
+	 * Set up the initial data for the given session. This method is called in between {@link org.spout.api.event.player.PlayerLoginEvent} and {@link org.spout.api.event.player.PlayerJoinEvent}. Game
+	 * plugins should have set
 	 *
 	 * @param session The session to set data for
 	 */
 	public abstract void initializeServerSession(ServerSession session);
 
 	/**
-	 * Set up the initial data for the given session.
-	 * This method is called in between {@link org.spout.api.event.player.PlayerLoginEvent}
-	 * and {@link org.spout.api.event.player.PlayerJoinEvent}. Game plugins should have set
+	 * Set up the initial data for the given session. This method is called in between {@link org.spout.api.event.player.PlayerLoginEvent} and {@link org.spout.api.event.player.PlayerJoinEvent}. Game
+	 * plugins should have set
 	 *
 	 * @param session The session to set data for
 	 */
@@ -231,8 +227,7 @@ public abstract class Protocol {
 	}
 
 	/**
-	 * Returns all protocols currently registered.
-	 * The returned collection is unmodifiable.
+	 * Returns all protocols currently registered. The returned collection is unmodifiable.
 	 *
 	 * @return All registered protocols
 	 */

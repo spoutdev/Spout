@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -25,6 +25,15 @@
  * the MIT license.
  */
 package org.spout.api.permissions;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 
 import org.spout.api.Engine;
 import org.spout.api.event.EventHandler;
@@ -39,25 +48,12 @@ import org.spout.cereal.config.ConfigurationHolder;
 import org.spout.cereal.config.ConfigurationHolderConfiguration;
 import org.spout.cereal.config.yaml.YamlConfiguration;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-
 /**
-* Handle registering default permissions. Permissions registered here will be applied
-* to permissions events if no other plugin has changed the values.
-* Wildcards will be checked.
-*/
-
+ * Handle registering default permissions. Permissions registered here will be applied to permissions events if no other plugin has changed the values. Wildcards will be checked.
+ */
 public class DefaultPermissions extends ConfigurationHolderConfiguration implements Listener {
 	private final ConfigurationHolder ENABLED = new ConfigurationHolder(true, "enabled");
 	private final ConfigurationHolder DEFAULTS = new ConfigurationHolder(new ArrayList<>(Arrays.asList("spout.*")), "defaults");
-
 	private final Engine engine;
 	private final YamlConfiguration config;
 	private final Set<String> defaultPermissions = new HashSet<String>();
@@ -96,7 +92,7 @@ public class DefaultPermissions extends ConfigurationHolderConfiguration impleme
 		defaultPermissions.addAll(DEFAULTS.getStringList());
 	}
 
-	@EventHandler(order = Order.LATEST)
+	@EventHandler (order = Order.LATEST)
 	protected void onPermissionNode(PermissionNodeEvent event) {
 		if (!ENABLED.getBoolean()) {
 			return;
@@ -111,7 +107,7 @@ public class DefaultPermissions extends ConfigurationHolderConfiguration impleme
 		}
 	}
 
-	@EventHandler(order = Order.LATEST)
+	@EventHandler (order = Order.LATEST)
 	protected void onGetAllWithNode(PermissionGetAllWithNodeEvent event) {
 		if (!ENABLED.getBoolean()) {
 			return;
@@ -142,8 +138,7 @@ public class DefaultPermissions extends ConfigurationHolderConfiguration impleme
 	}
 
 	/**
-	 * Get the current default permissions. The returned collection will be unmodifiable.
-	 * If DefaultPermissions is not enabled, the returned set will be empty.
+	 * Get the current default permissions. The returned collection will be unmodifiable. If DefaultPermissions is not enabled, the returned set will be empty.
 	 *
 	 * @return The current default permissions
 	 */
@@ -157,10 +152,8 @@ public class DefaultPermissions extends ConfigurationHolderConfiguration impleme
 	}
 
 	/**
-	 * Remove a permission from the set of default permissions.
-	 * If the permission is not a default permission, nothing happens.
-	 * This will remove default permissions from the user-defined list of permissions
-	 * if they are not in the plugin-defined list.
+	 * Remove a permission from the set of default permissions. If the permission is not a default permission, nothing happens. This will remove default permissions from the user-defined list of
+	 * permissions if they are not in the plugin-defined list.
 	 *
 	 * @param node The node to remove
 	 */
@@ -171,7 +164,8 @@ public class DefaultPermissions extends ConfigurationHolderConfiguration impleme
 				DEFAULTS.getList().remove(node);
 				try {
 					save();
-				} catch (ConfigurationException ignore) {}
+				} catch (ConfigurationException ignore) {
+				}
 			}
 		}
 	}

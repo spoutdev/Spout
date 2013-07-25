@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -31,13 +31,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.spout.api.Platform;
 
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
-
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
@@ -78,6 +77,7 @@ public class EntityManager {
 
 	/**
 	 * Gets all entities.
+	 *
 	 * @return A collection of entities.
 	 */
 	public Collection<SpoutEntity> getAll() {
@@ -86,6 +86,7 @@ public class EntityManager {
 
 	/**
 	 * Gets all the entities that are in a live state (not the snapshot).
+	 *
 	 * @return A collection of entities
 	 */
 	public Collection<SpoutEntity> getAllLive() {
@@ -94,6 +95,7 @@ public class EntityManager {
 
 	/**
 	 * Gets all the players currently in the engine.
+	 *
 	 * @return The list of players.
 	 */
 	public List<Player> getPlayers() {
@@ -102,6 +104,7 @@ public class EntityManager {
 
 	/**
 	 * Gets an entity by its id.
+	 *
 	 * @param id The id.
 	 * @return The entity, or {@code null} if it could not be found.
 	 */
@@ -111,6 +114,7 @@ public class EntityManager {
 
 	/**
 	 * Adds an entity to the manager.
+	 *
 	 * @param entity The entity
 	 */
 	public void addEntity(SpoutEntity entity) {
@@ -142,6 +146,7 @@ public class EntityManager {
 
 	/**
 	 * Removes an entity from the manager.
+	 *
 	 * @param entity The entity
 	 */
 	public void removeEntity(SpoutEntity entity) {
@@ -184,6 +189,7 @@ public class EntityManager {
 
 	/**
 	 * The region this entity manager oversees
+	 *
 	 * @return region
 	 */
 	public SpoutRegion getRegion() {

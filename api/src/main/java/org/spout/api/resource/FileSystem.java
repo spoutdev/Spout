@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -56,8 +56,7 @@ public interface FileSystem {
 	public Set<ResourceLoader> getLoaders();
 
 	/**
-	 * Returns the loader with the specified scheme. There can only ever be one
-	 * loader per scheme in the FileSystem.
+	 * Returns the loader with the specified scheme. There can only ever be one loader per scheme in the FileSystem.
 	 *
 	 * @param scheme to get
 	 * @return loader with specified scheme
@@ -89,8 +88,7 @@ public interface FileSystem {
 	public InputStream getResourceStream(String uri);
 
 	/**
-	 * Adds the resource at the specified location to the system's resource
-	 * cache.
+	 * Adds the resource at the specified location to the system's resource cache.
 	 *
 	 * @param uri to load resource at
 	 * @throws LoaderNotFoundException if there is no loader for the specified scheme
@@ -100,8 +98,7 @@ public interface FileSystem {
 	public void loadResource(URI uri) throws LoaderNotFoundException, ResourceNotFoundException, IOException;
 
 	/**
-	 * Adds the resource at the specified location to the system's resource
-	 * cache.
+	 * Adds the resource at the specified location to the system's resource cache.
 	 *
 	 * @param uri to load resource at
 	 * @throws LoaderNotFoundException if there is no loader for the specified scheme
@@ -111,14 +108,9 @@ public interface FileSystem {
 	public void loadResource(String uri) throws LoaderNotFoundException, ResourceNotFoundException, IOException;
 
 	/**
-	 * Returns the resource at the specified path with an inferred type. If
-	 * this resource is not loaded when this is called, it will be
-	 * automatically loaded and cached before returning the resource. This call
-	 * assumes that the inferred return type is actually the correct type of
-	 * the resource loader's return type. If the resource is not found in the
-	 * specified path, this call will then attempt to load the fallback
-	 * resource specified in the {@link ResourceLoader} of this scheme; if that
-	 * is null, the returned resource will be null.
+	 * Returns the resource at the specified path with an inferred type. If this resource is not loaded when this is called, it will be automatically loaded and cached before returning the resource. This
+	 * call assumes that the inferred return type is actually the correct type of the resource loader's return type. If the resource is not found in the specified path, this call will then attempt to
+	 * load the fallback resource specified in the {@link ResourceLoader} of this scheme; if that is null, the returned resource will be null.
 	 *
 	 * @param uri to get resource from
 	 * @param <R> inferred type of resource
@@ -127,14 +119,9 @@ public interface FileSystem {
 	public <R> R getResource(URI uri);
 
 	/**
-	 * Returns the resource at the specified path with an inferred type. If
-	 * this resource is not loaded when this is called, it will be
-	 * automatically loaded and cached before returning the resource. This call
-	 * assumes that the inferred return type is actually the correct type of
-	 * the resource loader's return type. If the resource is not found in the
-	 * specified path, this call will then attempt to load the fallback
-	 * resource specified in the {@link ResourceLoader} of this scheme; if that
-	 * is null, the returned resource will be null.
+	 * Returns the resource at the specified path with an inferred type. If this resource is not loaded when this is called, it will be automatically loaded and cached before returning the resource. This
+	 * call assumes that the inferred return type is actually the correct type of the resource loader's return type. If the resource is not found in the specified path, this call will then attempt to
+	 * load the fallback resource specified in the {@link ResourceLoader} of this scheme; if that is null, the returned resource will be null.
 	 *
 	 * @param uri to get resource from
 	 * @param <R> inferred type of resource
@@ -163,28 +150,22 @@ public interface FileSystem {
 	public <R> List<R> getResources(String uri);
 
 	/**
-	 * Returns a list of all {@link ResourcePathResolver}s that are currently
-	 * on the system. These resolvers handle the {@link URI}s passed to
-	 * {@link #getResource(java.net.URI)} to find a suitable input stream for
-	 * the resource.
+	 * Returns a list of all {@link ResourcePathResolver}s that are currently on the system. These resolvers handle the {@link URI}s passed to {@link #getResource(java.net.URI)} to find a suitable input
+	 * stream for the resource.
 	 *
 	 * @return list of path resolvers
 	 */
 	public List<ResourcePathResolver> getPathResolvers();
 
 	/**
-	 * Adds a new path resolver to be queried when attempting to find a
-	 * suitable input stream for a specified {@link URI} in
-	 * {@link #getResource(java.net.URI)}
+	 * Adds a new path resolver to be queried when attempting to find a suitable input stream for a specified {@link URI} in {@link #getResource(java.net.URI)}
 	 *
 	 * @param pathResolver to add
 	 */
 	public void addPathResolver(ResourcePathResolver pathResolver);
 
 	/**
-	 * Removes the path resolver to be queried when attempting to find a
-	 * suitable input stream for a specified {@link URI} in
-	 * {@link #getResource(java.net.URI)}
+	 * Removes the path resolver to be queried when attempting to find a suitable input stream for a specified {@link URI} in {@link #getResource(java.net.URI)}
 	 *
 	 * @param pathResolver to remove
 	 */

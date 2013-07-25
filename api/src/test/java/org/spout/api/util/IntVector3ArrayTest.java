@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,57 +26,54 @@
  */
 package org.spout.api.util;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Iterator;
 import java.util.Random;
 
 import org.junit.Test;
+
 import org.spout.api.math.IntVector3;
 
+import static org.junit.Assert.assertTrue;
+
 public class IntVector3ArrayTest {
-	
 	private final int LENGTH = 100;
 	private final int SIZE = 32;
 	private final int MASK = SIZE - 1;
-	
+
 	@Test
 	public void test() {
-		
+
 		Random r = new Random();
-		
+
 		boolean[][][] grid = new boolean[SIZE][SIZE][SIZE];
-		
+
 		int[] x = randomArray(LENGTH, MASK, r);
 		int[] y = randomArray(LENGTH, MASK, r);
 		int[] z = randomArray(LENGTH, MASK, r);
-		
+
 		IntVector3Array arr = new IntVector3Array(x, y, z, LENGTH);
-		
+
 		Iterator<IntVector3> itr = arr.iterator();
-		
+
 		int l = 0;
 		while (itr.hasNext()) {
 			IntVector3 v = itr.next();
 			grid[v.getX()][v.getY()][v.getZ()] = true;
 			l++;
 		}
-		
+
 		assertTrue("Iterator has incorrect length, " + l + "!=" + LENGTH, l == LENGTH);
-		
+
 		for (int i = 0; i < LENGTH; i++) {
 			assertTrue("Location missed " + x[i] + ", " + y[i] + ", " + z[i], grid[x[i]][y[i]][z[i]]);
 		}
-		
 	}
-	
-	
+
 	private static int[] randomArray(int length, int mask, Random r) {
-		int [] a = new int[length];
+		int[] a = new int[length];
 		for (int i = 0; i < length; i++) {
 			a[i] = r.nextInt() & mask;
 		}
 		return a;
 	}
-
 }

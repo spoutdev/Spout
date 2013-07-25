@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -40,14 +40,10 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.set.concurrent.TSyncIntHashSet;
 
 public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
-
 	protected final static int CHUNKS_PER_TICK = 20;
-
 	protected int viewDistance;
 	protected final int blockMinimumViewDistance;
-	
 	private boolean removed = false;
-	
 	//Holds all entities that have ever been sync'd to this Synchronizer
 	protected final TSyncIntHashSet synchronizedEntities = new TSyncIntHashSet();
 
@@ -74,21 +70,19 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 		removed = true;
 		clearObservers();
 	}
-	
+
 	protected void clearObservers() {
 		TickStage.checkStage(TickStage.FINALIZE);
 	}
 
 	public void forceRespawn() {
 	}
-	
+
 	public void forceSync() {
 	}
 
 	/**
-	 * Called just before the pre-snapshot stage.<br>
-	 * This stage can make changes but they should be checked to make sure they
-	 * are non-conflicting.
+	 * Called just before the pre-snapshot stage.<br> This stage can make changes but they should be checked to make sure they are non-conflicting.
 	 */
 	@Override
 	public void finalizeTick() {
@@ -103,7 +97,6 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 			// TODO: confirm this is never going to be called and remove it
 			throw new IllegalStateException("Removed in preSnapshot()");
 		}
-
 	}
 
 	protected boolean canSendChunk(Chunk c) {
@@ -122,11 +115,9 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
-	 * This is a MONITOR method, for sending network updates, no changes should
-	 * be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
 	 *
-	 * While always called during the startSnapshot part of the tick, it may be called from
-	 * multiple threads
+	 * While always called during the startSnapshot part of the tick, it may be called from multiple threads
 	 *
 	 * @param c the chunk
 	 * @return chunks that were sent
@@ -134,17 +125,15 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	public final Collection<Chunk> sendChunk(Chunk c) {
 		return sendChunk(c, false);
 	}
-	
+
 	/**
 	 * Sends a chunk to the client.
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
-	 * This is a MONITOR method, for sending network updates, no changes should
-	 * be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
 	 *
-	 * While always called during the startSnapshot part of the tick, it may be called from
-	 * multiple threads
+	 * While always called during the startSnapshot part of the tick, it may be called from multiple threads
 	 *
 	 * @param c the chunk
 	 * @param force forces sending of the chunk without checking the canSendChunk method
@@ -167,8 +156,7 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
-	 * This is a MONITOR method, for sending network updates, no changes should
-	 * be made to the chunk.
+	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk.
 	 *
 	 * All calls to this method are made from the thread managing the player
 	 *
@@ -182,8 +170,7 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
-	 * This is a MONITOR method, for sending network updates, no changes should
-	 * be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
 	 *
 	 * All calls to this method are made from the thread managing the player
 	 *
@@ -196,8 +183,7 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
-	 * This is a MONITOR method, for sending network updates, no changes should
-	 * be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
 	 *
 	 * @param p position to send
 	 * @param rot rotation to send
@@ -209,18 +195,14 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	 *
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
-	 * This is a MONITOR method, for sending network updates, no changes should
-	 * be made to the chunk
+	 * This is a MONITOR method, for sending network updates, no changes should be made to the chunk
 	 *
 	 * @param world the world
 	 */
 	protected abstract void worldChanged(World world);
 
 	/**
-	 * Called when a block in a chunk that the player is observing changes.<br>
-	 * <br>
-	 * Note: The coordinates of the block are chunk relative and the world field
-	 * is undefined.
+	 * Called when a block in a chunk that the player is observing changes.<br> <br> Note: The coordinates of the block are chunk relative and the world field is undefined.
 	 *
 	 * @param chunk the chunk
 	 * @param x coordinate
@@ -232,10 +214,7 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	/**
-	 * Called when a block in a chunk that the player is observing changes.<br>
-	 * <br>
-	 * Note: The coordinates of the block are chunk relative and the world field
-	 * is undefined.
+	 * Called when a block in a chunk that the player is observing changes.<br> <br> Note: The coordinates of the block are chunk relative and the world field is undefined.
 	 *
 	 * @param chunk the chunk
 	 * @param x coordinate
@@ -266,5 +245,4 @@ public abstract class ServerNetworkSynchronizer extends NetworkSynchronizer {
 	public boolean hasSpawned(Entity e) {
 		return synchronizedEntities.contains(e.getId());
 	}
-
 }

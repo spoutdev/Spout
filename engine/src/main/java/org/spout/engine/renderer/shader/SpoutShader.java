@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,7 +33,6 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.shader.Shader;
 
 public interface SpoutShader extends Shader {
-
 	public abstract void enableAttribute(String name, int size, int type, int stride, long offset, int layout);
 
 	public abstract void assign();
@@ -48,5 +47,4 @@ public interface SpoutShader extends Shader {
 	public abstract void checkUniform();
 
 	public abstract void checkAttributes(List<Integer> attributesUsed);
-
 }

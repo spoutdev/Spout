@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,10 +34,8 @@ import org.spout.api.util.list.ByteCircularBufferFIFO;
 
 /**
  * Implements a variable integer format.  All integers are supported, but small positive integers are represented using fewer bytes.
- * 
- * 0 - 127:      1 byte
- * 128 - 32511:  2 bytes
- * Rest:         5 bytes
+ *
+ * 0 - 127:      1 byte 128 - 32511:  2 bytes Rest:         5 bytes
  */
 public class VarInt {
 	public static void writeString(OutputStream buf, String data) throws IOException {
@@ -55,34 +53,34 @@ public class VarInt {
 
 	public static void writeInt(ByteCircularBufferFIFO buf, int data) {
 		if (data < 0 || data >= 0x00007F00) {
-			buf.write((byte)(0xFF));
-			buf.write((byte)(data >> 24));
-			buf.write((byte)(data >> 16));
-			buf.write((byte)(data >> 8));
-			buf.write((byte)(data >> 0));
+			buf.write((byte) (0xFF));
+			buf.write((byte) (data >> 24));
+			buf.write((byte) (data >> 16));
+			buf.write((byte) (data >> 8));
+			buf.write((byte) (data >> 0));
 		} else if (data >= 0x00000080) {
-			buf.write((byte)(0x80 | (data >> 8)));
-			buf.write((byte)(       (data >> 0)));
+			buf.write((byte) (0x80 | (data >> 8)));
+			buf.write((byte) ((data >> 0)));
 		} else {
-			buf.write((byte)data);
+			buf.write((byte) data);
 		}
 	}
-	
+
 	public static void writeInt(OutputStream buf, int data) throws IOException {
 		if (data < 0 || data >= 0x00007F00) {
-			buf.write((byte)(0xFF));
-			buf.write((byte)(data >> 24));
-			buf.write((byte)(data >> 16));
-			buf.write((byte)(data >> 8));
-			buf.write((byte)(data >> 0));
+			buf.write((byte) (0xFF));
+			buf.write((byte) (data >> 24));
+			buf.write((byte) (data >> 16));
+			buf.write((byte) (data >> 8));
+			buf.write((byte) (data >> 0));
 		} else if (data >= 0x00000080) {
-			buf.write((byte)(0x80 | (data >> 8)));
-			buf.write((byte)(       (data >> 0)));
+			buf.write((byte) (0x80 | (data >> 8)));
+			buf.write((byte) ((data >> 0)));
 		} else {
-			buf.write((byte)data);
+			buf.write((byte) data);
 		}
 	}
-	
+
 	public static String readString(InputStream buf) throws IOException {
 		int length = readInt(buf);
 		if (length == -1) {
@@ -91,7 +89,7 @@ public class VarInt {
 
 		char[] data = new char[length];
 		for (int i = 0; i < length; i++) {
-			data[i] = (char)readInt(buf);
+			data[i] = (char) readInt(buf);
 		}
 		return new String(data);
 	}
@@ -122,7 +120,7 @@ public class VarInt {
 			return b1;
 		}
 	}
-	
+
 	public static int readInt(InputStream buf) throws IOException {
 
 		int b1 = buf.read();
@@ -148,5 +146,4 @@ public class VarInt {
 		}
 		return data;
 	}
-
 }

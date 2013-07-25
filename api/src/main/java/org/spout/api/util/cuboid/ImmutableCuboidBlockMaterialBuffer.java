@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,7 +33,7 @@ import org.spout.api.util.cuboid.procedure.CuboidBlockMaterialProcedure;
 public class ImmutableCuboidBlockMaterialBuffer extends CuboidBuffer {
 	protected final short[] id;
 	protected final short[] data;
-	
+
 	public ImmutableCuboidBlockMaterialBuffer(CuboidBlockMaterialBuffer buffer) {
 		super(buffer.getBase().getFloorX(), buffer.getBase().getFloorY(), buffer.getBase().getFloorZ(), buffer.getSize().getFloorX(), buffer.getSize().getFloorY(), buffer.getSize().getFloorZ());
 		this.id = new short[buffer.id.length];
@@ -74,7 +74,7 @@ public class ImmutableCuboidBlockMaterialBuffer extends CuboidBuffer {
 		if (index < 0) {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
 		}
-		
+
 		return BlockMaterial.get(id[index], data[index]);
 	}
 
@@ -85,7 +85,7 @@ public class ImmutableCuboidBlockMaterialBuffer extends CuboidBuffer {
 		}
 		return id[index];
 	}
-	
+
 	public short getData(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		if (index < 0) {

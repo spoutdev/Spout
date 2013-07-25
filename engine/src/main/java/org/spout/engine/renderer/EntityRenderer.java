@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,7 +33,6 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.model.Model;
 import org.spout.api.render.Camera;
-
 import org.spout.engine.component.entity.SpoutModelComponent;
 import org.spout.engine.filesystem.resource.ClientTexture;
 import org.spout.engine.mesh.BaseMesh;
@@ -41,8 +40,7 @@ import org.spout.engine.mesh.BaseMesh;
 /**
  * The Renderer of all EntityRendererComponents
  *
- * This class has several objectives...
- * -- Keep a cache of all EntityRendererComponents who share a model. This cuts down on all rendering.
+ * This class has several objectives... -- Keep a cache of all EntityRendererComponents who share a model. This cuts down on all rendering.
  */
 public class EntityRenderer {
 	private final List<SpoutModelComponent> RENDERERS = new ArrayList<>();
@@ -64,10 +62,10 @@ public class EntityRenderer {
 
 		//Call renderers based on models
 		for (SpoutModelComponent renderer : RENDERERS) {
-			for(Model model : renderer.getModels()) {
+			for (Model model : renderer.getModels()) {
 				if (((ClientTexture) model.getRenderMaterial().getValue("Diffuse")).isLoaded()) {
 					renderer.init();
-}
+				}
 				final BaseMesh mesh = (BaseMesh) model.getMesh();
 				//Prep mesh for rendering
 				mesh.preDraw();
@@ -78,7 +76,7 @@ public class EntityRenderer {
 
 				renderer.update(model, dt);
 				renderer.draw(model);
-				
+
 				//Callback after rendering
 				mesh.postDraw();
 			}

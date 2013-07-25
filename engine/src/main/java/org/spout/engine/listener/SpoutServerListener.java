@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -45,7 +45,6 @@ import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.world.EntityEnterWorldEvent;
 import org.spout.api.event.world.EntityExitWorldEvent;
 import org.spout.api.util.access.BanType;
-
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.SpoutServerSession;
@@ -58,7 +57,7 @@ public class SpoutServerListener implements Listener {
 		this.server = server;
 	}
 
-	@EventHandler(order = Order.MONITOR)
+	@EventHandler (order = Order.MONITOR)
 	public void onPlayerConnect(PlayerConnectEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -83,7 +82,7 @@ public class SpoutServerListener implements Listener {
 		}
 	}
 
-	@EventHandler(order = Order.EARLIEST)
+	@EventHandler (order = Order.EARLIEST)
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player p = event.getPlayer();
 		PlayerBanKickEvent banEvent = null;
@@ -114,14 +113,14 @@ public class SpoutServerListener implements Listener {
 		}
 	}
 
-	@EventHandler(order = Order.MONITOR)
+	@EventHandler (order = Order.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (event.getMessage() != null) {
 			server.broadcastMessage(event.getMessage());
 		}
 	}
 
-	@EventHandler(order = Order.EARLIEST)
+	@EventHandler (order = Order.EARLIEST)
 	public void onGetAllWithNode(PermissionGetAllWithNodeEvent event) {
 		for (Player player : server.getOnlinePlayers()) {
 			event.getReceivers().put(player, Result.DEFAULT);
@@ -129,19 +128,19 @@ public class SpoutServerListener implements Listener {
 		event.getReceivers().put(server.getCommandSource(), Result.DEFAULT);
 	}
 
-	@EventHandler(order = Order.EARLIEST)
+	@EventHandler (order = Order.EARLIEST)
 	public void onEntityChangeWorld(EntityChangeWorldEvent event) {
 		if (event.getPrevious().equals(event.getTarget())) {
 			return;
 		}
-		if (!(event.getEntity() instanceof  Player)) {
+		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}
 		((SpoutServerWorld) event.getPrevious()).removePlayer((Player) event.getEntity());
 		((SpoutServerWorld) event.getTarget()).addPlayer((Player) event.getEntity());
 	}
-	
-	@EventHandler(order = Order.EARLIEST)
+
+	@EventHandler (order = Order.EARLIEST)
 	public void onEntityEnterWorldEvent(EntityEnterWorldEvent event) {
 		for (Component component : event.getWorld().values()) {
 			if (component instanceof WorldComponent) {
@@ -153,8 +152,8 @@ public class SpoutServerListener implements Listener {
 			}
 		}
 	}
-	
-	@EventHandler(order = Order.EARLIEST)
+
+	@EventHandler (order = Order.EARLIEST)
 	public void onEntityExitWorldEvent(EntityExitWorldEvent event) {
 		for (Component component : event.getWorld().values()) {
 			if (component instanceof WorldComponent) {

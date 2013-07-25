@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -37,7 +37,6 @@ import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 
 public interface AreaChunkAccess extends AreaBlockAccess {
-
 	/**
 	 * Gets the {@link Chunk} at chunk coordinates (x, y, z)
 	 *
@@ -60,9 +59,10 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 */
 	@LiveRead
 	public Chunk getChunk(int x, int y, int z, LoadOption loadopt);
-	
+
 	/**
 	 * Gets if a chunk is contained in this area
+	 *
 	 * @param x coordinate of the chunk
 	 * @param y coordinate of the chunk
 	 * @param z coordinate of the chunk
@@ -150,44 +150,40 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 * @param x coordinate of the chunk
 	 * @param y coordinate of the chunk
 	 * @param z coordinate of the chunk
-	 * @Param whether to save this chunk
 	 */
 	@DelayedWrite
 	public void unloadChunk(int x, int y, int z, boolean save);
-	
+
 	/**
 	 * Gets the number of currently loaded chunks
-	 * 
+	 *
 	 * @return number of loaded chunks
 	 */
 	@SnapshotRead
 	public int getNumLoadedChunks();
-	
+
 	/**
-	 * Queues a list of chunks for generation.  The Vector3 values
-	 * are in chunk coords.
-	 * 
+	 * Queues a list of chunks for generation.  The Vector3 values are in chunk coords.
+	 *
 	 * @param chunks a list of chunk coordinates
 	 */
 	public void queueChunksForGeneration(List<Vector3> chunks);
-	
+
 	/**
-	 * Queues a chunk for generation.  The Vector3 value
-	 * is in chunk coords.
-	 * 
+	 * Queues a chunk for generation.  The Vector3 value is in chunk coords.
+	 *
 	 * @param chunks a list of chunk coordinates
 	 */
 	public void queueChunkForGeneration(Vector3 chunk);
-	
+
 	/**
 	 * Gets the lighting buffer associated with the given manager
-	 * 
+	 *
 	 * @param manager the corresponding lighting manager
 	 * @param x coordinate of the chunk
 	 * @param y coordinate of the chunk
 	 * @param z coordinate of the chunk
 	 * @param loadopt load option
-	 * @return
 	 */
 	public <T extends CuboidLightBuffer> T getLightBuffer(LightingManager<T> manager, int x, int y, int z, LoadOption loadopt);
 }

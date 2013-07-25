@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -35,10 +35,10 @@ import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.entity.Player;
 import org.spout.api.event.server.access.BanChangeEvent;
-import org.spout.api.util.access.BanType;
 import org.spout.api.event.server.access.WhitelistChangeEvent;
 import org.spout.api.util.ListFile;
 import org.spout.api.util.access.AccessManager;
+import org.spout.api.util.access.BanType;
 
 /**
  * Implementation of AccessManager that uses PlayerListFiles.
@@ -48,7 +48,7 @@ public class SpoutAccessManager implements AccessManager {
 	private final ListFile bannedIps = new ListFile(new File("config/banned_ips.txt"));
 	private final ListFile whitelist = new ListFile(new File("config/whitelist.txt"));
 	private boolean whitelistEnabled = false;
-	private String banMessage ="You are banned from this server!";
+	private String banMessage = "You are banned from this server!";
 	private String ipBanMessage = "You are banned from this server!";
 	private String whitelistMessage = "You are not on the whitelist!";
 

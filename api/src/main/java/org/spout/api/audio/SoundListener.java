@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,19 +34,15 @@ import org.spout.api.math.Vector3;
  */
 public interface SoundListener {
 	/**
-	 * Sets the position of this SoundListener. The specified location will
-	 * affect how this listener will hear sound relative to the existing
-	 * sources.
+	 * Sets the position of this SoundListener. The specified location will affect how this listener will hear sound relative to the existing sources.
 	 *
-	 * @param pos  position of listener
+	 * @param pos position of listener
 	 * @see #getPosition
 	 */
 	public void setPosition(Point pos);
 
 	/**
-	 * Returns the position of this SoundListener. The specified location will
-	 * affect how this listener will hear sound relative to the existing
-	 * sources.
+	 * Returns the position of this SoundListener. The specified location will affect how this listener will hear sound relative to the existing sources.
 	 *
 	 * @return position of listener
 	 * @see #setPosition
@@ -56,7 +52,7 @@ public interface SoundListener {
 	/**
 	 * Sets the velocity of this SoundListener. Used for doppler effects.
 	 *
-	 * @param vec  velocity of listener
+	 * @param vec velocity of listener
 	 * @see #getVelocity
 	 */
 	public void setVelocity(Vector3 vec);
@@ -72,17 +68,15 @@ public interface SoundListener {
 	/**
 	 * Sets the orientation of this SoundListener.
 	 *
-	 * @param at  position of the listening point relative to
-	 *            {@link #getPosition()}
-	 * @param up  up value
+	 * @param at position of the listening point relative to {@link #getPosition()}
+	 * @param up up value
 	 */
 	public void setOrientation(Vector3 at, Vector3 up);
 
 	/**
 	 * Sets the at value of this SoundListener's orientation.
 	 *
-	 * @param at  position of the listening point relative to
-	 *            {@link #getPosition()}
+	 * @param at position of the listening point relative to {@link #getPosition()}
 	 * @see #getOrientationAt
 	 */
 	public void setOrientationAt(Vector3 at);
@@ -90,7 +84,7 @@ public interface SoundListener {
 	/**
 	 * Sets the up value of this SoundListener's orientation.
 	 *
-	 * @param up  up value
+	 * @param up up value
 	 * @see #getOrientationUp
 	 */
 	public void setOrientationUp(Vector3 up);
@@ -98,8 +92,7 @@ public interface SoundListener {
 	/**
 	 * Returns the at value of this SoundListener's orientation.
 	 *
-	 * @return position of the listening point relative to
-	 *         {@link #getPosition()}
+	 * @return position of the listening point relative to {@link #getPosition()}
 	 * @see #setOrientationAt
 	 */
 	public Vector3 getOrientationAt();

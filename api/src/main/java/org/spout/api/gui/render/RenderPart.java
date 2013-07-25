@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -45,9 +45,7 @@ public class RenderPart implements Comparable<RenderPart> {
 	private Color color = Color.WHITE;
 
 	/**
-	 * Sets the bounds of the source of the render part. This is commonly used
-	 * for sprite sheets and should be left at zero for simple colored
-	 * rectangles.
+	 * Sets the bounds of the source of the render part. This is commonly used for sprite sheets and should be left at zero for simple colored rectangles.
 	 *
 	 * @param source of part
 	 */
@@ -56,9 +54,7 @@ public class RenderPart implements Comparable<RenderPart> {
 	}
 
 	/**
-	 * Returns the bounds of the source of the render part. This is commonly
-	 * used for sprite sheets and should be left at zero for simple colored
-	 * rectangles.
+	 * Returns the bounds of the source of the render part. This is commonly used for sprite sheets and should be left at zero for simple colored rectangles.
 	 *
 	 * @return source of part
 	 */
@@ -67,8 +63,7 @@ public class RenderPart implements Comparable<RenderPart> {
 	}
 
 	/**
-	 * Sets the bounds of the actual sprite of the render material. This is
-	 * used for specifying the actual visible size of the render part.
+	 * Sets the bounds of the actual sprite of the render material. This is used for specifying the actual visible size of the render part.
 	 *
 	 * @param sprite of render part
 	 */
@@ -77,8 +72,7 @@ public class RenderPart implements Comparable<RenderPart> {
 	}
 
 	/**
-	 * Returns the bounds of the actual sprite of the render material. This is
-	 * used for specifying the actual visible size of the render part.
+	 * Returns the bounds of the actual sprite of the render material. This is used for specifying the actual visible size of the render part.
 	 *
 	 * @return sprite of render part
 	 */
@@ -87,10 +81,8 @@ public class RenderPart implements Comparable<RenderPart> {
 	}
 
 	/**
-	 * Returns the layer that this should be rendered on. Something with a
-	 * higher z-index will be rendered on top of something with a lower z-index
-	 * and something with a lower z-index will be rendered under the higher
-	 * z-index part.
+	 * Returns the layer that this should be rendered on. Something with a higher z-index will be rendered on top of something with a lower z-index and something with a lower z-index will be rendered
+	 * under the higher z-index part.
 	 *
 	 * @param zIndex of part
 	 */
@@ -99,10 +91,8 @@ public class RenderPart implements Comparable<RenderPart> {
 	}
 
 	/**
-	 * Returns the layer that this should be rendered on. Something with a
-	 * higher z-index will be rendered on top of something with a lower z-index
-	 * and something with a lower z-index will be rendered under the higher
-	 * z-index part.
+	 * Returns the layer that this should be rendered on. Something with a higher z-index will be rendered on top of something with a lower z-index and something with a lower z-index will be rendered
+	 * under the higher z-index part.
 	 *
 	 * @return z-index of part
 	 */

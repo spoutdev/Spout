@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -27,26 +27,24 @@
 package org.spout.api.util.list;
 
 public class ByteCircularBufferFIFO {
-
 	private static final byte[] emptyArray = new byte[0];
-	
 	private byte[] buf;
 	private int start = 0;
 	private int end = 0;
 	private int mask = 0;
-	
+
 	public ByteCircularBufferFIFO() {
 		this(16);
 	}
-	
+
 	public ByteCircularBufferFIFO(int initialSize) {
 		buf = emptyArray;
 		resizeBuffer(initialSize);
 	}
-	
+
 	/**
 	 * Writes a byte to the FIFO
-	 * 
+	 *
 	 * @param b the byte to add
 	 */
 	public void write(byte b) {
@@ -55,19 +53,19 @@ public class ByteCircularBufferFIFO {
 		}
 		buf[(end++) & mask] = b;
 	}
-	
+
 	/**
 	 * Writes a byte array to the FIFO
-	 * 
+	 *
 	 * @param array the byte array to add
 	 */
 	public void write(byte[] array) {
 		write(array, 0, array.length);
 	}
-	
+
 	/**
 	 * Writes a portion of a byte array to the FIFO
-	 * 
+	 *
 	 * @param array the byte array to add
 	 * @param off the index of the first byte to write
 	 * @param length the number of bytes to write
@@ -84,7 +82,7 @@ public class ByteCircularBufferFIFO {
 
 	/**
 	 * Reads a byte from the FIFO
-	 * 
+	 *
 	 * @return the byte or -1 if the FIFO is empty
 	 */
 	public int read() {
@@ -94,19 +92,19 @@ public class ByteCircularBufferFIFO {
 
 		return buf[(start++) & mask] & 0xFF;
 	}
-	
+
 	/**
 	 * Fills a byte array by reading the FIFO
-	 * 
+	 *
 	 * @param array the byte array to add
 	 */
 	public int read(byte[] array) {
 		return read(array, 0, array.length);
 	}
-	
+
 	/**
 	 * Fills a portion of a byte array by reading the FIFO
-	 * 
+	 *
 	 * @param array the byte array to add
 	 * @param off the index of the first byte to write
 	 * @param length the maximum number of bytes to write
@@ -122,11 +120,9 @@ public class ByteCircularBufferFIFO {
 		}
 		return length;
 	}
-	
+
 	/**
 	 * Skips the given number of bytes
-	 * 
-	 * @param n
 	 */
 	public long skip(long n) {
 		int length = end - start;
@@ -136,10 +132,10 @@ public class ByteCircularBufferFIFO {
 		start += n;
 		return n;
 	}
-	
+
 	/**
 	 * Converts the data stored in the FIFO into a byte array.  The next byte to be read is placed at position 0.
-	 * 
+	 *
 	 * @return a byte array representation of the array
 	 */
 	public byte[] toByteArray() {
@@ -154,14 +150,14 @@ public class ByteCircularBufferFIFO {
 		}
 		return a;
 	}
-	
+
 	/**
 	 * Reduces the internal array to the minimum size required to hold the FIFO data
 	 */
 	public void trim() {
 		resizeBuffer(0);
 	}
-	
+
 	private void resizeBuffer(int newSize) {
 		if (end - start > newSize) {
 			newSize = end - start;
@@ -179,7 +175,7 @@ public class ByteCircularBufferFIFO {
 			start = 0;
 		}
 	}
-	
+
 	/**
 	 * Returns the lowest power of 2 that is greater than the given integer
 	 */

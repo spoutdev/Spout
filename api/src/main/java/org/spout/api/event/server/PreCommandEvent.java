@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,8 +33,8 @@ import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 
 /**
- * This event is called before a command goes through the full command handling process.</br>
- * This can be used for command blocking, or detecting anything the player is typing as a command that may not be registered yet.</br>
+ * This event is called before a command goes through the full command handling process.</br> This can be used for command blocking, or detecting anything the player is typing as a command that may
+ * not be registered yet.</br>
  */
 public class PreCommandEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
@@ -54,6 +54,7 @@ public class PreCommandEvent extends Event implements Cancellable {
 
 	/**
 	 * Gets the first component of the command.
+	 *
 	 * @return the command
 	 */
 	public String getCommand() {
@@ -67,6 +68,7 @@ public class PreCommandEvent extends Event implements Cancellable {
 
 	/**
 	 * Gets the full command message issued to the server.
+	 *
 	 * @return message sent.
 	 */
 	public CommandArguments getArguments() {
@@ -75,7 +77,6 @@ public class PreCommandEvent extends Event implements Cancellable {
 
 	/**
 	 * Sets the command message that was sent to the server.
-	 * @param args
 	 */
 	public void setArguments(CommandArguments args) {
 		this.args = args;
@@ -83,7 +84,6 @@ public class PreCommandEvent extends Event implements Cancellable {
 
 	/**
 	 * Sets the command message that was sent to the server.
-	 * @param args
 	 */
 	public void setArguments(String... args) {
 		setArguments(new CommandArguments(command, args));

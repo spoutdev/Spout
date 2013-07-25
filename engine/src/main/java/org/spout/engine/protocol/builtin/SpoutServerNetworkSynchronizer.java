@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -34,8 +34,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.spout.api.Spout;
 
+import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -51,7 +51,6 @@ import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
-
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
@@ -62,26 +61,27 @@ import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 import org.spout.engine.world.SpoutChunk;
 
 public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
-	private Point lastChunkCheck =  Point.invalid;
-
+	private Point lastChunkCheck = Point.invalid;
 	// Base points used so as not to load chunks unnecessarily
 	private final Set<Point> chunkInitQueue = new LinkedHashSet<Point>();
 	private final Set<Point> priorityChunkSendQueue = new LinkedHashSet<Point>();
 	private final Set<Point> chunkSendQueue = new LinkedHashSet<Point>();
 	private final Set<Point> chunkFreeQueue = new LinkedHashSet<Point>();
-
-	/** Chunks that have initialized on the client. May also have chunks that have been sent. */
+	/**
+	 * Chunks that have initialized on the client. May also have chunks that have been sent.
+	 */
 	private final Set<Point> initializedChunks = new LinkedHashSet<Point>();
-	/** Chunks that have been sent to the client */
+	/**
+	 * Chunks that have been sent to the client
+	 */
 	private final Set<Point> activeChunks = new LinkedHashSet<Point>();
-
 	private volatile boolean worldChanged = true;
 	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
-	/** Includes chunks that need to be observed. When observation is successfully attained or no longer wanted, point is removed */
+	/**
+	 * Includes chunks that need to be observed. When observation is successfully attained or no longer wanted, point is removed
+	 */
 	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
 	private boolean sync = false;
-
-	
 	protected int tickCounter = 0;
 
 	public SpoutServerNetworkSynchronizer(Session session) {
@@ -101,16 +101,14 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 			removeObserver(p);
 		}
 	}
-	
+
 	@Override
 	public void forceSync() {
 		sync = true;
 	}
 
 	/**
-	 * Called just before the pre-snapshot stage.<br>
-	 * This stage can make changes but they should be checked to make sure they
-	 * are non-conflicting.
+	 * Called just before the pre-snapshot stage.<br> This stage can make changes but they should be checked to make sure they are non-conflicting.
 	 */
 	@Override
 	public void finalizeTick() {
@@ -123,7 +121,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 
 		final Point lastPosition = player.getPhysics().getTransform().getPosition();
 		final Point currentPosition = ((SpoutPhysicsComponent) player.getPhysics()).getTransformLive().getPosition();
-		
+
 		if (lastPosition == null || (currentPosition != null && getPlayer().getPhysics().isWorldDirty())) {
 			clearObservers();
 			worldChanged = true;
@@ -133,8 +131,6 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 				checkChunkUpdates(currentPosition);
 				lastChunkCheck = currentPosition;
 			}
-
-
 		}
 
 		if (!worldChanged) {
@@ -152,10 +148,8 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 
 			checkObserverUpdateQueue();
 		}
-
 	}
-	
-	
+
 	/**
 	 * Resets all chunk stores for the client.  This method is only called during the pre-snapshot part of the tick.
 	 */
@@ -169,7 +163,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 		lastChunkCheck = Point.invalid;
 		synchronizedEntities.clear();
 	}
-	
+
 	private int chunksSent = 0;
 	private Set<Point> unsendable = new HashSet<Point>();
 
@@ -230,7 +224,6 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 				tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 			}
 		}
-
 	}
 
 	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Point p) {
@@ -261,7 +254,6 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 				}
 			}
 			chunksSent++;
-
 		} else {
 			unsendable.add(p);
 		}
@@ -323,7 +315,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 		final int bx = (int) currentPosition.getX();
 		final int by = (int) currentPosition.getY();
 		final int bz = (int) currentPosition.getZ();
-		
+
 		final int cx = bx >> Chunk.BLOCKS.BITS;
 		final int cy = by >> Chunk.BLOCKS.BITS;
 		final int cz = bz >> Chunk.BLOCKS.BITS;

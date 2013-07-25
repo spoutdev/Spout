@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,11 +30,13 @@ import org.spout.api.util.thread.annotation.Threadsafe;
 
 /**
  * Base interface for an object that can accept listeners for a specified event
+ *
  * @param <T> The type of event allowed
  */
 public interface Eventable<T extends ObjectEvent<?>> {
 	/**
 	 * Add a listener for the type of event this {@link Eventable} covers.
+	 *
 	 * @param listener The listener to register.
 	 */
 	@Threadsafe
@@ -48,6 +50,7 @@ public interface Eventable<T extends ObjectEvent<?>> {
 
 	/**
 	 * Unregister a specific listener
+	 *
 	 * @param listener The listener to unregister
 	 */
 	@Threadsafe
@@ -55,6 +58,7 @@ public interface Eventable<T extends ObjectEvent<?>> {
 
 	/**
 	 * Call the event with all current listeners.
+	 *
 	 * @param event The event instance to call
 	 */
 	@Threadsafe

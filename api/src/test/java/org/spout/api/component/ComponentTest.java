@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -25,9 +25,6 @@
  * the MIT license.
  */
 package org.spout.api.component;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 
 import java.io.File;
 import java.util.Collection;
@@ -82,6 +79,13 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 public final class ComponentTest {
 	@Test
 	public void test() throws Exception {
@@ -116,11 +120,11 @@ public final class ComponentTest {
 
 		assertNull(base.getExact(GenericComponent.class));
 		assertNull(base.get(GenericEntityComponent.class));
-		
+
 		Collection<GenericComponent> generic = base.getAll(GenericComponent.class);
 		assertTrue(generic.size() == 2);
 		assertThat(generic, hasItems(c1, c2));
-		
+
 		Collection<Component> components = base.values();
 		assertTrue(components.size() == 3);
 		assertThat(components, hasItems(c1, c2, c3));
@@ -131,7 +135,6 @@ public final class ComponentTest {
 		Collection<Interface> allOfType = base.getAllOfType(Interface.class);
 		assertTrue(allOfType.size() == 1);
 		assertEquals(cwi, type);
-		
 	}
 
 	public static abstract class GenericComponent extends Component {
@@ -159,7 +162,6 @@ public final class ComponentTest {
 		}
 	}
 
-
 	public static class GenericSubComponent extends GenericComponent {
 		public GenericSubComponent() {
 		}
@@ -174,8 +176,8 @@ public final class ComponentTest {
 		public OtherGenericComponent() {
 		}
 	}
-	
-	public static interface Interface {	
+
+	public static interface Interface {
 	}
 
 	public static class GenericComponentWithInterface extends GenericComponent implements Interface {

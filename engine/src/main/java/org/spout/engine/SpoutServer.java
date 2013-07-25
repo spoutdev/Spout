@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -48,6 +48,12 @@ import javax.jmdns.ServiceInfo;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang3.Validate;
+import org.fourthline.cling.UpnpService;
+import org.fourthline.cling.UpnpServiceImpl;
+import org.fourthline.cling.controlpoint.ControlPoint;
+import org.fourthline.cling.support.igd.PortMappingListener;
+import org.fourthline.cling.support.model.PortMapping;
+import org.fourthline.cling.transport.spi.InitializationException;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
@@ -55,12 +61,6 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.teleal.cling.UpnpService;
-import org.teleal.cling.UpnpServiceImpl;
-import org.teleal.cling.controlpoint.ControlPoint;
-import org.teleal.cling.support.igd.PortMappingListener;
-import org.teleal.cling.support.model.PortMapping;
-import org.teleal.cling.transport.spi.InitializationException;
 
 import org.spout.api.Platform;
 import org.spout.api.Server;
@@ -93,7 +93,6 @@ import org.spout.api.resource.FileSystem;
 import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
-
 import org.spout.cereal.config.ConfigurationException;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.SpoutPlayer;
@@ -514,7 +513,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 		}
 	}
 
-
 	@Override
 	public AccessManager getAccessManager() {
 		return accessManager;
@@ -576,6 +574,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	/**
 	 * Gets the lighting map used across all worlds on the engine
+	 *
 	 * @return engine map
 	 */
 	public StringToUniqueIntegerMap getEngineLightingMap() {
@@ -584,6 +583,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	/**
 	 * Gets the biome map used accorss all worlds on the engine
+	 *
 	 * @return biome map
 	 */
 	public StringToUniqueIntegerMap getBiomeMap() {

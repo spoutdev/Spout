@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -34,7 +34,6 @@ import org.spout.api.component.BaseComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.widget.ControlComponent;
 import org.spout.api.datatable.ManagedHashMap;
-import org.spout.api.datatable.SerializableMap;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.geo.discrete.Transform2D;
@@ -46,7 +45,6 @@ import org.spout.api.gui.Widget;
 import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
-
 import org.spout.engine.batcher.SpriteBatch;
 
 public class SpoutWidget extends BaseComponentOwner implements Widget {
@@ -82,13 +80,13 @@ public class SpoutWidget extends BaseComponentOwner implements Widget {
 			return renderPartCache;
 		}
 	}
-	
+
 	public void render() {
 		if (dirty) {
 			batcher.flush(getRenderPartPacks());
 			dirty = false;
 		}
-		
+
 		batcher.render(transform.toMatrix());
 	}
 
@@ -109,7 +107,6 @@ public class SpoutWidget extends BaseComponentOwner implements Widget {
 	public Screen getScreen() {
 		return screen;
 	}
-
 
 	@Override
 	public Transform2D getTransform() {

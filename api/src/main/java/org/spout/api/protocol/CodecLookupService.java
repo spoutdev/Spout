@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,24 +33,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.SyncedStringMap;
 
 /**
  * A class used to lookup message codecs.
- *
  */
 public abstract class CodecLookupService {
 	protected final MessageCodec<?>[] opcodeTable;
+
 	protected CodecLookupService(int size) {
 		opcodeTable = new MessageCodec<?>[size];
 	}
 
 	private int nextId = 0;
-
 	/**
-	 * A table which maps messages to codecs. This is generally used to map
-	 * outgoing packets to a codec.
+	 * A table which maps messages to codecs. This is generally used to map outgoing packets to a codec.
 	 */
 	protected final Map<Class<? extends Message>, MessageCodec<?>> classTable = new HashMap<Class<? extends Message>, MessageCodec<?>>();
 
@@ -61,8 +58,7 @@ public abstract class CodecLookupService {
 	 * @param <T> The type of message.
 	 * @param <C> The type of codec.
 	 * @throws InstantiationException if the codec could not be instantiated.
-	 * @throws IllegalAccessException if the codec could not be instantiated due
-	 *             to an access violation.
+	 * @throws IllegalAccessException if the codec could not be instantiated due to an access violation.
 	 */
 	protected <T extends Message, C extends MessageCodec<T>> void bind(Class<C> clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		bind(clazz, null);
@@ -76,8 +72,7 @@ public abstract class CodecLookupService {
 	 * @param <T> The type of message.
 	 * @param <C> The type of codec.
 	 * @throws InstantiationException if the codec could not be instantiated.
-	 * @throws IllegalAccessException if the codec could not be instantiated due
-	 *             to an access violation.
+	 * @throws IllegalAccessException if the codec could not be instantiated due to an access violation.
 	 */
 	protected <T extends Message, C extends MessageCodec<T>> C bind(Class<C> clazz, SyncedStringMap dynamicPacketMap) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		boolean dynamicId = false;
@@ -139,7 +134,7 @@ public abstract class CodecLookupService {
 	 * @param <T> The type of message.
 	 * @return The codec, or {@code null} if it could not be found.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public <T extends Message> MessageCodec<T> find(Class<T> clazz) {
 		return (MessageCodec<T>) classTable.get(clazz);
 	}

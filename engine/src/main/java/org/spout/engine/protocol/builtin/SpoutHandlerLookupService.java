@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -27,7 +27,6 @@
 package org.spout.engine.protocol.builtin;
 
 import org.spout.api.protocol.HandlerLookupService;
-
 import org.spout.engine.protocol.builtin.handler.BlockUpdateMessageHandler;
 import org.spout.engine.protocol.builtin.handler.ChunkDataMessageHandler;
 import org.spout.engine.protocol.builtin.handler.ChunkDatatableMessageHandler;

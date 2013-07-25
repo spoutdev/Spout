@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -29,6 +29,7 @@ package org.spout.engine.protocol.builtin.message;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.util.SpoutToStringStyle;
 
 public class LoginMessage extends SpoutMessage {
@@ -45,9 +46,7 @@ public class LoginMessage extends SpoutMessage {
 	}
 
 	/**
-	 * Client to Server, this is Protocol version
-	 * Server to Client, this is the player Id
-	 * @return
+	 * Client to Server, this is Protocol version Server to Client, this is the player Id
 	 */
 	// TODO: protocol - change this it proto version & player id
 	// TODO: protocol - implement protocol check

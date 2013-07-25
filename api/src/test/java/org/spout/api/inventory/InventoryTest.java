@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,6 +33,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.spout.api.faker.EngineFaker;
 import org.spout.api.inventory.util.InventoryIterator;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
@@ -41,14 +42,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.spout.api.faker.EngineFaker;
 
 public class InventoryTest extends EngineFaker {
 	private final Material[] mats = {BlockMaterial.AIR, BlockMaterial.SOLID_BLUE, BlockMaterial.UNBREAKABLE};
 	private final Random random = new Random();
 	private List<ItemStack> items = new ArrayList<ItemStack>(3);
 	private Inventory inventory = new Inventory(20);
-	
+
 	@Before
 	public void constructRandomInventory() {
 		for (int i = 0; i < inventory.size(); i++) {

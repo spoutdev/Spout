@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -65,7 +65,7 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 
 	/**
 	 * Adds an object to the list
-	 * @param next
+	 *
 	 * @return true if the object was successfully added
 	 */
 	@DelayedWrite
@@ -80,7 +80,6 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 
 	/**
 	 * Removes an object from the list
-	 * @param next
 	 */
 	@DelayedWrite
 	public boolean remove(T object) {
@@ -93,6 +92,7 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -102,6 +102,7 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 
 	/**
 	 * Gets the live value
+	 *
 	 * @return the live set
 	 */
 	public Set<T> getLive() {
@@ -109,11 +110,9 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	}
 
 	/**
-	 * Creates a list of elements that have been changed since the last snapshot
-	 * copy.<br>
-	 * <br>
-	 * This method may only be called during the pre-snapshot stage and the list
-	 * only remains valid during that stage.
+	 * Creates a list of elements that have been changed since the last snapshot copy.<br> <br> This method may only be called during the pre-snapshot stage and the list only remains valid during that
+	 * stage.
+	 *
 	 * @return the list of elements that have been updated
 	 */
 	public List<T> getDirtyList() {
@@ -123,6 +122,7 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 
 	/**
 	 * Tests if the set is empty
+	 *
 	 * @return true if the set is empty
 	 */
 	public boolean isEmptyLive() {

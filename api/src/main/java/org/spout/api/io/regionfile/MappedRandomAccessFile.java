@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -36,7 +36,6 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 public class MappedRandomAccessFile {
-
 	private final File filePath;
 	private final String permissions;
 	private long pos = 0;
@@ -44,7 +43,6 @@ public class MappedRandomAccessFile {
 	private final int PAGE_SHIFT;
 	private final int PAGE_SIZE;
 	private final long PAGE_MASK;
-	
 	private RandomAccessFile file;
 
 	public MappedRandomAccessFile(File filePath, String permissions) throws FileNotFoundException {
@@ -74,7 +72,7 @@ public class MappedRandomAccessFile {
 	}
 
 	byte[] intArray = new byte[4];
-	
+
 	public void writeInt(int i) throws IOException {
 		intArray[0] = (byte) (i >> 24);
 		intArray[1] = (byte) (i >> 16);
@@ -122,7 +120,6 @@ public class MappedRandomAccessFile {
 			pages.set(pageIndex, page);
 		}
 		return page;
-
 	}
 
 	public void seek(long pos) throws IOException {
@@ -130,8 +127,8 @@ public class MappedRandomAccessFile {
 	}
 
 	public void readFully(byte[] b) throws IOException {
-		int pageIndex = (int)(pos >> PAGE_SHIFT);
-		int offset = (int)(pos & PAGE_MASK);
+		int pageIndex = (int) (pos >> PAGE_SHIFT);
+		int offset = (int) (pos & PAGE_MASK);
 		int endPageOne = Math.min(b.length + offset, PAGE_SIZE);
 
 		MappedByteBuffer page = getPage(pageIndex);
@@ -163,18 +160,18 @@ public class MappedRandomAccessFile {
 	}
 
 	public void write(byte[] b, int off, int len) throws IOException {
-		int pageIndex = (int)(pos >> PAGE_SHIFT);
-		int offset = (int)(pos & PAGE_MASK);
+		int pageIndex = (int) (pos >> PAGE_SHIFT);
+		int offset = (int) (pos & PAGE_MASK);
 		int endPageOne = Math.min(len + offset, PAGE_SIZE);
 
 		MappedByteBuffer page = getPage(pageIndex);
 
 		int j = 0;
-		
+
 		int length = endPageOne - offset;
-		
+
 		page.position(offset);
-		
+
 		page.put(b, off + j, length);
 		j += length;
 

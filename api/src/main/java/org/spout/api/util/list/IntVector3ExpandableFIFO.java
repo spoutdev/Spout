@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,19 +26,14 @@
  */
 package org.spout.api.util.list;
 
-
 public class IntVector3ExpandableFIFO extends IntVector3FIFO {
-	
 	public IntVector3ExpandableFIFO(int size) {
 		super(size);
 	}
-	
+
 	/**
 	 * Writes the 3 coordinates to the FIFO
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
+	 *
 	 * @return true if the FIFO is full
 	 */
 	public boolean write(int x, int y, int z) {
@@ -49,16 +44,15 @@ public class IntVector3ExpandableFIFO extends IntVector3FIFO {
 		return false;
 	}
 
-	
 	/**
 	 * Gets if the FIFO is full
-	 * 
+	 *
 	 * @return true if the fifo is full
 	 */
 	public boolean isFull() {
 		return false;
 	}
-	
+
 	protected void resize(int newSize) {
 		int[] newArray = new int[newSize];
 
@@ -78,5 +72,4 @@ public class IntVector3ExpandableFIFO extends IntVector3FIFO {
 		read = 0;
 		array = newArray;
 	}
-
 }

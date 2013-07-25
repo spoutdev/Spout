@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,10 +33,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.util.StringUtil;
 
 /**
- * A 4-dimensional vector represented by float-precision x,y,z,w coordinates
- * <p>
- * Note, this is the Immutable form of Vector4. All operations will construct a
- * new Vector4.
+ * A 4-dimensional vector represented by float-precision x,y,z,w coordinates <p> Note, this is the Immutable form of Vector4. All operations will construct a new Vector4.
  */
 public class Vector4 implements Comparable<Vector4>, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -76,6 +73,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector4 from the given x, y, z, w
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -90,6 +88,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector4 from the given x, y, z, w
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -101,6 +100,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector4 from the given x, y, z, w
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -112,7 +112,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector4 from an old Vector4
-	 * @param o
 	 */
 	public Vector4(Vector4 o) {
 		this(o.x, o.y, o.z, o.w);
@@ -127,6 +126,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Gets the X coordinate
+	 *
 	 * @return The X coordinate
 	 */
 	public float getX() {
@@ -135,6 +135,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Gets the Y coordinate
+	 *
 	 * @return The Y coordinate
 	 */
 	public float getY() {
@@ -143,6 +144,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Gets the Z coordinate
+	 *
 	 * @return The Z coordinate
 	 */
 	public float getZ() {
@@ -151,6 +153,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Gets the W coordinate
+	 *
 	 * @return The W coordinate
 	 */
 	public float getW() {
@@ -175,6 +178,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Adds this Vector4 to the value of the Vector4 argument
+	 *
 	 * @param that The Vector4 to add
 	 * @return the new Vector4
 	 */
@@ -184,11 +188,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Adds a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 add(float x, float y, float z, float w) {
 		return add(new Vector4(x, y, z, w));
@@ -196,11 +195,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Adds a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 add(double x, double y, double z, double w) {
 		return add(new Vector4(x, y, z, w));
@@ -208,11 +202,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Adds a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 add(int x, int y, int z, int w) {
 		return add(new Vector4(x, y, z, w));
@@ -220,6 +209,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Subtracts this Vector4 to the value of the Vector4 argument
+	 *
 	 * @param that The Vector4 to subtract
 	 * @return the new Vector4
 	 */
@@ -229,11 +219,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Subtracts a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 subtract(float x, float y, float z, float w) {
 		return subtract(new Vector4(x, y, z, w));
@@ -241,11 +226,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Subtracts a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 subtract(double x, double y, double z, double w) {
 		return subtract(new Vector4(x, y, z, w));
@@ -253,11 +233,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Subtracts a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 subtract(int x, int y, int z, int w) {
 		return subtract(new Vector4(x, y, z, w));
@@ -265,6 +240,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Multiplies this Vector4 to the value of the Vector4 argument
+	 *
 	 * @param that The Vector4 to multiply
 	 * @return the new Vector4
 	 */
@@ -274,11 +250,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Multiplies a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 multiply(float x, float y, float z, float w) {
 		return multiply(new Vector4(x, y, z, w));
@@ -286,11 +257,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Multiplies a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 multiply(double x, double y, double z, double w) {
 		return multiply(new Vector4(x, y, z, w));
@@ -298,11 +264,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Multiplies a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 multiply(int x, int y, int z, int w) {
 		return multiply(new Vector4(x, y, z, w));
@@ -310,8 +271,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Multiplies a Vector4 by the given value
-	 * @param val
-	 * @return
 	 */
 	public Vector4 multiply(float val) {
 		return multiply(new Vector4(val, val, val, val));
@@ -319,8 +278,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Multiplies a Vector4 by the given value
-	 * @param val
-	 * @return
 	 */
 	public Vector4 multiply(double val) {
 		return multiply(new Vector4(val, val, val, val));
@@ -328,8 +285,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Multiplies a Vector4 by the given value
-	 * @param val
-	 * @return
 	 */
 	public Vector4 multiply(int val) {
 		return multiply(new Vector4(val, val, val, val));
@@ -337,6 +292,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Divides the given Vector4 from this Vector4
+	 *
 	 * @param that The Vector4 to divide
 	 * @return the new Vector4
 	 */
@@ -346,11 +302,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Divides a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 divide(float x, float y, float z, float w) {
 		return divide(new Vector4(x, y, z, w));
@@ -358,11 +309,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Divides a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 divide(double x, double y, double z, double w) {
 		return divide(new Vector4(x, y, z, w));
@@ -370,11 +316,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Divides a Vector4 comprised of the given x, y, z, w values
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 * @return
 	 */
 	public Vector4 divide(int x, int y, int z, int w) {
 		return divide(new Vector4(x, y, z, w));
@@ -382,8 +323,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Divides a Vector4 by the given value
-	 * @param val
-	 * @return
 	 */
 	public Vector4 divide(float val) {
 		return divide(new Vector4(val, val, val, val));
@@ -391,8 +330,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Divides a Vector4 by the given value
-	 * @param val
-	 * @return
 	 */
 	public Vector4 divide(double val) {
 		return divide(new Vector4(val, val, val, val));
@@ -400,16 +337,14 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Divides a Vector4 by the given value
-	 * @param val
-	 * @return
 	 */
 	public Vector4 divide(int val) {
 		return divide(new Vector4(val, val, val, val));
 	}
 
 	/**
-	 * Returns this Vector4 dot the Vector4 argument. Dot Product is defined as
-	 * a.x*b.x + a.y*b.y
+	 * Returns this Vector4 dot the Vector4 argument. Dot Product is defined as a.x*b.x + a.y*b.y
+	 *
 	 * @param that The Vector4 to dot with this.
 	 * @return The dot product
 	 */
@@ -418,9 +353,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 	}
 
 	/**
-	 * Returns a Vector3 object with the x, y, z values from this Vector4
-	 * object.
-	 * @return
+	 * Returns a Vector3 object with the x, y, z values from this Vector4 object.
 	 */
 	public Vector3 toVector3() {
 		return Vector4.toVector3(this);
@@ -428,7 +361,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Returns a Vector2 object with the x, y values from this Vector4 object.
-	 * @return
 	 */
 	public Vector2 toVector2() {
 		return Vector4.toVector2(this);
@@ -436,7 +368,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Rounds the values of this Vector4 up to the nearest integer value.
-	 * @return
 	 */
 	public Vector4 ceil() {
 		return Vector4.ceil(this);
@@ -444,7 +375,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Rounds the values of this Vector4 down to the nearest integer value.
-	 * @return
 	 */
 	public Vector4 floor() {
 		return Vector4.floor(this);
@@ -452,7 +382,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Rounds the values of this Vector4 to the nearest integer value.
-	 * @return
 	 */
 	public Vector4 round() {
 		return Vector4.round(this);
@@ -460,7 +389,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Sets the values of this Vector4 to their absolute value.
-	 * @return
 	 */
 	public Vector4 abs() {
 		return Vector4.abs(this);
@@ -468,8 +396,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Gets the distance between this Vector4 and a given Vector4.
-	 * @param a
-	 * @return
 	 */
 	public double distance(Vector4 a) {
 		return Vector4.distance(a, this);
@@ -477,8 +403,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Gets the distance between this Vector4 and a given Vector4.
-	 * @param a
-	 * @return
 	 */
 	public double distanceSquared(Vector4 a) {
 		return Vector4.distanceSquared(a, this);
@@ -486,8 +410,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Raises the values of this Vector4 to the given power.
-	 * @param power
-	 * @return
 	 */
 	public Vector4 pow(double power) {
 		return Vector4.pow(this, power);
@@ -495,6 +417,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Calculates the length of this Vector4 squared.
+	 *
 	 * @return the squared length
 	 */
 	public float lengthSquared() {
@@ -502,8 +425,8 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 	}
 
 	/**
-	 * Calculates the length of this Vector4 Note: This makes use of the sqrt
-	 * function, and is not cached. That could affect performance
+	 * Calculates the length of this Vector4 Note: This makes use of the sqrt function, and is not cached. That could affect performance
+	 *
 	 * @return the length of this Vector4
 	 */
 	public float length() {
@@ -512,6 +435,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Returns this Vector4 where the length is equal to 1
+	 *
 	 * @return This Vector4 with length 1
 	 */
 	public Vector4 normalize() {
@@ -519,8 +443,8 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 	}
 
 	/**
-	 * Returns this Vector4 in an array. Element 0 contains x Element 1 contains
-	 * y
+	 * Returns this Vector4 in an array. Element 0 contains x Element 1 contains y
+	 *
 	 * @return The array containing this Vector4
 	 */
 	public float[] toArray() {
@@ -564,8 +488,8 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 	}
 
 	/**
-	 * Returns the length of the provided Vector4 Note: This makes use of the
-	 * sqrt function, and is not cached. This could affect performance.
+	 * Returns the length of the provided Vector4 Note: This makes use of the sqrt function, and is not cached. This could affect performance.
+	 *
 	 * @param a The Vector4 to calculate the length of
 	 * @return The length of the Vector4
 	 */
@@ -575,6 +499,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Returns the length squared of the provided Vector4
+	 *
 	 * @param a the Vector4 to calculate the length squared
 	 * @return the length squared of the Vector4
 	 */
@@ -584,8 +509,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Returns a Vector4 that is the unit form of the provided Vector4
-	 * @param a
-	 * @return
 	 */
 	public static Vector4 normalize(Vector4 a) {
 		return a.multiply(1.f / a.length());
@@ -593,9 +516,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Adds one Vector4 to the other Vector4
-	 * @param a
-	 * @param b
-	 * @return
 	 */
 	public static Vector4 add(Vector4 a, Vector4 b) {
 		return new Vector4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
@@ -603,9 +523,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Subtracts one Vector4 from the other Vector4
-	 * @param a
-	 * @param b
-	 * @return
 	 */
 	public static Vector4 subtract(Vector4 a, Vector4 b) {
 		return new Vector4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
@@ -613,9 +530,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Multiplies one Vector4 by the other Vector4
-	 * @param a
-	 * @param b
-	 * @return
 	 */
 	public static Vector4 multiply(Vector4 a, Vector4 b) {
 		return new Vector4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
@@ -623,29 +537,20 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Divides one Vector4 by the other Vector4
-	 * @param a
-	 * @param b
-	 * @return
 	 */
 	public static Vector4 divide(Vector4 a, Vector4 b) {
 		return new Vector4(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
 	}
 
 	/**
-	 * Calculates the Dot Product of two Vector4s Dot Product is defined as
-	 * a.x*b.x + a.y*b.y
-	 * @param a
-	 * @param b
-	 * @return
+	 * Calculates the Dot Product of two Vector4s Dot Product is defined as a.x*b.x + a.y*b.y
 	 */
 	public static float dot(Vector4 a, Vector4 b) {
 		return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 	}
 
 	/**
-	 * Returns a Vector3 object with the x, y, z values from this Vector4
-	 * object.
-	 * @return
+	 * Returns a Vector3 object with the x, y, z values from this Vector4 object.
 	 */
 	public static Vector3 toVector3(Vector4 o) {
 		return new Vector3(o.x, o.y, o.z);
@@ -653,7 +558,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Returns a Vector2 object with the x, y values from this Vector4 object.
-	 * @return
 	 */
 	public static Vector2 toVector2(Vector4 o) {
 		return new Vector2(o.x, o.y);
@@ -661,8 +565,8 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Rounds the values of the given Vector4 up to the nearest integer value.
+	 *
 	 * @param o Vector4 to use
-	 * @return
 	 */
 	public static Vector4 ceil(Vector4 o) {
 		return new Vector4(Math.ceil(o.x), Math.ceil(o.y), Math.ceil(o.z), Math.ceil(o.w));
@@ -670,8 +574,8 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Rounds the values of the given Vector4 down to the nearest integer value.
+	 *
 	 * @param o Vector4 to use
-	 * @return
 	 */
 	public static Vector4 floor(Vector4 o) {
 		return new Vector4(Math.floor(o.x), Math.floor(o.y), Math.floor(o.z), Math.floor(o.w));
@@ -679,8 +583,8 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Rounds the values of the given Vector4 to the nearest integer value.
+	 *
 	 * @param o Vector4 to use
-	 * @return
 	 */
 	public static Vector4 round(Vector4 o) {
 		return new Vector4(Math.round(o.x), Math.round(o.y), Math.round(o.z), Math.round(o.w));
@@ -688,8 +592,8 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Sets the values of the given Vector4 to their absolute value.
+	 *
 	 * @param o Vector4 to use
-	 * @return
 	 */
 	public static Vector4 abs(Vector4 o) {
 		return new Vector4(Math.abs(o.x), Math.abs(o.y), Math.abs(o.z), Math.abs(o.w));
@@ -697,9 +601,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Returns a Vector4 containing the smallest values.
-	 * @param o1
-	 * @param o2
-	 * @return
 	 */
 	public static Vector4 min(Vector4 o1, Vector4 o2) {
 		return new Vector4(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y), Math.min(o1.z, o2.z), Math.min(o1.w, o2.w));
@@ -707,9 +608,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Returns a Vector4 containing the largest values.
-	 * @param o1
-	 * @param o2
-	 * @return
 	 */
 	public static Vector4 max(Vector4 o1, Vector4 o2) {
 		return new Vector4(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y), Math.max(o1.z, o2.z), Math.max(o1.w, o2.w));
@@ -717,8 +615,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Returns a Vector4 with random values (between 0 and 1)
-	 * @param o
-	 * @return
 	 */
 	public static Vector4 rand() {
 		double[] rands = new double[4];
@@ -730,10 +626,11 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Returns the provided Vector4 in an array.
+	 *
 	 * @return The array containing the Vector4
 	 */
 	public static float[] toArray(Vector4 a) {
-		return new float[]{a.x, a.y, a.z, a.w};
+		return new float[] {a.x, a.y, a.z, a.w};
 	}
 
 	/**
@@ -745,9 +642,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Gets the distance between two Vector4.
-	 * @param a
-	 * @param b
-	 * @return
 	 */
 	public static double distance(Vector4 a, Vector4 b) {
 		return GenericMath.length(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
@@ -755,9 +649,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Gets the squared distance between two Vector4.
-	 * @param a
-	 * @param b
-	 * @return
 	 */
 	public static double distanceSquared(Vector4 a, Vector4 b) {
 		return GenericMath.lengthSquared(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
@@ -765,9 +656,6 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 
 	/**
 	 * Raises the values of a Vector4 to the given power.
-	 * @param o
-	 * @param power
-	 * @return
 	 */
 	public static Vector4 pow(Vector4 o, double power) {
 		return new Vector4(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power), Math.pow(o.w, power));

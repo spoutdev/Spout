@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -35,6 +35,7 @@ public class MatrixMath {
 
 	/**
 	 * Rounds all fields of the vector to the nearest integer value.
+	 *
 	 * @param o Matrix to use
 	 * @return The rounded matrix
 	 */
@@ -51,6 +52,7 @@ public class MatrixMath {
 
 	/**
 	 * Adds two matrices together
+	 *
 	 * @param a The left matrix
 	 * @param b The right matrix
 	 * @return The sum matrix of left plus right
@@ -71,6 +73,7 @@ public class MatrixMath {
 
 	/**
 	 * Multiplies two matrices together
+	 *
 	 * @param a The left matrix
 	 * @param b The right matrix
 	 * @return The product matrix of left times right
@@ -95,6 +98,7 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 identity matrix
+	 *
 	 * @return a 4x4 identity matrix
 	 */
 	public static Matrix createIdentity() {
@@ -103,6 +107,7 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 uniform scalar matrix
+	 *
 	 * @param scale The scale to apply to the identity matrix
 	 * @return The scaled matrix
 	 */
@@ -116,6 +121,7 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 uniform scalar matrix
+	 *
 	 * @param scale The scale to apply to the identity matrix
 	 * @return The scaled matrix
 	 */
@@ -129,6 +135,7 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 3x3 uniform scalar matrix
+	 *
 	 * @param scale The scale to apply to the identity matrix
 	 * @return The scaled matrix
 	 */
@@ -140,8 +147,8 @@ public class MatrixMath {
 	}
 
 	/**
-	 * Creates and returns a 4x4 matrix that represents the translation provided
-	 * by the given Vector3
+	 * Creates and returns a 4x4 matrix that represents the translation provided by the given Vector3
+	 *
 	 * @param vector The translation vector
 	 * @return The matrix form of the translation vector
 	 */
@@ -154,8 +161,8 @@ public class MatrixMath {
 	}
 
 	/**
-	 * Creates and returns a 3x3 matrix that represents the translation provided
-	 * by the given Vector2
+	 * Creates and returns a 3x3 matrix that represents the translation provided by the given Vector2
+	 *
 	 * @param vector The translation vector
 	 * @return The matrix form of the translation vector
 	 */
@@ -168,6 +175,7 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 rotation matrix around the X axis
+	 *
 	 * @param rot The rotation around x in degrees
 	 * @return The matrix corresponding to the rotation
 	 */
@@ -189,6 +197,7 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 rotation matrix around the Y axis
+	 *
 	 * @param rot The rotation around y in degrees
 	 * @return The matrix corresponding to the rotation
 	 */
@@ -210,6 +219,7 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 rotation matrix around the Z axis
+	 *
 	 * @param rot The rotation around z in degrees
 	 * @return The matrix corresponding to the rotation
 	 */
@@ -230,8 +240,8 @@ public class MatrixMath {
 	}
 
 	/**
-	 * Creates and returns a 4x4 rotation matrix given by the provided
-	 * Quaternion
+	 * Creates and returns a 4x4 rotation matrix given by the provided Quaternion
+	 *
 	 * @param rot The rotation
 	 * @return The rotation matrix for the quaternion
 	 */
@@ -273,11 +283,11 @@ public class MatrixMath {
 
 	/**
 	 * Creates a lookat matrix with the given eye point.
+	 *
 	 * @param eye The location of the camera
 	 * @param at The location that the camera is looking at
 	 * @param up The direction that corrisponds to Up
-	 * @return A rotational transform that corrisponds to a camera looking at
-	 * the given values
+	 * @return A rotational transform that corrisponds to a camera looking at the given values
 	 */
 	public static Matrix createLookAt(Vector3 eye, Vector3 at, Vector3 up) {
 		Vector3 f = at.subtract(eye).normalize();
@@ -306,8 +316,8 @@ public class MatrixMath {
 	}
 
 	/**
-	 * Creates a perspective projection matrix with the given (x) FOV, aspect,
-	 * near and far planes
+	 * Creates a perspective projection matrix with the given (x) FOV, aspect, near and far planes
+	 *
 	 * @param fov The Field of View in the x direction
 	 * @param aspect The aspect ratio, usually width/height
 	 * @param znear The near plane. Cannot be 0
@@ -323,6 +333,7 @@ public class MatrixMath {
 
 	/**
 	 * Creates an orthographic viewing fustrum built from the provided values
+	 *
 	 * @param right the right most plane of the viewing fustrum
 	 * @param left the left most plane of the viewing fustrum
 	 * @param top the top plane of the viewing fustrum
@@ -355,6 +366,7 @@ public class MatrixMath {
 
 	/**
 	 * Transpose the matrix.
+	 *
 	 * @param in The matrix to transpose
 	 * @return The transposed matrix
 	 */

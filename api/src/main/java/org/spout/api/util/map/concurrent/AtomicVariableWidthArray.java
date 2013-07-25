@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,16 +32,12 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 import org.spout.api.math.GenericMath;
 
 /**
- * This class implements a variable width Atomic array.  It is backed by an AtomicInteger array.<br>
- * <br>
- * Entries widths can be a power of 2 from 1 to 32
+ * This class implements a variable width Atomic array.  It is backed by an AtomicInteger array.<br> <br> Entries widths can be a power of 2 from 1 to 32
  */
 public class AtomicVariableWidthArray implements Serializable {
-	
 	private static final long serialVersionUID = 423785245671235L;
-	
 	private final static int[] log2 = new int[33];
-	
+
 	static {
 		log2[1] = 0;
 		log2[2] = 1;
@@ -50,33 +46,30 @@ public class AtomicVariableWidthArray implements Serializable {
 		log2[16] = 4;
 		log2[32] = 5;
 	}
-	
-	private final boolean fullWidth;
 
+	private final boolean fullWidth;
 	private final int indexShift;
 	private final int subIndexMask;
 	private final int[] valueBitmask;
 	private final int[] valueShift;
 	private final int maxValue;
 	private final int width;
-
 	private AtomicIntegerArray array;
-
 	private final int length;
-	
+
 	/**
 	 * Creates a variable Atomic array.  The width must be a power of two from 1 to 32 and the length must be a multiple of the number of elements that fit in an int after packing.
-	 * 
+	 *
 	 * @param length the length of the array
 	 * @param width the number of bits in each entry
 	 */
 	public AtomicVariableWidthArray(int length, int width) {
 		this(length, width, null);
 	}
-	
+
 	/**
 	 * Creates a variable Atomic array.  The width must be a power of two from 1 to 32 and the length must be a multiple of the number of elements that fit in an int after packing.
-	 * 
+	 *
 	 * @param length the length of the array
 	 * @param width the number of bits in each entry
 	 * @param initial the initial state of the array (in packed format)
@@ -85,28 +78,28 @@ public class AtomicVariableWidthArray implements Serializable {
 		if (GenericMath.roundUpPow2(width) != width || width < 1 || width > 32) {
 			throw new IllegalArgumentException("Width must be a power of 2 between 1 and 32 " + width);
 		}
-		
+
 		indexShift = 5 - log2[width];
 		subIndexMask = (1 << indexShift) - 1;
-		
+
 		int valuesPerInt = 32 / width;
-		
+
 		valueBitmask = new int[valuesPerInt];
 		valueShift = new int[valuesPerInt];
-		
+
 		for (int i = 0; i < valuesPerInt; i++) {
 			valueShift[i] = i * width;
 			valueBitmask[i] = ((1 << width) - 1) << valueShift[i];
 		}
-		
+
 		this.length = length;
-		
+
 		int newLength = length / valuesPerInt;
-		
+
 		if (newLength * valuesPerInt != length) {
 			throw new IllegalArgumentException("The length must be a multiple of " + valuesPerInt + " for arrays of width " + width);
 		}
-		
+
 		if (initial != null) {
 			if (newLength != initial.length) {
 				throw new IllegalArgumentException("Length of packed array did not match expected");
@@ -115,18 +108,17 @@ public class AtomicVariableWidthArray implements Serializable {
 		} else {
 			this.array = new AtomicIntegerArray(newLength);
 		}
-		
-		
+
 		this.fullWidth = width == 32;
-		
+
 		this.maxValue = this.fullWidth ? -1 : valueBitmask[0];
-		
+
 		this.width = width;
 	}
-	
+
 	/**
 	 * Gets the maximum unsigned value that can be stored in the array
-	 * 
+	 *
 	 * @return the max value
 	 */
 	public int getMaxValue() {
@@ -146,7 +138,7 @@ public class AtomicVariableWidthArray implements Serializable {
 
 		return unPack(array.get(getIndex(i)), getSubIndex(i));
 	}
-	
+
 	/**
 	 * Sets an element to the given value
 	 *
@@ -155,7 +147,7 @@ public class AtomicVariableWidthArray implements Serializable {
 	 */
 	public final void set(int i, int newValue) {
 		if (fullWidth) {
-			array.set(i,  newValue);
+			array.set(i, newValue);
 			return;
 		}
 
@@ -196,7 +188,7 @@ public class AtomicVariableWidthArray implements Serializable {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Sets an element in the array at a given index and returns the old value
 	 *
@@ -220,7 +212,7 @@ public class AtomicVariableWidthArray implements Serializable {
 		}
 		return unPack(prev, subIndex);
 	}
-	
+
 	private final int addAndGet(int i, int delta, boolean old) {
 		if (fullWidth) {
 			if (old) {
@@ -245,7 +237,7 @@ public class AtomicVariableWidthArray implements Serializable {
 		}
 		return (old ? prevValue : newValue) & valueBitmask[0];
 	}
-	
+
 	/**
 	 * Gets the length of the array
 	 *
@@ -254,22 +246,20 @@ public class AtomicVariableWidthArray implements Serializable {
 	public final int length() {
 		return length;
 	}
-	
+
 	/**
 	 * Gets the width of the array
-	 * 
+	 *
 	 * @return the width
 	 */
 	public final int width() {
 		return width;
 	}
-	
+
 	/**
-	 * Gets an array containing all the values in the array. The returned values
-	 * are not guaranteed to be from the same time instant.
+	 * Gets an array containing all the values in the array. The returned values are not guaranteed to be from the same time instant.
 	 *
-	 * If an array is provided and it is the correct length, then that array
-	 * will be used as the destination array.
+	 * If an array is provided and it is the correct length, then that array will be used as the destination array.
 	 *
 	 * @param array the provided array
 	 * @return an array containing the values in the array
@@ -278,18 +268,16 @@ public class AtomicVariableWidthArray implements Serializable {
 		if (array == null || array.length != length()) {
 			array = new int[length()];
 		}
-		
+
 		for (int i = 0; i < length(); i++) {
 			array[i] = get(i);
 		}
-		
+
 		return array;
 	}
-	
+
 	/**
 	 * Gets a packed version of this array.  Tearing may occur if the array is updated during this method call.
-	 * 
-	 * @return
 	 */
 	public int[] getPacked() {
 		int length = this.array.length();
@@ -303,49 +291,48 @@ public class AtomicVariableWidthArray implements Serializable {
 	/*
 	 * Remaining methods use the above methods
 	 */
-	
+
 	public int addAndGet(int i, int delta) {
 		return addAndGet(i, delta, false);
 	}
-	
+
 	public int getAndAdd(int i, int delta) {
 		return addAndGet(i, delta, true);
 	}
-	
+
 	public int incrementAndGet(int i) {
 		return addAndGet(i, 1);
 	}
-	
+
 	public int decrementAndGet(int i) {
 		return addAndGet(i, -1);
 	}
-	
+
 	public int getAndIncrement(int i) {
 		return getAndAdd(i, 1);
 	}
-	
+
 	public int getAndDecrement(int i) {
 		return getAndAdd(i, -1);
 	}
-	
+
 	private final int getIndex(int i) {
 		return i >> indexShift;
 	}
-	
+
 	private final int getSubIndex(int i) {
 		return subIndexMask & i;
 	}
-	
+
 	private final int unPack(int packed, int subIndex) {
 		int v = (packed & valueBitmask[subIndex]) >>> valueShift[subIndex];
 		return v;
 	}
-	
+
 	private final int pack(int prev, int newValue, int subIndex) {
 		int bitmask = valueBitmask[subIndex];
 		int shift = valueShift[subIndex];
 		int result = (prev & ~bitmask) | (bitmask & (newValue << shift));
 		return result;
 	}
-	
 }

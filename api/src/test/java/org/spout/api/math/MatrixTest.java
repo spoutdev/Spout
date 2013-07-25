@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,9 +26,9 @@
  */
 package org.spout.api.math;
 
-import static org.junit.Assert.fail;
-
 import org.junit.Test;
+
+import static org.junit.Assert.fail;
 
 public class MatrixTest {
 	private static final double eps = 0.01;
@@ -49,7 +49,7 @@ public class MatrixTest {
 		if (m.getDimension() != 4) {
 			fail("Default Constructor should make 4x4, got" + m.getDimension());
 		}
-		double[][] id = { {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+		double[][] id = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 		compareMatrixToArray(m, id);
 	}
 
@@ -72,7 +72,6 @@ public class MatrixTest {
 				}
 			}
 		}
-
 	}
 
 	@Test
@@ -80,7 +79,7 @@ public class MatrixTest {
 		Matrix m = new Matrix();
 		m.set(0, 0, 12);
 		m.set(1, 3, 2);
-		double[][] id = { {12, 0, 0, 0}, {0, 1, 0, 2}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+		double[][] id = {{12, 0, 0, 0}, {0, 1, 0, 2}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 		compareMatrixToArray(m, id);
 	}
 
@@ -92,7 +91,7 @@ public class MatrixTest {
 		if (m.getDimension() != 4) {
 			fail("Default Constructor should make 4x4, got" + m.getDimension());
 		}
-		double[][] id = { {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+		double[][] id = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 		compareMatrixToArray(m, id);
 
 		Matrix c = new Matrix();
@@ -105,7 +104,7 @@ public class MatrixTest {
 		if (m.getDimension() != 4) {
 			fail("Default Constructor should make 4x4, got" + m.getDimension());
 		}
-		double[][] mul = { {-1, 10, 0, 0}, {0, 1, 16, 4}, {0, 0, 1, 0}, {0, 0, 4, 1}};
+		double[][] mul = {{-1, 10, 0, 0}, {0, 1, 16, 4}, {0, 0, 1, 0}, {0, 0, 4, 1}};
 
 		compareMatrixToArray(m, mul);
 
@@ -136,7 +135,7 @@ public class MatrixTest {
 
 		Matrix trans = MatrixMath.createTranslated(center.multiply(-1));
 		mat = MatrixMath.multiply(mat, trans);
-		id = new double[][] { {-0.7071068f, 0.0f, 0.7071068f, 0.0f}, {0.0f, 1.0000001f, 0.0f, 0.0f}, {-0.7071068f, 0.0f, -0.7071068f, 0.0f}, {-5.0f, 0.0f, -5.0f, 1.0f}};
+		id = new double[][] {{-0.7071068f, 0.0f, 0.7071068f, 0.0f}, {0.0f, 1.0000001f, 0.0f, 0.0f}, {-0.7071068f, 0.0f, -0.7071068f, 0.0f}, {-5.0f, 0.0f, -5.0f, 1.0f}};
 		compareMatrixToArray(mat, id);
 	}
 
@@ -148,7 +147,7 @@ public class MatrixTest {
 		if (m.getDimension() != 4) {
 			fail("Default Constructor should make 4x4, got" + m.getDimension());
 		}
-		double[][] id = { {2, 0, 0, 0}, {0, 2, 0, 0}, {0, 0, 2, 0}, {0, 0, 0, 2}};
+		double[][] id = {{2, 0, 0, 0}, {0, 2, 0, 0}, {0, 0, 2, 0}, {0, 0, 0, 2}};
 		compareMatrixToArray(m, id);
 
 		Matrix c = new Matrix();
@@ -161,21 +160,21 @@ public class MatrixTest {
 		if (m.getDimension() != 4) {
 			fail("Default Constructor should make 4x4, got" + m.getDimension());
 		}
-		double[][] mul = { {0, 10, 0, 0}, {0, 2, 0, 4}, {0, 0, 2, 0}, {0, 0, 4, 2}};
+		double[][] mul = {{0, 10, 0, 0}, {0, 2, 0, 4}, {0, 0, 2, 0}, {0, 0, 4, 2}};
 		compareMatrixToArray(m, mul);
 	}
 
 	@Test
 	public void testTranslate() {
 		Vector3 a = new Vector3(-1, 2, 4);
-		double[][] id = { {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {-1, 2, 4, 1}};
+		double[][] id = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {-1, 2, 4, 1}};
 		Matrix m = MatrixMath.createTranslated(a);
 		compareMatrixToArray(m, id);
 	}
 
 	@Test
 	public void testScaleDouble() {
-		double[][] id = { {5, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 5, 0}, {0, 0, 0, 1}};
+		double[][] id = {{5, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 5, 0}, {0, 0, 0, 1}};
 		Matrix m = MatrixMath.createScaled(5.0f);
 		compareMatrixToArray(m, id);
 	}
@@ -183,7 +182,7 @@ public class MatrixTest {
 	@Test
 	public void testScaleVector3() {
 		Vector3 s = new Vector3(-1, 5, 3);
-		double[][] id = { {-1, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 3, 0}, {0, 0, 0, 1}};
+		double[][] id = {{-1, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 3, 0}, {0, 0, 0, 1}};
 		Matrix m = MatrixMath.createScaled(s);
 		compareMatrixToArray(m, id);
 	}
@@ -191,7 +190,7 @@ public class MatrixTest {
 	@Test
 	public void testRotateX() {
 		float theta = 30;
-		double[][] id = { {1, 0, 0, 0}, {0, Math.cos(Math.toRadians(theta)), -Math.sin(Math.toRadians(theta)), 0}, {0, Math.sin(Math.toRadians(theta)), Math.cos(Math.toRadians(theta)), 0}, {0, 0, 0, 1}};
+		double[][] id = {{1, 0, 0, 0}, {0, Math.cos(Math.toRadians(theta)), -Math.sin(Math.toRadians(theta)), 0}, {0, Math.sin(Math.toRadians(theta)), Math.cos(Math.toRadians(theta)), 0}, {0, 0, 0, 1}};
 		Matrix m = MatrixMath.createRotatedX(theta);
 		compareMatrixToArray(m, id);
 	}
@@ -199,7 +198,7 @@ public class MatrixTest {
 	@Test
 	public void testRotateY() {
 		float theta = 10;
-		double[][] id = { {Math.cos(Math.toRadians(theta)), 0, Math.sin(Math.toRadians(theta)), 0}, {0, 1, 0, 0}, {-Math.sin(Math.toRadians(theta)), 0, Math.cos(Math.toRadians(theta)), 0}, {0, 0, 0, 1}};
+		double[][] id = {{Math.cos(Math.toRadians(theta)), 0, Math.sin(Math.toRadians(theta)), 0}, {0, 1, 0, 0}, {-Math.sin(Math.toRadians(theta)), 0, Math.cos(Math.toRadians(theta)), 0}, {0, 0, 0, 1}};
 		Matrix m = MatrixMath.createRotatedY(theta);
 		compareMatrixToArray(m, id);
 	}
@@ -207,7 +206,7 @@ public class MatrixTest {
 	@Test
 	public void testRotateZ() {
 		float theta = 40;
-		double[][] id = { {Math.cos(Math.toRadians(theta)), -Math.sin(Math.toRadians(theta)), 0, 0}, {Math.sin(Math.toRadians(theta)), Math.cos(Math.toRadians(theta)), 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+		double[][] id = {{Math.cos(Math.toRadians(theta)), -Math.sin(Math.toRadians(theta)), 0, 0}, {Math.sin(Math.toRadians(theta)), Math.cos(Math.toRadians(theta)), 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 		compareMatrixToArray(MatrixMath.createRotatedZ(theta), id);
 	}
 
@@ -219,20 +218,20 @@ public class MatrixTest {
 		rot = Quaternion.IDENTITY;
 		m = MatrixMath.createRotated(rot);
 
-		double[][] id = { {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+		double[][] id = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);
 
 		rot = new Quaternion(4, 3, 2, 0, true);
 		m = MatrixMath.createRotated(rot);
 
-		id = new double[][] { {0.103448, 0.827586, 0.551724, 0}, {0.827586, -0.37931, 0.413793, 0}, {0.551724, 0.413793, -0.724138, 0}, {0, 0, 0, 1}};
+		id = new double[][] {{0.103448, 0.827586, 0.551724, 0}, {0.827586, -0.37931, 0.413793, 0}, {0.551724, 0.413793, -0.724138, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);
 
 		rot = new Quaternion(90, new Vector3(0, 1, 0));
 		m = MatrixMath.createRotated(rot);
-		id = new double[][] { {0, 0, 1, 0}, {0, 1, 0, 0}, {-1, 0, 0, 0}, {0, 0, 0, 1}};
+		id = new double[][] {{0, 0, 1, 0}, {0, 1, 0, 0}, {-1, 0, 0, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);
 	}

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang3.tuple.Pair;
+
 import org.spout.api.event.object.Eventable;
 import org.spout.api.event.object.EventableListener;
 import org.spout.api.io.store.simple.SimpleStore;
@@ -39,7 +40,6 @@ import org.spout.api.io.store.simple.SimpleStore;
  * This class syncs a StringToUniqueIntegerMap from server to client
  */
 public final class SyncedStringMap extends StringToUniqueIntegerMap implements Eventable<SyncedMapEvent> {
-
 	private final CopyOnWriteArrayList<EventableListener<SyncedMapEvent>> registeredListeners = new CopyOnWriteArrayList<EventableListener<SyncedMapEvent>>();
 	private int id;
 
@@ -53,13 +53,13 @@ public final class SyncedStringMap extends StringToUniqueIntegerMap implements E
 
 	public static SyncedStringMap create(String name) {
 		SyncedStringMap map = new SyncedStringMap(name);
-		map.id  = SyncedMapRegistry.register(map);
+		map.id = SyncedMapRegistry.register(map);
 		return map;
 	}
-	
+
 	public static SyncedStringMap create(StringToUniqueIntegerMap parent, SimpleStore<Integer> store, int minId, int maxId, String name) {
 		SyncedStringMap map = new SyncedStringMap(parent, store, minId, maxId, name);
-		map.id  = SyncedMapRegistry.register(map);
+		map.id = SyncedMapRegistry.register(map);
 		return map;
 	}
 
@@ -83,8 +83,6 @@ public final class SyncedStringMap extends StringToUniqueIntegerMap implements E
 		callEvent(new SyncedMapEvent(this, SyncedMapEvent.Action.ADD, Arrays.asList(Pair.of(id, key))));
 		return super.register(key, id);
 	}
-	
-	
 
 	public void handleUpdate(SyncedMapEvent message) {
 		switch (message.getAction()) {
@@ -109,11 +107,10 @@ public final class SyncedStringMap extends StringToUniqueIntegerMap implements E
 		callEvent(new SyncedMapEvent(this, SyncedMapEvent.Action.SET, new ArrayList<Pair<Integer, String>>()));
 	}
 
-	
 	public int getId() {
 		return id;
 	}
-	
+
 	@Override
 	public void registerListener(EventableListener<SyncedMapEvent> listener) {
 		registeredListeners.add(listener);

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -29,49 +29,36 @@ package org.spout.engine.util.packed;
 import org.spout.api.util.hashing.SignedTenBitTripleHashed;
 
 public class PackedCoords extends SignedTenBitTripleHashed {
-	
-	@SuppressWarnings("unused")
+	@SuppressWarnings ("unused")
 	private final static int mask = 0xFFDFFBFF;
 
 	/**
-	 * Gets the int packed location for the given coordinates.  The coordinates must 
-	 * be in the region or one of its 26 neighbours for correction operation.
-	 * 
+	 * Gets the int packed location for the given coordinates.  The coordinates must be in the region or one of its 26 neighbours for correction operation.
+	 *
 	 * @param x the x offset
 	 * @param y the y offset
 	 * @param z the z offset
-	 * @return
 	 */
 	public static int getPackedCoords(int x, int y, int z) {
 		return SignedTenBitTripleHashed.key(x, y, z);
 	}
-	
+
 	public static int getX(int bx, int packed) {
 		return SignedTenBitTripleHashed.key1(packed) + bx;
 	}
-	
+
 	public static int getY(int by, int packed) {
 		return SignedTenBitTripleHashed.key2(packed) + by;
 	}
-	
+
 	public static int getZ(int bz, int packed) {
 		return SignedTenBitTripleHashed.key3(packed) + bz;
 	}
-	
+
 	/**
-	 * Adds the given x, y, z coordinate to this packed coordinate.<br>
-	 * <br>
-	 * Warning: this method will overflow if the resulting coordinate is outside 
-	 * the allowed range
-	 * 
-	 * @param packed
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
+	 * Adds the given x, y, z coordinate to this packed coordinate.<br> <br> Warning: this method will overflow if the resulting coordinate is outside the allowed range
 	 */
 	public static int translate(int packed, int x, int y, int z) {
 		return SignedTenBitTripleHashed.add(packed, x, y, z);
 	}
-	
 }

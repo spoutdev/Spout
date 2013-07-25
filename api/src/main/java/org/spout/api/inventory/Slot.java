@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -29,8 +29,7 @@ package org.spout.api.inventory;
 import java.io.Serializable;
 
 /**
- * Wraps around an Inventory and slot index to provide simple getters and setters<br>
- * This is not an element of an inventory. It is just a wrapper. It does not contain an ItemStack itself.
+ * Wraps around an Inventory and slot index to provide simple getters and setters<br> This is not an element of an inventory. It is just a wrapper. It does not contain an ItemStack itself.
  */
 public class Slot implements Serializable {
 	private static final long serialVersionUID = 5406867981064669422L;
@@ -44,6 +43,7 @@ public class Slot implements Serializable {
 
 	/**
 	 * Gets the Inventory this Slot is in
+	 *
 	 * @return Slot Inventory
 	 */
 	public Inventory getInventory() {
@@ -52,6 +52,7 @@ public class Slot implements Serializable {
 
 	/**
 	 * Gets the index of this Slot in the Inventory
+	 *
 	 * @return Slot index
 	 */
 	public int getIndex() {
@@ -60,6 +61,7 @@ public class Slot implements Serializable {
 
 	/**
 	 * Returns the ItemStack contained in this Slot
+	 *
 	 * @return Slot ItemStack
 	 */
 	public ItemStack get() {
@@ -68,6 +70,7 @@ public class Slot implements Serializable {
 
 	/**
 	 * Replaces the ItemStack at this slot in this inventory with the specified ItemStack
+	 *
 	 * @param item to set this slot
 	 * @return the item previously contained
 	 */
@@ -77,6 +80,7 @@ public class Slot implements Serializable {
 
 	/**
 	 * Adds a value to the amount of an item in this Slot
+	 *
 	 * @param amount to add
 	 * @return True if the amount was added, False if not
 	 */
@@ -86,6 +90,7 @@ public class Slot implements Serializable {
 
 	/**
 	 * Adds a value to the data of an item in this Slot
+	 *
 	 * @param amount to add
 	 * @return True of the data was added, False if not
 	 */
@@ -94,10 +99,9 @@ public class Slot implements Serializable {
 	}
 
 	/**
-	 * Attempts to add an item to the item of this Slot.
-	 * If the slot is empty, the slot is set to the new item.
-	 * Otherwise if the two items can stack, they are stacked.
-	 * The input item amount is modified upon adding
+	 * Attempts to add an item to the item of this Slot. If the slot is empty, the slot is set to the new item. Otherwise if the two items can stack, they are stacked. The input item amount is modified
+	 * upon adding
+	 *
 	 * @param item to add
 	 */
 	public void add(ItemStack item) {

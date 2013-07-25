@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,8 +30,9 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.services.ServiceManager.ServicePriority;
 
 /**
- * Constructs a service provider from an abstract class or interface.<br/>
- * Plugins shout NOT be constructing their own ServiceProviders, they should be getting providers from the ServiceManager dependent on the implementing class.
+ * Constructs a service provider from an abstract class or interface.<br/> Plugins shout NOT be constructing their own ServiceProviders, they should be getting providers from the ServiceManager
+ * dependent on the implementing class.
+ *
  * @param <T> Service
  */
 public class ServiceProvider<T> implements Comparable<ServiceProvider<?>> {
@@ -50,6 +51,7 @@ public class ServiceProvider<T> implements Comparable<ServiceProvider<?>> {
 
 	/**
 	 * Get the Class associated with the service provider.
+	 *
 	 * @return service
 	 */
 	public Class<T> getService() {
@@ -58,6 +60,7 @@ public class ServiceProvider<T> implements Comparable<ServiceProvider<?>> {
 
 	/**
 	 * Get the plugin that registered the service provider.
+	 *
 	 * @return plugin
 	 */
 	public Plugin getPlugin() {
@@ -66,6 +69,7 @@ public class ServiceProvider<T> implements Comparable<ServiceProvider<?>> {
 
 	/**
 	 * Get the provider which implements the class defined by the service.
+	 *
 	 * @return T provider
 	 */
 	public T getProvider() {
@@ -74,6 +78,7 @@ public class ServiceProvider<T> implements Comparable<ServiceProvider<?>> {
 
 	/**
 	 * Set the priority for the service provider
+	 *
 	 * @param priority of service
 	 */
 	public ServiceProvider<T> setPriority(ServicePriority priority) {
@@ -83,6 +88,7 @@ public class ServiceProvider<T> implements Comparable<ServiceProvider<?>> {
 
 	/**
 	 * Get the priority for the service provider
+	 *
 	 * @return priority
 	 */
 	public ServicePriority getPriority() {

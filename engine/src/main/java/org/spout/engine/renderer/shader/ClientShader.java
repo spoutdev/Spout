@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 import org.spout.api.Spout;
 import org.spout.api.math.Matrix;
@@ -43,7 +44,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Texture;
-
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutRenderer;
@@ -65,9 +65,7 @@ import org.spout.engine.renderer.shader.variables.Vector3ArrayShaderVariable;
  * Represents a Shader Object in OpenGL
  */
 public class ClientShader implements SpoutShader {
-
 	public class ShaderCompilationTask implements Runnable {
-
 		private final ClientShader shader;
 		private final String vsource, fsource;
 		private final String vsourceUrl, fsourceUrl;
@@ -108,7 +106,7 @@ public class ClientShader implements SpoutShader {
 				//Attributes
 				int activeAttributes = GL20.glGetProgrami(program, GL20.GL_ACTIVE_ATTRIBUTES);
 				int maxAttributeLength = GL20.glGetProgrami(program, GL20.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH);
-				for (int i = 0 ; i < activeAttributes ; i++) {
+				for (int i = 0; i < activeAttributes; i++) {
 					String name = GL20.glGetActiveAttrib(program, i, maxAttributeLength);
 					int type = GL20.glGetActiveAttribType(program, i);
 					int size = GL20.glGetActiveAttribSize(program, i);
@@ -121,7 +119,7 @@ public class ClientShader implements SpoutShader {
 				//Uniforms
 				int activeUniforms = GL20.glGetProgrami(program, GL20.GL_ACTIVE_UNIFORMS);
 				int maxUniformLength = GL20.glGetProgrami(program, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH);
-				for (int i = 0 ; i < activeUniforms ; i++) {
+				for (int i = 0; i < activeUniforms; i++) {
 					String name = GL20.glGetActiveUniform(program, i, maxUniformLength);
 					int type = GL20.glGetActiveUniformType(program, i);
 					int size = GL20.glGetActiveUniformSize(program, i);
@@ -163,7 +161,6 @@ public class ClientShader implements SpoutShader {
 	}
 
 	public class AttrUniInfo {
-
 		private final String name;
 		private final int type, size, location;
 
@@ -197,7 +194,6 @@ public class ClientShader implements SpoutShader {
 	}
 
 	private static ClientShader assigned = null;
-
 	private int program;
 	private String shaderName;
 	private int attachedShaders;
@@ -246,7 +242,6 @@ public class ClientShader implements SpoutShader {
 		}
 
 		doCompileShader(vshader, vertexShader, fshader, fragmentShader);
-
 	}
 
 	private void doCompileShader(String vsource, String vsourceUrl, String fsource, String fsourceUrl) {
@@ -346,7 +341,6 @@ public class ClientShader implements SpoutShader {
 		//GL20.glEnableVertexAttribArray(layout);
 		//GL20.glVertexAttribPointer(layout, size, type, false, 0, offset);
 	}
-	
 
 	@Override
 	public void assign() {
@@ -378,7 +372,6 @@ public class ClientShader implements SpoutShader {
 				}
 				dirtyTextures.clear();
 			}
-
 		}
 	}
 
@@ -388,29 +381,28 @@ public class ClientShader implements SpoutShader {
 
 	private String getFallbackVertexShader() {
 		return "#version 120\n"
-			+ "attribute vec4 vPosition;\n"
-			+ "attribute vec4 vColor;\n"
-			+ "attribute vec2 vTexCoord; \n"
-			+ "varying vec4 color;\n"
-			+ "varying vec2 uvcoord; \n"
-			+ "uniform mat4 Projection; \n"
-			+ "uniform mat4 View; \n"
-			+ "void main() \n"
-			+ "{\n    gl_Position = Projection * View * vPosition; \n"
-			+ "	uvcoord = vTexCoord; \n"
-			+ "color = vColor; \n"
-			+ "} \n";
+				+ "attribute vec4 vPosition;\n"
+				+ "attribute vec4 vColor;\n"
+				+ "attribute vec2 vTexCoord; \n"
+				+ "varying vec4 color;\n"
+				+ "varying vec2 uvcoord; \n"
+				+ "uniform mat4 Projection; \n"
+				+ "uniform mat4 View; \n"
+				+ "void main() \n"
+				+ "{\n    gl_Position = Projection * View * vPosition; \n"
+				+ "	uvcoord = vTexCoord; \n"
+				+ "color = vColor; \n"
+				+ "} \n";
 	}
 
 	private String getFallbackFragmentShader() {
 		return "#version 120\n"
-			+ "varying vec4 color;  //in \n"
-			+ "varying vec2 uvcoord; \n"
-			+ "uniform sampler2D texture; \n"
-			+ "void main()\n{\n"
-			+ "gl_FragColor =  color; \n} \n";
+				+ "varying vec4 color;  //in \n"
+				+ "varying vec2 uvcoord; \n"
+				+ "uniform sampler2D texture; \n"
+				+ "void main()\n{\n"
+				+ "gl_FragColor =  color; \n} \n";
 	}
-	
 
 	private void dispose() {
 		if (program != -1) {

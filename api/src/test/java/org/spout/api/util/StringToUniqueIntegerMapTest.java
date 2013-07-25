@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,6 +26,17 @@
  */
 package org.spout.api.util;
 
+import java.io.File;
+import java.util.HashMap;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import org.spout.api.io.store.simple.FlatFileStore;
+import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.io.store.simple.SimpleStore;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -33,33 +44,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.util.HashMap;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.spout.api.io.store.simple.FlatFileStore;
-import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.io.store.simple.SimpleStore;
-
 public class StringToUniqueIntegerMapTest {
 	private StringToUniqueIntegerMap serverMap;
 	private SimpleStore<Integer> serverStore;
-
 	private StringToUniqueIntegerMap world1Map;
 	private SimpleStore<Integer> world1Store;
-
 	private StringToUniqueIntegerMap world2Map;
 	private SimpleStore<Integer> world2Store;
-
 	private File world1File = new File("world1.dat");
 	private File world2File = new File("world2.dat");
-
 	private HashMap<String, Integer> serverCache = new HashMap<String, Integer>();
 	private HashMap<String, Integer> world1Cache = new HashMap<String, Integer>();
 	private HashMap<String, Integer> world2Cache = new HashMap<String, Integer>();
-
 	private final String firstKey = "firstKey";
 	private final String lastKey = "lastKey";
 	private final int minValue = 100;
@@ -101,7 +97,7 @@ public class StringToUniqueIntegerMapTest {
 		assertThat(serverStore.get(lastKey), is(maxValue - 1));
 	}
 
-	@Test(expected=IllegalStateException.class)
+	@Test (expected = IllegalStateException.class)
 	public void mapOverflow() {
 		fillServerMap();
 		serverMap.register("overflowKey");
@@ -175,13 +171,13 @@ public class StringToUniqueIntegerMapTest {
 		world2File.delete();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test (expected = IllegalArgumentException.class)
 	public void ManualRegisterOutOfMinRange() {
 		// only ids *below* minValue can be directly set
 		world1Map.register("some.block.name1", minValue + 1);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test (expected = IllegalArgumentException.class)
 	public void ManualRegisterOutOfMaxRange() {
 		world1Map.register("some.block.name2", maxValue + 1);
 	}

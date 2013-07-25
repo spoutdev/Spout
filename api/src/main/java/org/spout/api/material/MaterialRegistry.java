@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,29 +30,27 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
-import org.spout.api.Server;
 
+import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.material.block.BlockFullState;
-import org.spout.api.math.IntVector3;
 import org.spout.api.math.GenericMath;
-import org.spout.api.util.StringToUniqueIntegerMap;
+import org.spout.api.math.IntVector3;
 import org.spout.api.util.SyncedStringMap;
 
 /**
  * Handles all registered materials on the server statically.
- *
  */
 public abstract class MaterialRegistry {
 	private final static ConcurrentHashMap<String, Material> nameLookup = new ConcurrentHashMap<String, Material>(1000);
 	private final static int MAX_SIZE = 1 << 16;
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	private final static AtomicReference<Material[]>[] materialLookup = new AtomicReference[MAX_SIZE];
 	private static boolean setup = false;
-	private static SyncedStringMap materialRegistry  = new SyncedStringMap(null, new MemoryStore<Integer>(), 1, Short.MAX_VALUE, Material.class.getName());
+	private static SyncedStringMap materialRegistry = new SyncedStringMap(null, new MemoryStore<Integer>(), 1, Short.MAX_VALUE, Material.class.getName());
 	private final static Material[] NULL_MATERIAL_ARRAY = new Material[] {null};
 
 	static {
@@ -63,11 +61,10 @@ public abstract class MaterialRegistry {
 	}
 
 	/**
-	 * Sets up the material registry for its first use. May not be called more than once.<br/>
-	 * This attempts to load the materials.dat file from the 'worlds' directory into memory.<br/>
-	 * 
+	 * Sets up the material registry for its first use. May not be called more than once.<br/> This attempts to load the materials.dat file from the 'worlds' directory into memory.<br/>
+	 *
 	 * Can throw an {@link IllegalStateException} if the material registry has already been setup.
-	 * 
+	 *
 	 * @return StringToUniqueIntegerMap of registered materials
 	 */
 	public static SyncedStringMap setupRegistry() {
@@ -96,7 +93,7 @@ public abstract class MaterialRegistry {
 			store.load();
 		}
 	}
-	
+
 	private static void setupClient() {
 		materialRegistry = SyncedStringMap.create(null, new MemoryStore<Integer>(), 1, Short.MAX_VALUE, Material.class.getName());
 	}
@@ -124,7 +121,7 @@ public abstract class MaterialRegistry {
 			return id;
 		}
 	}
-	
+
 	protected static AtomicReference<Material[]> getSubMaterialReference(short id) {
 		return materialLookup[id];
 	}
@@ -158,7 +155,7 @@ public abstract class MaterialRegistry {
 		}
 		return materialLookup[id].get()[0];
 	}
-	
+
 	/**
 	 * Gets the material from the given id and data
 	 *
@@ -174,7 +171,7 @@ public abstract class MaterialRegistry {
 		if (parent[0] == null) {
 			return null;
 		}
-		
+
 		data &= parent[0].getDataMask();
 		return materialLookup[id].get()[data];
 	}
@@ -221,7 +218,6 @@ public abstract class MaterialRegistry {
 			}
 		}
 		return set.toArray(new Material[0]);
-
 	}
 
 	/**
@@ -236,10 +232,9 @@ public abstract class MaterialRegistry {
 
 	/**
 	 * Returns a human legible material name from the full material.
-	 * 
+	 *
 	 * This will strip any '_' and replace with spaces, strip out extra whitespace, and lowercase the material name.
 	 *
-	 * @param matName
 	 * @return human legible name of the material.
 	 */
 	private static String formatName(String matName) {
@@ -275,7 +270,7 @@ public abstract class MaterialRegistry {
 
 		return minimumMask;
 	}
-	
+
 	private static void testEffectRanges(Material m) {
 		if (m instanceof DynamicMaterial) {
 			testEffectRange(m, ((DynamicMaterial) m).getDynamicRange(), "Dynamic effect range");
@@ -284,7 +279,7 @@ public abstract class MaterialRegistry {
 			testEffectRange(m, ((BlockMaterial) m).getMaximumPhysicsRange((short) 0), "Physics maximum effect range");
 		}
 	}
-	
+
 	private static void testEffectRange(Material m, Iterable<IntVector3> range, String rangeType) {
 		if (range == null) {
 			throw new NullPointerException(rangeType + " must be set before registering material");

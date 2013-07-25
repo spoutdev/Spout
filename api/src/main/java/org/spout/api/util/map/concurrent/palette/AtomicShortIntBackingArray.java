@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,35 +26,33 @@
  */
 package org.spout.api.util.map.concurrent.palette;
 
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
+import gnu.trove.set.hash.TIntHashSet;
+
 public abstract class AtomicShortIntBackingArray {
-	
 	/**
 	 * Exception throw if the palette is full.  The same instance is reused.
 	 */
 	protected final static PaletteFullException paletteFull = new PaletteFullException("Reused exception - information in stack trace is invalid");
-	
 	private final int length;
-	
+
 	/**
 	 * Creates an AtomicShortIntArray
-	 * 
-	 * @param length the number of entries 
+	 *
+	 * @param length the number of entries
 	 */
 	public AtomicShortIntBackingArray(int length) {
 		this.length = length;
 	}
-	
+
 	/**
 	 * Gets the width of the internal array, in bits
-	 * 
+	 *
 	 * @return the width
 	 */
 	public abstract int width();
-	
+
 	/**
 	 * Gets the length of the array
 	 *
@@ -63,21 +61,21 @@ public abstract class AtomicShortIntBackingArray {
 	public int length() {
 		return length;
 	}
-	
+
 	/**
 	 * Gets the size of the internal palette
-	 * 
+	 *
 	 * @return the palette size
 	 */
 	public abstract int getPaletteSize();
-	
+
 	/**
 	 * Gets the number of palette entries in use
-	 * 
+	 *
 	 * @return the number of entries
 	 */
 	public abstract int getPaletteUsage();
-	
+
 	/**
 	 * Gets an element from the array at a given index
 	 *
@@ -85,7 +83,7 @@ public abstract class AtomicShortIntBackingArray {
 	 * @return the element
 	 */
 	public abstract int get(int i);
-	
+
 	/**
 	 * Sets an element to the given value
 	 *
@@ -94,7 +92,7 @@ public abstract class AtomicShortIntBackingArray {
 	 * @return the old value
 	 */
 	public abstract int set(int i, int newValue) throws PaletteFullException;
-	
+
 	/**
 	 * Sets the element at the given index, but only if the previous value was the expected value.
 	 *
@@ -104,13 +102,11 @@ public abstract class AtomicShortIntBackingArray {
 	 * @return true on success
 	 */
 	public abstract boolean compareAndSet(int i, int expect, int update) throws PaletteFullException;
-	
+
 	public abstract boolean isPaletteMaxSize();
-	
+
 	/**
 	 * Gets the number of unique entries in the array
-	 * 
-	 * @return
 	 */
 	public int getUnique() {
 		return getUnique(new TIntHashSet());
@@ -118,9 +114,8 @@ public abstract class AtomicShortIntBackingArray {
 
 	/**
 	 * Gets the number of unique entries in the array
-	 * 
+	 *
 	 * @param inUseSet set to use to store used ids
-	 * @return
 	 */
 	public int getUnique(TIntHashSet inUseSet) {
 		inUseSet.clear();
@@ -132,27 +127,22 @@ public abstract class AtomicShortIntBackingArray {
 		}
 		return unique;
 	}
-	
+
 	/**
 	 * Gets the palette in use by the backing array or an array of zero length if no palette is in use.
-	 * 
-	 * @return
 	 */
 	public abstract int[] getPalette();
 
 	/**
 	 * Gets the packed array used by the backing store.  This is a flat array if there is no palette in use.
-	 * 
-	 * @return
 	 */
 	public abstract int[] getBackingArray();
-	
+
 	/**
-	 * 
+	 *
 	 * @param previous
 	 * @throws PaletteFullException
 	 */
-	
 	protected void copyFromPrevious(AtomicShortIntBackingArray previous) throws PaletteFullException {
 		if (previous != null) {
 			for (int i = 0; i < length; i++) {
@@ -162,15 +152,15 @@ public abstract class AtomicShortIntBackingArray {
 			set(0, 0);
 		}
 	}
-	
+
 	protected static int[] toIntArray(AtomicIntegerArray array, int length) {
 		int[] packed = new int[length];
 		for (int i = 0; i < length; i++) {
 			packed[i] = array.get(i);
 		}
-		return packed;	
+		return packed;
 	}
-	
+
 	protected static int[] toIntArray(AtomicIntegerArray array) {
 		int length = array.length();
 		int[] packed = new int[length];

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@ import org.spout.api.model.animation.Skeleton;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings ("unchecked")
 public class SkeletonLoader extends ResourceLoader {
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 
@@ -55,16 +55,16 @@ public class SkeletonLoader extends ResourceLoader {
 		Map<? extends String, ?> node = (Map<? extends String, ?>) resourceProperties.get(root);
 
 		Skeleton skeleton = new Skeleton();
-		
+
 		loadBone(skeleton, root, null, node);
-		
+
 		//System.out.println("Skeleton loaded : (org.spout.engine.resources.loader.SkeletonLoader line 57)");
 		//skeleton.print();
-		
+
 		return skeleton;
 	}
 
-	private static void loadBone(Skeleton skeleton, String name, String parentName, Map<? extends String, ?> keymap){
+	private static void loadBone(Skeleton skeleton, String name, String parentName, Map<? extends String, ?> keymap) {
 		Bone bone = new Bone();
 		bone.setName(name);
 
@@ -73,32 +73,33 @@ public class SkeletonLoader extends ResourceLoader {
 
 		skeleton.addBone(name, parentName, bone);
 
-		if(keymap.containsKey("children"))
+		if (keymap.containsKey("children")) {
 			loadChild(skeleton, name, (Map<? extends String, Map<? extends String, ?>>) keymap.get("children"));
+		}
 	}
 
-	private static void loadChild(Skeleton skeleton, String parentName, Map<? extends String, Map<? extends String, ?>> keymap){
-		for(Entry<? extends String, Map<? extends String, ?>> entry : keymap.entrySet()){
+	private static void loadChild(Skeleton skeleton, String parentName, Map<? extends String, Map<? extends String, ?>> keymap) {
+		for (Entry<? extends String, Map<? extends String, ?>> entry : keymap.entrySet()) {
 			loadBone(skeleton, entry.getKey(), parentName, entry.getValue());
 		}
 	}
 
-	private static int[] loadIntList(String str){
-		String []split = str.split(" ");
-		int []result = new int[split.length];
+	private static int[] loadIntList(String str) {
+		String[] split = str.split(" ");
+		int[] result = new int[split.length];
 
-		for(int i = 0; i < split.length; i++){		
+		for (int i = 0; i < split.length; i++) {
 			result[i] = Integer.parseInt(split[i]);
 		}
 
 		return result;
 	}
 
-	private static float[] loadFloatList(String str){
-		String []split = str.split(" ");
-		float []result = new float[split.length];
+	private static float[] loadFloatList(String str) {
+		String[] split = str.split(" ");
+		float[] result = new float[split.length];
 
-		for(int i = 0; i < split.length; i++){		
+		for (int i = 0; i < split.length; i++) {
 			result[i] = Float.parseFloat(split[i]);
 		}
 

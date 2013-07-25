@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,7 +32,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 public class SRFBlockLock implements Lock {
-	
 	private final AtomicInteger lockCounter;
 	private final Lock lock;
 
@@ -40,7 +39,7 @@ public class SRFBlockLock implements Lock {
 		this.lock = lock;
 		this.lockCounter = lockCounter;
 	}
-	
+
 	@Override
 	public void lock() {
 		incrementLockCounter();
@@ -50,7 +49,6 @@ public class SRFBlockLock implements Lock {
 	@Override
 	public void lockInterruptibly() throws InterruptedException {
 		throw new UnsupportedOperationException("");
-	
 	}
 
 	@Override
@@ -73,30 +71,30 @@ public class SRFBlockLock implements Lock {
 		lock.unlock();
 		decrementLockCounter();
 	}
-	
+
 	/**
 	 * Increments the lock counter.<br>
-	 * 
+	 *
 	 * @return the number of blocks locked or FILE_CLOSED
 	 */
 	private int incrementLockCounter() {
 		while (true) {
 			int oldValue = this.lockCounter.get();
-			
+
 			if (oldValue == SimpleRegionFile.FILE_CLOSED) {
 				return SimpleRegionFile.FILE_CLOSED;
 			}
-			
+
 			int newValue = oldValue + 1;
 			if (this.lockCounter.compareAndSet(oldValue, newValue)) {
 				return newValue;
 			}
 		}
 	}
-	
+
 	/**
 	 * Increments the lock counter.<br>
-	 * 
+	 *
 	 * @return the number of blocks locked or FILE_CLOSED
 	 */
 	private int decrementLockCounter() {
@@ -116,5 +114,4 @@ public class SRFBlockLock implements Lock {
 			}
 		}
 	}
-
 }

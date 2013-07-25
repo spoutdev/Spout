@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -44,10 +45,8 @@ import org.spout.api.util.StringUtil;
  */
 public class Point extends Vector3 implements WorldSource {
 	private static final long serialVersionUID = 1L;
-
 	protected final World world;
 	public static final Point invalid = new Point(null, 0, 0, 0);
-	
 	/**
 	 * Hashcode caching
 	 */
@@ -83,7 +82,7 @@ public class Point extends Vector3 implements WorldSource {
 	public Point divide(double val) {
 		return new Point(super.divide(val), world);
 	}
-	
+
 	@Override
 	public Point divide(Vector3 other) {
 		return new Point(super.divide(other), world);
@@ -118,7 +117,7 @@ public class Point extends Vector3 implements WorldSource {
 	public Point multiply(double val) {
 		return new Point(super.multiply(val), world);
 	}
-	
+
 	@Override
 	public Point multiply(Vector3 other) {
 		return new Point(super.multiply(other), world);
@@ -165,12 +164,12 @@ public class Point extends Vector3 implements WorldSource {
 	public Point add(int x, int y, int z) {
 		return new Point(super.add(x, y, z), world);
 	}
-	
+
 	@Override
 	public Point subtract(Vector3 other) {
 		return new Point(super.subtract(other), world);
 	}
-	
+
 	@Override
 	public Point subtract(float x, float y, float z) {
 		return new Point(super.subtract(x, y, z), world);
@@ -197,7 +196,7 @@ public class Point extends Vector3 implements WorldSource {
 	public int getBlockZ() {
 		return this.getFloorZ();
 	}
-	
+
 	public int getChunkX() {
 		return this.getFloorX() >> Chunk.BLOCKS.BITS;
 	}
@@ -217,11 +216,9 @@ public class Point extends Vector3 implements WorldSource {
 	/**
 	 * Gets the square of the distance between two points.
 	 *
-	 * This will return Double.MAX_VALUE if the other Point is null, either
-	 * world is null, or the two points are in different worlds.
+	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
 	 *
 	 * Otherwise, it returns the Manhattan distance.
-	 *
 	 */
 	public double getSquaredDistance(Point other) {
 		if (other == null || world == null || other.world == null || !world.equals(other.world)) {
@@ -236,11 +233,9 @@ public class Point extends Vector3 implements WorldSource {
 	/**
 	 * Gets the distance between two points.
 	 *
-	 * This will return Double.MAX_VALUE if the other Point is null, either
-	 * world is null, or the two points are in different worlds.
+	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
 	 *
 	 * Otherwise, it returns the Manhattan distance.
-	 *
 	 */
 	public double getDistance(Point other) {
 		return Math.sqrt(getSquaredDistance(other));
@@ -249,11 +244,9 @@ public class Point extends Vector3 implements WorldSource {
 	/**
 	 * Gets the Manhattan distance between two points.
 	 *
-	 * This will return Double.MAX_VALUE if the other Point is null, either
-	 * world is null, or the two points are in different worlds.
+	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
 	 *
 	 * Otherwise, it returns the Manhattan distance.
-	 *
 	 */
 	public double getManhattanDistance(Point other) {
 		if (other == null || world == null || other.world == null || !world.equals(other.world)) {
@@ -263,11 +256,9 @@ public class Point extends Vector3 implements WorldSource {
 	}
 
 	/**
-	 * Gets the largest distance between two points, when projected onto one of
-	 * the axes.
+	 * Gets the largest distance between two points, when projected onto one of the axes.
 	 *
-	 * This will return Double.MAX_VALUE if the other Point is null, either
-	 * world is null, or the two points are in different worlds.
+	 * This will return Double.MAX_VALUE if the other Point is null, either world is null, or the two points are in different worlds.
 	 *
 	 * Otherwise, it returns the max distance.
 	 */
@@ -282,7 +273,7 @@ public class Point extends Vector3 implements WorldSource {
 	 * Gets the world this point is locate in
 	 *
 	 * @return the world
-	 */	
+	 */
 	@Override
 	public World getWorld() {
 		return world;
@@ -292,9 +283,9 @@ public class Point extends Vector3 implements WorldSource {
 	 * Gets the block this point is locate in
 	 *
 	 * @return the world
-	 */	
+	 */
 	public Block getBlock() {
-        return world.getBlock(x, y, z);
+		return world.getBlock(x, y, z);
 	}
 
 	@Override
@@ -321,15 +312,15 @@ public class Point extends Vector3 implements WorldSource {
 	public String toString() {
 		return getClass().getSimpleName() + StringUtil.toString(world, x, y, z);
 	}
-	
+
 	public String toBlockString() {
 		return "{" + world.getName() + ":" + getBlockX() + ", " + getBlockY() + ", " + getBlockZ() + "}";
 	}
-	
+
 	public String toChunkString() {
 		return "{" + world.getName() + ":" + getChunkX() + ", " + getChunkY() + ", " + getChunkZ() + "}";
 	}
-	
+
 	//Custom serialization logic because world can not be made serializable
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
 		out.writeFloat(this.x);
@@ -337,7 +328,7 @@ public class Point extends Vector3 implements WorldSource {
 		out.writeFloat(this.z);
 		out.writeUTF(world != null ? world.getName() : "null");
 	}
-	
+
 	private void readObject(java.io.ObjectInputStream in) throws IOException {
 		float x = in.readFloat();
 		float y = in.readFloat();
@@ -346,24 +337,23 @@ public class Point extends Vector3 implements WorldSource {
 		World w = Spout.getEngine().getWorld(world, true);
 		try {
 			Field field;
-			
+
 			field = Vector3.class.getDeclaredField("x");
 			field.setAccessible(true);
 			field.set(this, x);
-			
+
 			field = Vector3.class.getDeclaredField("y");
 			field.setAccessible(true);
 			field.set(this, y);
-			
+
 			field = Vector3.class.getDeclaredField("z");
 			field.setAccessible(true);
 			field.set(this, z);
-			
+
 			field = Point.class.getDeclaredField("world");
 			field.setAccessible(true);
 			field.set(this, w);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			if (Spout.debugMode()) {
 				e.printStackTrace();
 			}

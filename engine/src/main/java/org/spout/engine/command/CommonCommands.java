@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -25,6 +25,13 @@
  * the MIT license.
  */
 package org.spout.engine.command;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.spout.api.Server;
 import org.spout.api.Spout;
@@ -50,13 +57,6 @@ import org.spout.api.plugin.Plugin;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.component.entity.MovementValidatorComponent;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 public class CommonCommands {
 	private final SpoutEngine engine;
 
@@ -68,8 +68,8 @@ public class CommonCommands {
 		return engine;
 	}
 
-	@CommandDescription(aliases = {"bat", "batch"}, usage = "<file>", desc = "Executes a Spout batch file.")
-	@Permissible("spout.command.batch")
+	@CommandDescription (aliases = {"bat", "batch"}, usage = "<file>", desc = "Executes a Spout batch file.")
+	@Permissible ("spout.command.batch")
 	public void batch(CommandSource source, CommandArguments args) throws CommandException {
 		String fileName = args.popString("file");
 		args.assertCompletelyParsed();
@@ -82,8 +82,8 @@ public class CommonCommands {
 		source.sendMessage("Executed " + fileName + ".");
 	}
 
-	@CommandDescription(aliases = "stop", usage = "[message]", desc = "Stop the server!")
-	@Permissible("spout.command.stop")
+	@CommandDescription (aliases = "stop", usage = "[message]", desc = "Stop the server!")
+	@Permissible ("spout.command.stop")
 	public void stop(CommandSource source, CommandArguments args) throws ArgumentParseException {
 		String message = "Engine halting";
 		switch (engine.getPlatform()) {
@@ -101,8 +101,8 @@ public class CommonCommands {
 		engine.stop(message);
 	}
 
-	@CommandDescription(aliases = "stackdump", desc = "Writes the stack trace of all active threads to the logs")
-	@Permissible("spout.command.dumpstack")
+	@CommandDescription (aliases = "stackdump", desc = "Writes the stack trace of all active threads to the logs")
+	@Permissible ("spout.command.dumpstack")
 	public void dumpstack(CommandSource source, CommandArguments args) {
 		Map<Thread, StackTraceElement[]> dump = Thread.getAllStackTraces();
 		Iterator<Entry<Thread, StackTraceElement[]>> i = dump.entrySet().iterator();
@@ -118,8 +118,8 @@ public class CommonCommands {
 		engine.getLogger().info("[---------------End Stack Dump---------------]");
 	}
 
-	@CommandDescription(aliases = "reload", usage = "[plugin]", desc = "Reload engine and/or plugins")
-	@Permissible("spout.command.reload")
+	@CommandDescription (aliases = "reload", usage = "[plugin]", desc = "Reload engine and/or plugins")
+	@Permissible ("spout.command.reload")
 	public void reload(CommandSource source, CommandArguments args) throws CommandException {
 		if (!args.hasMore()) {
 			source.sendMessage("Reloading engine...");
@@ -147,8 +147,8 @@ public class CommonCommands {
 		}
 	}
 
-	@CommandDescription(aliases = {"plugins", "pl"}, desc = "List all plugins on the engine")
-	@Permissible("spout.command.plugins")
+	@CommandDescription (aliases = {"plugins", "pl"}, desc = "List all plugins on the engine")
+	@Permissible ("spout.command.plugins")
 	public void plugins(CommandSource source, CommandArguments args) throws ArgumentParseException {
 		args.assertCompletelyParsed();
 		List<Plugin> plugins = getEngine().getPluginManager().getPlugins();
@@ -171,9 +171,9 @@ public class CommonCommands {
 		source.sendMessage(pluginListString.toString());
 	}
 
-	@CommandDescription(aliases = {"setspawn", "ss"}, desc = "Sets the spawnpoint for a world")
-	@Permissible("spout.command.setspawn")
-	@Platform(org.spout.api.Platform.SERVER)
+	@CommandDescription (aliases = {"setspawn", "ss"}, desc = "Sets the spawnpoint for a world")
+	@Permissible ("spout.command.setspawn")
+	@Platform (org.spout.api.Platform.SERVER)
 	public void setspawn(CommandSource source, CommandArguments args) throws CommandException {
 		Point point = args.popPoint("spawnpoint", source);
 		args.assertCompletelyParsed();
@@ -185,9 +185,9 @@ public class CommonCommands {
 				+ point.getBlockX() + ", y: " + point.getBlockY() + ", z: " + point.getBlockZ());
 	}
 
-	@CommandDescription(aliases = {"whatisspawn", "wis"}, desc = "Tells you the spawnpoint of a world")
-	@Permissible("spout.command.tellspawn")
-	@Platform(org.spout.api.Platform.SERVER)
+	@CommandDescription (aliases = {"whatisspawn", "wis"}, desc = "Tells you the spawnpoint of a world")
+	@Permissible ("spout.command.tellspawn")
+	@Platform (org.spout.api.Platform.SERVER)
 	public void tellspawn(CommandSource source, CommandArguments args) throws CommandException {
 		Point point = args.popWorld("world", source).getSpawnPoint().getPosition();
 		args.assertCompletelyParsed();
@@ -196,8 +196,8 @@ public class CommonCommands {
 				+ point.getBlockX() + ", y: " + point.getBlockY() + ", z: " + point.getBlockZ());
 	}
 
-	@CommandDescription(aliases = {"worldinfo"}, desc = "Provides info about known worlds", usage = "[world]")
-	@Permissible("spout.command.worldinfo")
+	@CommandDescription (aliases = {"worldinfo"}, desc = "Provides info about known worlds", usage = "[world]")
+	@Permissible ("spout.command.worldinfo")
 	public void worldInfo(CommandSource source, CommandArguments args) throws CommandException {
 		if (!args.hasMore() && getEngine() instanceof Server) {
 			Collection<World> worlds = ((Server) engine).getWorlds();
@@ -218,11 +218,10 @@ public class CommonCommands {
 			source.sendMessage("UUID: " + world.getUID());
 			source.sendMessage("Seed: " + world.getSeed());
 		}
-
 	}
 
-	@CommandDescription(aliases = {"regioninfo"}, desc = "Provides info about regions in a given world", usage = "[world]")
-	@Permissible("spout.command.regioninfo")
+	@CommandDescription (aliases = {"regioninfo"}, desc = "Provides info about regions in a given world", usage = "[world]")
+	@Permissible ("spout.command.regioninfo")
 	public void chunkInfo(CommandSource source, CommandArguments args) throws CommandException {
 		World world = args.popWorld("world");
 		args.assertCompletelyParsed();
@@ -239,8 +238,8 @@ public class CommonCommands {
 		source.sendMessage("chunks: " + chunks);
 	}
 
-	@CommandDescription(aliases = {"tp", "teleport"}, usage = "[player] <target>", desc = "Teleport to a location")
-	@Permissible("spout.command.tp")
+	@CommandDescription (aliases = {"tp", "teleport"}, usage = "[player] <target>", desc = "Teleport to a location")
+	@Permissible ("spout.command.tp")
 	public void tp(CommandSource source, CommandArguments args) throws CommandException {
 		Player player = args.popPlayerOrMe("source", source);
 		Point point = args.popPoint("target", source);
@@ -258,8 +257,8 @@ public class CommonCommands {
 				+ ", Y: " + point.getY() + ", Z: " + point.getZ() + ".");
 	}
 
-	@CommandDescription(aliases = "validate_movement", desc = "Toggle the validating of movement.")
-	@Filter(PlayerFilter.class)
+	@CommandDescription (aliases = "validate_movement", desc = "Toggle the validating of movement.")
+	@Filter (PlayerFilter.class)
 	public void validateInput(Player player, CommandArguments args) throws CommandException {
 		if (!InputCommands.isPressed(args)) {
 			return;
@@ -270,8 +269,8 @@ public class CommonCommands {
 		}
 	}
 
-	@CommandDescription(aliases = {"ver", "version"}, desc = "Display the version of Spout this server is running.")
-	@Permissible("spout.command.version")
+	@CommandDescription (aliases = {"ver", "version"}, desc = "Display the version of Spout this server is running.")
+	@Permissible ("spout.command.version")
 	public void version(CommandSource source, CommandArguments args) throws CommandException {
 		source.sendMessage("This server is running Spout #" + Spout.getAPIVersion().replace("dev b", "") + ".");
 	}

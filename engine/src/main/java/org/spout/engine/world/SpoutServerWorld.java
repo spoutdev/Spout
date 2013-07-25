@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -101,7 +101,6 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 	 */
 	private final WeakReference<SpoutServerWorld> selfReference;
 	public static final WeakReference<SpoutServerWorld> NULL_WEAK_REFERENCE = new WeakReference<SpoutServerWorld>(null);
-	
 	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<Long, SetQueue<SpoutColumn>>();
 
 	// TODO set up number of stages ?
@@ -119,7 +118,7 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 		this.age = new SnapshotableLong(snapshotManager, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 20, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<SpoutServerWorld>(this);
-		
+
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);
 
 		getEngine().getScheduler().addAsyncManager(this);
@@ -268,7 +267,7 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 	public StringToUniqueIntegerMap getLightingMap() {
 		return lightingMap;
 	}
-	
+
 	@Override
 	public TaskManager getTaskManager() {
 		return taskManager;

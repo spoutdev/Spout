@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -27,6 +27,7 @@
 package org.spout.api.geo.cuboid;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.discrete.Point;
@@ -41,13 +42,11 @@ public class Cuboid implements WorldSource {
 	private final int x;
 	private final int y;
 	private final int z;
-
 	/**
 	 * Hashcode caching
 	 */
 	private volatile boolean hashed = false;
 	private volatile int hashcode = 0;
-
 	/**
 	 * Vertex cache
 	 */
@@ -55,9 +54,6 @@ public class Cuboid implements WorldSource {
 
 	/**
 	 * Constructs a cubiod with the point as the base point, and
-	 * 
-	 * @param base
-	 * @param size
 	 */
 	public Cuboid(Point base, Vector3 size) {
 		this.base = base;
@@ -94,7 +90,7 @@ public class Cuboid implements WorldSource {
 
 	/**
 	 * Returns the vertices of this Cuboid.
-	 * 
+	 *
 	 * @return The vertices
 	 */
 	public Vector3[] getVertices() {
@@ -142,7 +138,6 @@ public class Cuboid implements WorldSource {
 
 			return cuboid.size.getX() == size.getX() && cuboid.size.getY() == size.getY() && cuboid.size.getZ() == size.getZ() && cuboid.getWorld().equals(getWorld()) && cuboid.getX() == getX() && cuboid.getY() == getY() && cuboid.getZ() == getZ();
 		}
-
 	}
 
 	@Override

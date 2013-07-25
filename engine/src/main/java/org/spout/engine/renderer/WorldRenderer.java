@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,11 +26,7 @@
  */
 package org.spout.engine.renderer;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Ordering;
-import com.google.common.collect.TreeMultimap;
 import java.util.ArrayList;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -39,6 +35,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.TreeMultimap;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
@@ -49,7 +49,6 @@ import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.util.map.TInt21TripleObjectHashMapOfMaps;
-
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.world.SpoutClientWorld;
@@ -67,7 +66,6 @@ public class WorldRenderer {
 	private SpoutClientWorld currentWorld = null;
 	//Benchmark
 	public int addedBatch, updatedBatch;
-
 	// Info variables
 	private int occludedChunks = 0;
 	private int culledChunks = 0;
@@ -174,8 +172,6 @@ public class WorldRenderer {
 
 	/**
 	 * Remove all batch at the specified position
-	 * @param world
-	 * @param chunkMesh
 	 */
 	private void cleanBatchAggregator(World world, ChunkMesh chunkMesh) {
 		Vector3 position = ChunkMeshBatchAggregator.getBaseFromChunkMesh(chunkMesh);
@@ -187,7 +183,7 @@ public class WorldRenderer {
 		}
 
 		List<RenderMaterial> toRemoveFromPositions = new ArrayList<>();
-		for (Iterator<Entry<RenderMaterial, ChunkMeshBatchAggregator>> it = aggregatorPerMaterial.entrySet().iterator(); it.hasNext();) {
+		for (Iterator<Entry<RenderMaterial, ChunkMeshBatchAggregator>> it = aggregatorPerMaterial.entrySet().iterator(); it.hasNext(); ) {
 			Entry<RenderMaterial, ChunkMeshBatchAggregator> entry = it.next();
 
 			RenderMaterial material = entry.getKey();
@@ -214,7 +210,6 @@ public class WorldRenderer {
 	}
 
 	private class BatchGeneratorTask {
-
 		public void run(final long limit) {
 			addedBatch = 0;
 			updatedBatch = 0;

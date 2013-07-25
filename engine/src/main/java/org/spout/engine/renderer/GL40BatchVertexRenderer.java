@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -35,6 +35,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
+
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
@@ -44,6 +45,7 @@ public class GL40BatchVertexRenderer extends BatchVertexRenderer {
 
 	/**
 	 * Batch Renderer using OpenGL 4.0 mode.
+	 *
 	 * @param renderMode Mode to render in
 	 */
 	public GL40BatchVertexRenderer(int renderMode) {
@@ -53,49 +55,50 @@ public class GL40BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	protected void initFlush(Map<Integer,Buffer> buffers){
+	protected void initFlush(Map<Integer, Buffer> buffers) {
 		int size = 0;
-		int []layouts = new int[buffers.size()];
-		int []elements = new int[buffers.size()];
+		int[] layouts = new int[buffers.size()];
+		int[] elements = new int[buffers.size()];
 		FloatBuffer[] floatBuffers = new FloatBuffer[buffers.size()];
 
 		int i = 0;
-		for(Entry<Integer, Buffer> entry : buffers.entrySet()){
+		for (Entry<Integer, Buffer> entry : buffers.entrySet()) {
 			layouts[i] = entry.getKey();
 			floatBuffers[i] = (FloatBuffer) entry.getValue();
 			elements[i] = floatBuffers[i].limit() / flushingNumVertices;
 			size += floatBuffers[i].limit();
 			i++;
 		}
-		
+
 		FloatBuffer buffer = BufferUtils.createFloatBuffer(size);
 		buffer.clear();
 
-		for(int vertex = 0; vertex < flushingNumVertices; vertex++){
-			for(i = 0; i < layouts.length; i++){ 	
-				for(int k = 0; k < elements[i]; k++){
+		for (int vertex = 0; vertex < flushingNumVertices; vertex++) {
+			for (i = 0; i < layouts.length; i++) {
+				for (int k = 0; k < elements[i]; k++) {
 					buffer.put(floatBuffers[i].get(vertex * elements[i] + k));
 				}
 			}
 		}
-		
+
 		buffer.flip();
-		
-		if(flushingBuffer == null)
+
+		if (flushingBuffer == null) {
 			flushingBuffer = SpoutFloatBuffer.getBuffer();
-		
+		}
+
 		flushingBuffer.setData(elements, layouts, buffer);
 	}
-	
+
 	@Override
 	protected boolean doFlush(boolean force) {
-		if(flushingBuffer.flush(force)){
+		if (flushingBuffer.flush(force)) {
 			GL30.glBindVertexArray(vao);
 			SpoutRenderer.checkGLError();
 
-			if(currentBuffer != null){
+			if (currentBuffer != null) {
 				currentBuffer.unbind();
-				for(int layout : currentBuffer.getLayout()){
+				for (int layout : currentBuffer.getLayout()) {
 					GL20.glDisableVertexAttribArray(layout);
 					SpoutRenderer.checkGLError();
 				}
@@ -103,7 +106,7 @@ public class GL40BatchVertexRenderer extends BatchVertexRenderer {
 
 			flushingBuffer.bind(true);
 
-			for(int layout : flushingBuffer.getLayout()){
+			for (int layout : flushingBuffer.getLayout()) {
 				GL20.glEnableVertexAttribArray(layout);
 				SpoutRenderer.checkGLError();
 			}
@@ -140,19 +143,19 @@ public class GL40BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	public void doRelease(){
-		if(currentBuffer != null){
+	public void doRelease() {
+		if (currentBuffer != null) {
 			currentBuffer.release();
 			currentBuffer = null;
 		}
-		if(flushingBuffer != null){
+		if (flushingBuffer != null) {
 			flushingBuffer.release();
 			flushingBuffer = null;
 		}
 	}
 
 	@Override
-	public void doDelete(){
+	public void doDelete() {
 		doRelease();
 		GL30.glDeleteVertexArrays(vao);
 	}

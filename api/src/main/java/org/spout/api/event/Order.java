@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -27,11 +27,8 @@
 package org.spout.api.event;
 
 /**
- * Order of an event listener may be registered at.
- * <p>
- * Odd-numbered (IGNORE_CANCELLED) slots are called even when events are marked "not propagating".<br/>
- * If an event stops propagating part way through an even slot, that slot will not cease execution,
- * but future even slots will not be called.
+ * Order of an event listener may be registered at. <p> Odd-numbered (IGNORE_CANCELLED) slots are called even when events are marked "not propagating".<br/> If an event stops propagating part way
+ * through an even slot, that slot will not cease execution, but future even slots will not be called.
  */
 public enum Order {
 	/**
@@ -39,9 +36,7 @@ public enum Order {
 	 */
 	EARLIEST(0, false),
 	/**
-	 * Called after "Earliest" handlers and before "Early" handlers.<br/>
-	 * Is called even when event has been canceled.<br/>
-	 * Should generally be used to uncancel events canceled in Earliest.<br/>
+	 * Called after "Earliest" handlers and before "Early" handlers.<br/> Is called even when event has been canceled.<br/> Should generally be used to uncancel events canceled in Earliest.<br/>
 	 */
 	EARLY_IGNORE_CANCELLED(1, true),
 	/**
@@ -49,9 +44,7 @@ public enum Order {
 	 */
 	EARLY(2, false),
 	/**
-	 * Called after "Early" handlers and before "Default" handlers.<br/>
-	 * Is called even when event has been canceled. <br/>
-	 * This is for general-purpose always-run events.<br/>
+	 * Called after "Early" handlers and before "Default" handlers.<br/> Is called even when event has been canceled. <br/> This is for general-purpose always-run events.<br/>
 	 */
 	DEFAULT_IGNORE_CANCELLED(3, true),
 	/**
@@ -59,8 +52,7 @@ public enum Order {
 	 */
 	DEFAULT(4, false),
 	/**
-	 * Called after "Default" handlers and before "Late" handlers.<br/>
-	 * Is called even when event has been canceled.<br/>
+	 * Called after "Default" handlers and before "Late" handlers.<br/> Is called even when event has been canceled.<br/>
 	 */
 	LATE_IGNORE_CANCELLED(5, true),
 	/**
@@ -68,8 +60,7 @@ public enum Order {
 	 */
 	LATE(6, false),
 	/**
-	 * Called after "Late" handlers and before "Latest" handlers. <br/>
-	 * Is called even when event has been canceled.<br/>
+	 * Called after "Late" handlers and before "Latest" handlers. <br/> Is called even when event has been canceled.<br/>
 	 */
 	LATEST_IGNORE_CANCELLED(7, true),
 	/**
@@ -77,9 +68,7 @@ public enum Order {
 	 */
 	LATEST(8, false),
 	/**
-	 * Called after "Latest" handlers. <br/>
-	 * No changes to the event should be made in this order slot (though it is not enforced).<br/>
-	 * This is called even when event has been cancelled.</br>
+	 * Called after "Latest" handlers. <br/> No changes to the event should be made in this order slot (though it is not enforced).<br/> This is called even when event has been cancelled.</br>
 	 */
 	MONITOR(9, true);
 	private final int index;

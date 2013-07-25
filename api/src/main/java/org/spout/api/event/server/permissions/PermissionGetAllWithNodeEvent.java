@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -38,8 +38,7 @@ import org.spout.api.event.server.NodeBasedEvent;
 import org.spout.api.permissions.PermissionsSubject;
 
 /**
- * This event is called to gather the PermissionsSubjects with the given permission set.</br>
- * Plugins responsible for managing PermissionsSubjects should add them to the list of subjects.
+ * This event is called to gather the PermissionsSubjects with the given permission set.</br> Plugins responsible for managing PermissionsSubjects should add them to the list of subjects.
  */
 public class PermissionGetAllWithNodeEvent extends NodeBasedEvent {
 	private final Map<PermissionsSubject, Result> receivers = new HashMap<PermissionsSubject, Result>();
@@ -51,6 +50,7 @@ public class PermissionGetAllWithNodeEvent extends NodeBasedEvent {
 
 	/**
 	 * Returns the map of receivers. This map is modified to add applicable receivers
+	 *
 	 * @return The receivers map
 	 */
 	public Map<PermissionsSubject, Result> getReceivers() {

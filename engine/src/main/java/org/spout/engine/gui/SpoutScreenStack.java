@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -59,12 +59,12 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 		// Add the debug screen
 		debugScreen = new DebugScreen();
 		screens.add(debugScreen);
-		
+
 		// Add the dev console
 		console = new DevConsole(SpoutRenderMaterials.DEFAULT_FONT);
 		console.setDateFormat(new SimpleDateFormat("E HH:mm:ss"));
 		screens.add(console);
-		
+
 		update();
 	}
 
@@ -146,8 +146,8 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	}
 
 	/**
-	 * Gets a copy of the ordered list of visible screens
-	 * The first item in the list is the bottom-most fullscreen, the last item in the list is the top-most fullscreen/popupscreen.
+	 * Gets a copy of the ordered list of visible screens The first item in the list is the bottom-most fullscreen, the last item in the list is the top-most fullscreen/popupscreen.
+	 *
 	 * @return copy of the visible screens, in order
 	 */
 	@Override
@@ -168,7 +168,6 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 
 	/**
 	 * Gets which screen takes input
-	 * @return
 	 */
 	@Override
 	public Screen getInputScreen() {

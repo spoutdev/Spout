@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,10 +34,9 @@ import java.util.List;
 import gnu.trove.list.array.TIntArrayList;
 
 public class StringUtil {
-
 	/**
 	 * Tests if this string starts with the specified prefix, ignoring case
-	 * 
+	 *
 	 * @param input the input
 	 * @param prefix the prefix
 	 * @return True if the input starts with the prefix when ignoring case, False if not
@@ -57,7 +56,7 @@ public class StringUtil {
 
 	/**
 	 * Gets whether two characters equal each other, while ignoring case.
-	 * 
+	 *
 	 * @param input1 to use
 	 * @param input2 to use
 	 * @return True if input1 and input2 equal when ignoring case, False if not
@@ -68,7 +67,7 @@ public class StringUtil {
 
 	/**
 	 * Matches a value using a name and the value .toString() method
-	 * 
+	 *
 	 * @param values to look into
 	 * @param name to match against
 	 * @return a collection of values that matched
@@ -88,7 +87,7 @@ public class StringUtil {
 
 	/**
 	 * Matches a named class using a name
-	 * 
+	 *
 	 * @param values to look into
 	 * @param name to match against
 	 * @return a collection of values that matched
@@ -108,7 +107,7 @@ public class StringUtil {
 
 	/**
 	 * Matches a file name using a name
-	 * 
+	 *
 	 * @param values to look into
 	 * @param name to match against
 	 * @return a collection of values that matched
@@ -128,6 +127,7 @@ public class StringUtil {
 
 	/**
 	 * Gets the named object with the shortest name from the values specified
+	 *
 	 * @param values to look into
 	 * @return the shortest value, or null if there are no values
 	 */
@@ -145,7 +145,7 @@ public class StringUtil {
 
 	/**
 	 * Wraps all components in between brackets delimited by ','-signs
-	 * 
+	 *
 	 * @param components to turn into a String
 	 * @return a String representation of the input
 	 */
@@ -154,9 +154,8 @@ public class StringUtil {
 	}
 
 	/**
-	 * Converts a String expression of elements into an integer array<br>
-	 * For example: "12-34, 35, 36, 11-0"
-	 * 
+	 * Converts a String expression of elements into an integer array<br> For example: "12-34, 35, 36, 11-0"
+	 *
 	 * @param elements to convert
 	 * @return the converted result
 	 */
@@ -196,9 +195,8 @@ public class StringUtil {
 	}
 
 	/**
-	 * Wraps all components in between brackets delimited by ','-signs, 
-	 * appending the class name in front of it.
-	 * 
+	 * Wraps all components in between brackets delimited by ','-signs, appending the class name in front of it.
+	 *
 	 * @param object name to append in front
 	 * @param components to turn into a String
 	 * @return a String representation of the input

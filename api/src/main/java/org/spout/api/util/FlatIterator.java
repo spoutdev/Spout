@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,12 +32,10 @@ import java.util.NoSuchElementException;
 import org.spout.api.math.IntVector3;
 
 /**
- * An Iterator that iterates outwards from a given central 3d integer coordinate.<br>
- * <br>
- * The Manhattan distance from the given center to the coordinates in the sequence increases monotonically and the iterator passes through all integer coordinates.
+ * An Iterator that iterates outwards from a given central 3d integer coordinate.<br> <br> The Manhattan distance from the given center to the coordinates in the sequence increases monotonically and
+ * the iterator passes through all integer coordinates.
  */
 public class FlatIterator extends IntVector3 implements Iterator<IntVector3> {
-
 	private final IntVector3 center;
 	private final IntVector3 step;
 	private int distance;
@@ -45,7 +43,7 @@ public class FlatIterator extends IntVector3 implements Iterator<IntVector3> {
 	private int top;
 	private boolean hasNext;
 	private boolean first = true;
-	
+
 	public FlatIterator() {
 		this(0, 0, 0, 1);
 	}
@@ -67,11 +65,6 @@ public class FlatIterator extends IntVector3 implements Iterator<IntVector3> {
 
 	/**
 	 * Resets the iterator and positions it at (x, y, z)
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param height
 	 */
 	public void reset(int x, int y, int z, int height) {
 		super.setX(x);
@@ -130,7 +123,7 @@ public class FlatIterator extends IntVector3 implements Iterator<IntVector3> {
 						step.setX(1); //
 						step.setZ(1); //
 					}
-				} else if (dz == 0){
+				} else if (dz == 0) {
 					if (dx > 0) {
 						step.setX(-1); //
 						step.setZ(-1); //

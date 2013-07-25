@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -34,11 +34,11 @@ import org.spout.api.math.Vector3;
 public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffer {
 	private CuboidBlockMaterialBuffer source;
 	private final ImmutableCuboidBlockMaterialBuffer backBuffer;
-	
+
 	public CuboidBlockMaterialBuffer(CuboidBlockMaterialBuffer buffer) {
 		this(buffer, false);
 	}
-	
+
 	public CuboidBlockMaterialBuffer(CuboidBlockMaterialBuffer buffer, boolean backBuffer) {
 		super(buffer);
 		if (backBuffer) {
@@ -47,7 +47,7 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 			this.backBuffer = null;
 		}
 	}
-	
+
 	public CuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, short[] id, short[] data) {
 		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, id, data, false);
 	}
@@ -60,7 +60,7 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 			this.backBuffer = null;
 		}
 	}
-	
+
 	public CuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, false);
 	}
@@ -73,7 +73,7 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 			this.backBuffer = null;
 		}
 	}
-	
+
 	public CuboidBlockMaterialBuffer(double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
 		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, false);
 	}
@@ -90,7 +90,7 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 	public CuboidBlockMaterialBuffer(Vector3 base, Vector3 size) {
 		this(base, size, false);
 	}
-	
+
 	public CuboidBlockMaterialBuffer(Vector3 base, Vector3 size, boolean backBuffer) {
 		super(base, size);
 		if (backBuffer) {
@@ -120,7 +120,7 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 
 	/**
 	 * Sets a horizontal layer of blocks to a given material
-	 * 
+	 *
 	 * @param y - coordinate of the start of the layer
 	 * @param height of the layer
 	 * @param material to set to
@@ -131,7 +131,7 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 
 	/**
 	 * Sets a horizontal layer of blocks to a given material id and data
-	 * 
+	 *
 	 * @param y - coordinate of the start of the layer
 	 * @param height of the layer
 	 * @param id of the material to set to
@@ -149,7 +149,7 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 
 	/**
 	 * Sets a single block material
-	 * 
+	 *
 	 * @param x - coordinate of the block
 	 * @param y - coordinate of the block
 	 * @param z - coordinate of the block
@@ -160,14 +160,14 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 		if (index < 0) {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
 		}
-		
+
 		this.id[index] = material.getId();
 		this.data[index] = material.getData();
 	}
 
 	/**
 	 * Sets a single block material id and data
-	 * 
+	 *
 	 * @param x - coordinate of the block
 	 * @param y - coordinate of the block
 	 * @param z - coordinate of the block
@@ -198,7 +198,7 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 	public short[] getRawData() {
 		return data;
 	}
-	
+
 	public ImmutableCuboidBlockMaterialBuffer getBackBuffer() {
 		return backBuffer == null ? this : backBuffer;
 	}

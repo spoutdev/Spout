@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -37,7 +37,7 @@ import org.spout.engine.SpoutRenderer;
 public class Mat4ArrayShaderVariable extends ShaderVariable {
 	Matrix[] value;
 
-	public Mat4ArrayShaderVariable(int program, String name, Matrix []value) {
+	public Mat4ArrayShaderVariable(int program, String name, Matrix[] value) {
 		super(program, name);
 		this.value = value;
 	}
@@ -49,12 +49,12 @@ public class Mat4ArrayShaderVariable extends ShaderVariable {
 	@Override
 	public void assign() {
 		FloatBuffer buff = BufferUtils.createFloatBuffer(16 * value.length);
-		
+
 		for (int i = 0; i < value.length; i++) {
 			buff.put(value[i].getData());
 		}
 		buff.flip();
-		
+
 		GL20.glUniformMatrix4(location, false, buff);
 		SpoutRenderer.checkGLError();
 	}

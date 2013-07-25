@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -57,6 +57,7 @@ public interface AccessManager {
 
 	/**
 	 * Whether or not the player is whitelisted.
+	 *
 	 * @param player in question
 	 * @return true if whitelisted.
 	 */
@@ -64,32 +65,21 @@ public interface AccessManager {
 
 	/**
 	 * Whitelists a player
-	 *
-	 * @param player
 	 */
 	public void whitelist(String player);
 
 	/**
 	 * Unwhitelists a player
-	 *
-	 * @param player
 	 */
 	public void unwhitelist(String player);
 
 	/**
 	 * Unwhitelists a player
-	 *
-	 * @param player
-	 * @param kick
 	 */
 	public void unwhitelist(String player, boolean kick);
 
 	/**
 	 * Unwhitelists a player
-	 *
-	 * @param player
-	 * @param kick
-	 * @param reason
 	 */
 	public void unwhitelist(String player, boolean kick, String reason);
 
@@ -102,8 +92,6 @@ public interface AccessManager {
 
 	/**
 	 * Sets the message that is displayed when a player is not whitelisted.
-	 *
-	 * @param message
 	 */
 	public void setWhitelistMessage(String message);
 
@@ -117,33 +105,22 @@ public interface AccessManager {
 
 	/**
 	 * Bans the specified from the server.
-	 *
-	 * @param type
-	 * @param s
-	 * @param kick
 	 */
 	public void ban(BanType type, String s, boolean kick);
 
 	/**
 	 * Bans the specified from the server.
-	 *
-	 * @param s
-	 * @param kick
-	 * @param reason
 	 */
 	public void ban(BanType type, String s, boolean kick, String reason);
 
 	/**
 	 * Unbans the specified from the server.
-	 *
-	 * @param s
 	 */
 	public void unban(BanType type, String s);
 
 	/**
 	 * Gets all banned of the designated type
 	 *
-	 * @param type
 	 * @return all bans
 	 */
 	public Collection<String> getBanned(BanType type);
@@ -151,8 +128,6 @@ public interface AccessManager {
 	/**
 	 * Whether or not the subject is banned
 	 *
-	 * @param type
-	 * @param s
 	 * @return true if banned
 	 */
 	public boolean isBanned(BanType type, String s);
@@ -160,16 +135,12 @@ public interface AccessManager {
 	/**
 	 * Gets the ban message for the designated type.
 	 *
-	 * @param type
 	 * @return message
 	 */
 	public String getBanMessage(BanType type);
 
 	/**
 	 * Sets the ban message
-	 *
-	 * @param type
-	 * @param message
 	 */
 	public void setBanMessage(BanType type, String message);
 }

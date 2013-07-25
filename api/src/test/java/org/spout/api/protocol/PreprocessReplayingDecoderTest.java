@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -25,8 +25,6 @@
  * the MIT license.
  */
 package org.spout.api.protocol;
-
-import static org.junit.Assert.assertTrue;
 
 import java.net.SocketAddress;
 import java.util.LinkedList;
@@ -42,10 +40,12 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.UpstreamMessageEvent;
 import org.junit.Test;
+
 import org.spout.api.protocol.fake.FakeChannelHandlerContext;
 
-public class PreprocessReplayingDecoderTest {
+import static org.junit.Assert.assertTrue;
 
+public class PreprocessReplayingDecoderTest {
 	private final int LENGTH = 65536;
 	private final int BREAK = 17652;
 
@@ -61,13 +61,13 @@ public class PreprocessReplayingDecoderTest {
 		Random r = new Random();
 
 		byte[] input = new byte[LENGTH];
-		
+
 		int i = 0;
-		
+
 		for (i = 0; i < LENGTH; i++) {
-			input[i] = (byte)r.nextInt();
+			input[i] = (byte) r.nextInt();
 		}
-		
+
 		i = 0;
 		while (i < input.length) {
 			int burstSize = r.nextInt(512);
@@ -78,13 +78,12 @@ public class PreprocessReplayingDecoderTest {
 			if (i + burstSize > input.length) {
 				burstSize = input.length - i;
 			}
-			
+
 			final ChannelBuffer buf = ChannelBuffers.buffer(burstSize);
 			buf.writeBytes(input, i, burstSize);
 			i += burstSize;
-			
-			MessageEvent e = new MessageEvent() {
 
+			MessageEvent e = new MessageEvent() {
 				@Override
 				public Channel getChannel() {
 					return null;
@@ -104,9 +103,8 @@ public class PreprocessReplayingDecoderTest {
 				public SocketAddress getRemoteAddress() {
 					return null;
 				}
-
 			};
-			
+
 			p.messageReceived(fake, e);
 		}
 
@@ -127,23 +125,20 @@ public class PreprocessReplayingDecoderTest {
 					System.out.println(j + ") " + Integer.toBinaryString(input[j] & 0xFF) + " " + Integer.toBinaryString(output[j] & 0xFF));
 				}
 			}
-			
+
 			if (i < BREAK) {
 				assertTrue("Input/Output mismatch at position " + i, output[i] == input[i]);
 			} else {
 				assertTrue("Input/Output mismatch at position " + i + ", after the processor change", output[i] == (byte) ~input[i]);
 			}
 		}
-
 	}
 
 	private static class Preprocessor extends PreprocessReplayingDecoder {
-
 		private final int breakPoint;
 		private final int length;
 		private int position = 0;
 		private boolean breakOccured;
-
 		private Random r = new Random();
 
 		public Preprocessor(int capacity, int breakPoint, int length) {
@@ -166,29 +161,27 @@ public class PreprocessReplayingDecoderTest {
 			if (position + packetSize > length) {
 				packetSize = length - position;
 			}
-			
+
 			if (packetSize == 0) {
 				return null;
 			}
 
 			byte[] buf = new byte[packetSize];
-			
+
 			buffer.readBytes(buf);
-			
+
 			position += packetSize;
 
 			if (position == breakPoint) {
 				this.setProcessor(new NegatingProcessor(512));
 				breakOccured = true;
 			}
-			
+
 			return buf;
 		}
-
 	}
 
 	private static class NegatingProcessor extends CommonChannelProcessor {
-
 		byte[] buffer = new byte[65536];
 		int readPointer = 0;
 		int writePointer = 0;
@@ -213,7 +206,5 @@ public class PreprocessReplayingDecoderTest {
 			}
 			return i;
 		}
-
 	}
-
 }

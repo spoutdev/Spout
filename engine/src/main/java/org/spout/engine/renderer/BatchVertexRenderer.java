@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import gnu.trove.list.array.TFloatArrayList;
-
 import org.lwjgl.BufferUtils;
 
 import org.spout.api.Client;
@@ -44,7 +43,6 @@ import org.spout.api.Spout;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
-
 import org.spout.engine.renderer.shader.SpoutShader;
 import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
 
@@ -150,8 +148,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	/**
-	 * The act of drawing.  The Batch will check if it's possible to render
-	 * as well as setup for rendering.  If it's possible to render, it will call doRender()
+	 * The act of drawing.  The Batch will check if it's possible to render as well as setup for rendering.  If it's possible to render, it will call doRender()
 	 */
 	protected abstract void doDraw(RenderMaterial material, int startVert, int endVert);
 
@@ -199,6 +196,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		}
 		list.add(this);
 	}
+
 	/*
 	 * We want this to be overriden to clean up traces GL objects...I think
 	 * Subclasses should use doRelease

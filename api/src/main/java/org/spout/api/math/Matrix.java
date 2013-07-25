@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -45,7 +45,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Creates a new matrix with the given dimension
-	 * @param dim
 	 */
 	public Matrix(int dim) {
 		dimension = dim;
@@ -62,10 +61,7 @@ public class Matrix implements Serializable {
 	}
 
 	/**
-	 * Creates a new matrix from the given dimension and given data in column
-	 * major order
-	 * @param dim
-	 * @param dat
+	 * Creates a new matrix from the given dimension and given data in column major order
 	 */
 	public Matrix(int dim, float[] dat) {
 		dimension = dim;
@@ -74,7 +70,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Creates a new copy of provided matrix
-	 * @param copy
 	 */
 	public Matrix(Matrix copy) {
 		this(copy.dimension, copy.data);
@@ -86,9 +81,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Gets the value at the given row and colum
-	 * @param row
-	 * @param column
-	 * @return
 	 */
 	public float get(int row, int column) {
 		if (row < 0 || row >= dimension) {
@@ -102,9 +94,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Sets the value at the given row and column
-	 * @param row
-	 * @param column
-	 * @param value
 	 */
 	public void set(int row, int column, float value) {
 		if (row < 0 || row >= dimension) {
@@ -118,8 +107,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Multiplies this matrix with the provided matrix
-	 * @param that
-	 * @return
 	 */
 	public Matrix multiply(Matrix that) {
 		return MatrixMath.multiply(this, that);
@@ -127,8 +114,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Adds this matrix to the given matrix
-	 * @param that
-	 * @return
 	 */
 	public Matrix add(Matrix that) {
 		return MatrixMath.add(this, that);
@@ -136,6 +121,7 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Transpose the matrix
+	 *
 	 * @return the transposition of this matrix
 	 */
 	public Matrix transpose() {
@@ -144,7 +130,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Returns this matrix in a single dimension float array
-	 * @return
 	 */
 	public float[] toArray() {
 		return data.clone();
@@ -152,6 +137,7 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Fast access to matrix data used to fill a buffer for instance.
+	 *
 	 * @return float array of length size*size
 	 */
 	public float[] getData() {

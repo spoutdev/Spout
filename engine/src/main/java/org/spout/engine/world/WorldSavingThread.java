@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -46,10 +46,11 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 /**
  * Dedicated thread to IO write operations for world chunks
  */
-public class WorldSavingThread extends Thread{
+public class WorldSavingThread extends Thread {
 	private static final WorldSavingThread instance = new WorldSavingThread();
 	private final AtomicBoolean queueRunning = new AtomicBoolean(true);
 	private final LinkedBlockingQueue<Callable<SpoutServerWorld>> queue = new LinkedBlockingQueue<Callable<SpoutServerWorld>>();
+
 	public WorldSavingThread() {
 		super("World Saving Thread");
 	}
@@ -67,7 +68,7 @@ public class WorldSavingThread extends Thread{
 		}
 		instance.addChunk(chunk);
 	}
-	
+
 	public void addChunk(SpoutChunk chunk) {
 		if (Spout.getEngine() instanceof Client) {
 			throw new IllegalStateException("Client mode is not allowed to add chunks for saving");
@@ -76,7 +77,7 @@ public class WorldSavingThread extends Thread{
 		instance.queue.add(task);
 		pingBackup();
 	}
-	
+
 	private void pingBackup() {
 		if (Spout.getEngine() instanceof Client) {
 			throw new IllegalStateException("Client mode is not allowed to poll backup of chunks");
@@ -84,7 +85,6 @@ public class WorldSavingThread extends Thread{
 		if (instance.queueRunning.compareAndSet(false, true)) {
 			new BackupThread().start();
 		}
-
 	}
 
 	public static void finish() {
@@ -112,7 +112,7 @@ public class WorldSavingThread extends Thread{
 				e.printStackTrace();
 			}
 		}
-		processRemaining("main");	
+		processRemaining("main");
 	}
 
 	private void processRemaining(String threadType) {
@@ -145,21 +145,21 @@ public class WorldSavingThread extends Thread{
 		for (World w : worlds) {
 			((SpoutServerWorld) w).getRegionFileManager().closeAll();
 		}
-		
+
 		if (!queueRunning.compareAndSet(true, false)) {
 			Spout.getLogger().severe("queueRunning was already false when " + threadType + " world saving thread finished");
 		}
-		
+
 		if (!queue.isEmpty()) {
 			pingBackup();
 		}
-		
 	}
 
 	private static class ChunkSaveTask implements Callable<SpoutServerWorld> {
 		final SpoutChunkSnapshot snapshot;
 		final List<DynamicBlockUpdate> blockUpdates;
 		final SpoutChunk chunk;
+
 		ChunkSaveTask(SpoutChunk chunk) {
 			this.snapshot = chunk.getSnapshot(SnapshotType.LIGHT_ONLY, EntityType.BOTH, ExtraData.DATATABLE, true);
 			this.blockUpdates = chunk.getRegion().getDynamicBlockUpdates(chunk);
@@ -188,18 +188,16 @@ public class WorldSavingThread extends Thread{
 			return world;
 		}
 	}
-	
+
 	private class BackupThread extends Thread {
-		
 		public BackupThread() {
 			Spout.getLogger().info("Backup world save thread started due to late submission of chunk for saving");
 			Thread.dumpStack();
 		}
-		
+
 		@Override
 		public void run() {
 			processRemaining("backup");
 		}
-
 	}
 }

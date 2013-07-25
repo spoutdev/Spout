@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,16 +26,18 @@
  */
 package org.spout.api.render;
 
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Vector3;
-import static org.mockito.Mockito.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ViewFrustumTest {
 	private ViewFrustum frustum;
@@ -55,7 +57,7 @@ public class ViewFrustumTest {
 		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
 		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
-		frustum.update(projection, view, new Vector3(0,0,0));
+		frustum.update(projection, view, new Vector3(0, 0, 0));
 
 		assertEquals(new Vector3(0, 0, 0), frustum.position);
 		// TODO test the created planes... a more patient person can do this
@@ -66,7 +68,7 @@ public class ViewFrustumTest {
 		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
 		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
-		frustum.update(projection, view, new Vector3(0,0,0));
+		frustum.update(projection, view, new Vector3(0, 0, 0));
 
 		Vector3[] vertices = new Vector3[8];
 		// Front
@@ -82,7 +84,7 @@ public class ViewFrustumTest {
 
 		Cuboid c = mock(Cuboid.class);
 		when(c.getVertices()).thenReturn(vertices);
-		
+
 		//assertTrue(frustum.intersects(c));
 	}
 
@@ -91,7 +93,7 @@ public class ViewFrustumTest {
 		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
 		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
-		frustum.update(projection, view, new Vector3(0,0,0));
+		frustum.update(projection, view, new Vector3(0, 0, 0));
 
 		Vector3[] vertices = new Vector3[8];
 		// Front
@@ -107,7 +109,7 @@ public class ViewFrustumTest {
 
 		Cuboid c = mock(Cuboid.class);
 		when(c.getVertices()).thenReturn(vertices);
-		
+
 		//assertFalse(frustum.intersects(c));
 	}
 
@@ -116,7 +118,7 @@ public class ViewFrustumTest {
 		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
 		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
-		frustum.update(projection, view, new Vector3(0,0,0));
+		frustum.update(projection, view, new Vector3(0, 0, 0));
 
 		//assertTrue(frustum.contains(new Vector3(0, 0, 2)));
 		//assertTrue(frustum.contains(new Vector3(0, 0, 100)));

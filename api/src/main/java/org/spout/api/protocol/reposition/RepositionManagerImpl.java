@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,7 +32,6 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Vector3;
 
 public abstract class RepositionManagerImpl implements RepositionManager {
-
 	@Override
 	public int convertChunkX(int x) {
 		return (convertX(x << Chunk.BLOCKS.BITS)) >> Chunk.BLOCKS.BITS;
@@ -47,32 +46,32 @@ public abstract class RepositionManagerImpl implements RepositionManager {
 	public int convertChunkZ(int z) {
 		return (convertZ(z << Chunk.BLOCKS.BITS)) >> Chunk.BLOCKS.BITS;
 	}
-	
+
 	@Override
 	public int convertX(int x) {
 		return (int) convertX((double) x);
 	}
-	
+
 	@Override
 	public int convertY(int y) {
 		return (int) convertY((double) y);
 	}
-	
+
 	@Override
 	public int convertZ(int z) {
 		return (int) convertZ((double) z);
 	}
-	
+
 	@Override
 	public float convertX(float x) {
 		return (float) convertX((double) x);
 	}
-	
+
 	@Override
 	public float convertY(float y) {
 		return (float) convertY((double) y);
 	}
-	
+
 	@Override
 	public float convertZ(float z) {
 		return (float) convertZ((double) z);
@@ -106,5 +105,4 @@ public abstract class RepositionManagerImpl implements RepositionManager {
 		Vector3 newP = new Vector3(newX, newY, newZ);
 		return newP;
 	}
-	
 }

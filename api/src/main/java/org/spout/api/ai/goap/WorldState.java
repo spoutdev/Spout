@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -44,12 +44,14 @@ public class WorldState implements Cloneable {
 	}
 
 	public WorldState apply(WorldState effects) {
-		if (effects == EMPTY || effects.state.isEmpty())
+		if (effects == EMPTY || effects.state.isEmpty()) {
 			return this;
+		}
 		Map<String, Object> newState = Maps.newHashMap(effects.state);
 		for (Entry<String, Object> entry : state.entrySet()) {
-			if (!newState.containsKey(entry.getKey()))
+			if (!newState.containsKey(entry.getKey())) {
 				newState.put(entry.getKey(), entry.getValue());
+			}
 		}
 		return new WorldState(newState);
 	}
@@ -83,7 +85,7 @@ public class WorldState implements Cloneable {
 		return differences;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public <T> T get(String string) {
 		return (T) state.get(string);
 	}
@@ -108,17 +110,18 @@ public class WorldState implements Cloneable {
 		for (int i = 0; i < objects.length; i += 2) {
 			map.put((String) objects[i], objects[i + 1]);
 		}
-		if (immutable)
+		if (immutable) {
 			map = ImmutableMap.copyOf(map);
+		}
 		return new WorldState(map);
 	}
 
 	public static WorldState create(String firstKey, Object firstValue) {
-		return create(new Object[] { firstKey, firstValue });
+		return create(new Object[] {firstKey, firstValue});
 	}
 
 	public static WorldState create(String firstKey, Object firstValue, String secondKey, Object secondValue) {
-		return create(new Object[] { firstKey, firstValue, secondKey, secondValue });
+		return create(new Object[] {firstKey, firstValue, secondKey, secondValue});
 	}
 
 	public static WorldState createEmptyState() {
@@ -126,10 +129,10 @@ public class WorldState implements Cloneable {
 	}
 
 	public static WorldState createImmutable(String firstKey, Object firstValue) {
-		return create(new Object[] { firstKey, firstValue }, true);
+		return create(new Object[] {firstKey, firstValue}, true);
 	}
 
 	public static WorldState createImmutable(String firstKey, Object firstValue, String secondKey, Object secondValue) {
-		return create(new Object[] { firstKey, firstValue, secondKey, secondValue }, true);
+		return create(new Object[] {firstKey, firstValue, secondKey, secondValue}, true);
 	}
 }

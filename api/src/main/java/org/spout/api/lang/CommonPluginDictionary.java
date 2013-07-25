@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -25,8 +25,6 @@
  * the MIT license.
  */
 package org.spout.api.lang;
-
-import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,16 +40,17 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import gnu.trove.map.hash.TIntObjectHashMap;
 import org.apache.commons.io.IOUtils;
-import org.spout.api.Spout;
-import org.spout.api.command.CommandSource;
-import org.spout.api.plugin.Plugin;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.nodes.Tag;
 
-public abstract class CommonPluginDictionary implements PluginDictionary {
+import org.spout.api.Spout;
+import org.spout.api.command.CommandSource;
+import org.spout.api.plugin.Plugin;
 
+public abstract class CommonPluginDictionary implements PluginDictionary {
 	public static final int NO_ID = -1;
 
 	protected abstract InputStream openLangResource(String filename);
@@ -60,7 +59,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 	protected Plugin plugin;
 	private final TIntObjectHashMap<LanguageDictionary> languageDictionaries = new TIntObjectHashMap<LanguageDictionary>();
 	private int nextId = 0;
-	private final HashMap<String, HashMap<String, Integer>> classes = new HashMap<String, HashMap<String,Integer>>(10);
+	private final HashMap<String, HashMap<String, Integer>> classes = new HashMap<String, HashMap<String, Integer>>(10);
 	private final LinkedList<Integer> idList = new LinkedList<Integer>();
 	private final LanguageDictionary codedLanguage = new LanguageDictionary(null);
 
@@ -68,10 +67,10 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 		super();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	protected void load() {
 		Yaml yaml = new Yaml();
-		
+
 		// Load keymap
 		InputStream in = openLangResource("keymap.yml");
 		if (in == null) {
@@ -98,7 +97,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 		} catch (ClassCastException e) {
 			e.printStackTrace();
 		}
-		
+
 		loadLanguages();
 	}
 
@@ -106,7 +105,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 		Yaml yaml = new Yaml();
 		LinkedHashMap<String, Object> dump = new LinkedHashMap<String, Object>();
 		dump.put("nextId", nextId);
-		LinkedHashMap<Integer, LinkedHashMap<String, String>> ids = new LinkedHashMap<Integer, LinkedHashMap<String,String>>();
+		LinkedHashMap<Integer, LinkedHashMap<String, String>> ids = new LinkedHashMap<Integer, LinkedHashMap<String, String>>();
 		for (Entry<String, HashMap<String, Integer>> e1 : classes.entrySet()) {
 			for (Entry<String, Integer> e2 : e1.getValue().entrySet()) {
 				String clazz = e1.getKey();
@@ -119,7 +118,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 			}
 		}
 		dump.put("ids", ids);
-		
+
 		String toWrite = yaml.dumpAs(dump, Tag.MAP, FlowStyle.BLOCK);
 		try {
 			writer.write(toWrite);
@@ -130,14 +129,13 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 		}
 	}
 
-	
 	protected abstract void loadLanguages();
 
 	protected File getLangDirectory() {
 		return new File(plugin.getDataFolder(), "lang");
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	protected void loadLanguage(InputStream in, String fileName) {
 		Yaml yaml = new Yaml();
 		Map<String, Object> dump = (Map<String, Object>) yaml.load(in);
@@ -169,7 +167,6 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 					} catch (IllegalAccessException e1) {
 						Spout.getLogger().log(Level.SEVERE, "Failed to construct LocaleNumberHandler", e1);
 					}
-					
 				}
 			}
 		}
@@ -177,23 +174,17 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 
 	/**
 	 * Returns the translation of source into the receivers preferred language
-	 * 
-	 * @param source
-	 *            the string to translate
-	 * @param receiver
-	 *            the receiver who will see the message
-	 * @param args
-	 *            any object given will be inserted into the target string for
-	 *            each %0, %1 asf
-	 * @param foundClass
-	 *            the class that called the translation (used for determining
-	 *            which translation is correct)
+	 *
+	 * @param source the string to translate
+	 * @param receiver the receiver who will see the message
+	 * @param args any object given will be inserted into the target string for each %0, %1 asf
+	 * @param foundClass the class that called the translation (used for determining which translation is correct)
 	 * @return the translation
 	 */
 	public String tr(String source, CommandSource receiver, String foundClass, Object[] args) {
 		String use = source;
 		Locale preferred = receiver.getPreferredLocale();
-	
+
 		// Search for translation
 		LanguageDictionary dict = getDictionary(preferred);
 		Number num = 0;
@@ -240,7 +231,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 
 	public int getKey(String source, String clazz) {
 		synchronized (classes) {
-			HashMap<String, Integer> idmap = classes.get(clazz);			
+			HashMap<String, Integer> idmap = classes.get(clazz);
 			if (idmap == null) {
 				return NO_ID;
 			} else {
@@ -255,7 +246,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 
 	public void broadcast(String source, CommandSource[] receivers, String clazz, Object[] args) {
 		int key = getKey(source, clazz);
-		for (CommandSource receiver:receivers) {
+		for (CommandSource receiver : receivers) {
 			String use = source;
 			LanguageDictionary dict = getDictionary(receiver.getPreferredLocale());
 			if (dict != null) {
@@ -287,5 +278,4 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 			return codedLanguage.getTranslation(id);
 		}
 	}
-
 }

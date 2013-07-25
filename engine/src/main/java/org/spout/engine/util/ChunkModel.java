@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -88,7 +88,6 @@ public class ChunkModel {
 
 	/**
 	 * Gets the current center chunk of this model
-	 * @return
 	 */
 	public SpoutChunk getCenter() {
 		return this.center;
@@ -110,8 +109,8 @@ public class ChunkModel {
 	}
 
 	/**
-	 * Gets the chunk at world chunk coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 * Gets the chunk at world chunk coordinates<br> Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 *
 	 * @param cx coordinate of the chunk
 	 * @param cy coordinate of the chunk
 	 * @param cz coordinate of the chunk
@@ -140,8 +139,8 @@ public class ChunkModel {
 	}
 
 	/**
-	 * Gets the chunk at world block coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 * Gets the chunk at world block coordinates<br> Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 *
 	 * @param bx coordinate of the block
 	 * @param by coordinate of the block
 	 * @param bz coordinate of the block

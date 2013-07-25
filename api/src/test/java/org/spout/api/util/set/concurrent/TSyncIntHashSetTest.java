@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,15 +26,15 @@
  */
 package org.spout.api.util.set.concurrent;
 
-import static org.junit.Assert.assertTrue;
-import gnu.trove.set.TIntSet;
-
 import java.util.HashSet;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import gnu.trove.set.TIntSet;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class TSyncIntHashSetTest {
 	private final static int LENGTH = 10000;
@@ -42,21 +42,18 @@ public class TSyncIntHashSetTest {
 	private final static int TEST_COUNT = 2;
 	private final static int mask = 0x7F;
 	private final static int invMask = -1 - mask;
-
 	private final static boolean PRINT_AVERAGES = false;
 	private final static boolean PRINT_ALL_TESTS = false;
-
 	public final static int[] readBuffer = new int[LENGTH];
 	public final static int[] writeBuffer = new int[LENGTH];
-	
 	private int values;
 
 	@Before
 	public void setUp() {
 		Random rand = new Random();
-		
+
 		HashSet<Integer> set = new HashSet<Integer>();
-		
+
 		values = 0;
 
 		for (int count = 0; count < LENGTH; count++) {
@@ -69,7 +66,7 @@ public class TSyncIntHashSetTest {
 		}
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings ("unused")
 	@Test
 	public void testMap() {
 		long trove = 0;
@@ -85,24 +82,23 @@ public class TSyncIntHashSetTest {
 			}
 
 			troverw += runJoin(threads, "TroveRW");
-			
+
 			TIntSet set = TroveReadWriteSet.set;
-			
+
 			assertTrue("Incorrect number of entries in set, " + set.size() + ", expected " + values, set.size() == values);
-			
+
 			for (int i = 0; i < LENGTH; i++) {
 				int value = writeBuffer[i];
 				assertTrue("Expected entry, " + value + " at index " + i + " missing", set.contains(value));
 			}
-			
+
 			set.clear();
 		}
 
 		if (PRINT_AVERAGES) {
 			System.out.println("--- Averages ---");
-			System.out.println("TroveRW: " + (troverw / 1000000.0)/TEST_COUNT + "ms");
+			System.out.println("TroveRW: " + (troverw / 1000000.0) / TEST_COUNT + "ms");
 		}
-		
 	}
 
 	private static long runJoin(Thread[] threads, String name) {
@@ -120,14 +116,13 @@ public class TSyncIntHashSetTest {
 		long time = System.nanoTime() - startTime;
 
 		if (PRINT_ALL_TESTS) {
-			System.out.println(name + ": " + (time/1000000.0) + "ms");
+			System.out.println(name + ": " + (time / 1000000.0) + "ms");
 		}
 		return time;
 	}
 
 	public static class TroveReadWriteSet extends Thread {
 		public static TSyncIntHashSet set;
-
 		public static AtomicInteger count = new AtomicInteger(LENGTH);
 
 		public TroveReadWriteSet(long seed) {

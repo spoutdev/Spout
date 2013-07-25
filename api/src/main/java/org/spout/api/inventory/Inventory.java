@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -42,8 +42,7 @@ import org.spout.api.inventory.util.InventoryIterator;
 import org.spout.api.material.Material;
 
 /**
- * Represents a collection of {@link ItemStack} implemented as a 
- * {@link List<ItemStack>}
+ * Represents a collection of {@link ItemStack} implemented as a {@link List<ItemStack>}
  */
 public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	/**
@@ -51,15 +50,12 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	private static final long serialVersionUID = 1L;
 	/**
-	 * A set of {@link InventoryViewer} to send updates every time a slot is 
-	 * set.<br>
-	 * Note: Do not make changes to this variable, it is intended to be final, but 
-	 * transient variables cannot be set to final.
+	 * A set of {@link InventoryViewer} to send updates every time a slot is set.<br> Note: Do not make changes to this variable, it is intended to be final, but transient variables cannot be set to
+	 * final.
 	 */
 	private transient Set<InventoryViewer> viewers = new HashSet<InventoryViewer>();
 	/**
-	 * An array of {@link ItemStack}s that act as a mapping between slots and 
-	 * items.
+	 * An array of {@link ItemStack}s that act as a mapping between slots and items.
 	 */
 	private final ItemStack[] contents;
 
@@ -73,8 +69,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Constructs a new Inventory with an initial slot to {@link ItemStack} 
-	 * mapping
+	 * Constructs a new Inventory with an initial slot to {@link ItemStack} mapping
 	 *
 	 * @param contents array of the contents of the inventory
 	 */
@@ -84,11 +79,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Gets the raw content array of this inventory
-	 * 
-	 * <p>
-	 * Modifications to this array will modify the inventory contents
-	 * </p>
-	 * 
+	 *
+	 * <p> Modifications to this array will modify the inventory contents </p>
+	 *
 	 * @return raw contents
 	 */
 	public ItemStack[] getContents() {
@@ -96,10 +89,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Gets the set of {@link InventoryViewer} viewing the inventory.
-	 * <p>
-	 * Modifications to this set will alter the viewers of this inventory
-	 * </p>
+	 * Gets the set of {@link InventoryViewer} viewing the inventory. <p> Modifications to this set will alter the viewers of this inventory </p>
 	 *
 	 * @return set of viewers
 	 */
@@ -128,8 +118,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Sets the data of an {@link ItemStack} at the specified slot to the 
-	 * specified data.
+	 * Sets the data of an {@link ItemStack} at the specified slot to the specified data.
 	 *
 	 * @param slot to set item at
 	 * @param data to set to
@@ -147,8 +136,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Adds data of an {@link ItemStack} at the specified slot to the specified 
-	 * data
+	 * Adds data of an {@link ItemStack} at the specified slot to the specified data
 	 *
 	 * @param slot to set item at
 	 * @param amount to add to current data
@@ -164,8 +152,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Sets the amount of an {@link ItemStack} at the specified slot to the 
-	 * specified amount
+	 * Sets the amount of an {@link ItemStack} at the specified slot to the specified amount
 	 *
 	 * @param slot to set item at
 	 * @param amount to set to
@@ -183,8 +170,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Adds the amount of an {@link ItemStack} at the specified slot to the 
-	 * specified amount
+	 * Adds the amount of an {@link ItemStack} at the specified slot to the specified amount
 	 *
 	 * @param slot to set item at
 	 * @param amount to add to
@@ -201,6 +187,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Gets the amount of the specified {@link Material} in the inventory.
+	 *
 	 * @param material to check
 	 * @return amount of specified material
 	 */
@@ -258,11 +245,10 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	public Grid grid(int length) {
 		return new Grid(length, size() / length);
 	}
-	
+
 	/**
-	 * Constructs a new {@link Cube} with the specified row length and the 
-	 * specified face height
-	 * 
+	 * Constructs a new {@link Cube} with the specified row length and the specified face height
+	 *
 	 * @param length of faces
 	 * @param height of faces
 	 * @return new cube
@@ -272,21 +258,18 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Whether the inventory contains at least the amount of the specified
-	 * {@link Material}.
+	 * Whether the inventory contains at least the amount of the specified {@link Material}.
 	 *
 	 * @param material to check
 	 * @param amount to check
-	 * @return true if inventory contains at least the specified amount of the
-	 * specified material
+	 * @return true if inventory contains at least the specified amount of the specified material
 	 */
 	public boolean contains(Material material, int amount) {
 		return getAmount(material) >= amount;
 	}
 
 	/**
-	 * Whether the inventory contains exactly the specified amount of the specified
-	 * {@link Material}.
+	 * Whether the inventory contains exactly the specified amount of the specified {@link Material}.
 	 *
 	 * @param material to check
 	 * @param amount to check
@@ -297,18 +280,10 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Attempts to empty the specified {@link ItemStack} into the inventory
-	 * starting at the specified slot. While iterating through the inventories
-	 * slots, if a slot is null the remainder of the ItemStack will be put in
-	 * the null slot, if a slot is not null but the
-	 * {@link org.spout.api.material.Material} of the two ItemStacks do not
-	 * match, the iteration will continue to the next slot, and if the slot is
-	 * not null and the Material of the two ItemStacks do match the two
-	 * ItemStacks will attempt to be 'stacked'. After
-	 * {@link ItemStack#stack(org.spout.api.inventory.ItemStack)} has been
-	 * called, if the specified ItemStack is empty the call will return,
-	 * otherwise it will continue iterating through the slots until either the
-	 * stack is empty, or the iteration has ended.
+	 * Attempts to empty the specified {@link ItemStack} into the inventory starting at the specified slot. While iterating through the inventories slots, if a slot is null the remainder of the ItemStack
+	 * will be put in the null slot, if a slot is not null but the {@link org.spout.api.material.Material} of the two ItemStacks do not match, the iteration will continue to the next slot, and if the
+	 * slot is not null and the Material of the two ItemStacks do match the two ItemStacks will attempt to be 'stacked'. After {@link ItemStack#stack(org.spout.api.inventory.ItemStack)} has been called,
+	 * if the specified ItemStack is empty the call will return, otherwise it will continue iterating through the slots until either the stack is empty, or the iteration has ended.
 	 *
 	 * @param firstSlot slot to start iteration at (inclusive)
 	 * @param lastSlot slot to end iteration at (inclusive)
@@ -340,9 +315,8 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Returns the number of slots in the inventory including slots that may or
-	 * may not have a null item.
-	 * 
+	 * Returns the number of slots in the inventory including slots that may or may not have a null item.
+	 *
 	 * @return number of slots
 	 */
 	@Override
@@ -351,10 +325,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Whether the inventory contains any {@link ItemStack} elements in it's
-	 * contents.
-	 * 
-	 * @return true if the inventory contains a not null slot. 
+	 * Whether the inventory contains any {@link ItemStack} elements in it's contents.
+	 *
+	 * @return true if the inventory contains a not null slot.
 	 */
 	@Override
 	public boolean isEmpty() {
@@ -367,31 +340,27 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Whether the inventory contains the specified {@link ItemStack}. If the 
-	 * {@link Object} provided is not an ItemStack or a {@link Material} it
-	 * will return false. If the object passed in is a Material, true will be
-	 * returned if an ItemStack with that material is found with at least 1
-	 * amount.
-	 * 
+	 * Whether the inventory contains the specified {@link ItemStack}. If the {@link Object} provided is not an ItemStack or a {@link Material} it will return false. If the object passed in is a
+	 * Material, true will be returned if an ItemStack with that material is found with at least 1 amount.
+	 *
 	 * @param o ItemStack whose presence is to be tested in this inventory
-	 * @return true if specified Object is present 
+	 * @return true if specified Object is present
 	 */
 	@Override
 	public boolean contains(Object o) {
 		if (o instanceof Material) {
-			return contains((Material)o);
+			return contains((Material) o);
 		} else if (o instanceof ItemStack) {
-			return contains((ItemStack)o);
+			return contains((ItemStack) o);
 		}
 		return false;
 	}
 
 	/**
-	 * Whether the inventory contains the specified {@link Material}. True,
-	 * if an ItemStack with that material is found with at least 1 amount.
-	 * 
+	 * Whether the inventory contains the specified {@link Material}. True, if an ItemStack with that material is found with at least 1 amount.
+	 *
 	 * @param item ItemStack whose presence is to be tested in this inventory
-	 * @return true if specified ItemStack is present 
+	 * @return true if specified ItemStack is present
 	 */
 	public boolean contains(Material material) {
 		for (ItemStack i : getContents()) {
@@ -406,11 +375,10 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Whether the inventory contains the specified {@link ItemStack}. True,
-	 * if an ItemStack with that material is found with at least 1 amount.
-	 * 
+	 * Whether the inventory contains the specified {@link ItemStack}. True, if an ItemStack with that material is found with at least 1 amount.
+	 *
 	 * @param item ItemStack whose presence is to be tested in this inventory
-	 * @return true if specified ItemStack is present 
+	 * @return true if specified ItemStack is present
 	 */
 	public boolean contains(ItemStack item) {
 		for (ItemStack i : getContents()) {
@@ -425,10 +393,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Returns an {@link InventoryIterator} to iterate over the inventory in the
-	 * correct sequence.
-	 * 
-	 * @return iterator 
+	 * Returns an {@link InventoryIterator} to iterate over the inventory in the correct sequence.
+	 *
+	 * @return iterator
 	 */
 	@Override
 	public InventoryIterator iterator() {
@@ -436,10 +403,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Returns an array whose indexes are represented as slots which can contain
-	 * a null or not null {@link ItemStack}.
-	 * 
-	 * @return an array containing the slot to item mapping of the inventory 
+	 * Returns an array whose indexes are represented as slots which can contain a null or not null {@link ItemStack}.
+	 *
+	 * @return an array containing the slot to item mapping of the inventory
 	 */
 	@Override
 	public Object[] toArray() {
@@ -447,34 +413,24 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Returns an array whose indexes are represented as slots which can contain
-	 * a null or not null {@link ItemStack}. The array returned is casted to the
-	 * given type which must be an array of ItemStacks to avoid a
-	 * {@link ClassCastException}.
-	 * 
+	 * Returns an array whose indexes are represented as slots which can contain a null or not null {@link ItemStack}. The array returned is casted to the given type which must be an array of ItemStacks
+	 * to avoid a {@link ClassCastException}.
+	 *
 	 * @param <T> type of array to be casted
 	 * @param a array of ItemStacks
 	 * @return an array containing the slot to item mapping of the inventory
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T> T[] toArray(T[] a) {
 		return (T[]) getContents();
 	}
 
 	/**
-	 * Attempts to empty the specified {@link ItemStack} into the inventory
-	 * starting at the specified slot. While iterating through the inventories
-	 * slots, if a slot is null the remainder of the ItemStack will be put in
-	 * the null slot, if a slot is not null but the
-	 * {@link org.spout.api.material.Material} of the two ItemStacks do not
-	 * match, the iteration will continue to the next slot, and if the slot is
-	 * not null and the Material of the two ItemStacks do match the two
-	 * ItemStacks will attempt to be 'stacked'. After
-	 * {@link ItemStack#stack(org.spout.api.inventory.ItemStack)} has been
-	 * called, if the specified ItemStack is empty the call will return,
-	 * otherwise it will continue iterating through the slots until either the
-	 * stack is empty, or the iteration has ended.
+	 * Attempts to empty the specified {@link ItemStack} into the inventory starting at the specified slot. While iterating through the inventories slots, if a slot is null the remainder of the ItemStack
+	 * will be put in the null slot, if a slot is not null but the {@link org.spout.api.material.Material} of the two ItemStacks do not match, the iteration will continue to the next slot, and if the
+	 * slot is not null and the Material of the two ItemStacks do match the two ItemStacks will attempt to be 'stacked'. After {@link ItemStack#stack(org.spout.api.inventory.ItemStack)} has been called,
+	 * if the specified ItemStack is empty the call will return, otherwise it will continue iterating through the slots until either the stack is empty, or the iteration has ended.
 	 *
 	 * @param item to attempt to add to the inventory
 	 * @return true
@@ -486,9 +442,8 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Sets the slot of the first occurrence of this {@link ItemStack}
-	 * or {@link Material} to null.
-	 * 
+	 * Sets the slot of the first occurrence of this {@link ItemStack} or {@link Material} to null.
+	 *
 	 * @param o ItemStack to be removed from the inventory
 	 * @return true if the inventory contained the specified ItemStack
 	 */
@@ -508,9 +463,8 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Returns true if the inventory contains all the elements of the specified
-	 * collection.
-	 * 
+	 * Returns true if the inventory contains all the elements of the specified collection.
+	 *
 	 * @param objects collection to be checked for containment in the list
 	 * @return true if the inventory contained all elements in the collection
 	 */
@@ -526,10 +480,8 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Appends all of the elements in the specified collection to the first
-	 * possible slot in the inventory in the order specified by the collections
-	 * {@link Iterator}.
-	 * 
+	 * Appends all of the elements in the specified collection to the first possible slot in the inventory in the order specified by the collections {@link Iterator}.
+	 *
 	 * @param items to be added
 	 * @return true
 	 */
@@ -547,13 +499,11 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Appends all of the elements in the specified collection to the first
-	 * possible slot in the inventory starting at the specified index in the
-	 * order specified by the collections {@link Iterator}.
-	 * 
+	 * Appends all of the elements in the specified collection to the first possible slot in the inventory starting at the specified index in the order specified by the collections {@link Iterator}.
+	 *
 	 * @param i slot to try to add each item in the collection to
 	 * @param items to add
-	 * @return true 
+	 * @return true
 	 */
 	@Override
 	public boolean addAll(int i, Collection<? extends ItemStack> items) {
@@ -566,9 +516,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Sets the slot of each element in the specified collection to null.
-	 * 
+	 *
 	 * @param objects to remove
-	 * @return true 
+	 * @return true
 	 */
 	@Override
 	public boolean removeAll(Collection<?> objects) {
@@ -580,9 +530,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 				if (item == null) {
 					continue;
 				}
-				if (o instanceof ItemStack && ((ItemStack)o).equalsIgnoreSize(item)) {
+				if (o instanceof ItemStack && ((ItemStack) o).equalsIgnoreSize(item)) {
 					set(i, null);
-				} else if (o instanceof Material && ((Material)o).equals(item.getMaterial())) {
+				} else if (o instanceof Material && ((Material) o).equals(item.getMaterial())) {
 					set(i, null);
 				}
 			}
@@ -591,12 +541,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Retains only the elements in this inventory that are contained in the
-	 * specified collection; removes all items that are not contained within
-	 * the specified collection.
-	 * 
-	 * @param objects
-	 * @return true 
+	 * Retains only the elements in this inventory that are contained in the specified collection; removes all items that are not contained within the specified collection.
+	 *
+	 * @return true
 	 */
 	@Override
 	public boolean retainAll(Collection<?> objects) {
@@ -612,8 +559,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Sets every slot in the inventory to null. Every slot in this inventory
-	 * will be null after this call.
+	 * Sets every slot in the inventory to null. Every slot in this inventory will be null after this call.
 	 */
 	@Override
 	public void clear() {
@@ -624,7 +570,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Returns the {@link ItemStack} at the specified slot in this inventory.
-	 * 
+	 *
 	 * @param i slot to get the item from
 	 * @return item in the slot
 	 */
@@ -634,10 +580,8 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Checks whether a certain slot can be set to the item specified<br>
-	 * {@link set(i, item)} does not call this method before setting, this method is used
-	 * externally before set is called
-	 * 
+	 * Checks whether a certain slot can be set to the item specified<br> {@link set(i, item)} does not call this method before setting, this method is used externally before set is called
+	 *
 	 * @param i slot to set the item at
 	 * @param item to set in the specified slot
 	 * @return True if the item can be set at the slot, False if not
@@ -647,13 +591,11 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Replaces the {@link ItemStack} at the specified slot in this inventory
-	 * with the specified ItemStack.
-	 * 
+	 * Replaces the {@link ItemStack} at the specified slot in this inventory with the specified ItemStack.
+	 *
 	 * @param i slot to set the item at
 	 * @param item to set in the specified slot
-	 * @Param update whether to update the item and notify viewers
-	 * @return the item previously at the slot 
+	 * @return the item previously at the slot
 	 */
 	public ItemStack set(int i, ItemStack item, boolean update) {
 		if (item != null && item.isEmpty()) {
@@ -668,12 +610,11 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Replaces the {@link ItemStack} at the specified slot in this inventory
-	 * with the specified ItemStack.
-	 * 
+	 * Replaces the {@link ItemStack} at the specified slot in this inventory with the specified ItemStack.
+	 *
 	 * @param i slot to set the item at
 	 * @param item to set in the specified slot
-	 * @return the item previously at the slot 
+	 * @return the item previously at the slot
 	 */
 	@Override
 	public ItemStack set(int i, ItemStack item) {
@@ -681,21 +622,13 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Attempts to empty the specified {@link ItemStack} into the inventory
-	 * starting at the specified slot. While iterating through the inventories
-	 * slots, if a slot is null the remainder of the ItemStack will be put in
-	 * the null slot, if a slot is not null but the
-	 * {@link org.spout.api.material.Material} of the two ItemStacks do not
-	 * match, the iteration will continue to the next slot, and if the slot is
-	 * not null and the Material of the two ItemStacks do match the two
-	 * ItemStacks will attempt to be 'stacked'. After
-	 * {@link ItemStack#stack(org.spout.api.inventory.ItemStack)} has been
-	 * called, if the specified ItemStack is empty the call will return, 
-	 * otherwise it will continue iterating through the slots until either the
-	 * stack is empty, or the iteration has ended.
-	 * 
+	 * Attempts to empty the specified {@link ItemStack} into the inventory starting at the specified slot. While iterating through the inventories slots, if a slot is null the remainder of the ItemStack
+	 * will be put in the null slot, if a slot is not null but the {@link org.spout.api.material.Material} of the two ItemStacks do not match, the iteration will continue to the next slot, and if the
+	 * slot is not null and the Material of the two ItemStacks do match the two ItemStacks will attempt to be 'stacked'. After {@link ItemStack#stack(org.spout.api.inventory.ItemStack)} has been called,
+	 * if the specified ItemStack is empty the call will return, otherwise it will continue iterating through the slots until either the stack is empty, or the iteration has ended.
+	 *
 	 * @param i slot to start iteration at
-	 * @param item to attempt to add to the inventory 
+	 * @param item to attempt to add to the inventory
 	 */
 	@Override
 	public void add(int i, ItemStack item) {
@@ -704,9 +637,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Sets the specified slot of the inventory to null.
-	 * 
+	 *
 	 * @param i slot to set to null
-	 * @return the {@link ItemStack} previously at the slot 
+	 * @return the {@link ItemStack} previously at the slot
 	 */
 	@Override
 	public ItemStack remove(int i) {
@@ -715,6 +648,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Returns the first empty {@link Slot}. If all inventory slots are filled, null is returned instead.
+	 *
 	 * @return first empty slot
 	 */
 	public Slot getFirstEmptySlot() {
@@ -728,10 +662,11 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Returns the first non-empty {@link Slot}.  If all inventory slots are empty, null is returned instead.
+	 *
 	 * @return first non-empty slot
 	 */
 	public Slot getFirstUsedSlot() {
-		for(int i = 0; i < this.size(); i++) {
+		for (int i = 0; i < this.size(); i++) {
 			if (this.get(i) != null) {
 				return new Slot(this, i);
 			}
@@ -740,11 +675,10 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Returns the slot of the first occurrence of the specified element, or -1
-	 * if this inventory does not contain the element.
-	 * 
+	 * Returns the slot of the first occurrence of the specified element, or -1 if this inventory does not contain the element.
+	 *
 	 * @param o element to search for
-	 * @return the slot of the first occurrence of the specified element 
+	 * @return the slot of the first occurrence of the specified element
 	 */
 	@Override
 	public int indexOf(Object o) {
@@ -761,11 +695,10 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Returns the slot of the last occurrence of the specified element, or -1
-	 * if this inventory does not contain the element.
-	 * 
+	 * Returns the slot of the last occurrence of the specified element, or -1 if this inventory does not contain the element.
+	 *
 	 * @param o element to search for
-	 * @return the slot of the last occurrence of the specified element 
+	 * @return the slot of the last occurrence of the specified element
 	 */
 	@Override
 	public int lastIndexOf(Object o) {
@@ -782,10 +715,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Returns an {@link InventoryIterator} to iterate over the inventory in the
-	 * proper order.
-	 * 
-	 * @return new inventory iterator 
+	 * Returns an {@link InventoryIterator} to iterate over the inventory in the proper order.
+	 *
+	 * @return new inventory iterator
 	 */
 	@Override
 	public InventoryIterator listIterator() {
@@ -793,11 +725,10 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Returns an {@link InventoryIterator} to iterate over the inventory in the
-	 * proper order starting at the specified slot.
-	 * 
+	 * Returns an {@link InventoryIterator} to iterate over the inventory in the proper order starting at the specified slot.
+	 *
 	 * @param i slot to start iterating from
-	 * @return new inventory iterator 
+	 * @return new inventory iterator
 	 */
 	@Override
 	public InventoryIterator listIterator(int i) {
@@ -805,13 +736,11 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Returns a view of the portion of this inventory between the specified 
-	 * first slot and the specified last slot.
-	 * 
+	 * Returns a view of the portion of this inventory between the specified first slot and the specified last slot.
+	 *
 	 * @param firstSlot slot to start list at
 	 * @param lastSlot slot to end list at
-	 * @return view of the range between the specified first slot and the 
-	 * specified last slot.
+	 * @return view of the range between the specified first slot and the specified last slot.
 	 */
 	@Override
 	public Inventory subList(int firstSlot, int lastSlot) {
@@ -824,11 +753,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
-	 * Creates and returns a new inventory with the current slot to
-	 * {@link ItemStack} array. With the indexes of the array representing the
-	 * slots and the contents representing the slot's contents.
-	 * 
-	 * @return new inventory with the same contents  
+	 * Creates and returns a new inventory with the current slot to {@link ItemStack} array. With the indexes of the array representing the slots and the contents representing the slot's contents.
+	 *
+	 * @return new inventory with the same contents
 	 */
 	@Override
 	public Inventory clone() {
@@ -839,5 +766,4 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 		in.defaultReadObject();
 		viewers = new HashSet<InventoryViewer>();
 	}
-
 }

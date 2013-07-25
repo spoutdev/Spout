@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -29,9 +29,8 @@ package org.spout.api.exception;
 import org.spout.api.scheduler.TickStage;
 
 public class IllegalTickSequenceException extends RuntimeException {
-
 	private static final long serialVersionUID = 1L;
-	
+
 	public IllegalTickSequenceException(int allowedStages, int restrictedStages, Thread t, int actualStage) {
 		super(getMessage(allowedStages, restrictedStages, t, actualStage));
 	}
@@ -39,7 +38,7 @@ public class IllegalTickSequenceException extends RuntimeException {
 	public IllegalTickSequenceException(int allowedStages, int actualStage) {
 		super("Method called during (" + TickStage.getAllStages(actualStage) + ") when only (" + TickStage.getAllStages(allowedStages) + ") were allowed");
 	}
-	
+
 	private static String getMessage(int allowedStages, int restrictedStages, Thread t, int actualStage) {
 		if (Thread.currentThread() != t) {
 			return "Method called by non-owning thread (" + Thread.currentThread() + ") during (" + TickStage.getAllStages(actualStage) + ") when only calls by (" + t + ") during (" + TickStage.getAllStages(allowedStages) + ") were allowed";
@@ -47,5 +46,4 @@ public class IllegalTickSequenceException extends RuntimeException {
 			return "Method called during (" + TickStage.getAllStages(actualStage) + ") when only (" + TickStage.getAllStages(restrictedStages) + ") were allowed for owning thread " + t;
 		}
 	}
-
 }

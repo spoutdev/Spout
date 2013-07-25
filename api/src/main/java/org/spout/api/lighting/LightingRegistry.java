@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -31,24 +31,23 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+
 import org.spout.api.Platform;
 import org.spout.api.Server;
-
 import org.spout.api.Spout;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.util.StringToUniqueIntegerMap;
 
 public class LightingRegistry {
-
 	private final static ConcurrentHashMap<String, LightingManager<?>> nameLookup = new ConcurrentHashMap<String, LightingManager<?>>(10);
 	private final static int MAX_SIZE = 1 << 16;
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	private final static AtomicReference<LightingManager<?>>[] lightingLookup = new AtomicReference[MAX_SIZE];
 	private final static AtomicReference<LightingManager<?>[]> managerArray = new AtomicReference<LightingManager<?>[]>();
 	private static boolean setup = false;
 	private final static BinaryFileStore store = new BinaryFileStore();
 	private final static StringToUniqueIntegerMap lightingRegistry = new StringToUniqueIntegerMap(null, store, 1, Short.MAX_VALUE, LightingManager.class.getName());
-	
+
 	static {
 		for (int i = 0; i < lightingLookup.length; i++) {
 			lightingLookup[i] = new AtomicReference<LightingManager<?>>();
@@ -56,11 +55,10 @@ public class LightingRegistry {
 	}
 
 	/**
-	 * Sets up the lighting registry for its first use. May not be called more than once.<br/>
-	 * This attempts to load the lighting.dat file from the 'worlds' directory into memory.<br/>
-	 * 
+	 * Sets up the lighting registry for its first use. May not be called more than once.<br/> This attempts to load the lighting.dat file from the 'worlds' directory into memory.<br/>
+	 *
 	 * Can throw an {@link IllegalStateException} if the material registry has already been setup.
-	 * 
+	 *
 	 * @return StringToUniqueIntegerMap of registered materials
 	 */
 	public static StringToUniqueIntegerMap setupRegistry() {
@@ -78,7 +76,7 @@ public class LightingRegistry {
 		setup = true;
 		return lightingRegistry;
 	}
-	
+
 	/**
 	 * Registers the LightingManager in the Lighting lookup service
 	 *
@@ -95,7 +93,7 @@ public class LightingRegistry {
 		addToManagerArray(manager);
 		return id;
 	}
-	
+
 	/**
 	 * Gets the LightingManager from the given id
 	 *
@@ -108,7 +106,7 @@ public class LightingRegistry {
 		}
 		return lightingLookup[id].get();
 	}
-	
+
 	/**
 	 * Gets the LightingManager by its name. Case-insensitive.
 	 *
@@ -118,7 +116,7 @@ public class LightingRegistry {
 	public static LightingManager<?> get(String name) {
 		return nameLookup.get(formatName(name));
 	}
-	
+
 	/**
 	 * Gets the LightingManager by a portion of its name. Case-insensitive.
 	 *
@@ -136,23 +134,22 @@ public class LightingRegistry {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a human legible name from the full LightingManager name.
-	 * 
+	 *
 	 * This will strip out extra whitespace, strip any other spaces and replace with '_', and lowercase the LightingManager name.
 	 *
-	 * @param name
 	 * @return human legible name of the material.
 	 */
 	private static String formatName(String name) {
 		return name.trim().replaceAll(" ", "_").toLowerCase();
 	}
-	
+
 	public static LightingManager<?>[] getManagers() {
 		return managerArray.get();
 	}
-	
+
 	private static void addToManagerArray(LightingManager<?> manager) {
 		boolean success = false;
 		while (!success) {
@@ -173,5 +170,4 @@ public class LightingRegistry {
 			success = managerArray.compareAndSet(oldArray, newArray);
 		}
 	}
-	
 }

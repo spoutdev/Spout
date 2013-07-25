@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -29,7 +29,6 @@ package org.spout.engine.command;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.CommandDescription;
-
 import org.spout.api.exception.ArgumentParseException;
 import org.spout.engine.SpoutClient;
 
@@ -40,7 +39,7 @@ public class RendererCommands {
 		this.client = client;
 	}
 
-	@CommandDescription(aliases = {"r_wireframe"}, desc = "Toggles Wireframe for the renderer")
+	@CommandDescription (aliases = {"r_wireframe"}, desc = "Toggles Wireframe for the renderer")
 	public void toggleWireframe(CommandSource source, CommandArguments args) throws ArgumentParseException {
 		args.assertCompletelyParsed();
 

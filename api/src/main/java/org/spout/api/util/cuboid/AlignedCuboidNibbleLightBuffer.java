@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -29,24 +29,22 @@ package org.spout.api.util.cuboid;
 import org.spout.api.lighting.Modifiable;
 import org.spout.api.math.GenericMath;
 
-
 public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
-	
 	private final int xMask;
 	private final int yMask;
 	private final int zMask;
 	private final int xShift;
 	private final int yShift;
 	private final int zShift;
-	
+
 	protected AlignedCuboidNibbleLightBuffer(AlignedCuboidNibbleLightBuffer buffer) {
 		this(buffer.holder, buffer.getManagerId(), buffer.baseX, buffer.baseY, buffer.baseZ, buffer.sizeX, buffer.sizeY, buffer.sizeZ, buffer.lightData);
 	}
-	
+
 	protected AlignedCuboidNibbleLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		this(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
 	}
-	
+
 	protected AlignedCuboidNibbleLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
 		super(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, data);
 		this.xMask = GenericMath.roundUpPow2(sizeX) - 1;
@@ -68,7 +66,7 @@ public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
 		yShift = GenericMath.multiplyToShift(super.Yinc);
 		zShift = GenericMath.multiplyToShift(super.Zinc);
 	}
-	
+
 	@Override
 	public int getIndex(int x, int y, int z) {
 		x &= xMask;
@@ -79,29 +77,26 @@ public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
 		z <<= zShift;
 		return x | y | z;
 	}
-	
+
 	@Override
 	public AlignedCuboidNibbleLightBuffer copy() {
 		return new AlignedCuboidNibbleLightBuffer(this);
 	}
-	
+
 	/**
 	 * Copies data from an array into a Z row.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
+	 *
 	 * @param start the first element to copy
 	 * @param end the last element to copy (exclusive)
 	 */
 	public void copyZRow(int x, int y, int z, int start, int end, int[] values) {
 		int index = getIndex(x, y, z);
-		
+
 		int inc = (Zinc >> 1);
 
 		if (isEven(index)) {
 			index >>= 1;
-			
+
 			while (start < end) {
 				lightData[index] = (byte) ((lightData[index] & 0xF0) | (values[start] & 0xF));
 				start++;
@@ -109,7 +104,7 @@ public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
 			}
 		} else {
 			index >>= 1;
-			
+
 			while (start < end) {
 				lightData[index] = (byte) ((lightData[index] & 0x0F) | (values[start] << 4));
 				start++;
@@ -117,5 +112,4 @@ public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
 			}
 		}
 	}
-
 }

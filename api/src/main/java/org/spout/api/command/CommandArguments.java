@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -25,6 +25,16 @@
  * the MIT license.
  */
 package org.spout.api.command;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -38,22 +48,11 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
- * This class is used as a wrapper for command arguments to make them easily
- * parse-able.
+ * This class is used as a wrapper for command arguments to make them easily parse-able.
  *
- * Please note that the javadocs for the pop* methods describe how input is currently handled. Handling may
- * change over time, and while efforts are made to retain backwards compatibility it is not always possible.
+ * Please note that the javadocs for the pop* methods describe how input is currently handled. Handling may change over time, and while efforts are made to retain backwards compatibility it is not
+ * always possible.
  */
 public class CommandArguments {
 	private final StringBuilder commandString = new StringBuilder();
@@ -68,7 +67,6 @@ public class CommandArguments {
 		this.args = new ArrayList<String>(args);
 		this.flags = new CommandFlags(this);
 	}
-
 
 	public CommandArguments(String commandName, String... args) {
 		this(commandName, Arrays.asList(args));
@@ -117,8 +115,7 @@ public class CommandArguments {
 	// State control
 
 	/**
-	 * Called when an error has occurred while parsing the specified argument
-	 * Example:
+	 * Called when an error has occurred while parsing the specified argument Example:
 	 * <pre>
 	 * 	 if (success) {
 	 * 		 return success(argName, myValue);
@@ -131,23 +128,21 @@ public class CommandArguments {
 	 * @param error The error that occurred
 	 * @param completions Possible completions for the argument
 	 * @param silenceable Whether the error is caused by syntax of single argument/permanntly invalid provided value (or not)
-	 * @see ArgumentParseException for more detail about meanings of args
 	 * @return The exception -- must be thrown
+	 * @see ArgumentParseException for more detail about meanings of args
 	 */
 	public ArgumentParseException failure(String argName, String error, boolean silenceable, String... completions) {
 		return new ArgumentParseException(commandString.toString(), argName, error, silenceable, completions);
 	}
 
 	/**
-	 * Must be called when an argument has been successfully parsed
-	 * This stores the parsed value into the map, appends the string value to the map, and advances the index.
+	 * Must be called when an argument has been successfully parsed This stores the parsed value into the map, appends the string value to the map, and advances the index.
 	 *
-	 * @param argName     The name of the arg
+	 * @param argName The name of the arg
 	 * @param parsedValue The parsed value of the argument
-	 * @param <T>         The type of the parsed value
+	 * @param <T> The type of the parsed value
 	 * @return {@code parsedValue}
 	 */
-
 	public <T> T success(String argName, T parsedValue) {
 		return success(argName, parsedValue, false);
 	}
@@ -192,13 +187,11 @@ public class CommandArguments {
 	}
 
 	private static final Pattern QUOTE_START_REGEX = Pattern.compile("^('|\")"),
-								 QUOTE_END_REGEX = Pattern.compile("[^\\\\]?('|\")$"),
-								 QUOTE_ESCAPE_REGEX = Pattern.compile("\\\\([\"'])");
+			QUOTE_END_REGEX = Pattern.compile("[^\\\\]?('|\")$"),
+			QUOTE_ESCAPE_REGEX = Pattern.compile("\\\\([\"'])");
 
 	/**
-	 * Return the current argument, without advancing the argument index.
-	 * Combines quoted strings provided as arguments as necessary.
-	 * If there are no arguments remaining, the default value is returned.
+	 * Return the current argument, without advancing the argument index. Combines quoted strings provided as arguments as necessary. If there are no arguments remaining, the default value is returned.
 	 *
 	 * @param argName The name of the argument
 	 * @return The argument with the current index.
@@ -283,7 +276,6 @@ public class CommandArguments {
 	}
 
 	/**
-	 *
 	 * @throws ArgumentParseException when unparsed arguments are present.
 	 */
 	public void assertCompletelyParsed() throws ArgumentParseException {
@@ -415,9 +407,6 @@ public class CommandArguments {
 
 	/**
 	 * Gets a worl
-	 * @param argName
-	 * @return
-	 * @throws ArgumentParseException
 	 */
 	public World popWorld(String argName) throws ArgumentParseException {
 		String arg = currentArgument(argName);
@@ -455,9 +444,7 @@ public class CommandArguments {
 	}
 
 	/**
-	 * Pop a {@link Vector3}.
-	 * Accepts either x y z or x,y,z syntax
-	 * TODO support relative syntax
+	 * Pop a {@link Vector3}. Accepts either x y z or x,y,z syntax TODO support relative syntax
 	 *
 	 * @param argName The name of the argument
 	 * @return A parsed vector
@@ -494,13 +481,12 @@ public class CommandArguments {
 	}
 
 	/**
-	 * Format for point:
-	 * {@code world x,y,z} or {@code world x y z}
+	 * Format for point: {@code world x,y,z} or {@code world x y z}
 	 *
-	 * @see #popWorld(String, CommandSource) for world syntax
-	 * @see #popVector3(String) for coordinates syntax
 	 * @param argName Name of key to store this argument value as
 	 * @return A point
+	 * @see #popWorld(String, CommandSource) for world syntax
+	 * @see #popVector3(String) for coordinates syntax
 	 */
 	public Point popPoint(String argName, CommandSource source) throws ArgumentParseException {
 		try {
@@ -546,8 +532,7 @@ public class CommandArguments {
 	}
 
 	/**
-	 * Pop an enum value from the arguments list.
-	 * Values are checked by index and by uppercased name.
+	 * Pop an enum value from the arguments list. Values are checked by index and by uppercased name.
 	 *
 	 * @param argName The name of the argument
 	 * @param enumClass The enum class to
@@ -573,7 +558,6 @@ public class CommandArguments {
 			}
 		}
 		return success(argName, value);
-
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -52,6 +52,7 @@ package org.spout.engine.world;
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
+
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,42 +63,36 @@ import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.render.RenderMaterial;
 
 //just need to,bottom,east,west,south,north, not diagonal neigbour it's 8 snapshot useless
+
 /**
  * Stores 9 chunk snapshots (1 middle chunk and 8 neighbours) for quick access
  */
 public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<SpoutChunkSnapshotModel> {
-	
 	private static final AtomicInteger idCounter = new AtomicInteger(0);
-	
-	private final int cx,cy,cz;
+	private final int cx, cy, cz;
 	private final ChunkSnapshot[][][] chunks;
 	private ChunkSnapshot center;
 	private final boolean unload;
 	private final int distance;
 	private final int id;
-	
 	/**
-	 * Time of the SpoutChunkSnapshotModel creation
-	 * To benchmark purpose
+	 * Time of the SpoutChunkSnapshotModel creation To benchmark purpose
 	 */
 	private final long time;
-	
 	/**
 	 * Set of renderMaterial to render, null -> All encountered material
 	 */
 	private Set<RenderMaterial> renderMaterials = null;
-	
 	/**
 	 * Indicates that the renderer has not received a model for this chunk yet
 	 */
 	private boolean first;
-
 	private final SpoutWorld world;
-	
+
 	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, long time) {
 		this(world, cx, cy, cz, unload, null, 0, null, false, time);
 	}
-	
+
 	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, boolean first, long time) {
 		this(world, cx, cy, cz, false, chunks, distance, renderMaterials, first, time);
 	}
@@ -116,7 +111,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		this.time = time;
 		this.first = first;
 	}
-	
+
 	@Override
 	public int getX() {
 		return cx;
@@ -131,11 +126,11 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	public int getZ() {
 		return cz;
 	}
-	
+
 	public int getDistance() {
 		return distance;
 	}
-	
+
 	/**
 	 * Gets if the chunk was unloaded.  Unload models only indicate an unload occurred and contain no data.
 	 */
@@ -146,8 +141,6 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 
 	/**
 	 * Gets the current center chunk of this model
-	 * 
-	 * @return
 	 */
 	@Override
 	public ChunkSnapshot getCenter() {
@@ -170,16 +163,11 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	}
 
 	/**
-	 * Gets the chunk at world chunk coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will
-	 * be thrown.
-	 * 
-	 * @param cx
-	 *            coordinate of the chunk
-	 * @param cy
-	 *            coordinate of the chunk
-	 * @param cz
-	 *            coordinate of the chunk
+	 * Gets the chunk at world chunk coordinates<br> Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 *
+	 * @param cx coordinate of the chunk
+	 * @param cy coordinate of the chunk
+	 * @param cz coordinate of the chunk
 	 * @return The chunk, or null if not available
 	 */
 	@Override
@@ -188,28 +176,23 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	}
 
 	/**
-	 * Gets the chunk at world block coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will
-	 * be thrown.
-	 * 
-	 * @param bx
-	 *            coordinate of the block
-	 * @param by
-	 *            coordinate of the block
-	 * @param bz
-	 *            coordinate of the block
+	 * Gets the chunk at world block coordinates<br> Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 *
+	 * @param bx coordinate of the block
+	 * @param by coordinate of the block
+	 * @param bz coordinate of the block
 	 * @return The chunk, or null if not available
 	 */
 	@Override
 	public ChunkSnapshot getChunkFromBlock(int bx, int by, int bz) {
 		return getChunk(bx >> Chunk.BLOCKS.BITS, by >> Chunk.BLOCKS.BITS, bz >> Chunk.BLOCKS.BITS);
 	}
-	
+
 	@Override
 	public int compareTo(final SpoutChunkSnapshotModel o) {
 		int d1 = getDistance();
 		int d2 = o.getDistance();
-		
+
 		if (d1 == d2) {
 			return id - o.id;
 		} else {
@@ -256,33 +239,30 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		return true;
 	}
 
-	public void addDirty(SpoutChunkSnapshotModel oldModel, boolean oldRemoved){
+	public void addDirty(SpoutChunkSnapshotModel oldModel, boolean oldRemoved) {
 		addRenderMaterials(oldModel.getRenderMaterials());
 		if (oldRemoved && oldModel.first) {
 			first = true;
 		}
 	}
-	
+
 	public boolean isFirst() {
 		return first;
 	}
 
 	/**
-	 * Add a set of renderMaterial to render
-	 * If the set is null, the set isn't added because null -> all encountered render material
-	 * @param renderMaterials
+	 * Add a set of renderMaterial to render If the set is null, the set isn't added because null -> all encountered render material
 	 */
 	private void addRenderMaterials(Set<RenderMaterial> renderMaterials) {
-		if( this.renderMaterials == null || renderMaterials == null)
+		if (this.renderMaterials == null || renderMaterials == null) {
 			this.renderMaterials = null;
-		else
+		} else {
 			this.renderMaterials.addAll(renderMaterials);
+		}
 	}
-	
+
 	/**
 	 * Returns the set of render materials updates by this model
-	 * 
-	 * @return
 	 */
 	public Set<RenderMaterial> getRenderMaterials() {
 		return this.renderMaterials;
@@ -290,8 +270,6 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 
 	/**
 	 * Check if a renderMaterial should be rendered
-	 * @param renderMaterial
-	 * @return
 	 */
 	public boolean hasRenderMaterial(RenderMaterial renderMaterial) {
 		//TODO : Fix render material set and decomment that

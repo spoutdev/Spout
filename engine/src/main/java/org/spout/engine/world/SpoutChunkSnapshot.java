@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,14 +26,15 @@
  */
 package org.spout.engine.world;
 
-import gnu.trove.procedure.TShortObjectProcedure;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import gnu.trove.procedure.TShortObjectProcedure;
+
 import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.block.BlockComponent;
@@ -124,7 +125,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			for (int i = 0; i < lightBuffers.length; i++) {
 				CuboidLightBuffer buffer = lightBuffers[i];
 				int id = buffer.getManagerId() & 0xFFFF;
-				this.idLightBufferMap[id] =  buffer;
+				this.idLightBufferMap[id] = buffer;
 			}
 		}
 
@@ -270,7 +271,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@Override
 	public List<BlockComponentSnapshot> getBlockComponents() {
 		return blockComponents;
-    }
+	}
 
 	public int[] getPalette() {
 		return palette;
@@ -289,7 +290,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		private final Set<Class<? extends BlockComponent>> clazz;
 		private final SerializableMap data;
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings ("unchecked")
 		private SpoutBlockComponentSnapshot(int x, int y, int z, BlockComponentOwner holder, SerializableMap data) {
 			this.x = x;
 			this.y = y;

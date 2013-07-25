@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -31,25 +31,26 @@ import java.awt.image.BufferedImage;
 import org.spout.api.render.Texture;
 
 public class ServerTexture extends Texture {
-
-	public ServerTexture(int[] colors, int width, int height){
+	public ServerTexture(int[] colors, int width, int height) {
 		super(colors, width, height);
 	}
 
 	public ServerTexture(BufferedImage baseImage) {
 		super(baseImage.getRGB(0, 0, baseImage.getWidth(), baseImage.getHeight(), null, 0, baseImage.getWidth()), baseImage.getWidth(), baseImage.getHeight());
 	}
-	
+
 	@Override
 	public Texture subTexture(int x, int y, int w, int h) {
 		throw new UnsupportedOperationException("TODO: Reimplement this");
 	}
 
 	@Override
-	public void writeGPU() { }
+	public void writeGPU() {
+	}
 
 	@Override
-	public void bind() { }
+	public void bind() {
+	}
 
 	@Override
 	public boolean isLoaded() {

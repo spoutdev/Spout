@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -42,7 +42,6 @@ import org.spout.api.Spout;
 import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.event.storage.PlayerSaveEvent;
-
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.SpoutPlayerSnapshot;
@@ -62,6 +61,7 @@ public class PlayerFiles {
 
 	private static class SaveTask implements Runnable {
 		private final PlayerSnapshot snapshot;
+
 		public SaveTask(PlayerSnapshot snapshot) {
 			this.snapshot = snapshot;
 		}
@@ -97,7 +97,8 @@ public class PlayerFiles {
 					if (os != null) {
 						try {
 							os.close();
-						} catch (IOException ignore) { }
+						} catch (IOException ignore) {
+						}
 					}
 				}
 				try {
@@ -116,12 +117,9 @@ public class PlayerFiles {
 	}
 
 	/**
-	 * Loads player data for the player, if it exists
-	 * <p>
-	 * Returns null on failure or if the data could not be loaded.
-	 * If an exception is thrown or the player data is not in a valid format
-	 * it will be backed up and new player data will be created for the player
-	 * @param name
+	 * Loads player data for the player, if it exists <p> Returns null on failure or if the data could not be loaded. If an exception is thrown or the player data is not in a valid format it will be
+	 * backed up and new player data will be created for the player
+	 *
 	 * @return player, or null if it could not be loaded
 	 */
 	public static SpoutPlayer loadPlayerData(String name) {
@@ -130,7 +128,7 @@ public class PlayerFiles {
 		if (event.getSnapshot() != null) {
 			return new SpoutPlayerSnapshot(event.getSnapshot()).toEntity((SpoutEngine) Spout.getEngine());
 		}
-		
+
 		File playerDir = new File(Spout.getEngine().getDataFolder().toString(), "players");
 		String fileName = name + ".dat";
 		File playerData = new File(playerDir, fileName);
@@ -162,5 +160,4 @@ public class PlayerFiles {
 		}
 		return null;
 	}
-	
 }

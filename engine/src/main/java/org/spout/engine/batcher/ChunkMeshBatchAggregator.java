@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -27,6 +27,7 @@
 package org.spout.engine.batcher;
 
 import org.lwjgl.opengl.GL11;
+
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Cuboid;
@@ -49,21 +50,18 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	public final static int SIZE_Z = 1;
 	public final static Vector3 SIZE = new Vector3(SIZE_X, SIZE_Y, SIZE_Z);
 	public final static int COUNT = SIZE_X * SIZE_Y * SIZE_Z;
-
 	private int count = 0;
-
 	private BatchVertexRenderer renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-
 	public final static Matrix model = MatrixMath.createIdentity();
 	private final RenderMaterial material;
-
 	private boolean dataSent = false;
 	private boolean ready = false;
-
 	private final BufferContainer bufferContainer[] = new BufferContainer[COUNT];
 
-	/** Gets the linear position of a local 3D coord */
-	private int getIndex(int x, int y, int z){
+	/**
+	 * Gets the linear position of a local 3D coord
+	 */
+	private int getIndex(int x, int y, int z) {
 		if (x > SIZE_X || x < 1) {
 			throw new IllegalArgumentException("x must be between 1 (inclusive) and SIZE_X (" + SIZE_X + ") (inclusive). It was " + x);
 		}
@@ -77,21 +75,25 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		return index;
 	}
 
-	/** Gets the base of a chunk mesh, which is the coord of the ChunkMeshBatchAggregator */
+	/**
+	 * Gets the base of a chunk mesh, which is the coord of the ChunkMeshBatchAggregator
+	 */
 	public static Vector3 getBaseFromChunkMesh(ChunkMesh mesh) {
 		int localX = (mesh.getChunkX() >= 0 ? mesh.getChunkX() + 1 : Math.abs(mesh.getChunkX())) - 1;
 		int localY = (mesh.getChunkY() >= 0 ? mesh.getChunkY() + 1 : Math.abs(mesh.getChunkY())) - 1;
 		int localZ = (mesh.getChunkZ() >= 0 ? mesh.getChunkZ() + 1 : Math.abs(mesh.getChunkZ())) - 1;
-		int x = (int) (Math.floor((float)localX / SIZE_X) * SIZE_X);
-		int y = (int) (Math.floor((float)localY / SIZE_Y) * SIZE_Y);
-		int z = (int) (Math.floor((float)localZ / SIZE_Z) * SIZE_Z);
+		int x = (int) (Math.floor((float) localX / SIZE_X) * SIZE_X);
+		int y = (int) (Math.floor((float) localY / SIZE_Y) * SIZE_Y);
+		int z = (int) (Math.floor((float) localZ / SIZE_Z) * SIZE_Z);
 		x = (mesh.getChunkX() >= 0 ? x : (-1 * x) - 1);
 		y = (mesh.getChunkY() >= 0 ? y : (-1 * y) - 1);
 		z = (mesh.getChunkZ() >= 0 ? z : (-1 * z) - 1);
 		return new Vector3(x, y, z);
 	}
 
-	/** Returns the local position of a ChunkMesh with a ChunkMeshBatchAggregator */
+	/**
+	 * Returns the local position of a ChunkMesh with a ChunkMeshBatchAggregator
+	 */
 	public static Vector3 getLocalCoordFromChunkMesh(ChunkMesh mesh) {
 		int localX = (mesh.getChunkX() >= 0 ? mesh.getChunkX() + 1 : Math.abs(mesh.getChunkX())) - 1;
 		int localY = (mesh.getChunkY() >= 0 ? mesh.getChunkY() + 1 : Math.abs(mesh.getChunkY())) - 1;
@@ -110,13 +112,13 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 
 	public boolean update() {
 		//Send data
-		if(!dataSent){
+		if (!dataSent) {
 			renderer.setBufferContainers(bufferContainer);
 			dataSent = true;
 		}
 
 		//Start to flush
-		if(renderer.flush(false)){
+		if (renderer.flush(false)) {
 			ready = true;
 			return true;
 		} else {
@@ -135,12 +137,13 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 
 	public void setSubBatch(BufferContainer bufferContainer, int x, int y, int z) {
 		int index = getIndex(x, y, z);
-		
-		if(bufferContainer == null && this.bufferContainer[index] != null)
+
+		if (bufferContainer == null && this.bufferContainer[index] != null) {
 			count--;
-		else if(bufferContainer != null && this.bufferContainer[index] == null)
+		} else if (bufferContainer != null && this.bufferContainer[index] == null) {
 			count++;
-		
+		}
+
 		this.bufferContainer[index] = bufferContainer;
 		dataSent = false;
 	}
@@ -154,19 +157,18 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	/**
-	 * We can have only one instance of ChunkMeshBatchAggregator at one position and material
-	 * So we need to override the equals of extended class cuboid
+	 * We can have only one instance of ChunkMeshBatchAggregator at one position and material So we need to override the equals of extended class cuboid
 	 */
 	@Override
 	public boolean equals(Object obj) {
 		return obj == this;
 	}
-	
+
 	public void setQueued(boolean queued) {
 		this.queued = queued;
 	}
 
-	public boolean isQueued(){
+	public boolean isQueued() {
 		return queued;
 	}
 
@@ -177,7 +179,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	public void preRender() {
 		renderer.preDraw();
 	}
-	
+
 	public void postRender() {
 		renderer.postDraw();
 	}
@@ -185,5 +187,4 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	public void clear() {
 		renderer.release();
 	}
-	
 }

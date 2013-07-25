@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,10 +33,8 @@ import org.spout.api.event.Order;
 import org.spout.api.event.Result;
 import org.spout.api.event.player.PlayerConnectEvent;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
-
 import org.spout.engine.SpoutProxy;
 import org.spout.engine.protocol.SpoutServerSession;
-import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutProxyListener implements Listener {
 	private final SpoutProxy proxy;
@@ -45,7 +43,7 @@ public class SpoutProxyListener implements Listener {
 		this.proxy = proxy;
 	}
 
-	@EventHandler(order = Order.MONITOR)
+	@EventHandler (order = Order.MONITOR)
 	public void onPlayerConnect(PlayerConnectEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -55,7 +53,7 @@ public class SpoutProxyListener implements Listener {
 		proxy.connect(event.getPlayerName(), event.getSession());
 	}
 
-	@EventHandler(order = Order.EARLIEST)
+	@EventHandler (order = Order.EARLIEST)
 	public void onGetAllWithNode(PermissionGetAllWithNodeEvent event) {
 		for (Player player : proxy.getOnlinePlayers()) {
 			event.getReceivers().put(player, Result.DEFAULT);

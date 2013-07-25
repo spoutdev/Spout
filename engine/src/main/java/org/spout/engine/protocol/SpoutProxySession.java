@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -32,9 +32,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
+
 import org.spout.api.Spout;
-import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.proxy.ConnectionInfo;
 import org.spout.api.protocol.proxy.ConnectionInfoMessage;
 import org.spout.api.protocol.proxy.ProxyStartMessage;
@@ -73,8 +74,6 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 
 	/**
 	 * For proxy, the main channel is downstream and the auxChannel is upstream.
-	 * @param force
-	 * @param message 
 	 */
 	@Override
 	public void send(boolean force, Message message) {
@@ -83,7 +82,7 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 		}
 		super.send(force, message);
 	}
-	
+
 	public void sendUpstream(Message message) {
 		if (message instanceof ConnectionInfoMessage) {
 			updateConnectionInfo(true, (ConnectionInfoMessage) message);

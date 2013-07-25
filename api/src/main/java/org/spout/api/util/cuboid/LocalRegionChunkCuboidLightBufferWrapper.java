@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,29 +32,26 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 
 /**
- * This class implements a Cuboid buffer wrapper.  Each sub-buffer must be exactly one
- * chunk in size.
+ * This class implements a Cuboid buffer wrapper.  Each sub-buffer must be exactly one chunk in size.
  */
 public class LocalRegionChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer> extends ChunkCuboidLightBufferWrapper<T> {
-	
 	private static final int SINGLE = Region.BLOCKS.SIZE;
 	private static final int TRIPLE = SINGLE * 3;
-	
 	private final Region r;
 	private final LoadOption loadOpt;
 	private final short id;
-	
+
 	public LocalRegionChunkCuboidLightBufferWrapper(Region r, short id, LoadOption loadOpt) {
 		this(r.getBlockX() - SINGLE, r.getBlockY() - SINGLE, r.getBlockZ() - SINGLE, TRIPLE, TRIPLE, TRIPLE, r, id, loadOpt);
 	}
-	
+
 	private LocalRegionChunkCuboidLightBufferWrapper(int bx, int by, int bz, int sx, int sy, int sz, Region r, short id, LoadOption loadOpt) {
 		super(bx, by, bz, sx, sy, sz, id);
 		this.r = r;
 		this.loadOpt = loadOpt;
 		this.id = id;
 	}
-	
+
 	protected T getLightBufferRaw(int x, int y, int z, boolean allowNull) {
 		int cx = (x - baseX - Region.BLOCKS.SIZE) >> Chunk.BLOCKS.BITS;
 		int cy = (y - baseY - Region.BLOCKS.SIZE) >> Chunk.BLOCKS.BITS;
@@ -66,7 +63,7 @@ public class LocalRegionChunkCuboidLightBufferWrapper<T extends CuboidLightBuffe
 			}
 			return null;
 		}
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings ("unchecked")
 		T buf = (T) c.getLightBuffer(id);
 		if (buf == null) {
 			Spout.getLogger().info("Chunk has no buffer");

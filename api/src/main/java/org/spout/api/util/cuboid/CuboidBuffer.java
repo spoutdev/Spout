@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -29,22 +29,16 @@ package org.spout.api.util.cuboid;
 import org.spout.api.math.Vector3;
 
 /**
- * This class implements a Cuboid common methods for a one dimensional array
- * Cuboid Buffer
+ * This class implements a Cuboid common methods for a one dimensional array Cuboid Buffer
  *
- * Elements are stored in column order and each column is +1 on the Z dimension
- * relative to the previous one.
+ * Elements are stored in column order and each column is +1 on the Z dimension relative to the previous one.
  *
- * Each YZ plane is followed by the plane corresponding to +1 on the X
- * dimension.
+ * Each YZ plane is followed by the plane corresponding to +1 on the X dimension.
  *
- * It is assumed that the Cuboid has dimensions (SX, SY, SZ) and the base is set
- * at the origin.
+ * It is assumed that the Cuboid has dimensions (SX, SY, SZ) and the base is set at the origin.
  *
- * buffer[0] = data(0, 0, 0 ) buffer[1] = data(0, 1, 0 ) ..... buffer[SY-1] =
- * data(0, SY-1, 0 ) buffer[SY] = data(0, 0 1 ) .... buffer[SZ*SY - 1] = data(0,
- * SY-1, SZ-1) buffer[SZ*SY] = data(1, 0, 0 ) .... buffer[SZ*SY*SX -1] =
- * data(SX-1, SY-1, SZ-1)
+ * buffer[0] = data(0, 0, 0 ) buffer[1] = data(0, 1, 0 ) ..... buffer[SY-1] = data(0, SY-1, 0 ) buffer[SY] = data(0, 0 1 ) .... buffer[SZ*SY - 1] = data(0, SY-1, SZ-1) buffer[SZ*SY] = data(1, 0, 0 )
+ * .... buffer[SZ*SY*SX -1] = data(SX-1, SY-1, SZ-1)
  *
  * TODO is this the best package to put this?
  */
@@ -72,13 +66,13 @@ public abstract class CuboidBuffer {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
 		this.sizeZ = sizeZ;
-		
+
 		this.size = new Vector3(sizeX, sizeY, sizeZ);
 
 		this.baseX = baseX;
 		this.baseY = baseY;
 		this.baseZ = baseZ;
-		
+
 		this.base = new Vector3(baseX, baseY, baseZ);
 
 		topX = baseX + sizeX;
@@ -109,7 +103,7 @@ public abstract class CuboidBuffer {
 	public Vector3 getSize() {
 		return size;
 	}
-	
+
 	/**
 	 * Gets the volume of the CuboidBuffer
 	 */
@@ -118,8 +112,7 @@ public abstract class CuboidBuffer {
 	}
 
 	/**
-	 * Gets the top-coordinates of the CuboidBuffer, these are outside this buffer<br>
-	 * These coordinates are an addition of base and size
+	 * Gets the top-coordinates of the CuboidBuffer, these are outside this buffer<br> These coordinates are an addition of base and size
 	 */
 	public Vector3 getTop() {
 		return new Vector3(topX, topY, topZ);
@@ -138,8 +131,7 @@ public abstract class CuboidBuffer {
 	}
 
 	/**
-	 * Copies the data contained within the given CuboidShortBuffer to this one.
-	 * Any non-overlapping locations are ignored
+	 * Copies the data contained within the given CuboidShortBuffer to this one. Any non-overlapping locations are ignored
 	 *
 	 * @param source The CuboidShortBuffer source from which to copy the data.
 	 */

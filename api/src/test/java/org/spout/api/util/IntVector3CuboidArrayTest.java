@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,37 +26,37 @@
  */
 package org.spout.api.util;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Iterator;
 import java.util.Random;
 
 import org.junit.Test;
+
 import org.spout.api.math.IntVector3;
 
+import static org.junit.Assert.assertTrue;
+
 public class IntVector3CuboidArrayTest {
-	
 	private final int LENGTH = 5;
 	private final int SIZE = 32;
 	private final int MASK = SIZE - 1;
-	
+
 	@Test
 	public void test() {
-		
+
 		Random r = new Random();
-		
+
 		boolean[][][] grid = new boolean[SIZE + 1][SIZE + 1][SIZE + 1];
-		
+
 		int[] bx = randomArray(LENGTH, MASK, r);
 		int[] by = randomArray(LENGTH, MASK, r);
 		int[] bz = randomArray(LENGTH, MASK, r);
-		
+
 		int[] tx = randomArray(LENGTH, MASK, r);
 		int[] ty = randomArray(LENGTH, MASK, r);
 		int[] tz = randomArray(LENGTH, MASK, r);
-		
+
 		int size = 0;
-		
+
 		for (int i = 0; i < LENGTH; i++) {
 			if (tx[i] <= bx[i]) {
 				tx[i] = bx[i] + 1;
@@ -69,20 +69,20 @@ public class IntVector3CuboidArrayTest {
 			}
 			size += (tx[i] - bx[i]) * (ty[i] - by[i]) * (tz[i] - bz[i]);
 		}
-		
+
 		IntVector3CuboidArray arr = new IntVector3CuboidArray(bx, by, bz, tx, ty, tz, LENGTH);
-		
+
 		Iterator<IntVector3> itr = arr.iterator();
-		
+
 		int l = 0;
 		while (itr.hasNext()) {
 			IntVector3 v = itr.next();
 			grid[v.getX()][v.getY()][v.getZ()] = true;
 			l++;
 		}
-		
+
 		assertTrue("Iterator has incorrect length, " + l + "!=" + size, l == size);
-		
+
 		for (int i = 0; i < LENGTH; i++) {
 			for (int xx = bx[i]; xx < tx[i]; xx++) {
 				for (int yy = by[i]; yy < ty[i]; yy++) {
@@ -92,16 +92,13 @@ public class IntVector3CuboidArrayTest {
 				}
 			}
 		}
-		
 	}
-	
-	
+
 	private static int[] randomArray(int length, int mask, Random r) {
-		int [] a = new int[length];
+		int[] a = new int[length];
 		for (int i = 0; i < length; i++) {
 			a[i] = r.nextInt() & mask;
 		}
 		return a;
 	}
-
 }

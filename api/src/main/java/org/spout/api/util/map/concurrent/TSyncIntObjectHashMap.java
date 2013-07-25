@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,16 +26,6 @@
  */
 package org.spout.api.util.map.concurrent;
 
-import gnu.trove.function.TObjectFunction;
-import gnu.trove.impl.Constants;
-import gnu.trove.iterator.TIntObjectIterator;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.procedure.TIntObjectProcedure;
-import gnu.trove.procedure.TIntProcedure;
-import gnu.trove.procedure.TObjectProcedure;
-import gnu.trove.set.TIntSet;
-
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +36,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import gnu.trove.function.TObjectFunction;
+import gnu.trove.impl.Constants;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.procedure.TIntObjectProcedure;
+import gnu.trove.procedure.TIntProcedure;
+import gnu.trove.procedure.TObjectProcedure;
+import gnu.trove.set.TIntSet;
+
 import org.spout.api.math.GenericMath;
 
 /**
@@ -53,8 +53,7 @@ import org.spout.api.math.GenericMath;
  *
  * Read/write locks are used to synchronise access.
  *
- * By default, it creates 16 sub-maps and there is a separate read/write lock
- * for each submap.
+ * By default, it creates 16 sub-maps and there is a separate read/write lock for each submap.
  *
  * @param <V> the value type
  */
@@ -112,7 +111,7 @@ public class TSyncIntObjectHashMap<V> implements TSyncIntObjectMap<V> {
 	 * @param loadFactor the load factor for the map
 	 * @param noEntryKey the key used to indicate a null key
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public TSyncIntObjectHashMap(int mapCount, int initialCapacity, float loadFactor, int noEntryKey) {
 		if (mapCount > 0x100000) {
 			throw new IllegalArgumentException("Map count exceeds valid range");
@@ -383,7 +382,7 @@ public class TSyncIntObjectHashMap<V> implements TSyncIntObjectMap<V> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public V[] values(V[] dest) {
 		for (int m = 0; m < mapCount; m++) {
 			lockArray[m].readLock().lock();

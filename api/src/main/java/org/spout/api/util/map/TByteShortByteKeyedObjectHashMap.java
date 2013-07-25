@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -28,16 +28,14 @@ package org.spout.api.util.map;
 
 import java.util.Collection;
 
-import org.spout.api.util.hashing.ByteShortByteHashed;
-
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 
+import org.spout.api.util.hashing.ByteShortByteHashed;
+
 /**
- * A simplistic map that supports a 3 bytes for keys, using a trove int int
- * hashmap in the backend.
- *
+ * A simplistic map that supports a 3 bytes for keys, using a trove int int hashmap in the backend.
  */
 public class TByteShortByteKeyedObjectHashMap<K> extends ByteShortByteHashed {
 	protected final TIntObjectHashMap<K> map;
@@ -68,7 +66,7 @@ public class TByteShortByteKeyedObjectHashMap<K> extends ByteShortByteHashed {
 	public void clear() {
 		map.clear();
 	}
-	
+
 	public void compact() {
 		map.compact();
 	}
@@ -106,7 +104,7 @@ public class TByteShortByteKeyedObjectHashMap<K> extends ByteShortByteHashed {
 		return map.valueCollection();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public K[] values() {
 		return (K[]) map.values();
 	}

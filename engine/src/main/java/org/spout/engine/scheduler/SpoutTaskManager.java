@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -48,23 +48,14 @@ import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutTaskManager implements TaskManager {
-
 	private final ConcurrentHashMap<SpoutTask, SpoutWorker> activeWorkers = new ConcurrentHashMap<SpoutTask, SpoutWorker>();
-
 	private final ConcurrentHashMap<Integer, SpoutTask> activeTasks = new ConcurrentHashMap<Integer, SpoutTask>();
-
 	private final TaskPriorityQueue taskQueue;
-
 	private final boolean mainThread;
-
 	private final AtomicBoolean alive;
-
 	private final AtomicLong upTime;
-
 	private final Object scheduleLock = new Object();
-
 	private final Scheduler scheduler;
-
 	private final ExecutorService pool = Executors.newFixedThreadPool(20, new NamedThreadFactory("Scheduler Thread Pool Thread"));
 
 	public SpoutTaskManager(Scheduler scheduler, Thread mainThread) {
@@ -136,9 +127,9 @@ public class SpoutTaskManager implements TaskManager {
 
 	public void heartbeat(long delta) {
 		long upTime = this.upTime.addAndGet(delta);
-		
+
 		Queue<SpoutTask> q;
-		
+
 		while ((q = taskQueue.poll(upTime)) != null) {
 			boolean checkRequired = !taskQueue.isFullyBelowThreshold(q, upTime);
 			Iterator<SpoutTask> itr = q.iterator();
@@ -147,7 +138,7 @@ public class SpoutTaskManager implements TaskManager {
 				if (checkRequired && currentTask.getPriority() > upTime) {
 					continue;
 				}
-				
+
 				itr.remove();
 				currentTask.setUnqueued();
 
@@ -316,5 +307,4 @@ public class SpoutTaskManager implements TaskManager {
 	public long getUpTime() {
 		return upTime.get();
 	}
-	
 }

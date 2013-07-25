@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -49,6 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.lwjgl.opengl.Display;
+
 import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Platform;
@@ -83,46 +83,18 @@ import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.world.RegionGenerator;
-import static org.spout.engine.world.SpoutChunk.meshesGenerated;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
+import static org.spout.engine.world.SpoutChunk.meshesGenerated;
+
 /**
- * A class which handles scheduling for the engine {@link SpoutTask}s.<br>
- * <br>
- * Tasks can be submitted to the scheduler for execution by the main thread.
- * These tasks are executed during a period where none of the auxiliary threads
- * are executing.<br>
- * <br>
- * Each tick consists of a number of stages. Each stage is executed in parallel,
- * but the next stage is not started until all threads have completed the
- * previous stage.<br>
- * <br>
- * Except for executing queued serial tasks, all threads are run in parallel.
- * The full sequence is as follows:<br>
- * <ul>
- * <li>Single Thread
- * <ul>
- * <li><b>Execute queued tasks</b><br>
- * Tasks that are submitted for execution are executed one at a time.
- * </ul>
- * <li>Parallel Threads
- * <ul>
- * <li><b>Stage 1</b><br>
- * This is the first stage of execution. Most Events are generated during this
- * stage and the API is fully open for use. - chunks are
- * populated.
- * <li><b>Stage 2</b><br>
- * During this stage, entity collisions are handled.
- * <li><b>Finalize Tick</b><br>
- * During this stage - entities are moved between entity managers.
- * - chunks are compressed if necessary.
- * <li><b>Pre-snapshot</b><br>
- * This is a MONITOR stage, data is stable and no modifications are allowed.
- * <li><b>Copy Snapshot</b><br>
- * During this stage all live values are copied to their stable snapshot. Data
- * is unstable so no reads are permitted during this stage.
- * </ul>
- * </ul>
+ * A class which handles scheduling for the engine {@link SpoutTask}s.<br> <br> Tasks can be submitted to the scheduler for execution by the main thread. These tasks are executed during a period where
+ * none of the auxiliary threads are executing.<br> <br> Each tick consists of a number of stages. Each stage is executed in parallel, but the next stage is not started until all threads have
+ * completed the previous stage.<br> <br> Except for executing queued serial tasks, all threads are run in parallel. The full sequence is as follows:<br> <ul> <li>Single Thread <ul> <li><b>Execute
+ * queued tasks</b><br> Tasks that are submitted for execution are executed one at a time. </ul> <li>Parallel Threads <ul> <li><b>Stage 1</b><br> This is the first stage of execution. Most Events are
+ * generated during this stage and the API is fully open for use. - chunks are populated. <li><b>Stage 2</b><br> During this stage, entity collisions are handled. <li><b>Finalize Tick</b><br> During
+ * this stage - entities are moved between entity managers. - chunks are compressed if necessary. <li><b>Pre-snapshot</b><br> This is a MONITOR stage, data is stable and no modifications are allowed.
+ * <li><b>Copy Snapshot</b><br> During this stage all live values are copied to their stable snapshot. Data is unstable so no reads are permitted during this stage. </ul> </ul>
  */
 public final class SpoutScheduler implements Scheduler {
 	/**
@@ -176,7 +148,7 @@ public final class SpoutScheduler implements Scheduler {
 	private final LinkedBlockingDeque<Runnable> finalTaskQueue = new LinkedBlockingDeque<Runnable>();
 	private final ConcurrentLinkedQueue<Runnable> lastTickTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 	// Scheduler tasks
-	private final StartTickTask[] startTickTask = new StartTickTask[]{
+	private final StartTickTask[] startTickTask = new StartTickTask[] {
 			new StartTickTask(0),
 			new StartTickTask(1),
 			new StartTickTask(2)
@@ -353,14 +325,14 @@ public final class SpoutScheduler implements Scheduler {
 			while (!shutdown) {
 				long startTime = System.currentTimeMillis();
 				tickStartTime.set(System.currentTimeMillis());
-				
+
 				boolean underLoad = expectedTime < startTime - PULSE_EVERY;
-				
+
 				if (expectedTime < startTime - 10000) {
 					expectedTime = startTime;
 					Spout.getLogger().info("Server has fallen more than 10 seconds behind schedule");
 				}
-				
+
 				heavyLoad.set(underLoad);
 
 				long delta = startTime - lastTick;
@@ -373,11 +345,11 @@ public final class SpoutScheduler implements Scheduler {
 					Spout.severe("Error while pulsing: {0}", ex.getMessage());
 					ex.printStackTrace();
 				}
-				
+
 				expectedTime += PULSE_EVERY;
-				
+
 				long currentTime = System.currentTimeMillis();
-				
+
 				if (currentTime < expectedTime) {
 					try {
 						Thread.sleep(expectedTime - currentTime);
@@ -386,9 +358,9 @@ public final class SpoutScheduler implements Scheduler {
 					}
 				}
 			}
-			
+
 			RegionGenerator.shutdownExecutorService();
-			
+
 			if (engine.getPlatform() == Platform.CLIENT) {
 				try {
 					if (renderThread.isAlive()) {
@@ -406,9 +378,9 @@ public final class SpoutScheduler implements Scheduler {
 					Spout.info("Interrupted when waiting for gui thread to end");
 				}
 			}
-			
+
 			RegionGenerator.awaitExecutorServiceTermination();
-			
+
 			heavyLoad.set(false);
 
 			asyncManagers.copySnapshot();
@@ -476,7 +448,6 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private class GUIThread extends Thread {
-
 		public GUIThread() {
 			super("GUI Thread");
 		}
@@ -515,10 +486,10 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	private static final Deque<SpoutChunkSnapshotModel> models = new ConcurrentLinkedDeque<SpoutChunkSnapshotModel>();;
+	private static final Deque<SpoutChunkSnapshotModel> models = new ConcurrentLinkedDeque<SpoutChunkSnapshotModel>();
+	;
 
 	public class MeshGeneratorThread extends Thread {
-
 		@Override
 		public void run() {
 			while (!shutdown) {
@@ -1094,12 +1065,8 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	/**
-	 * For internal use only.  This is for tasks that must happen right at the start of the new tick.<br>
-	 * <br>
-	 * Tasks are executed in the order that they are received.<br>
-	 * <br>
-	 * It is used for region unloading
-	 * @param r
+	 * For internal use only.  This is for tasks that must happen right at the start of the new tick.<br> <br> Tasks are executed in the order that they are received.<br> <br> It is used for region
+	 * unloading
 	 */
 	public void scheduleCoreTask(Runnable r) {
 		coreTaskQueue.add(r);
@@ -1132,9 +1099,8 @@ public final class SpoutScheduler implements Scheduler {
 		}
 		 */
 	}
-	
+
 	private static class MarkedNamedThreadFactory extends Thread implements ThreadFactory {
-		
 		private final AtomicInteger idCounter = new AtomicInteger();
 		private final String namePrefix;
 		private final boolean daemon;
@@ -1143,13 +1109,12 @@ public final class SpoutScheduler implements Scheduler {
 			this.namePrefix = namePrefix;
 			this.daemon = daemon;
 		}
-		
+
 		@Override
 		public Thread newThread(Runnable runnable) {
 			Thread thread = new SchedulerSyncExecutorThread(runnable, "Executor{" + namePrefix + "-" + idCounter.getAndIncrement() + "}");
 			thread.setDaemon(daemon);
 			return thread;
 		}
-		
 	}
 }

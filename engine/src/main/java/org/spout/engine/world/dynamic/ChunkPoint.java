@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -31,18 +31,15 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
 public class ChunkPoint extends Point {
-
 	public ChunkPoint(Point point) {
 		super(point);
 	}
-	
+
 	public ChunkPoint(Vector3 vector, World w) {
 		super(vector, w);
 	}
-	
+
 	public ChunkPoint(World world, float x, float y, float z) {
 		super(world, x, y, z);
 	}
-
-
 }

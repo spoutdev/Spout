@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -28,17 +28,17 @@ package org.spout.engine.filesystem.resource.loader;
 
 import java.io.InputStream;
 
-import org.lwjgl.util.*;
+import org.lwjgl.util.WaveData;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.resource.ResourceLoader;
-
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.filesystem.resource.ClientSound;
 
-import static org.lwjgl.openal.AL10.*;
+import static org.lwjgl.openal.AL10.alBufferData;
+import static org.lwjgl.openal.AL10.alGenBuffers;
 
 public class SoundLoader extends ResourceLoader {
 	public SoundLoader() {

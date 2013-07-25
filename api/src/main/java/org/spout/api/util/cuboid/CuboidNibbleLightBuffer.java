@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,19 +30,18 @@ import java.util.Arrays;
 
 import org.spout.api.lighting.Modifiable;
 
-
 public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 	protected final byte[] lightData;
 	private CuboidNibbleLightBuffer source = null;
-	
+
 	protected CuboidNibbleLightBuffer(CuboidNibbleLightBuffer buffer) {
 		this(buffer.holder, buffer.getManagerId(), buffer.baseX, buffer.baseY, buffer.baseZ, buffer.sizeX, buffer.sizeY, buffer.sizeZ, buffer.lightData);
 	}
-	
+
 	protected CuboidNibbleLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		this(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
 	}
-	
+
 	protected CuboidNibbleLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
 		super(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		int volume = getVolume();
@@ -54,12 +53,13 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 			if (data.length != arrayLength) {
 				throw new IllegalArgumentException("The length of the given array is invalid, " + data.length + ", expected length, " + arrayLength);
 			}
-			this.lightData = Arrays.copyOf(data, data.length);;
+			this.lightData = Arrays.copyOf(data, data.length);
+			;
 		} else {
 			this.lightData = new byte[arrayLength];
 		}
 	}
-	
+
 	@Override
 	public void setSource(CuboidBuffer source) {
 		if (source instanceof CuboidNibbleLightBuffer) {
@@ -96,15 +96,15 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 			}
 		}
 	}
-	
+
 	public void set(int x, int y, int z, byte value) {
 		set(getIndex(x, y, z), value);
 	}
-	
+
 	public byte get(int x, int y, int z) {
 		return get(getIndex(x, y, z));
 	}
-	
+
 	public void set(int index, byte value) {
 		holder.setModified();
 		if (isEven(index)) {
@@ -115,7 +115,7 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 			lightData[index] = (byte) ((lightData[index] & 0x0F) | (value << 4));
 		}
 	}
-	
+
 	public byte get(int index) {
 		if (isEven(index)) {
 			index >>= 1;
@@ -123,23 +123,22 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 		} else {
 			index >>= 1;
 			return (byte) ((lightData[index] >> 4) & 0x0F);
-		}		
+		}
 	}
-	
+
 	public CuboidNibbleLightBuffer copy() {
 		return new CuboidNibbleLightBuffer(this);
 	}
-	
+
 	public void copyToArray(byte[] target, int start) {
 		System.arraycopy(lightData, 0, target, start, lightData.length);
 	}
-	
+
 	public byte[] serialize() {
 		return Arrays.copyOf(lightData, lightData.length);
 	}
-	
+
 	protected static boolean isEven(int i) {
 		return (i | 1) != i;
 	}
-
 }

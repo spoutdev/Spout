@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -54,13 +54,11 @@ import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class RegionGenerator implements Named {
-	
-	private final static ExecutorService pool = 
+	private final static ExecutorService pool =
 			Executors.newFixedThreadPool(
-					Runtime.getRuntime().availableProcessors() * 2 + 1, 
-					new NamedThreadFactory("RegionGenerator - async pool", 
-					true));
-	
+					Runtime.getRuntime().availableProcessors() * 2 + 1,
+					new NamedThreadFactory("RegionGenerator - async pool",
+							true));
 	private final SpoutRegion region;
 	private final SpoutWorld world;
 	private final Lock[][] columnLocks;
@@ -72,27 +70,27 @@ public class RegionGenerator implements Named {
 	private final int cx;
 	private final int cy;
 	private final int cz;
-	
-	@SuppressWarnings("unchecked")
+
+	@SuppressWarnings ("unchecked")
 	public RegionGenerator(SpoutRegion region, int width) {
 		if (GenericMath.roundUpPow2(width) != width || width > Region.CHUNKS.SIZE || width < 0) {
 			throw new IllegalArgumentException("Width must be a power of 2 and can't be more than one region width");
 		}
-		
+
 		int sections = Region.CHUNKS.SIZE / width;
-		
+
 		this.width = width;
 		this.mask = width - 1;
 		this.generatedColumns = new AtomicReference[sections][sections];
 		this.columnLocks = new Lock[sections][sections];
-		
+
 		for (int x = 0; x < sections; x++) {
 			for (int z = 0; z < sections; z++) {
 				this.generatedColumns[x][z] = new AtomicReference<GenerateState>(GenerateState.NONE);
 				this.columnLocks[x][z] = new NamedReentrantLock(x, z);
 			}
 		}
-		
+
 		this.shift = GenericMath.multiplyToShift(width);
 		this.region = region;
 		this.world = region.getWorld();
@@ -104,24 +102,23 @@ public class RegionGenerator implements Named {
 	public void generateColumn(final int chunkX, final int chunkZ) {
 		generateColumn(chunkX, chunkZ, true, true);
 	}
-	
+
 	public Lock getColumnLock(int chunkX, int chunkZ) {
 		final int x = (chunkX & (~mask)) & Region.CHUNKS.MASK;
 		final int z = (chunkZ & (~mask)) & Region.CHUNKS.MASK;
-		
+
 		return columnLocks[x >> shift][z >> shift];
-		
 	}
-	
+
 	public void generateColumn(final int chunkX, final int chunkZ, boolean sync, boolean wait) {
-		
+
 		if (sync && !wait) {
 			throw new IllegalArgumentException("Generate column must be set to wait when in sync mode");
 		}
 
 		final int x = (chunkX & (~mask)) & Region.CHUNKS.MASK;
 		final int z = (chunkZ & (~mask)) & Region.CHUNKS.MASK;
-		
+
 		AtomicReference<GenerateState> generated = generatedColumns[x >> shift][z >> shift];
 		if (generated.get().done(sync)) {
 			return;
@@ -158,15 +155,15 @@ public class RegionGenerator implements Named {
 			if (generated.get().done(sync)) {
 				return;
 			}
-			
+
 			if (!sync && generated.get().isAsyncInProgress()) {
 				return;
 			}
-			
+
 			LightingManager<?>[] managers = world.getLightingManagers();
 
 			CuboidLightBuffer[][][][] buffers = new CuboidLightBuffer[managers.length][][][];
-			
+
 			boolean success = false;
 			success |= generated.compareAndSet(GenerateState.NONE, sync ? GenerateState.IN_PROGRESS_SYNC : GenerateState.IN_PROGRESS_ASYNC);
 
@@ -186,9 +183,9 @@ public class RegionGenerator implements Named {
 
 			final CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE << shift, Region.BLOCKS.SIZE, Chunk.BLOCKS.SIZE << shift);
 			world.getGenerator().generate(buffer, cxx, cy, czz, world);
-			
+
 			int[][] heights = new int[Chunk.BLOCKS.SIZE << shift][Chunk.BLOCKS.SIZE << shift];
-			
+
 			for (int colX = 0; colX < width; colX++) {
 				int colWorldX = colX + cxx;
 				for (int colZ = 0; colZ < width; colZ++) {
@@ -223,13 +220,13 @@ public class RegionGenerator implements Named {
 								lock.readUnlock(colLock);
 							}
 						}
-						
+
 						col = world.getColumn(colWorldX, colWorldZ, LoadOption.LOAD_GEN, sync);
 						if (col == null) {
 							throw new IllegalStateException("Column generation failed, " + colWorldX + ", " + colWorldZ + " chunk: " + chunkX + ", " + chunkZ + " region (chunk coords): " + region.getBase().toChunkString());
 						}
 					}
-					
+
 					for (int blockX = 0; blockX < Chunk.BLOCKS.SIZE; blockX++) {
 						int indexX = (colX << Chunk.BLOCKS.BITS) + blockX;
 						for (int blockZ = 0; blockZ < Chunk.BLOCKS.SIZE; blockZ++) {
@@ -245,7 +242,7 @@ public class RegionGenerator implements Named {
 			for (int i = 0; i < managers.length; i++) {
 				buffers[i] = managers[i].bulkInitializeUnchecked(buffer, heights);
 			}
-			
+
 			AtomicBlockStore[][][] blockStores = new AtomicBlockStore[width][Region.CHUNKS.SIZE][width];
 
 			for (int xx = 0; xx < width; xx++) {
@@ -263,9 +260,9 @@ public class RegionGenerator implements Named {
 					}
 				}
 			}
-			
+
 			SnapshotLock lock = Spout.getScheduler().getSnapshotLock();
-			
+
 			lock.readLock(colLock);
 			try {
 				for (int xx = 0; xx < width; xx++) {
@@ -285,7 +282,7 @@ public class RegionGenerator implements Named {
 							}
 
 							boolean chunkSet = region.setChunkIfNotGeneratedWithoutLock(newChunk, x + xx, yy, z + zz);
-							
+
 							if (chunkSet) {
 								newChunk.setModified();
 							}
@@ -304,7 +301,6 @@ public class RegionGenerator implements Named {
 			if (!success) {
 				throw new IllegalStateException("Column " + x + ", " + z + " rY=" + region.getChunkY() + " int region " + region.getBase().toBlockString() + " copied twice after generation, generation state is " + generated + " sync is " + sync);
 			}
-
 		} finally {
 			colLock.unlock();
 		}
@@ -313,11 +309,11 @@ public class RegionGenerator implements Named {
 			touchChunk(chunkX, 0, chunkZ);
 		}
 	}
-	
+
 	public static void shutdownExecutorService() {
 		pool.shutdown();
 	}
-	
+
 	public static void awaitExecutorServiceTermination() {
 		boolean interrupted = false;
 		try {
@@ -338,46 +334,44 @@ public class RegionGenerator implements Named {
 				Thread.currentThread().interrupt();
 			}
 		}
-
 	}
-	
+
 	public void touchChunkNeighbors(SpoutChunk c) {
-		
+
 		if (!c.isObserved()) {
 			Spout.getLogger().info("Touched chunk is not observed, " + c);
 			return;
 		}
-		
+
 		int x = c.getX() & Region.CHUNKS.MASK;
 		int z = c.getZ() & Region.CHUNKS.MASK;
 		int y = c.getZ() & Region.CHUNKS.MASK;
-		
+
 		touchChunkNeighbors(x, y, z);
-		
 	}
-	
+
 	private void touchChunkNeighbors(int x, int y, int z) {
-		
+
 		x &= Region.CHUNKS.MASK;
 		z &= Region.CHUNKS.MASK;
 		y &= Region.CHUNKS.MASK;
-		
+
 		BlockFace[] faces = BlockFaces.NESW.toArray();
-		
+
 		for (BlockFace face : faces) {
 			IntVector3 v = face.getIntOffset();
 
 			final int ox = x + (v.getX() << shift);
 
 			final int oz = z + (v.getZ() << shift);
-			
+
 			if (ox < 0 || ox >= Region.CHUNKS.SIZE || oz < 0 || oz >= Region.CHUNKS.SIZE) {
 				SpoutRegion newRegion = region.getLocalRegion(face, LoadOption.NO_LOAD);
 				if (newRegion != null) {
 					newRegion.getRegionGenerator().touchChunk(ox, y, oz);
 				} else {
 					final BlockFace finalFace = face;
-					
+
 					pool.submit(new Runnable() {
 						@Override
 						public void run() {
@@ -397,7 +391,7 @@ public class RegionGenerator implements Named {
 			}
 		}
 	}
-	
+
 	protected void touchChunk(final int x, final int y, final int z) {
 
 		final int mask = Region.CHUNKS.MASK;
@@ -417,11 +411,14 @@ public class RegionGenerator implements Named {
 			}, true);
 		}
 	}
-	
+
 	private static enum GenerateState {
-		
-		NONE, IN_PROGRESS_ASYNC, IN_PROGRESS_SYNC, COPIED;
-		
+
+		NONE,
+		IN_PROGRESS_ASYNC,
+		IN_PROGRESS_SYNC,
+		COPIED;
+
 		public boolean done(boolean sync) {
 			if (!sync) {
 				return this == IN_PROGRESS_SYNC || this == COPIED;
@@ -429,20 +426,18 @@ public class RegionGenerator implements Named {
 				return this == COPIED;
 			}
 		}
-		
+
 		public boolean isAsyncInProgress() {
 			return this == IN_PROGRESS_ASYNC;
 		}
-	
-	}
-	
-	private class NamedReentrantLock extends ReentrantLock implements Named {
 
+	}
+
+	private class NamedReentrantLock extends ReentrantLock implements Named {
 		private static final long serialVersionUID = 1L;
-		
 		private final int x;
 		private final int z;
-		
+
 		public NamedReentrantLock(int x, int z) {
 			this.x = x;
 			this.z = z;
@@ -458,5 +453,4 @@ public class RegionGenerator implements Named {
 	public String getName() {
 		return "RegionGenerator{" + region + "}";
 	}
-
 }

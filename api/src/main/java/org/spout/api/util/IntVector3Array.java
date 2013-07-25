@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,14 +30,13 @@ import java.util.Iterator;
 
 import org.spout.api.math.IntVector3;
 
-public class IntVector3Array extends IntVector3 implements Iterable<IntVector3>, Iterator<IntVector3>{
-	
+public class IntVector3Array extends IntVector3 implements Iterable<IntVector3>, Iterator<IntVector3> {
 	private final int[] x;
 	private final int[] y;
 	private final int[] z;
 	private final int length;
 	private int pos;
-	
+
 	public IntVector3Array(int[] x, int[] y, int[] z, int length) {
 		super(0, 0, 0);
 		this.x = x;
@@ -71,5 +70,4 @@ public class IntVector3Array extends IntVector3 implements Iterable<IntVector3>,
 		pos = 0;
 		return this;
 	}
-
 }

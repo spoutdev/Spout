@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -154,7 +154,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	 */
 	private final WeakReference<SpoutWorld> selfReference;
 	public static final WeakReference<SpoutWorld> NULL_WEAK_REFERENCE = new WeakReference<SpoutWorld>(null);
-	
 	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<Long, SetQueue<SpoutColumn>>();
 
 	// TODO set up number of stages ?
@@ -172,9 +171,9 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 		regions = new RegionSource(this);
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
-		
+
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
-		
+
 		for (int i = 0; i < columnLockMap.length; i++) {
 			columnLockMap[i] = new ReentrantLock();
 		}
@@ -185,7 +184,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 		this.age = new SnapshotableLong(snapshotManager, age);
 		selfReference = new WeakReference<SpoutWorld>(this);
-
 	}
 
 	@Override
@@ -241,7 +239,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 		}
 		int cx = x >> SpoutColumn.BLOCKS.BITS;
 		int cz = z >> SpoutColumn.BLOCKS.BITS;
-		
+
 		final SpoutColumn column = getColumn(cx, cz, LoadOption.LOAD_ONLY);
 		if (column != null) {
 			final BiomeManager manager = column.getBiomeManager();
@@ -400,7 +398,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	public void resetDynamicBlock(int x, int y, int z) {
 		this.getRegionFromBlock(x, y, z).resetDynamicBlock(x, y, z);
 	}
-	
+
 	@Override
 	public void resetDynamicBlocks(Chunk c) {
 		c.resetDynamicBlocks(c);
@@ -439,7 +437,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 		SpoutWorld world = (SpoutWorld) obj;
 		return world.getUID().equals(getUID());
 	}
-	
+
 	@Override
 	public int getSurfaceHeight(int x, int z) {
 		return getSurfaceHeight(x, z, LoadOption.LOAD_GEN);
@@ -721,8 +719,8 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	}
 
 	/**
-	 * Gets a set of nearby players to the point, inside of the range.
-	 * The search will ignore the specified entity.
+	 * Gets a set of nearby players to the point, inside of the range. The search will ignore the specified entity.
+	 *
 	 * @param position of the center
 	 * @param ignore Entity to ignore
 	 * @param range to look for
@@ -743,6 +741,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	/**
 	 * Gets a set of nearby players to the point, inside of the range
+	 *
 	 * @param position of the center
 	 * @param range to look for
 	 * @return A set of nearby Players
@@ -756,6 +755,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	/**
 	 * Gets a set of nearby players to the entity, inside of the range
+	 *
 	 * @param entity marking the center and which is ignored
 	 * @param range to look for
 	 * @return A set of nearby Players
@@ -769,6 +769,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
+	 *
 	 * @param position to search from
 	 * @param ignore to ignore while searching
 	 * @param range to search
@@ -795,6 +796,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
+	 *
 	 * @param range to search
 	 * @return nearest player
 	 */
@@ -807,6 +809,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
+	 *
 	 * @param entity to search from
 	 * @param range to search
 	 * @return nearest player
@@ -820,6 +823,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	/**
 	 * Finds all the players inside of the regions inside the range area
+	 *
 	 * @param position to search from
 	 * @param range to search for regions
 	 * @return nearby region's players
@@ -846,6 +850,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	/**
 	 * Removes a column corresponding to the given Column coordinates
+	 *
 	 * @param x the x coordinate
 	 * @param z the z coordinate
 	 */
@@ -857,9 +862,10 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the column corresponding to the given Column coordinates
+	 *
 	 * @param x the x coordinate
 	 * @param z the z coordinate
 	 * @param loadopt load option
@@ -868,8 +874,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	protected SpoutColumn getColumn(int x, int z, LoadOption loadopt) {
 		return getColumn(x, z, loadopt, true);
 	}
-	
-	
+
 	protected SpoutColumn getColumn(int x, int z, LoadOption loadopt, boolean sync) {
 		long key = IntPairHashed.key(x, z);
 		SpoutColumn column = columns.get(key);
@@ -888,39 +893,38 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 		if (column != null || !loadopt.generateIfNeeded()) {
 			return column;
 		}
-		
+
 		int[][] height = this.getGenerator().getSurfaceHeight(this, x, z);
-		
+
 		int h = (height[7][7] >> Chunk.BLOCKS.BITS);
-		
+
 		SpoutRegion r = getRegionFromChunk(x, h, z, loadopt);
-		
+
 		if (r == null) {
 			throw new IllegalStateException("Unable to generate region for new column and load option " + loadopt);
 		}
-		
+
 		RegionGenerator generator = r.getRegionGenerator();
 		if (generator != null) {
 			generator.generateColumn(x, z, sync, true);
 		} else {
-			setIfNotGenerated(x, z, new int[SpoutColumn.BLOCKS.SIZE][SpoutColumn.BLOCKS.SIZE]); 
+			setIfNotGenerated(x, z, new int[SpoutColumn.BLOCKS.SIZE][SpoutColumn.BLOCKS.SIZE]);
 		}
 
 		column = getColumn(x, z, LoadOption.LOAD_ONLY);
-		
+
 		if (column == null) {
 			throw new IllegalStateException("Unable to generate column " + x + ", " + z);
 		}
-		
+
 		return column;
-		
 	}
-	
+
 	public SpoutColumn setIfNotGenerated(int x, int z, int[][] heightMap) {
 		long key = (((long) x) << 32) | (z & 0xFFFFFFFFL);
 		key = (key % 7919);
 		key &= columnLockMap.length - 1;
-		
+
 		Lock lock = columnLockMap[(int) key];
 		lock.lock();
 		try {
@@ -937,7 +941,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 			lock.unlock();
 		}
 	}
-	
+
 	public SpoutColumn loadColumn(int x, int z) {
 		InputStream in = getHeightMapInputStream(x, z);
 		if (in == null) {
@@ -1161,16 +1165,17 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 					SpoutChunk[] subArray2 = subArray1[dy];
 					for (int dz = 0; dz < subArray2.length; dz++) {
 						for (Player p : subArray2[dz].getObservingPlayers()) {
-							if (observed.contains(p)) continue;
+							if (observed.contains(p)) {
+								continue;
+							}
 							observed.add(p);
-							byte[] empty = new byte[chunks.length  * subArray1.length * subArray2.length];
+							byte[] empty = new byte[chunks.length * subArray1.length * subArray2.length];
 							p.getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
 						}
 						subArray2[dz].setCuboid(x, y, z, buffer, cause);
 					}
 				}
 			}
-			
 
 			return true;
 		} finally {
@@ -1190,12 +1195,14 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 					SpoutChunk[] subArray2 = subArray1[dy];
 					for (int dz = 0; dz < subArray2.length; dz++) {
 						for (Player p : subArray2[dz].getObservingPlayers()) {
-							if (observed.contains(p)) continue;
+							if (observed.contains(p)) {
+								continue;
+							}
 							observed.add(p);
-							byte[] empty = new byte[chunks.length  * subArray1.length * subArray2.length];
+							byte[] empty = new byte[chunks.length * subArray1.length * subArray2.length];
 							p.getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
 						}
-			 			subArray2[dz].setCuboid(x, y, z, buffer, cause);
+						subArray2[dz].setCuboid(x, y, z, buffer, cause);
 					}
 				}
 			}
@@ -1290,13 +1297,13 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	public boolean hasData(World world, String node) {
 		return hasData(node);
 	}
-	
+
 	public SetQueue<SpoutColumn> getColumnDirtyQueue(int x, int z) {
 		long key = IntPairHashed.key(x, z);
 		SetQueue<SpoutColumn> setQueue;
 		synchronized (regionColumnDirtyQueueMap) {
 			setQueue = regionColumnDirtyQueueMap.get(key);
-			
+
 			if (setQueue == null) {
 				setQueue = new SetQueue<SpoutColumn>(Region.CHUNKS.SIZE * Region.CHUNKS.SIZE);
 				regionColumnDirtyQueueMap.put(key, setQueue);

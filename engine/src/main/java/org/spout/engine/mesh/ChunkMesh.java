@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,14 +26,14 @@
  */
 package org.spout.engine.mesh;
 
-import gnu.trove.list.array.TFloatArrayList;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import gnu.trove.list.array.TFloatArrayList;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -52,7 +52,6 @@ import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.SnapshotMesh;
-
 import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
@@ -60,19 +59,15 @@ import org.spout.engine.world.SpoutChunkSnapshotModel;
  * Represents a mesh for a chunk.
  */
 public class ChunkMesh {
-
 	private HashMap<RenderMaterial, BufferContainer> meshs = new HashMap<RenderMaterial, BufferContainer>();
-
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
 	private final World world;
-	private final int chunkX,chunkY,chunkZ;
+	private final int chunkX, chunkY, chunkZ;
 	private boolean isUnloaded = false;
 	private boolean first = false;
-
 	/**
-	 * Time of the used SpoutChunkSnapshotModel generation
-	 * To benchmark purpose
+	 * Time of the used SpoutChunkSnapshotModel generation To benchmark purpose
 	 */
 	private final long time;
 
@@ -89,20 +84,20 @@ public class ChunkMesh {
 		time = chunkModel.getTime();
 	}
 
-	public int getChunkX(){
+	public int getChunkX() {
 		return chunkX;
 	}
 
-	public int getChunkY(){
+	public int getChunkY() {
 		return chunkY;
 	}
 
-	public int getChunkZ(){
+	public int getChunkZ() {
 		return chunkZ;
 	}
 
-	public void update(){
-		if(chunkModel.isUnload()){
+	public void update() {
+		if (chunkModel.isUnload()) {
 			isUnloaded = true;
 			return;
 		}
@@ -113,8 +108,8 @@ public class ChunkMesh {
 		updateBlock();
 
 		//Execute post buffer effect for each renderMaterial
-		for(Entry<RenderMaterial, BufferContainer> entry : meshs.entrySet()){
-			for(BufferEffect effect : entry.getKey().getBufferEffects()){
+		for (Entry<RenderMaterial, BufferContainer> entry : meshs.entrySet()) {
+			for (BufferEffect effect : entry.getKey().getBufferEffects()) {
 				effect.post(chunkModel, entry.getValue());
 			}
 		}
@@ -142,13 +137,14 @@ public class ChunkMesh {
 		}
 	}
 
-	public List<MeshFace> buildBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial, Vector3 position, boolean toRender[], OrientedMesh mesh) {
+	public List<MeshFace> buildBlock(ChunkSnapshotModel chunkSnapshotModel, Material blockMaterial, Vector3 position, boolean toRender[], OrientedMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
 		Vector3 model = new Vector3(position.getX(), position.getY(), position.getZ());
-		for(OrientedMeshFace meshFace : mesh){
+		for (OrientedMeshFace meshFace : mesh) {
 
-			if(!meshFace.canRender(toRender))
+			if (!meshFace.canRender(toRender)) {
 				continue;
+			}
 
 			Iterator<Vertex> it = meshFace.iterator();
 			Vertex v1 = new Vertex(it.next());
@@ -165,11 +161,6 @@ public class ChunkMesh {
 
 	/**
 	 * Generates the vertices of the given block and adds them to the ChunkMesh.
-	 * @param chunkSnapshotModel 
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
 	 */
 	private void generateBlockVertices(SpoutChunkSnapshotModel chunkSnapshotModel, int x, int y, int z) {
 		BlockMaterial material = center.getBlockMaterial(x, y, z);
@@ -180,7 +171,7 @@ public class ChunkMesh {
 
 		RenderMaterial renderMaterial = material.getModel().getRenderMaterial();
 
-		if( !chunkModel.hasRenderMaterial(renderMaterial) ){
+		if (!chunkModel.hasRenderMaterial(renderMaterial)) {
 			return;
 		}
 
@@ -188,7 +179,7 @@ public class ChunkMesh {
 
 		boolean toRender[] = new boolean[OrientedMeshFace.shouldRender.length];
 		boolean fullyOccluded = true;
-		for(int i = 0; i < OrientedMeshFace.shouldRender.length; i++){
+		for (int i = 0; i < OrientedMeshFace.shouldRender.length; i++) {
 			BlockFace face = OrientedMeshFace.shouldRender[i];
 			Vector3 facePos = position.add(face.getOffset());
 			int x1 = facePos.getFloorX();
@@ -207,39 +198,39 @@ public class ChunkMesh {
 			fullyOccluded = false;
 		}
 
-		if(fullyOccluded) {
+		if (fullyOccluded) {
 			return;
 		}
 
 		SnapshotMesh snapshotMesh = new SnapshotMesh(material, chunkSnapshotModel, new Point(position, world), toRender);
 
 		renderMaterial.preMesh(snapshotMesh);
-		List<MeshFace> faces = buildBlock(snapshotMesh.getSnapshotModel(), snapshotMesh.getMaterial(), snapshotMesh.getPosition(), snapshotMesh.getToRender(), (OrientedMesh)snapshotMesh.getMesh());
+		List<MeshFace> faces = buildBlock(snapshotMesh.getSnapshotModel(), snapshotMesh.getMaterial(), snapshotMesh.getPosition(), snapshotMesh.getToRender(), (OrientedMesh) snapshotMesh.getMesh());
 		snapshotMesh.setResult(faces);
 		renderMaterial.postMesh(snapshotMesh);
 		faces = snapshotMesh.getResult();
 
-		if(!faces.isEmpty()) {
+		if (!faces.isEmpty()) {
 			BufferContainer container = meshs.get(renderMaterial);
 			TFloatArrayList vertexBuffer, normalBuffer, textureBuffer;
 
-			if(container == null){
+			if (container == null) {
 				container = new BufferContainer();
-				
+
 				vertexBuffer = new TFloatArrayList();
 				container.setBuffers(VertexAttributes.Position.getLayout(), vertexBuffer);
-				
+
 				normalBuffer = new TFloatArrayList();
 				container.setBuffers(VertexAttributes.Normal.getLayout(), normalBuffer);
-				
+
 				textureBuffer = new TFloatArrayList();
 				container.setBuffers(VertexAttributes.Texture0.getLayout(), textureBuffer);
-				
+
 				meshs.put(renderMaterial, container);
 			} else {
-				 vertexBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Position.getLayout());
-				 normalBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Normal.getLayout());
-				 textureBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Texture0.getLayout());
+				vertexBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Position.getLayout());
+				normalBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Normal.getLayout());
+				textureBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Texture0.getLayout());
 			}
 
 			for (MeshFace meshFace : faces) {
@@ -250,12 +241,12 @@ public class ChunkMesh {
 					vertexBuffer.add(vert.position.getZ());
 					vertexBuffer.add(1f);
 
-					if(vert.texCoord0 != null){
+					if (vert.texCoord0 != null) {
 						textureBuffer.add(vert.texCoord0.getX());
 						textureBuffer.add(vert.texCoord0.getY());
 					}
 
-					if(vert.normal != null){
+					if (vert.normal != null) {
 						normalBuffer.add(vert.normal.getX());
 						normalBuffer.add(vert.normal.getY());
 						normalBuffer.add(vert.normal.getZ());
@@ -270,8 +261,6 @@ public class ChunkMesh {
 
 	/**
 	 * Checks if the chunk mesh has any vertices.
-	 * 
-	 * @return
 	 */
 	public boolean hasVertices() {
 		return !meshs.isEmpty();
@@ -331,7 +320,4 @@ public class ChunkMesh {
 		}
 		return true;
 	}
-	
-	
-
 }

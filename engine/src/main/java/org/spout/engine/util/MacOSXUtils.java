@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -30,14 +30,13 @@ import java.awt.Window;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-
 /**
  * Mac OS X-specific utility functions. If these are invoked when Mac OS X is not the active OS, they will do nothing (or return null)
  */
 public class MacOSXUtils {
-
 	private static final boolean isOSX;
 	private static final int osVersion;
+
 	static {
 		isOSX = System.getProperty("os.name").toLowerCase().contains("mac");
 		if (isOSX) {
@@ -58,6 +57,7 @@ public class MacOSXUtils {
 	}
 
 	private static final Method fullScreenUtilities_setWindowCanFullScreenMethod;
+
 	static {
 		Method m = null;
 		try {
@@ -105,6 +105,4 @@ public class MacOSXUtils {
 	public static Object Application_getApplication() {
 		return application;
 	}
-
-
 }

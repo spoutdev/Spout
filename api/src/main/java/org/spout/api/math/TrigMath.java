@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -27,8 +27,7 @@
 package org.spout.api.math;
 
 /**
- * A class designed for fast trigonometry operations. Sine, Cosine, Tangent,
- * Cotangent Secant and Cosecant use a sine float table.
+ * A class designed for fast trigonometry operations. Sine, Cosine, Tangent, Cotangent Secant and Cosecant use a sine float table.
  */
 public class TrigMath {
 	// Constants
@@ -80,11 +79,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Tangent calculations using a table.<br> <i>sin(angle) /
-	 * cos(angle)</i><br><br>
-	 * <p>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * Tangent calculations using a table.<br> <i>sin(angle) / cos(angle)</i><br><br> <p> <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle in radians
 	 * @return the tangent of the angle
 	 */
@@ -94,11 +90,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Cotangent calculations using a table.<br> <i>cos(angle) /
-	 * sin(angle)</i><br><br>
-	 * <p>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * Cotangent calculations using a table.<br> <i>cos(angle) / sin(angle)</i><br><br> <p> <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle in radians
 	 * @return the cotangent of the angle
 	 */
@@ -108,10 +101,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Secant calculations using a table:<br> <i>1 / cos(angle)</i><br><br>
-	 * <p>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * Secant calculations using a table:<br> <i>1 / cos(angle)</i><br><br> <p> <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle the angle in radians
 	 * @return the secant of the angle
 	 */
@@ -120,10 +111,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Cosecant calculations using a table.<br> <i>1 / sin(angle)</i><br><br>
-	 * <p>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * Cosecant calculations using a table.<br> <i>1 / sin(angle)</i><br><br> <p> <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle the angle in radians
 	 * @return the cosecant of the angle
 	 */
@@ -132,11 +121,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Sinus calculation using a table.<br> For double-precision sin values, use
-	 * the MathHelper sin function<br><br>
-	 * <p>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * Sinus calculation using a table.<br> For double-precision sin values, use the MathHelper sin function<br><br> <p> <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle the angle in radians
 	 * @return the sinus of the angle
 	 */
@@ -145,11 +131,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Cosinus calculation using a table.<br> For double-precision cos values,
-	 * use the MathHelper cos function<br><br>
-	 * <p>
-	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal
-	 * place
+	 * Cosinus calculation using a table.<br> For double-precision cos values, use the MathHelper cos function<br><br> <p> <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 *
 	 * @param angle the angle in radians
 	 * @return the cosinus of the angle
 	 */
@@ -176,6 +159,7 @@ public class TrigMath {
 
 	/**
 	 * Calculates the arc tangent of the value specified
+	 *
 	 * @param value of the tangent
 	 * @return tangent arc in radians
 	 */
@@ -188,9 +172,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Computes the phase theta by computing an arc tangent of y/x<br> Gets the
-	 * yaw rotation component in radians when looking into the direction
-	 * specified
+	 * Computes the phase theta by computing an arc tangent of y/x<br> Gets the yaw rotation component in radians when looking into the direction specified
+	 *
 	 * @param y direction
 	 * @param x direction
 	 * @return tangent arc in radians
@@ -211,8 +194,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Calculates the arc sinus of the value specified<br><br> Returns NaN if
-	 * the input value is outside the sinus range
+	 * Calculates the arc sinus of the value specified<br><br> Returns NaN if the input value is outside the sinus range
+	 *
 	 * @param value of the sinus
 	 * @return sinus arc in radians
 	 */
@@ -232,8 +215,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Calculates the arc cosinus of the value specified<br><br> Returns NaN if
-	 * the input value is outside the cosinus range
+	 * Calculates the arc cosinus of the value specified<br><br> Returns NaN if the input value is outside the cosinus range
+	 *
 	 * @param value of the cosinus
 	 * @return cosinus arc in radians
 	 */
@@ -246,8 +229,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Calculates the arc cotangent of the value specified<br><br> Returns NaN if
-	 * the input value is outside the cotangent range
+	 * Calculates the arc cotangent of the value specified<br><br> Returns NaN if the input value is outside the cotangent range
+	 *
 	 * @param value of the secant
 	 * @return secant arc in radians
 	 */
@@ -262,8 +245,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Calculates the arc secant of the value specified<br><br> Returns NaN if
-	 * the input value is outside the secant range
+	 * Calculates the arc secant of the value specified<br><br> Returns NaN if the input value is outside the secant range
+	 *
 	 * @param value of the secant
 	 * @return secant arc in radians
 	 */
@@ -275,8 +258,8 @@ public class TrigMath {
 	}
 
 	/**
-	 * Calculates the arc cosecant of the value specified<br><br> Returns NaN if
-	 * the input value is outside the cosecant range
+	 * Calculates the arc cosecant of the value specified<br><br> Returns NaN if the input value is outside the cosecant range
+	 *
 	 * @param value of the cosecant
 	 * @return cosecant arc in radians
 	 */

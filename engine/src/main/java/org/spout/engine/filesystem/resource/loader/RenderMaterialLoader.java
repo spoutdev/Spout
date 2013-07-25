@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -46,7 +46,6 @@ import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.shader.Shader;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
-
 import org.spout.engine.filesystem.resource.ClientRenderMaterial;
 
 public class RenderMaterialLoader extends ResourceLoader {
@@ -73,23 +72,23 @@ public class RenderMaterialLoader extends ResourceLoader {
 		final Shader shader = Spout.getFileSystem().getResource(shaderPath);
 		int layer = 0;
 		boolean depthTesting = true;
-		if(resourceProperties.containsKey("RenderState"))
-		{
+		if (resourceProperties.containsKey("RenderState")) {
 			final Map<? extends String, ?> renderState = checkerMapStringObject.check(resourceProperties.get("RenderState"));
 			Object s = renderState.get("Depth");
-			if(s instanceof Boolean) depthTesting = (Boolean)s;
+			if (s instanceof Boolean) {
+				depthTesting = (Boolean) s;
+			}
 			Object s2 = renderState.get("Layer");
-			if(s2 != null && s2 instanceof Integer) layer = (Integer)s2;
+			if (s2 != null && s2 instanceof Integer) {
+				layer = (Integer) s2;
+			}
 		}
 
 		// Better make a new HashMap, who knows whether we can even write to it...
 		final Map<String, Object> paramsNew = new HashMap<String, Object>();
 
-		if(resourceProperties.containsKey("MaterialParams"))
-		{
+		if (resourceProperties.containsKey("MaterialParams")) {
 			final Map<? extends String, ?> params = checkerMapStringObject.check(resourceProperties.get("MaterialParams"));
-
-
 
 			// Loop through the params and replace
 			for (Entry<? extends String, ?> entry : params.entrySet()) {
@@ -135,7 +134,7 @@ public class RenderMaterialLoader extends ResourceLoader {
 									Float.parseFloat(values[1]),
 									Float.parseFloat(values[2]),
 									1.0f
-									));
+							));
 							continue;
 
 						case 4:
@@ -144,7 +143,7 @@ public class RenderMaterialLoader extends ResourceLoader {
 									Float.parseFloat(values[1]),
 									Float.parseFloat(values[2]),
 									Float.parseFloat(values[3])
-									));
+							));
 							continue;
 
 						default:
@@ -160,7 +159,7 @@ public class RenderMaterialLoader extends ResourceLoader {
 					paramsNew.put(key, new Vector2(
 							Float.parseFloat(values[0]),
 							Float.parseFloat(values[1])
-							));
+					));
 					continue;
 				}
 
@@ -173,7 +172,7 @@ public class RenderMaterialLoader extends ResourceLoader {
 							Float.parseFloat(values[0]),
 							Float.parseFloat(values[1]),
 							Float.parseFloat(values[2])
-							));
+					));
 					continue;
 				}
 
@@ -187,7 +186,7 @@ public class RenderMaterialLoader extends ResourceLoader {
 							Float.parseFloat(values[1]),
 							Float.parseFloat(values[2]),
 							Float.parseFloat(values[3])
-							));
+					));
 					continue;
 				}
 
@@ -199,16 +198,16 @@ public class RenderMaterialLoader extends ResourceLoader {
 
 		ClientRenderMaterial material = new ClientRenderMaterial(shader, paramsNew, depthTesting, layer);
 		Object re = resourceProperties.get("RenderEffects");
-		if(re != null && re instanceof String[]) {
-			String[] renderEffects = (String[])re;
-			for(String effectName : renderEffects) {
+		if (re != null && re instanceof String[]) {
+			String[] renderEffects = (String[]) re;
+			for (String effectName : renderEffects) {
 				try {
 					Class<?> effect = PluginClassLoader.findPluginClass(effectName);
-					if(!RenderEffect.class.isAssignableFrom(effect)) {
+					if (!RenderEffect.class.isAssignableFrom(effect)) {
 						Spout.log("Error: " + effectName + " Is not a RenderEffect");
 					}
 					try {
-						RenderEffect effectInstance = (RenderEffect)effect.newInstance();
+						RenderEffect effectInstance = (RenderEffect) effect.newInstance();
 						material.addRenderEffect(effectInstance);
 					} catch (InstantiationException | IllegalAccessException e) {
 						// TODO Auto-generated catch block
@@ -218,11 +217,8 @@ public class RenderMaterialLoader extends ResourceLoader {
 					Spout.log("Warning: RenderEffect " + effectName + " Not Found.");
 				}
 			}
-
-
 		}
 
-
-		return  material;
+		return material;
 	}
 }

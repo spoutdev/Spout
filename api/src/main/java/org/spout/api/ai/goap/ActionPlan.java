@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -61,19 +61,24 @@ public class ActionPlan implements Plan<Agent>, Comparable<Plan<Agent>> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null || getClass() != obj.getClass())
+		}
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
+		}
 
 		ActionPlan other = (ActionPlan) obj;
-		if (Float.floatToIntBits(cost) != Float.floatToIntBits(other.cost))
+		if (Float.floatToIntBits(cost) != Float.floatToIntBits(other.cost)) {
 			return false;
-		if (plan.length != other.plan.length)
+		}
+		if (plan.length != other.plan.length) {
 			return false;
+		}
 		for (int i = 0; i < plan.length; i++) {
-			if (plan[i].getClass() != other.plan[i].getClass())
+			if (plan[i].getClass() != other.plan[i].getClass()) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -86,8 +91,9 @@ public class ActionPlan implements Plan<Agent>, Comparable<Plan<Agent>> {
 
 	@Override
 	public int hashCode() {
-		if (hashcode != -1)
+		if (hashcode != -1) {
 			return hashcode;
+		}
 		final int prime = 31;
 		return (hashcode = prime * (prime + Float.floatToIntBits(cost)) + Arrays.hashCode(plan));
 	}
@@ -99,10 +105,12 @@ public class ActionPlan implements Plan<Agent>, Comparable<Plan<Agent>> {
 
 	@Override
 	public void update(Agent agent) {
-		if (executing == null)
+		if (executing == null) {
 			return;
+		}
 		executing.update();
-		if (executing.isComplete())
+		if (executing.isComplete()) {
 			advancePlan();
+		}
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -60,8 +60,6 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Adds an object to the list
-	 *
-	 * @param object
 	 */
 	@DelayedWrite
 	public boolean add(T object) {
@@ -70,7 +68,7 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 		if (success) {
 			dirty.add(object);
 		}
-		
+
 		return success;
 	}
 
@@ -87,8 +85,6 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Removes an object from the list
-	 *
-	 * @param object
 	 */
 	@DelayedWrite
 	public boolean remove(T object) {
@@ -97,14 +93,12 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 		if (success) {
 			dirty.add(object);
 		}
-		
+
 		return success;
 	}
 
 	/**
 	 * Removes the object from the list at a particular index
-	 *
-	 * @param index
 	 */
 	@DelayedWrite
 	public void remove(int index) {

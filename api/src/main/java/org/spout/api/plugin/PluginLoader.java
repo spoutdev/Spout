@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -58,7 +58,7 @@ public class PluginLoader {
 	protected final Engine engine;
 	private final PluginSecurityManager manager;
 	private final double key;
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	private final Map<String, PluginClassLoader> loaders = new CaseInsensitiveMap();
 
 	public PluginLoader(final Engine engine, final PluginSecurityManager manager, final double key) {
@@ -69,6 +69,7 @@ public class PluginLoader {
 
 	/**
 	 * Enables the plugin
+	 *
 	 * @param plugin to enable
 	 */
 	public synchronized void enablePlugin(Plugin plugin) {
@@ -95,6 +96,7 @@ public class PluginLoader {
 
 	/**
 	 * Disables the plugin
+	 *
 	 * @param plugin to disable
 	 */
 	public synchronized void disablePlugin(Plugin plugin) {
@@ -118,11 +120,9 @@ public class PluginLoader {
 
 	/**
 	 * Loads the file as a plugin
+	 *
 	 * @param file to load
 	 * @return instance of the plugin
-	 * @throws InvalidPluginException
-	 * @throws UnknownDependencyException
-	 * @throws InvalidDescriptionFileException
 	 */
 	public synchronized Plugin loadPlugin(File file) throws InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
 		return loadPlugin(file, false);
@@ -130,13 +130,10 @@ public class PluginLoader {
 
 	/**
 	 * Loads the file as a plugin
+	 *
 	 * @param file to load
-	 * @param ignoreSoftDepends ignores soft dependencies when it attempts to load
-	 * the plugin
+	 * @param ignoreSoftDepends ignores soft dependencies when it attempts to load the plugin
 	 * @return instance of the plugin
-	 * @throws InvalidPluginException
-	 * @throws UnknownDependencyException
-	 * @throws InvalidDescriptionFileException
 	 */
 	public synchronized Plugin loadPlugin(File file, boolean ignoreSoftDepends) throws InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
 		Plugin result = null;
@@ -145,15 +142,15 @@ public class PluginLoader {
 
 		desc = getDescription(file);
 		if (desc.isValidPlatform(engine.getPlatform())) {
-	
+
 			File dataFolder = new File(file.getParentFile(), desc.getName());
-	
+
 			processDependencies(desc);
-	
+
 			if (!ignoreSoftDepends) {
 				processSoftDependencies(desc);
 			}
-	
+
 			try {
 				loader = new PluginClassLoader(this, this.getClass().getClassLoader(), desc);
 				loader.addURL(file.toURI().toURL());
@@ -173,7 +170,7 @@ public class PluginLoader {
 					Constructor<? extends Protocol> pConstructor = protocol.getConstructor();
 					Protocol.registerProtocol(pConstructor.newInstance());
 				}
-				
+
 				if (!locked) {
 					manager.unlock(key);
 				}
@@ -185,7 +182,7 @@ public class PluginLoader {
 				engine.getLogger().severe("To run " + desc.getName() + ", you need Java version " + version + " or higher!");
 				throw new InvalidPluginException(e);
 			}
-	
+
 			loader.setPlugin(result);
 			loaders.put(desc.getName(), loader);
 		}
@@ -195,7 +192,6 @@ public class PluginLoader {
 
 	/**
 	 * @param description Plugin description element
-	 * @throws UnknownSoftDependencyException
 	 */
 	protected synchronized void processSoftDependencies(PluginDescriptionFile description) throws UnknownSoftDependencyException {
 		List<String> softdepend = description.getSoftDepends();
@@ -212,7 +208,6 @@ public class PluginLoader {
 
 	/**
 	 * @param desc Plugin description element
-	 * @throws UnknownDependencyException
 	 */
 	protected synchronized void processDependencies(PluginDescriptionFile desc) throws UnknownDependencyException {
 		List<String> depends = desc.getDepends();
@@ -230,8 +225,6 @@ public class PluginLoader {
 	/**
 	 * @param file Plugin file object
 	 * @return The current plugin's description element.
-	 * @throws InvalidPluginException
-	 * @throws InvalidDescriptionFileException
 	 */
 	protected static synchronized PluginDescriptionFile getDescription(File file) throws InvalidPluginException, InvalidDescriptionFileException {
 		if (!file.exists()) {

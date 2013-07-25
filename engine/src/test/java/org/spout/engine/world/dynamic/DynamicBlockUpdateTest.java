@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,33 +26,33 @@
  */
 package org.spout.engine.world.dynamic;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Random;
 
 import org.junit.Test;
+
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.engine.faker.ChunkFaker;
 
+import static org.junit.Assert.assertTrue;
+
 public class DynamicBlockUpdateTest {
-	
 	private final static int CHECKS = 1000;
-	
+
 	@Test
 	public void test() throws Exception {
-		
+
 		Random r = new Random();
-		
+
 		for (int i = 0; i < CHECKS; i++) {
 			int x = r.nextInt(256);
 			int y = r.nextInt(256);
 			int z = r.nextInt(256);
 			long nextUpdate = (Math.abs(r.nextLong()) % 1000000L) + 1;
 			int data = r.nextInt();
-			
+
 			DynamicBlockUpdate update = new DynamicBlockUpdate(x, y, z, nextUpdate, data);
-			
+
 			assertTrue("X value mismatch, exp " + x + ", got " + update.getX(), x == update.getX());
 			assertTrue("Y value mismatch, exp " + y + ", got " + update.getY(), y == update.getY());
 			assertTrue("Z value mismatch, exp " + z + ", got " + update.getZ(), z == update.getZ());
@@ -60,17 +60,14 @@ public class DynamicBlockUpdateTest {
 			assertTrue("data value mismatch, exp " + data + ", got " + update.getData(), data == update.getData());
 
 			int chunkPacked = update.getChunkPacked();
-			
-			Chunk c = ChunkFaker.getChunk(x >> Region.CHUNKS.BITS, y >> Region.CHUNKS.BITS, z >> Region.CHUNKS.BITS);
-			
-			assertTrue("Unable to generate fake chunk", c != null);
-			
-			int chunkPackedFromChunk = DynamicBlockUpdate.getChunkPacked(c);
-			
-			assertTrue("Chunk packed calculation mismatch between static method and internal calculation", chunkPacked == chunkPackedFromChunk);
-			
-		}
-			
-	}
 
+			Chunk c = ChunkFaker.getChunk(x >> Region.CHUNKS.BITS, y >> Region.CHUNKS.BITS, z >> Region.CHUNKS.BITS);
+
+			assertTrue("Unable to generate fake chunk", c != null);
+
+			int chunkPackedFromChunk = DynamicBlockUpdate.getChunkPacked(c);
+
+			assertTrue("Chunk packed calculation mismatch between static method and internal calculation", chunkPacked == chunkPackedFromChunk);
+		}
+	}
 }

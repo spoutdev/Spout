@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -31,35 +31,31 @@ import java.util.Iterator;
 import org.spout.api.math.IntVector3;
 
 /**
- * An Iterator that iterates outwards from a given central 3d integer coordinate.<br>
- * <br>
- * The Manhattan distance from the given center to the coordinates in the sequence increases monotonically and the iterator passes through all integer coordinates.
+ * An Iterator that iterates outwards from a given central 3d integer coordinate.<br> <br> The Manhattan distance from the given center to the coordinates in the sequence increases monotonically and
+ * the iterator passes through all integer coordinates.
  */
 public class CubicIterator extends IntVector3 implements Iterator<IntVector3> {
-	
 	private final IntVector3 bottom;
 	private final IntVector3 top;
 	private boolean hasNext;
 	private boolean first = true;
-	
+
 	public CubicIterator() {
 		this(0, 0, 0);
 	}
-	
+
 	public CubicIterator(int w) {
 		this(0, 0, 0, w);
 	}
-	
+
 	public CubicIterator(int x, int y, int z) {
 		this(x, y, z, Integer.MAX_VALUE);
 	}
-	
+
 	public CubicIterator(int x, int y, int z, int w) {
 		this(x - w, y - w, z - w, x + w, x + w, x + w);
 	}
-	
 
-	
 	public CubicIterator(int bx, int by, int bz, int tx, int ty, int tz) {
 		super(bx, by, bz);
 		if (bx > tx || by > ty || bz > tz) {
@@ -73,13 +69,6 @@ public class CubicIterator extends IntVector3 implements Iterator<IntVector3> {
 
 	/**
 	 * Resets the iterator to the cuboid from (bx, by, bz) to (tx, ty, tz)
-	 * 
-	 * @param bx
-	 * @param by
-	 * @param bz
-	 * @param tx
-	 * @param ty
-	 * @param tz
 	 */
 	public void reset(int bx, int by, int bz, int tx, int ty, int tz) {
 		if (bx > tx || by > ty || bz > tz) {
@@ -91,11 +80,11 @@ public class CubicIterator extends IntVector3 implements Iterator<IntVector3> {
 		first = true;
 		hasNext = true;
 	}
-	
+
 	public void reset(int x, int y, int z, int w) {
 		reset(x - w, y - w, z - w, x + w, y + w, z + w);
 	}
-	
+
 	@Override
 	public boolean hasNext() {
 		return hasNext;
@@ -107,7 +96,7 @@ public class CubicIterator extends IntVector3 implements Iterator<IntVector3> {
 		int x = getX();
 		int y = getY();
 		int z = getZ();
-		
+
 		if (first) {
 			first = false;
 		} else {
@@ -137,5 +126,4 @@ public class CubicIterator extends IntVector3 implements Iterator<IntVector3> {
 	public void remove() {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
-
 }

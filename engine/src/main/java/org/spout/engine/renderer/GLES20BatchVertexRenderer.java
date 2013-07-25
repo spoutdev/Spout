@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -49,19 +49,19 @@ public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	@Override
 	public void preDraw() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void postDraw() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected void doDraw(RenderMaterial material, int startVert, int endVert) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -73,6 +73,6 @@ public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	@Override
 	protected void initFlush(Map<Integer, Buffer> buffers) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -36,71 +36,61 @@ import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.effect.SnapshotRender;
-
 import org.spout.engine.filesystem.resource.ClientTexture;
 
 //Crysis method of SSAO
 //Following the excellent John-chapman tutorial here: http://www.john-chapman.net/content.php?id=8
 public class SSAOPostProcessEffect implements RenderEffect {
-
 	//TODO: Make this settable from config.  It determines the 'quality' of SSAO in exchange for render time.
 	public static final int kernelSize = 20;
-	
-	//Noise demensions.  texture is square.  
+	//Noise demensions.  texture is square.
 	public static final int noiseSize = 2;
-	
 	public static final float radius = 1.0f;
-	
 	final Vector3[] kernel;
 	final ClientTexture noise;
 	final Vector2 noiseScale;
-	
-	
-	public SSAOPostProcessEffect()	{
+
+	public SSAOPostProcessEffect() {
 		kernel = new Vector3[kernelSize];
 		Random rng = new Random();
-		for(int i = 0; i < kernelSize; i++){
+		for (int i = 0; i < kernelSize; i++) {
 			//Create a set of random vectors along the surface of a hemisphere.
 			kernel[i] = new Vector3((rng.nextFloat() * 2) - 1, (rng.nextFloat() * 2) - 1, rng.nextFloat());
 			//Normalize the vector
-			kernel[i] = kernel[i].normalize();		
-			
-			
+			kernel[i] = kernel[i].normalize();
+
 			//Scale it into the hemisphere so the vectors aren't all along the surface. 
 			//We want the distance from the origin to fall off as we generate more points.  
-			float scale = (float)i / (float)kernelSize;
+			float scale = (float) i / (float) kernelSize;
 			scale = GenericMath.lerp(0.1f, 1.0f, scale * scale);
-			
+
 			kernel[i] = kernel[i].multiply(scale);
 		}
-		
+
 		//Generate the noise texture.
 		int[] texture = new int[noiseSize * noiseSize];
-		for(int i = 0; i < noiseSize * noiseSize; i++){
+		for (int i = 0; i < noiseSize * noiseSize; i++) {
 			Color c = new Color(rng.nextFloat(), rng.nextFloat(), 0);
-			texture[i] = c.getRGB();			
+			texture[i] = c.getRGB();
 		}
-		Vector2 resolution = ((Client)Spout.getEngine()).getResolution();
+		Vector2 resolution = ((Client) Spout.getEngine()).getResolution();
 		noiseScale = new Vector2(resolution.getX() / noiseSize, resolution.getY() / noiseSize);
 		noise = new ClientTexture(texture, noiseSize, noiseSize);
 	}
-	
+
 	@Override
 	public void preRender(SnapshotRender snapshotRender) {
-		
+
 		snapshotRender.getMaterial().getShader().setUniform("noiseScale", noiseScale);
 		snapshotRender.getMaterial().getShader().setUniform("noise", noise);
 		snapshotRender.getMaterial().getShader().setUniform("kernel", kernel);
 		snapshotRender.getMaterial().getShader().setUniform("kernelSize", kernel.length);
 		snapshotRender.getMaterial().getShader().setUniform("radius", radius);
-	
-		
 	}
 
 	@Override
 	public void postRender(SnapshotRender snapshotRender) {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 }

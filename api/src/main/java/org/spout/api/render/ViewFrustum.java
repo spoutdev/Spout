@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -31,16 +31,15 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector3;
 
 public class ViewFrustum {
-	
 	// This is the renderer subsize in bloc scale ( because it is in aggregator scale when it's pass through intersects )
-	Vector3 rendererSize = new Vector3(2,2,2);
+	Vector3 rendererSize = new Vector3(2, 2, 2);
 	Vector3 position = null;
 	float[][] frustum = new float[6][4];
 
 	public void update(Matrix projection, Matrix view, Vector3 paramPosition) {
-		
+
 		position = paramPosition;
-		
+
 		// http://www.crownandcutlass.com/features/technicaldetails/frustum.html
 		float[] clip = view.multiply(projection).getData();
 
@@ -98,73 +97,73 @@ public class ViewFrustum {
 			frustum[i][2] /= t;
 			frustum[i][3] /= t;
 		}*/
-		
+
 	}
-	
+
 	/**
 	 * Compute the distance between a point and the given plane
-	 * 
+	 *
 	 * @param p The id of the plane
 	 * @param v The vector
 	 * @return The distance
 	 */
 	private float distance(int p, Vector3 v) {
-		return frustum[p][0]*v.getX() + frustum[p][1]*v.getY() + frustum[p][2]*v.getZ() + frustum[p][3];
+		return frustum[p][0] * v.getX() + frustum[p][1] * v.getY() + frustum[p][2] * v.getZ() + frustum[p][3];
 	}
 
 	/**
 	 * Checks if the frustum of this camera intersects the given Cuboid.
-	 * 
+	 *
 	 * @param c The cuboid to check the frustum against.
 	 * @return True if the frustum intersects the cuboid.
 	 */
 	public boolean intersects(Cuboid c) {
-		
+
 		Vector3[] vertices = c.getVertices();
-		
+
 		for (int i = 0; i < 6; i++) {
-			
+
 			if (distance(i, vertices[0].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-			
+
 			if (distance(i, vertices[1].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-			
+
 			if (distance(i, vertices[2].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-			
+
 			if (distance(i, vertices[3].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-			
+
 			if (distance(i, vertices[4].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-			
+
 			if (distance(i, vertices[5].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-			
+
 			if (distance(i, vertices[6].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-			
+
 			if (distance(i, vertices[7].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-			
+
 			return false;
 		}
-		
+
 		return true;
 	}
 
 	/**
 	 * Checks if the frustum contains the given Vector3.
-	 * 
+	 *
 	 * @param vec The Vector3 to check the frustum against.
 	 * @return True if the frustum contains the Vector3.
 	 */

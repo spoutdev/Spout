@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -78,10 +78,10 @@ public class AsyncExecutorUtils {
 			}
 		}
 	}
-	
+
 	/**
 	 * Dumps the stack for the given Thread
-	 * 
+	 *
 	 * @param t the thread
 	 */
 	public static void dumpStackTrace(Thread t) {
@@ -91,5 +91,4 @@ public class AsyncExecutorUtils {
 			Spout.getEngine().getLogger().info("\tat " + e);
 		}
 	}
-	
 }

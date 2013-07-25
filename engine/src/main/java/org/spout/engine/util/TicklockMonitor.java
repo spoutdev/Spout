@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -31,12 +31,11 @@ import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 
 public class TicklockMonitor extends Thread {
-	
 	public TicklockMonitor() {
 		super("Tick Monitor");
 		setDaemon(true);
 	}
-	
+
 	@Override
 	public void run() {
 
@@ -51,10 +50,10 @@ public class TicklockMonitor extends Thread {
 				Thread.currentThread().interrupt();
 				dead = true;
 			}
-			
+
 			long tickTime = Spout.getEngine().getScheduler().getTickTime();
 			long upTime = Spout.getEngine().getScheduler().getUpTime();
-			
+
 			if (tickTime > threshold && upTime != lastUpTime) {
 				Spout.getLogger().info("Current Tick Time exceeds " + (threshold / 1000) + " seconds");
 				AsyncExecutorUtils.dumpAllStacks();

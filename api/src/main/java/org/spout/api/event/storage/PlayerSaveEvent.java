@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -57,11 +57,7 @@ import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called before an player data is saved to disk.
- * <p>
- * PlayerSaveEvents are async events and will never be executed on the
- * main thread. Be sure to synchronize your data structures.
- * </p>
+ * Called before an player data is saved to disk. <p> PlayerSaveEvents are async events and will never be executed on the main thread. Be sure to synchronize your data structures. </p>
  */
 public class PlayerSaveEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
@@ -74,7 +70,7 @@ public class PlayerSaveEvent extends Event {
 
 	/**
 	 * Gets the player snapshot to be saved
-	 * 
+	 *
 	 * @return snapshot
 	 */
 	public PlayerSnapshot getSnapshot() {
@@ -82,13 +78,9 @@ public class PlayerSaveEvent extends Event {
 	}
 
 	/**
-	 * True if the player snapshot has been successfully saved.
-	 * <p>
-	 * If isSaved() is false after the event has been fired, the engine will
-	 * use the default NBT player saving process, if it is true, the engine will
-	 * <b>NOT</b> save the player data and will rely on the plugin to restore the
-	 * data at the next login.
-	 * 
+	 * True if the player snapshot has been successfully saved. <p> If isSaved() is false after the event has been fired, the engine will use the default NBT player saving process, if it is true, the
+	 * engine will <b>NOT</b> save the player data and will rely on the plugin to restore the data at the next login.
+	 *
 	 * @return handled
 	 */
 	public boolean isSaved() {
@@ -96,12 +88,7 @@ public class PlayerSaveEvent extends Event {
 	}
 
 	/**
-	 * Sets whether this player snapshot has been saved.
-	 * <p>
-	 * If a plugin has saved the player snapshot and wants to override the
-	 * default engine saving of player data, it should setSaved(true). 
-	 * </p>
-	 * @param handle
+	 * Sets whether this player snapshot has been saved. <p> If a plugin has saved the player snapshot and wants to override the default engine saving of player data, it should setSaved(true). </p>
 	 */
 	public void setSaved(boolean handle) {
 		this.handled = handle;

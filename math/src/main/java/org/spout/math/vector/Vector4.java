@@ -1,10 +1,10 @@
 /*
- * This file is part of Math.
+ * This file is part of Spout.
  *
  * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
- * Math is licensed under the Spout License Version 1.
+ * Spout is licensed under the Spout License Version 1.
  *
- * Math is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * Math is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -309,7 +309,7 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 
 	@Override
 	public float[] toArray() {
-		return new float[]{x, y, z, w};
+		return new float[] {x, y, z, w};
 	}
 
 	@Override

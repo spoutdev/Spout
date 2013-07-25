@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -31,23 +31,22 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.MaterialRegistry;
 
 public class UniformImmutableCuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffer {
-
 	private final BlockMaterial uniform;
 	private final short id;
 	private final short data;
-	
+
 	public UniformImmutableCuboidBlockMaterialBuffer(Chunk c, BlockMaterial uniform) {
 		this(c.getBlockX(), c.getBlockY(), c.getBlockZ(), uniform, uniform.getId(), uniform.getData());
 	}
-	
+
 	public UniformImmutableCuboidBlockMaterialBuffer(Chunk c, short id, short data) {
 		this(c.getBlockX(), c.getBlockY(), c.getBlockZ(), (BlockMaterial) MaterialRegistry.get(id).getSubMaterial(data), id, data);
 	}
-	
+
 	public UniformImmutableCuboidBlockMaterialBuffer(int bx, int by, int bz, BlockMaterial uniform) {
 		this(bx, by, bz, uniform, uniform.getId(), uniform.getData());
 	}
-	
+
 	private UniformImmutableCuboidBlockMaterialBuffer(int bx, int by, int bz, BlockMaterial uniform, short id, short data) {
 		super(bx, by, bz, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, null, null);
 		this.uniform = uniform;
@@ -71,7 +70,7 @@ public class UniformImmutableCuboidBlockMaterialBuffer extends ImmutableCuboidBl
 	public short getId(int x, int y, int z) {
 		return id;
 	}
-	
+
 	public short getData(int x, int y, int z) {
 		return data;
 	}

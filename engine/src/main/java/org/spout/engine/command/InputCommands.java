@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -39,7 +39,6 @@ import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
 import org.spout.api.gui.Screen;
 import org.spout.api.input.Keyboard;
-
 import org.spout.engine.SpoutClient;
 
 /**
@@ -47,15 +46,17 @@ import org.spout.engine.SpoutClient;
  */
 public class InputCommands {
 	private final SpoutClient client;
+
 	public InputCommands(SpoutClient client) {
 		this.client = client;
 	}
+
 	public static boolean isPressed(CommandArguments args) throws ArgumentParseException {
 		return args.success("pressed", args.currentArgument("pressed").equalsIgnoreCase("+"));
 	}
 
-	@CommandDescription(aliases = "dev_console", desc = "Toggle display of debugging info.")
-	@Binding(value = Keyboard.KEY_F2, async = true)
+	@CommandDescription (aliases = "dev_console", desc = "Toggle display of debugging info.")
+	@Binding (value = Keyboard.KEY_F2, async = true)
 	public void devConsole(CommandSource source, CommandArguments args) throws CommandException {
 		if (!isPressed(args)) {
 			return;
@@ -74,8 +75,8 @@ public class InputCommands {
 		});
 	}
 
-	@CommandDescription(aliases = "debug_info", desc = "Toggle display of debugging info.")
-	@Binding(value = Keyboard.KEY_F3, async = true)
+	@CommandDescription (aliases = "debug_info", desc = "Toggle display of debugging info.")
+	@Binding (value = Keyboard.KEY_F3, async = true)
 	public void debugInfo(CommandSource source, CommandArguments args) throws CommandException {
 		if (!isPressed(args)) {
 			return;
@@ -103,12 +104,12 @@ public class InputCommands {
 		}
 
 		engine.getCommandManager().getCommand(PlayerInputState.MouseDirection.PITCH.getFlagName())
-			.setHelp("Adds pitch handling to the calling player's input state")
-			.setExecutor(new MouseMovementHandler(PlayerInputState.MouseDirection.PITCH));
+				.setHelp("Adds pitch handling to the calling player's input state")
+				.setExecutor(new MouseMovementHandler(PlayerInputState.MouseDirection.PITCH));
 
 		engine.getCommandManager().getCommand(PlayerInputState.MouseDirection.YAW.getFlagName())
-			.setHelp("Adds yaw handling to the calling player's input state")
-			.setExecutor(new MouseMovementHandler(PlayerInputState.MouseDirection.YAW));
+				.setHelp("Adds yaw handling to the calling player's input state")
+				.setExecutor(new MouseMovementHandler(PlayerInputState.MouseDirection.YAW));
 	}
 
 	public static class InputFlagHandler implements Executor {

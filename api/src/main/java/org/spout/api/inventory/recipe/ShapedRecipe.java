@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.inventory.ItemStack;
@@ -49,8 +50,7 @@ public class ShapedRecipe extends Recipe {
 	}
 
 	/**
-	 * Returns a {@link List} of a list of {@link Character}s that represent
-	 * the rows of the recipe.
+	 * Returns a {@link List} of a list of {@link Character}s that represent the rows of the recipe.
 	 *
 	 * @return rows of the recipe
 	 */
@@ -59,8 +59,7 @@ public class ShapedRecipe extends Recipe {
 	}
 
 	/**
-	 * Removes a row from the recipe at the given index. <code>0</code> being the last row
-	 * and <code>{@link java.util.List#size()} - 1</code> being the last row.
+	 * Removes a row from the recipe at the given index. <code>0</code> being the last row and <code>{@link java.util.List#size()} - 1</code> being the last row.
 	 *
 	 * @param index of row
 	 * @return row at specified index
@@ -70,9 +69,7 @@ public class ShapedRecipe extends Recipe {
 	}
 
 	/**
-	 * Returns the length of the rows of the recipe or <code>-1</code> if there
-	 * are no rows. In addition, this method verifies that all rows have the
-	 * same length.
+	 * Returns the length of the rows of the recipe or <code>-1</code> if there are no rows. In addition, this method verifies that all rows have the same length.
 	 *
 	 * @return length of each row
 	 * @throws IllegalStateException if the length of the rows is inconsistent.
@@ -96,8 +93,7 @@ public class ShapedRecipe extends Recipe {
 	// Ingredient management
 
 	/**
-	 * Returns a {@link Map} with {@link ItemStack}s mapped to the
-	 * {@link Character} they are represented by.
+	 * Returns a {@link Map} with {@link ItemStack}s mapped to the {@link Character} they are represented by.
 	 *
 	 * @return character item mapping
 	 */
@@ -106,8 +102,7 @@ public class ShapedRecipe extends Recipe {
 	}
 
 	/**
-	 * Returns the recipe's rows with {@link ItemStack} in place of the
-	 * characters which represent them.
+	 * Returns the recipe's rows with {@link ItemStack} in place of the characters which represent them.
 	 *
 	 * @return rows of the recipe
 	 */
@@ -134,12 +129,12 @@ public class ShapedRecipe extends Recipe {
 	public ShapedRecipe clone() {
 		return new RecipeBuilder().clone(this).buildShapedRecipe();
 	}
-	
+
 	@Override
 	public RecipeBuilder toBuilder() {
 		return new RecipeBuilder().clone(this);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof ShapedRecipe)) {
@@ -154,7 +149,7 @@ public class ShapedRecipe extends Recipe {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return (new HashCodeBuilder()).append(plugin).append(result).append(ingredientsMap).append(rows).build();

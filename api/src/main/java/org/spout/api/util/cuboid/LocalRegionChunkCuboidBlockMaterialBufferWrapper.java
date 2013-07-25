@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,31 +33,26 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.cuboid.procedure.CuboidBlockMaterialProcedure;
 
 /**
- * This class implements a Cuboid buffer wrapper.  Each sub-buffer must be exactly one
- * chunk in size.
+ * This class implements a Cuboid buffer wrapper.  Each sub-buffer must be exactly one chunk in size.
  */
 public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableCuboidBlockMaterialBuffer {
-	
 	private static final int SINGLE = Region.BLOCKS.SIZE;
 	private static final int TRIPLE = SINGLE * 3;
-	
 	private final Region r;
 	private final LoadOption loadOpt;
 	private final BlockMaterial nullMaterial;
-	
 	protected final int cTx;
 	protected final int cTy;
 	protected final int cTz;
 	protected final int cSx;
 	protected final int cSy;
 	protected final int cSz;
-	
 	private final ImmutableCuboidBlockMaterialBuffer[][][] cache;
 
 	public LocalRegionChunkCuboidBlockMaterialBufferWrapper(Region r, LoadOption loadOpt, BlockMaterial nullMaterial) {
 		this(r.getBlockX() - SINGLE, r.getBlockY() - SINGLE, r.getBlockZ() - SINGLE, TRIPLE, TRIPLE, TRIPLE, r, loadOpt, nullMaterial);
 	}
-	
+
 	private LocalRegionChunkCuboidBlockMaterialBufferWrapper(int bx, int by, int bz, int sx, int sy, int sz, Region r, LoadOption loadOpt, BlockMaterial nullMaterial) {
 		super(bx, by, bz, sx, sy, sz, null, null);
 		this.cTx = (bx + sx) >> Chunk.BLOCKS.BITS;
@@ -74,18 +69,13 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 
 	/**
 	 * Gets the sub-buffer corresponding to the given block location.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
 	 */
 	private ImmutableCuboidBlockMaterialBuffer getBlockMaterialBuffer(int x, int y, int z) {
 		int cx = (x - baseX) >> Chunk.BLOCKS.BITS;
 		int cy = (y - baseY) >> Chunk.BLOCKS.BITS;
 		int cz = (z - baseZ) >> Chunk.BLOCKS.BITS;
 		if (cx < 0 || cy < 0 || cz < 0 || cx >= cSx || cy >= cSy || cz >= cSz) {
-			throw new IllegalArgumentException("Chunk Coordinate (" + cx + ", " + cy + ", " + cz + ") is outside the buffer");	
+			throw new IllegalArgumentException("Chunk Coordinate (" + cx + ", " + cy + ", " + cz + ") is outside the buffer");
 		}
 		ImmutableCuboidBlockMaterialBuffer o = cache[cx][cy][cz];
 		if (o != null) {
@@ -98,7 +88,7 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 		cache[cx][cy][cz] = o;
 		return o;
 	}
-	
+
 	/**
 	 * Clears the cache containing sub-buffers.
 	 */
@@ -134,11 +124,11 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 		c.getCuboid(buffer);
 		return buffer;
 	}
-	
+
 	public void forEach(CuboidBlockMaterialProcedure procedure) {
 		throw new UnsupportedOperationException("Buffer is a buffer wrapper, there is no id array for fast iteration");
 	}
-	
+
 	@Override
 	public BlockMaterial get(int x, int y, int z) {
 		return getBlockMaterialBuffer(x, y, z).get(x, y, z);
@@ -148,7 +138,7 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 	public short getId(int x, int y, int z) {
 		return getBlockMaterialBuffer(x, y, z).getId(x, y, z);
 	}
-	
+
 	@Override
 	public short getData(int x, int y, int z) {
 		return getBlockMaterialBuffer(x, y, z).getData(x, y, z);
@@ -163,5 +153,4 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 	public short[] getRawData() {
 		throw new UnsupportedOperationException("Buffer is a buffer wrapper, there is no data array");
 	}
-	
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -52,7 +52,6 @@ import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
-
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
@@ -61,7 +60,6 @@ public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
 	private final Set<Binding> bindings = new HashSet<Binding>();
 	private final Set<InputExecutor> inputExecutors = new HashSet<InputExecutor>();
-	
 	private boolean redirected = false;
 
 	public SpoutInputManager() {
@@ -201,7 +199,7 @@ public class SpoutInputManager implements InputManager {
 			}
 		}
 	}
-	
+
 	private void onKeyPressed(Player player, Keyboard key, boolean pressed, char ch) {
 		final PlayerKeyEvent event = Spout.getEventManager().callEvent(new PlayerKeyEvent(player, key, pressed, ch));
 		if (event.isCancelled()) {
@@ -345,13 +343,13 @@ public class SpoutInputManager implements InputManager {
 		return ((Client) engine).getScreenStack().getInputScreen();
 	}
 
-	public void execute(float dt){
+	public void execute(float dt) {
 		// TODO: protocol - hacky fix
 		if (((Client) Spout.getEngine()).getWorld().getName().equalsIgnoreCase("NullWorld")) {
 			return;
 		}
-		SpoutPhysicsComponent physics = (SpoutPhysicsComponent) ((Client)Spout.getEngine()).getPlayer().getPhysics();
-		for(InputExecutor executor : inputExecutors){
+		SpoutPhysicsComponent physics = (SpoutPhysicsComponent) ((Client) Spout.getEngine()).getPlayer().getPhysics();
+		for (InputExecutor executor : inputExecutors) {
 			executor.execute(dt, physics.getTransformLive());
 		}
 		Player player = ((Client) Spout.getEngine()).getPlayer();
@@ -386,7 +384,7 @@ public class SpoutInputManager implements InputManager {
 		}
 	}
 
-	private static class FallbackInputExecutor implements InputExecutor{
+	private static class FallbackInputExecutor implements InputExecutor {
 		@Override
 		public void execute(float dt, Transform playerTransform) {
 

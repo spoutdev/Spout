@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -25,6 +25,19 @@
  * the MIT license.
  */
 package org.spout.engine.command;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.spout.api.Client;
 import org.spout.api.Server;
@@ -79,19 +92,6 @@ import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.world.SpoutChunk;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
 public class TestCommands {
 	private final SpoutEngine engine;
 
@@ -99,7 +99,7 @@ public class TestCommands {
 		this.engine = engine;
 	}
 
-	@CommandDescription(aliases = "reqinstall", usage = "<plugin> <uri>", desc = "Requests a plugin install.")
+	@CommandDescription (aliases = "reqinstall", usage = "<plugin> <uri>", desc = "Requests a plugin install.")
 	public void requestInstall(CommandSource source, CommandArguments args) throws CommandException {
 		final String plugin = args.popString("plugin");
 		final String url = args.popString("url");
@@ -120,7 +120,7 @@ public class TestCommands {
 		return source;
 	}
 
-	@CommandDescription(aliases = "sound", usage = "<load|play|pause|stop|rewind|dispose|pitch|gain|loop> <path|id> [value]",
+	@CommandDescription (aliases = "sound", usage = "<load|play|pause|stop|rewind|dispose|pitch|gain|loop> <path|id> [value]",
 			desc = "Test command for sound management.")
 	public void sound(CommandSource source, CommandArguments args) throws CommandException {
 		if (!(engine instanceof Client)) {
@@ -173,9 +173,9 @@ public class TestCommands {
 		}
 	}
 
-	@CommandDescription(aliases = "widget", usage = "<button|checkbox|radio|combo|list|label|slider|spinner|textfield|rect>",
+	@CommandDescription (aliases = "widget", usage = "<button|checkbox|radio|combo|list|label|slider|spinner|textfield|rect>",
 			desc = "Renders a widget on your screen.")
-	@Platform(org.spout.api.Platform.CLIENT)
+	@Platform (org.spout.api.Platform.CLIENT)
 	public void widget(CommandSource source, CommandArguments args) throws CommandException {
 		Client client = (Client) engine;
 		Screen screen = new Screen();
@@ -208,9 +208,9 @@ public class TestCommands {
 		client.getScreenStack().openScreen(screen);
 	}
 
-	@CommandDescription(aliases = "break", desc = "Debug command to break a block")
-	@Platform(org.spout.api.Platform.CLIENT)
-	@Filter(PlayerFilter.class)
+	@CommandDescription (aliases = "break", desc = "Debug command to break a block")
+	@Platform (org.spout.api.Platform.CLIENT)
+	@Filter (PlayerFilter.class)
 	public void debugBreak(Player player, CommandArguments args) throws CommandException {
 		Block block = player.get(InteractComponent.class).getTargetBlock();
 
@@ -222,19 +222,19 @@ public class TestCommands {
 		}
 	}
 
-	@CommandDescription(aliases = {"dbg"}, desc = "Debug Output")
+	@CommandDescription (aliases = {"dbg"}, desc = "Debug Output")
 	public void debugOutput(CommandSource source, CommandArguments args) {
 		World world = engine.getDefaultWorld();
 		source.sendMessage("World Entity count: " + world.getAll().size());
 	}
 
-	@CommandDescription(aliases = "dumpthreads", desc = "Dumps a listing of all thread stacks to the console")
+	@CommandDescription (aliases = "dumpthreads", desc = "Dumps a listing of all thread stacks to the console")
 	public void dumpThreads(CommandSource source, CommandArguments args) throws CommandException {
 		AsyncExecutorUtils.dumpAllStacks();
 	}
 
-	@CommandDescription(aliases = "plugins-tofile", usage = "[filename]", desc = "Creates a file containing all loaded plugins and their version")
-	@Permissible("spout.command.pluginstofile")
+	@CommandDescription (aliases = "plugins-tofile", usage = "[filename]", desc = "Creates a file containing all loaded plugins and their version")
+	@Permissible ("spout.command.pluginstofile")
 	public void getPluginDetails(CommandSource source, CommandArguments args) throws CommandException {
 		String standpath = "pluginreports";
 
@@ -317,7 +317,7 @@ public class TestCommands {
 		source.sendMessage("Plugins-report successfully created  in: " + standpath);
 	}
 
-	@CommandDescription(aliases = {"move"}, desc = "Move a entity with his Id")
+	@CommandDescription (aliases = {"move"}, desc = "Move a entity with his Id")
 	public void moveEntity(CommandSource source, CommandArguments args) throws CommandException {
 		int id = args.popInteger("id");
 		Point p = args.popPoint("dest", source);
@@ -333,7 +333,7 @@ public class TestCommands {
 		engine.getLogger().info("Entity " + id + " move to " + p.getBlockX() + "," + p.getBlockY() + "," + p.getBlockZ());
 	}
 
-	@CommandDescription(aliases = {"rotate"}, desc = "Rotate a entity with his Id")
+	@CommandDescription (aliases = {"rotate"}, desc = "Rotate a entity with his Id")
 	public void rotateEntity(CommandSource source, CommandArguments args) throws CommandException {
 		int id = args.popInteger("id");
 		World world = args.popWorld("world");
@@ -349,7 +349,7 @@ public class TestCommands {
 		engine.getLogger().info("Entity " + id + " rotate to " + rot.getX() + " " + rot.getY() + " " + rot.getZ());
 	}
 
-	@CommandDescription(aliases = {"scale"}, desc = "Scale a entity with his Id")
+	@CommandDescription (aliases = {"scale"}, desc = "Scale a entity with his Id")
 	public void scaleEntity(CommandSource source, CommandArguments args) throws CommandException {
 		int id = args.popInteger("id");
 		World world = args.popWorld("world");
@@ -368,7 +368,7 @@ public class TestCommands {
 		engine.getLogger().info("Entity " + id + " scale to " + scale.getX() + " " + scale.getY() + " " + scale.getZ());
 	}
 
-	@CommandDescription(aliases = {"animstart"}, desc = "Launch a animation his Id", flags = {@Flag(aliases = {"loop", "l"})})
+	@CommandDescription (aliases = {"animstart"}, desc = "Launch a animation his Id", flags = {@Flag (aliases = {"loop", "l"})})
 	public void playAnimation(CommandSource source, CommandArguments args) throws CommandException {
 		int id = args.popInteger("id");
 		World world = args.popWorld("world", source);
@@ -405,7 +405,7 @@ public class TestCommands {
 		source.sendMessage("Entity " + id + " is now playing " + animation.getName());
 	}
 
-	@CommandDescription(aliases = {"animstop"}, desc = "Stop all animation on a entity")
+	@CommandDescription (aliases = {"animstop"}, desc = "Stop all animation on a entity")
 	public void stopAnimation(CommandSource source, CommandArguments args) throws CommandException {
 		int id = args.popInteger("id");
 		World world = args.popWorld("world", source);
@@ -425,7 +425,7 @@ public class TestCommands {
 		source.sendMessage("Entity " + id + " animation stopped ");
 	}
 
-	@CommandDescription(aliases = {"profpop"}, desc = "Prints the populator profiler results to console")
+	@CommandDescription (aliases = {"profpop"}, desc = "Prints the populator profiler results to console")
 	public void profilePopulator(CommandSource source, CommandArguments args) throws CommandException {
 		args.assertCompletelyParsed();
 
@@ -451,7 +451,7 @@ public class TestCommands {
 		Spout.getLogger().info("Total " + totalDecorator);
 	}
 
-	@CommandDescription(aliases = {"resend"}, usage = "[all|one]", desc = "Resends chunks to players")
+	@CommandDescription (aliases = {"resend"}, usage = "[all|one]", desc = "Resends chunks to players")
 	public void resendChunks(CommandSource source, CommandArguments args) throws CommandException {
 		if (args.length() > 0) {
 			if (engine.getPlatform() != org.spout.api.Platform.SERVER) {
@@ -483,7 +483,7 @@ public class TestCommands {
 		}
 	}
 
-	@CommandDescription(aliases = {"testnetwork"}, desc = "Checks that the session is open and connected")
+	@CommandDescription (aliases = {"testnetwork"}, desc = "Checks that the session is open and connected")
 	public void testNetwork(CommandSource source, CommandArguments args) throws CommandException {
 		args.assertCompletelyParsed();
 		switch (engine.getPlatform()) {
@@ -504,9 +504,9 @@ public class TestCommands {
 		}
 	}
 
-	@CommandDescription(aliases = "respawn", usage = "", desc = "Forces the client to respawn")
-	@Platform(org.spout.api.Platform.SERVER)
-	@Filter(PlayerFilter.class)
+	@CommandDescription (aliases = "respawn", usage = "", desc = "Forces the client to respawn")
+	@Platform (org.spout.api.Platform.SERVER)
+	@Filter (PlayerFilter.class)
 	public void respawn(Player player, CommandArguments args) throws CommandException {
 		args.assertCompletelyParsed();
 		((ServerNetworkSynchronizer) player.getNetworkSynchronizer()).forceRespawn();

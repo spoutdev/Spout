@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2013 Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -57,11 +57,9 @@ public class RotatingFileHandler extends Handler {
 	private final AtomicBoolean closed = new AtomicBoolean(false);
 
 	/**
-	 * Creates a rotating file handler with the specified date handler.
-	 * Use %D for a placeholder for the date in the log name.
-	 * 
+	 * Creates a rotating file handler with the specified date handler. Use %D for a placeholder for the date in the log name.
+	 *
 	 * @param logDir the directory to create logs in
-	 * @param fileNameFormat
 	 * @param autoFlush whether to automatically flush after every log record
 	 */
 	public RotatingFileHandler(File logDir, String fileNameFormat, boolean autoFlush) {
@@ -108,7 +106,8 @@ public class RotatingFileHandler extends Handler {
 			if (writer != null) {
 				writer.close();
 			}
-		} catch (IOException ignore) {}
+		} catch (IOException ignore) {
+		}
 		if (logFlush != null) {
 			logFlush.interrupt();
 		}
@@ -122,12 +121,14 @@ public class RotatingFileHandler extends Handler {
 				logFileName = calculateFilename();
 				try {
 					writer.close();
-				} catch (IOException ignore) { }
+				} catch (IOException ignore) {
+				}
 				initImpl();
 			}
 			try {
 				writer.flush();
-			} catch (IOException ignore) {}
+			} catch (IOException ignore) {
+			}
 		} finally {
 			writerLock.unlock();
 		}

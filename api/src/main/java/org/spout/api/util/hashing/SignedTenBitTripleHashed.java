@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,20 +26,17 @@
  */
 package org.spout.api.util.hashing;
 
-
 public class SignedTenBitTripleHashed {
-	
 	private final static int mask = 0xFFDFFBFF;
-	
-	private final static int[] shiftMask = new int[16]; 
-	
+	private final static int[] shiftMask = new int[16];
+
 	static {
 		for (int i = 0; i < 16; i++) {
 			int single = 0x3FF >> i;
 			shiftMask[i] = (single << 22) | (single << 11) | single;
 		}
 	}
-	
+
 	/**
 	 * Packs the first 8 most significant bits of each byte into an <code>int</code>
 	 *
@@ -54,7 +51,7 @@ public class SignedTenBitTripleHashed {
 
 	/**
 	 * Gets the first signed 10-bit integer value from an int key
-	 * 
+	 *
 	 * @param key to get from
 	 * @return the first 8-bit integer value in the key
 	 */
@@ -64,7 +61,7 @@ public class SignedTenBitTripleHashed {
 
 	/**
 	 * Gets the second signed 10-bit integer value from an int key
-	 * 
+	 *
 	 * @param key to get from
 	 * @return the second 8-bit integer value in the key
 	 */
@@ -74,17 +71,17 @@ public class SignedTenBitTripleHashed {
 
 	/**
 	 * Gets the third signed 10-bit integer value from an int key
-	 * 
+	 *
 	 * @param key to get from
 	 * @return the third 8-bit integer value in the key
 	 */
 	public static final int key3(int key) {
 		return (key << 11) >> 22;
 	}
-	
+
 	/**
 	 * Adds the given offset to the packed key
-	 * 
+	 *
 	 * @param key the base key
 	 * @param x the x offset
 	 * @param y the y offset
@@ -95,12 +92,10 @@ public class SignedTenBitTripleHashed {
 		int offset = key(x, y, z);
 		return (key + offset) & mask;
 	}
-	
+
 	/**
-	 * Shifts the given key to the right.<br>
-	 * <br>
-	 * This method only works for keys if all 3 sub-keys are positive
-	 * 
+	 * Shifts the given key to the right.<br> <br> This method only works for keys if all 3 sub-keys are positive
+	 *
 	 * @param key the key
 	 * @param shift the right shift
 	 */

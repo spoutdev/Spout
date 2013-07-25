@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,26 +33,23 @@ import java.util.Date;
 import java.util.List;
 
 import org.spout.api.Spout;
+import org.spout.api.component.widget.LabelComponent;
 import org.spout.api.component.widget.RenderPartPacksComponent;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
-import org.spout.api.component.widget.LabelComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.Rectangle;
 import org.spout.api.meta.SpoutMetaPlugin;
-import org.spout.api.plugin.PluginManager;
 import org.spout.api.render.Font;
 import org.spout.api.render.SpoutRenderMaterials;
 
 public class DevConsole extends Screen {
 	// The Internal Spout-dummy plugin
 	private final SpoutMetaPlugin plugin;
-
 	private final Widget background = new SpoutWidget();
 	private final Widget textfield = new SpoutWidget();
 	private final Font font;
-	
 	private DateFormat dateFormat;
 	private List<Widget> lines = new ArrayList<Widget>();
 	private float scroll = 0;
@@ -62,7 +59,7 @@ public class DevConsole extends Screen {
 		this.font = font;
 		init();
 	}
-	
+
 	public void clearConsole() {
 		this.removeWidgets();
 		this.lines.clear();
@@ -76,7 +73,7 @@ public class DevConsole extends Screen {
 
 		final RenderPartPacksComponent bg = background.add(RenderPartPacksComponent.class);
 		final RenderPartPack bg_pack = new RenderPartPack(SpoutRenderMaterials.GUI_COLOR);
-		
+
 		// The display messages background
 		final RenderPart text_bg = new RenderPart();
 		text_bg.setColor(new Color(0f, 0f, 0f, 0.5f)); //Black with opacity of 50%
@@ -92,10 +89,10 @@ public class DevConsole extends Screen {
 		bg_pack.add(textfield_bg, 1);
 
 		bg.add(bg_pack);
-		
+
 		//Finally attach widget so we can draw
 		attachWidget(plugin, background);
-		
+
 		// Create the textfield
 		textfield.getTransform().setPosition(-0.965f, -0.945f);
 		LabelComponent lbl = textfield.add(LabelComponent.class);

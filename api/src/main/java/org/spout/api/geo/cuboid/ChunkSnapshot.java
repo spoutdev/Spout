@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -44,12 +44,10 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	 * Internal size of a side of a chunk
 	 */
 	public final static int CHUNK_SIZE = 16;
-
 	/**
 	 * Number of bits on the side of a chunk
 	 */
 	public final static int CHUNK_SIZE_BITS = 4;
-
 	/**
 	 * Mask to convert a block integer coordinate into the chunk's base
 	 */
@@ -61,43 +59,37 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 
 	/**
 	 * Gets a copy of the raw block ids.
-	 * 
+	 *
 	 * @return raw block ids
 	 */
 	public abstract short[] getBlockIds();
 
 	/**
 	 * Gets a copy of the raw block data.
-	 * 
+	 *
 	 * @return block data
 	 */
 	public abstract short[] getBlockData();
 
 	/**
 	 * Gets an array containing a copy of the light data arrays
-	 * 
-	 * @return
 	 */
 	public abstract CuboidLightBuffer[] getLightBuffers();
-	
+
 	/**
 	 * Gets an array containing a copy of a light data arrays
-	 * 
+	 *
 	 * @param id the id of the corresponding light manager
-	 * @return
 	 */
 	public abstract CuboidLightBuffer getLightBuffer(short id);
 
 	/**
 	 * Gets the region that this chunk is located in.
-	 *
-	 * @return
 	 */
 	public abstract Region getRegion();
 
 	/**
-	 * Gets an unmodifiable list of all of the entity snapshots
-	 * associated with this chunk.
+	 * Gets an unmodifiable list of all of the entity snapshots associated with this chunk.
 	 *
 	 * @return the entities
 	 */
@@ -112,7 +104,7 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 
 	/**
 	 * Gets a copy of the biome manager associated with this chunk.
-	 * 
+	 *
 	 * @return biome manager
 	 */
 	@SnapshotRead
@@ -126,9 +118,8 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	public abstract SerializableMap getDataMap();
 
 	/**
-	 * Gets a unmodifiable list of all of the block component snapshots
-	 * associated with this chunk.
-	 * 
+	 * Gets a unmodifiable list of all of the block component snapshots associated with this chunk.
+	 *
 	 * @return list of block component snapshots
 	 */
 	public abstract List<BlockComponentSnapshot> getBlockComponents();
@@ -197,35 +188,35 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	public static interface BlockComponentSnapshot {
 		/**
 		 * Gets the world block x-coordinate for this snapshot
-		 * 
+		 *
 		 * @return x-coordinate
 		 */
 		public int getX();
 
 		/**
 		 * Gets the world block x-coordinate for this snapshot
-		 * 
+		 *
 		 * @return y-coordinate
 		 */
 		public int getY();
 
 		/**
 		 * Gets the world block x-coordinate for this snapshot
-		 * 
+		 *
 		 * @return z-coordinate
 		 */
 		public int getZ();
 
 		/**
 		 * Gets the block component class
-		 * 
+		 *
 		 * @return block component class
 		 */
 		public Set<Class<? extends BlockComponent>> getComponents();
 
 		/**
 		 * Gets a copy of the block component data
-		 * 
+		 *
 		 * @return data
 		 */
 		public SerializableMap getData();

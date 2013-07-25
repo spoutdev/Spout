@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,53 +26,47 @@
  */
 package org.spout.api.util.map.concurrent.palette;
 
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import gnu.trove.set.hash.TIntHashSet;
 
 /**
  * An integer array that has a short index.  The array is atomic and is backed by a palette based lookup system.
  */
 public class AtomicShortIntArray {
-	
 	/**
 	 * The length of the array
 	 */
 	private final int length;
-	
 	/**
 	 * A reference to the store.  When the palette fills, or when the store is compressed.  A new store is created.
 	 */
 	private final AtomicReference<AtomicShortIntBackingArray> store = new AtomicReference<AtomicShortIntBackingArray>();
-	
 	/**
-	 * Locks<br>
-	 * A ReadWrite lock is used to managing locking<br>
-	 * When copying to a new store instance, and updating to new the store reference, all updates must be stopped.  The write lock is used as the resize lock.<br>
-	 * When making changes to the data stored in an array instance, multiple threads can access the array concurrently.  The read lock is used for the update lock.
-	 * Reads to the array are atomic and do not require any locking.
-	 * <br>
+	 * Locks<br> A ReadWrite lock is used to managing locking<br> When copying to a new store instance, and updating to new the store reference, all updates must be stopped.  The write lock is used as
+	 * the resize lock.<br> When making changes to the data stored in an array instance, multiple threads can access the array concurrently.  The read lock is used for the update lock. Reads to the array
+	 * are atomic and do not require any locking. <br>
 	 */
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private final Lock resizeLock = lock.writeLock();
 	private final Lock updateLock = lock.readLock();
-	
+
 	public AtomicShortIntArray(int length) {
 		this.length = length;
 		store.set(new AtomicShortIntUniformBackingArray(length));
 	}
-	
+
 	/**
 	 * Gets the width of the internal array, in bits
-	 * 
+	 *
 	 * @return the width
 	 */
 	public int width() {
 		return store.get().width();
 	}
-	
+
 	/**
 	 * Gets the length of the array
 	 *
@@ -81,25 +75,25 @@ public class AtomicShortIntArray {
 	public final int length() {
 		return length;
 	}
-	
+
 	/**
 	 * Gets the size of the internal palette
-	 * 
+	 *
 	 * @return the palette size
 	 */
 	public int getPaletteSize() {
 		return store.get().getPaletteSize();
 	}
-	
+
 	/**
 	 * Gets the number of palette entries in use
-	 * 
+	 *
 	 * @return the number of entries
 	 */
 	public int getPaletteUsage() {
 		return store.get().getPaletteUsage();
 	}
-	
+
 	/**
 	 * Gets an element from the array at a given index
 	 *
@@ -109,7 +103,7 @@ public class AtomicShortIntArray {
 	public int get(int i) {
 		return store.get().get(i);
 	}
-	
+
 	/**
 	 * Sets an element to the given value
 	 *
@@ -136,7 +130,7 @@ public class AtomicShortIntArray {
 							store.set(new AtomicShortIntDirectBackingArray(store.get()));
 						} else {
 							store.set(new AtomicShortIntPaletteBackingArray(store.get(), true));
-						}		
+						}
 					}
 				} finally {
 					resizeLock.unlock();
@@ -144,10 +138,10 @@ public class AtomicShortIntArray {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets the array equal to the given array.  The array should be the same length as this array
-	 * 
+	 *
 	 * @param initial the array containing the new values
 	 */
 	public void set(int[] initial) {
@@ -169,11 +163,10 @@ public class AtomicShortIntArray {
 			resizeLock.unlock();
 		}
 	}
-	
+
 	/**
-	 * Sets the array equal to the given array without automatically compressing the data.  
-	 * The array should be the same length as this array
-	 * 
+	 * Sets the array equal to the given array without automatically compressing the data. The array should be the same length as this array
+	 *
 	 * @param initial the array containing the new values
 	 */
 	public void uncompressedSet(int[] initial) {
@@ -187,10 +180,10 @@ public class AtomicShortIntArray {
 			resizeLock.unlock();
 		}
 	}
-	
+
 	/**
 	 * Sets the array equal to the given palette based array.  The main array should be the same length as this array
-	 * 
+	 *
 	 * @param palette the palette, if the palette is of length 0, variableWidthBlockArray contains the data, in flat format
 	 * @param blockArrayWidth the with of each entry in the main array
 	 * @param variableWidthBlockArray the array containing the new values, packed into ints
@@ -241,17 +234,17 @@ public class AtomicShortIntArray {
 			}
 		}
 	}
-	
+
 	/**
 	 * Attempts to compress the array
 	 */
 	public void compress() {
 		compress(new TIntHashSet());
 	}
-	
+
 	/**
 	 * Attempts to compress the array
-	 * 
+	 *
 	 * @param set to use to store used ids
 	 */
 	public void compress(TIntHashSet inUseSet) {
@@ -278,11 +271,9 @@ public class AtomicShortIntArray {
 			resizeLock.unlock();
 		}
 	}
-	
+
 	/**
 	 * Gets the number of unique entries in the array
-	 * 
-	 * @return
 	 */
 	public int getUnique() {
 		TIntHashSet inUse = new TIntHashSet();
@@ -294,29 +285,21 @@ public class AtomicShortIntArray {
 		}
 		return unique;
 	}
-	
+
 	/**
-	 * Gets the palette in use by the backing array or an array of zero length if no palette is in use.<br>
-	 * <br>
-	 * Data tearing may occur if the store is updated during this method call.
-	 * 
-	 * @return
+	 * Gets the palette in use by the backing array or an array of zero length if no palette is in use.<br> <br> Data tearing may occur if the store is updated during this method call.
 	 */
 	public int[] getPalette() {
 		return store.get().getPalette();
 	}
 
 	/**
-	 * Gets the packed array used by the backing store.  This is a flat array if there is no palette in use.<br>
-	 * <br>
-	 * Data tearing may occur if the store is updated during this method call.
-	 * 
-	 * @return
+	 * Gets the packed array used by the backing store.  This is a flat array if there is no palette in use.<br> <br> Data tearing may occur if the store is updated during this method call.
 	 */
 	public int[] getBackingArray() {
 		return store.get().getBackingArray();
 	}
-	
+
 	private static int getUnique(int[] initial) {
 		TIntHashSet inUse = new TIntHashSet();
 		int unique = 0;
@@ -327,30 +310,30 @@ public class AtomicShortIntArray {
 		}
 		return unique;
 	}
-	
+
 	/**
 	 * Locks the store so that reads and writes are prevented
 	 */
 	public void lock() {
 		resizeLock.lock();
 	}
-	
+
 	/**
 	 * Unlocks the store
 	 */
 	public void unlock() {
 		resizeLock.unlock();
 	}
-	
+
 	/**
 	 * Attempts to lock the store
-	 * 
+	 *
 	 * @return true on success
 	 */
 	public boolean tryLock() {
 		return resizeLock.tryLock();
 	}
-	
+
 	/**
 	 * Gets if the store is uniform
 	 */

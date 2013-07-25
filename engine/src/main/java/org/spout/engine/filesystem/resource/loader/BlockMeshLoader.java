@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -55,8 +55,9 @@ public class BlockMeshLoader extends ResourceLoader {
 
 		while (scan.hasNext()) {
 			String s = scan.nextLine();
-			if (s.startsWith("#"))
+			if (s.startsWith("#")) {
 				continue; // it's a comment, skip it
+			}
 			if (s.startsWith("v ")) { // Space is important !!
 				String[] sp = s.split(" ");
 				verticies.add(new Vector3(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));
@@ -67,41 +68,43 @@ public class BlockMeshLoader extends ResourceLoader {
 			}
 			if (s.startsWith("vt ")) {
 				String[] sp = s.split(" ");
-				uvs.add(new Vector2(Float.parseFloat(sp[1]), 1-Float.parseFloat(sp[2])));
+				uvs.add(new Vector2(Float.parseFloat(sp[1]), 1 - Float.parseFloat(sp[2])));
 			}
 			if (s.startsWith("f ")) {
 				String[] sp = s.split(" ");
 
 				Set<BlockFace> requiredFace = null;
 
-				if(sp.length > 2){
+				if (sp.length > 2) {
 					requiredFace = new HashSet<BlockFace>();
-					for(int i = 0; i < sp[2].length(); i++){
+					for (int i = 0; i < sp[2].length(); i++) {
 						char c = sp[2].charAt(i);
-						switch(c){
-						case 'T' :
-							requiredFace.add(BlockFace.TOP);
-							break;
-						case 'B' :
-							requiredFace.add(BlockFace.BOTTOM);
-							break;
-						case 'N' :
-							requiredFace.add(BlockFace.NORTH);
-							break;
-						case 'S' :
-							requiredFace.add(BlockFace.SOUTH);
-							break;
-						case 'W' :
-							requiredFace.add(BlockFace.WEST);
-							break;
-						case 'E' :
-							requiredFace.add(BlockFace.EAST);
-							break;
-						default : break;
+						switch (c) {
+							case 'T':
+								requiredFace.add(BlockFace.TOP);
+								break;
+							case 'B':
+								requiredFace.add(BlockFace.BOTTOM);
+								break;
+							case 'N':
+								requiredFace.add(BlockFace.NORTH);
+								break;
+							case 'S':
+								requiredFace.add(BlockFace.SOUTH);
+								break;
+							case 'W':
+								requiredFace.add(BlockFace.WEST);
+								break;
+							case 'E':
+								requiredFace.add(BlockFace.EAST);
+								break;
+							default:
+								break;
 						}
 					}
-					if(requiredFace.isEmpty())
+					if (requiredFace.isEmpty()) {
 						requiredFace = null;
+					}
 				}
 
 				if (sp[1].contains("//")) {
@@ -110,40 +113,39 @@ public class BlockMeshLoader extends ResourceLoader {
 						String[] sn = sp[i].split("//");
 						int pos = Integer.parseInt(sn[0]);
 						int norm = Integer.parseInt(sn[1]);
-						
+
 						ar.add(Vertex.createVertexPositionNormal(verticies.get(pos - 1), normals.get(norm - 1)));
 					}
 
-					if(requiredFace == null)
+					if (requiredFace == null) {
 						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0)));
-					else
+					} else {
 						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0), requiredFace));
+					}
 
 					ar.clear();
-
 				} else if (sp[1].contains("/")) {
 					ArrayList<Vertex> ar = new ArrayList<Vertex>();
 					for (int i = 1; i <= 3; i++) {
 						String[] sn = sp[i].split("/");
 						int pos = Integer.parseInt(sn[0]);
 						int uv = Integer.parseInt(sn[1]);
-						if (sn.length>2) {
+						if (sn.length > 2) {
 							int norm = Integer.parseInt(sn[2]);
-							
+
 							ar.add(Vertex.createVertexPositionNormaTexture0(verticies.get(pos - 1), normals.get(norm - 1), uvs.get(uv - 1)));
 						} else {
 							ar.add(Vertex.createVertexPositionTexture0(verticies.get(pos - 1), uvs.get(uv - 1)));
 						}
-
 					}
 
-					if(requiredFace == null)
+					if (requiredFace == null) {
 						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0)));
-					else
+					} else {
 						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0), requiredFace));
+					}
 
 					ar.clear();
-
 				} else {
 					int face1 = Integer.parseInt(sp[1]) - 1;
 					int face2 = Integer.parseInt(sp[2]) - 1;
@@ -153,15 +155,13 @@ public class BlockMeshLoader extends ResourceLoader {
 					Vertex p2 = Vertex.createVertexPosition(verticies.get(face2));
 					Vertex p3 = Vertex.createVertexPosition(verticies.get(face3));
 
-					if(requiredFace == null)
+					if (requiredFace == null) {
 						faces.add(new OrientedMeshFace(p3, p2, p1));
-					else
+					} else {
 						faces.add(new OrientedMeshFace(p3, p2, p1, requiredFace));
-
+					}
 				}
-
 			}
-
 		}
 
 		scan.close();
@@ -171,6 +171,6 @@ public class BlockMeshLoader extends ResourceLoader {
 
 	@Override
 	public OrientedMesh load(InputStream in) {
-			return BlockMeshLoader.loadObj(in);
+		return BlockMeshLoader.loadObj(in);
 	}
 }

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -31,7 +31,6 @@ import java.awt.Color;
 import org.spout.api.ClientOnly;
 
 public abstract class Texture {
-
 	protected int[] image;
 	protected int width;
 	protected int height;
@@ -55,15 +54,15 @@ public abstract class Texture {
 		System.arraycopy(image, 0, colorCopy, 0, image.length);
 		return colorCopy;
 	}
-	
-	public final void setColors(Color[] colors, int offset, int num){
-		for(int i = 0; i < num; i++) {
-			this.image[offset + i] = colors[i].getRGB(); 
+
+	public final void setColors(Color[] colors, int offset, int num) {
+		for (int i = 0; i < num; i++) {
+			this.image[offset + i] = colors[i].getRGB();
 		}
 	}
-	
-	public final void setColors(Color[] colors){
-		for(int i = 0; i < colors.length; i++) {
+
+	public final void setColors(Color[] colors) {
+		for (int i = 0; i < colors.length; i++) {
 			this.image[i] = colors[i].getRGB();
 		}
 	}
@@ -79,24 +78,23 @@ public abstract class Texture {
 	@ClientOnly
 	public abstract boolean isLoaded();
 
-	public static Color[] convertFromIntArray(int[] rgba){
+	public static Color[] convertFromIntArray(int[] rgba) {
 		final Color[] colors = new Color[rgba.length];
-		
-		for(int i = 0; i < rgba.length; i++){
+
+		for (int i = 0; i < rgba.length; i++) {
 			colors[i] = new Color(rgba[i], true);
 		}
-		
-		return colors;		
+
+		return colors;
 	}
-	
+
 	public static int[] converToIntArray(Color[] colors) {
 		int[] rgba = new int[colors.length];
-		
-		for (int i = 0; i < rgba.length; i++){
+
+		for (int i = 0; i < rgba.length; i++) {
 			rgba[i] = colors[i].getRGB();
 		}
-		
+
 		return rgba;
 	}
-	
 }

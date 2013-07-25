@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -32,21 +32,19 @@ import org.spout.api.component.Component;
 import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.engine.gui.SpoutScreenStack;
-import org.spout.engine.protocol.SpoutSession;
 
 /**
  * A subclass of SpoutPlayer with modifications for the client
  */
 public class SpoutClientPlayer extends SpoutPlayer {
-
 	public SpoutClientPlayer(Engine engine, String name, Transform transform, int viewDistance) {
-		super(engine, name, transform, viewDistance, null, false, (byte[])null, (Class<? extends Component>[]) null);
+		super(engine, name, transform, viewDistance, null, false, (byte[]) null, (Class<? extends Component>[]) null);
 
 		add(CameraComponent.class);
 	}
 
 	@Override
 	public void sendMessage(String message) {
-		((SpoutScreenStack)((Client)getEngine()).getScreenStack()).getConsole().addMessage(message);
+		((SpoutScreenStack) ((Client) getEngine()).getScreenStack()).getConsole().addMessage(message);
 	}
 }

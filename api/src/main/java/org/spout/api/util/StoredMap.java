@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -28,17 +28,16 @@ package org.spout.api.util;
 
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 public interface StoredMap<T> {
-
 	public void clear();
 
 	public List<Pair<T, String>> getItems();
 
 	/**
-	 * Returns a collection of all keys for all (key, value) pairs within the
-	 * Store
+	 * Returns a collection of all keys for all (key, value) pairs within the Store
 	 *
 	 * @return returns a Collection containing all the keys
 	 */
@@ -49,27 +48,26 @@ public interface StoredMap<T> {
 	/**
 	 * Gets the String corresponding to a given int.
 	 *
-	 * @param value
 	 * @return the String or null if no match
 	 */
 	public String getString(T value);
 
 	/**
 	 * Gets the int corresponding to a given String
+	 *
 	 * @param key The key
 	 * @return The int or null if no match
 	 */
 	public T getValue(String key);
 
 	/**
-	 * Registers a key/id pair with the map.  If the id is already in use the method will fail.<br>
-	 * <br>
-	 * The id must be lower than the min id for the map to prevent clashing with the dynamically allocated ids
+	 * Registers a key/id pair with the map.  If the id is already in use the method will fail.<br> <br> The id must be lower than the min id for the map to prevent clashing with the dynamically
+	 * allocated ids
 	 *
 	 * @param key the key to be added
 	 * @param value the desired value to be matched to the key
 	 * @return true if the key/id pair was successfully registered
-	 * @exception IllegalArgumentException if the id >= minId
+	 * @throws IllegalArgumentException if the id >= minId
 	 */
 	public boolean register(String key, T value);
 
@@ -79,5 +77,4 @@ public interface StoredMap<T> {
 	 * @return returns true if the map saves correctly
 	 */
 	public boolean save();
-    
 }

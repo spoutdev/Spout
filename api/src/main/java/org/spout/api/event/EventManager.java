@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,6 +32,7 @@ package org.spout.api.event;
 public interface EventManager {
 	/**
 	 * Calls an event with the given details
+	 *
 	 * @param event Event details
 	 * @return Called event
 	 */
@@ -39,12 +40,14 @@ public interface EventManager {
 
 	/**
 	 * Calls an event with the given details, on the next tick
+	 *
 	 * @param event Event details
 	 */
 	public <T extends Event> void callDelayedEvent(T event);
 
 	/**
 	 * Registers all the events in the given listener class
+	 *
 	 * @param listener Listener to register
 	 * @param owner Plugin to register
 	 */
@@ -52,6 +55,7 @@ public interface EventManager {
 
 	/**
 	 * Registers the specified executor to the given event class
+	 *
 	 * @param event Event type to register
 	 * @param priority Priority to register this event at
 	 * @param executor EventExecutor to register

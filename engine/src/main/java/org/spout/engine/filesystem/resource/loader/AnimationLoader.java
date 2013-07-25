@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -40,7 +40,7 @@ import org.spout.api.model.animation.Skeleton;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings ("unchecked")
 public class AnimationLoader extends ResourceLoader {
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 
@@ -52,47 +52,48 @@ public class AnimationLoader extends ResourceLoader {
 		final Yaml yaml = new Yaml();
 		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
 
-		Skeleton skeleton = Spout.getFileSystem().getResource((String)resourceProperties.get("Skeleton"));
-		
-		int frames = (Integer)resourceProperties.get("frames");
-		float delay = ((Double)resourceProperties.get("delay")).floatValue();
-		
-		Animation animation = new Animation(skeleton,frames,delay);
-		
+		Skeleton skeleton = Spout.getFileSystem().getResource((String) resourceProperties.get("Skeleton"));
+
+		int frames = (Integer) resourceProperties.get("frames");
+		float delay = ((Double) resourceProperties.get("delay")).floatValue();
+
+		Animation animation = new Animation(skeleton, frames, delay);
+
 		Map<? extends String, ?> bones_data = (Map<? extends String, ?>) resourceProperties.get("bones_data");
-		
-		for(Entry<? extends String, ?> entry : bones_data.entrySet()){
-			
+
+		for (Entry<? extends String, ?> entry : bones_data.entrySet()) {
+
 			Bone bone = skeleton.getBoneByName(entry.getKey());
-			if(bone == null)
+			if (bone == null) {
 				throw new IllegalStateException("Animation file mapped with the bad Skeleton file");
-			
-			Map<? extends Integer, String> value = (Map<? extends Integer, String>)entry.getValue();
-			
+			}
+
+			Map<? extends Integer, String> value = (Map<? extends Integer, String>) entry.getValue();
+
 			int i = 0;
-			for(Entry<? extends Integer, String> entryBone : value.entrySet()){
+			for (Entry<? extends Integer, String> entryBone : value.entrySet()) {
 				int frame = entryBone.getKey() - 1; //Start at 1
 
 				BoneTransform boneTransform = new BoneTransform(loadFloatList(entryBone.getValue()));
-				
+
 				animation.setBoneTransform(bone.getId(), i/*frame*/, boneTransform);
-				
+
 				i++;
 			}
 		}
 
 		//System.out.println("Animation loaded : (org.spout.engine.resources.loader.AnimationLoader line 77)");
 		//animation.dumbAnimation(" ");
-		
+
 		return animation;
 	}
 
-	private static float[] loadFloatList(String str){
-		String []split = str.split(",");
-		float []result = new float[split.length];
+	private static float[] loadFloatList(String str) {
+		String[] split = str.split(",");
+		float[] result = new float[split.length];
 
-		for(int i = 0; i < split.length; i++){		
-			result[i] = (float)Double.parseDouble(split[i]);
+		for (int i = 0; i < split.length; i++) {
+			result[i] = (float) Double.parseDouble(split[i]);
 		}
 
 		return result;

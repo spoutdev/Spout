@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -60,20 +60,17 @@ import org.bouncycastle.crypto.params.RSAKeyGenerationParameters;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.util.KeyUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import org.spout.api.Spout;
 
 public class SecurityHandler {
-	
 	public static final boolean DECRYPT_MODE = false;
 	public static final boolean ENCRYPT_MODE = true;
-	
-
-	private static final ConcurrentHashMap<String, AsymmetricCipherKeyPair > serverKeys = new ConcurrentHashMap<String, AsymmetricCipherKeyPair >();
+	private static final ConcurrentHashMap<String, AsymmetricCipherKeyPair> serverKeys = new ConcurrentHashMap<String, AsymmetricCipherKeyPair>();
 	private static final Provider provider;
 	private static final SecurityHandler instance;
-	
 	private byte[] sharedSecret;
-	
+
 	static {
 		Provider p = Security.getProvider("BC");
 		if (p == null) {
@@ -86,22 +83,22 @@ public class SecurityHandler {
 		provider = p;
 		instance = new SecurityHandler();
 	}
-	
+
 	public static SecurityHandler getInstance() {
 		return instance;
 	}
-	
+
 	public byte[] getSymetricKey() {
 		if (sharedSecret != null) {
 			return sharedSecret;
 		}
-		
+
 		sharedSecret = new byte[16];
 		final Random rand = new Random();
 		rand.nextBytes(sharedSecret);
 		return sharedSecret;
 	}
-	
+
 	public byte[] encodeKey(CipherParameters key) {
 		if (!(key instanceof RSAKeyParameters)) {
 			return null;
@@ -118,10 +115,10 @@ public class SecurityHandler {
 		encodable.add(new ASN1Integer(rsaKey.getExponent()));
 
 		return KeyUtil.getEncodedSubjectPublicKeyInfo(
-				new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, new DERNull()), 
+				new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, new DERNull()),
 				new DERSequence(encodable));
 	}
-	
+
 	public BufferedBlockCipher getSymmetricCipher(String cipher, String wrapper) {
 		if (cipher.equals("AES")) {
 			return addSymmetricWrapper(new AESEngine(), wrapper);
@@ -129,7 +126,7 @@ public class SecurityHandler {
 
 		return null;
 	}
-	
+
 	private BufferedBlockCipher addSymmetricWrapper(BlockCipher rawCipher, String wrapper) {
 		if (wrapper.startsWith("CFB")) {
 			int bits;
@@ -144,7 +141,7 @@ public class SecurityHandler {
 
 		return new BufferedBlockCipher(rawCipher);
 	}
-	
+
 	public PaddedBufferedBlockCipher addSymmetricPadding(BlockCipher rawCipher, String padding) {
 		if (padding.equals("PKCS7")) {
 			return new PaddedBufferedBlockCipher(rawCipher);
@@ -152,7 +149,7 @@ public class SecurityHandler {
 
 		return null;
 	}
-	
+
 	public AsymmetricBlockCipher getAsymmetricCipher(String cipher, String padding) {
 		if (cipher.equals("RSA")) {
 			return addAsymmetricPadding(new RSAEngine(), padding);
@@ -160,7 +157,7 @@ public class SecurityHandler {
 
 		return null;
 	}
-	
+
 	private AsymmetricBlockCipher addAsymmetricPadding(AsymmetricBlockCipher rawCipher, String padding) {
 		if (padding == null) {
 			return rawCipher;
@@ -170,7 +167,7 @@ public class SecurityHandler {
 			return null;
 		}
 	}
-	
+
 	public AsymmetricCipherKeyPairGenerator getGenerator(String algorithm) {
 		if (algorithm.equals("RSA")) {
 			return new RSAKeyPairGenerator();
@@ -220,15 +217,15 @@ public class SecurityHandler {
 		return output;
 	}
 
-	public AsymmetricCipherKeyPair  getKeyPair(String algorithm) {
+	public AsymmetricCipherKeyPair getKeyPair(String algorithm) {
 		return getKeyPair(1024, algorithm);
 	}
 
-	public AsymmetricCipherKeyPair  getKeyPair(int keySize, String algorithm) {
+	public AsymmetricCipherKeyPair getKeyPair(int keySize, String algorithm) {
 		return getKeyPair(keySize, algorithm, "SHA1PRNG", "SUN");
 	}
 
-	public AsymmetricCipherKeyPair  getKeyPair(int keySize, String algorithm, String RNGAlgorithm, String RNGProvider) {
+	public AsymmetricCipherKeyPair getKeyPair(int keySize, String algorithm, String RNGAlgorithm, String RNGProvider) {
 		AsymmetricCipherKeyPair pair = serverKeys.get(algorithm);
 		if (pair != null) {
 			return pair;
@@ -260,7 +257,7 @@ public class SecurityHandler {
 
 		return newPair;
 	}
-	
+
 	private SecureRandom getSecureRandom(String RNGAlgorithm, String RNGProvider) {
 		try {
 			SecureRandom r;
@@ -271,7 +268,7 @@ public class SecurityHandler {
 			}
 			r.nextBytes(new byte[1]);
 			return r;
-		} catch (NoSuchProviderException e) {	
+		} catch (NoSuchProviderException e) {
 			//Fallback to any provider for the algorithm
 			return getSecureRandom(RNGAlgorithm, null);
 		} catch (NoSuchAlgorithmException e) {

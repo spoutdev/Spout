@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -38,7 +38,7 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 
 	private void f(AStarGoal<N> goal, N node, N neighbour) {
 		float g = node.g + goal.g(node, neighbour); // estimate the cost from
-													// the start additively
+		// the start additively
 		float h = goal.h(neighbour);
 
 		neighbour.f = g + h;
@@ -54,15 +54,12 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 	}
 
 	/**
-	 * Creates an {@link AStarState} that can be reused across multiple
-	 * invocations of {{@link #run(AStarState, int)}.
-	 * 
-	 * @see #run(AStarState, int)
-	 * @param goal
-	 *            The {@link AStarGoal} state
-	 * @param start
-	 *            The starting {@link AStarNode}
+	 * Creates an {@link AStarState} that can be reused across multiple invocations of {{@link #run(AStarState, int)}.
+	 *
+	 * @param goal The {@link AStarGoal} state
+	 * @param start The starting {@link AStarNode}
 	 * @return The created state
+	 * @see #run(AStarState, int)
 	 */
 	public AStarState getStateFor(AStarGoal<N> goal, N start) {
 		return new AStarState(goal, start, getInitialisedStorage(goal, start));
@@ -70,32 +67,27 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 
 	/**
 	 * Runs the {@link AStarState} until a plan is found.
-	 * 
-	 * @see #run(AStarState)
-	 * @param state
-	 *            The state to use
+	 *
+	 * @param state The state to use
 	 * @return The generated {@link Plan}, or <code>null</code>
+	 * @see #run(AStarState)
 	 */
 	public P run(AStarState state) {
 		return run(state, -1);
 	}
 
 	/**
-	 * Runs the machine using the given {@link AStarState}'s
-	 * {@link AStarStorage}. Can be used to provide a continuation style usage
-	 * of the A* algorithm.
-	 * 
-	 * @param state
-	 *            The state to use
-	 * @param maxIterations
-	 *            The maximum number of iterations
+	 * Runs the machine using the given {@link AStarState}'s {@link AStarStorage}. Can be used to provide a continuation style usage of the A* algorithm.
+	 *
+	 * @param state The state to use
+	 * @param maxIterations The maximum number of iterations
 	 * @return The generated {@link Plan}, or <code>null</code> if not found
 	 */
 	public P run(AStarState state, int maxIterations) {
 		return run(state.storage, state.goal, state.start, maxIterations);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	private P run(AStarStorage storage, AStarGoal<N> goal, N start, int maxIterations) {
 		Preconditions.checkNotNull(goal);
 		Preconditions.checkNotNull(start);
@@ -113,8 +105,9 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 			storage.close(node);
 			for (AStarNode neighbour : node.getNeighbours()) {
 				f(goal, node, (N) neighbour);
-				if (!storage.shouldExamine(neighbour))
+				if (!storage.shouldExamine(neighbour)) {
 					continue;
+				}
 				storage.open(neighbour);
 				neighbour.parent = node;
 			}
@@ -126,7 +119,7 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 
 	/**
 	 * Runs the machine until a plan is either found or cannot be generated.
-	 * 
+	 *
 	 * @see #runFully(AStarGoal, AStarNode, int)
 	 */
 	public P runFully(AStarGoal<N> goal, N start) {
@@ -134,29 +127,21 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 	}
 
 	/**
-	 * Runs the machine fully until the iteration limit has been exceeded. This
-	 * will use the supplied goal and start to generate neighbours until the
-	 * goal state has been reached using the A* algorithm.
-	 * 
-	 * @param goal
-	 *            The {@link AStarGoal} state
-	 * @param start
-	 *            The starting {@link AStarNode}
-	 * @param iterations
-	 *            The number of iterations to run the machine for
-	 * @return The generated {@link Plan}, or <code>null</code> if it was not
-	 *         found
+	 * Runs the machine fully until the iteration limit has been exceeded. This will use the supplied goal and start to generate neighbours until the goal state has been reached using the A* algorithm.
+	 *
+	 * @param goal The {@link AStarGoal} state
+	 * @param start The starting {@link AStarNode}
+	 * @param iterations The number of iterations to run the machine for
+	 * @return The generated {@link Plan}, or <code>null</code> if it was not found
 	 */
 	public P runFully(AStarGoal<N> goal, N start, int iterations) {
 		return run(getInitialisedStorage(goal, start), goal, start, iterations);
 	}
 
 	/**
-	 * Sets the {@link Supplier} to use to generate instances of
-	 * {@link AStarStorage} for use while searching.
-	 * 
-	 * @param newSupplier
-	 *            The new supplier to use
+	 * Sets the {@link Supplier} to use to generate instances of {@link AStarStorage} for use while searching.
+	 *
+	 * @param newSupplier The new supplier to use
 	 */
 	public void setStorageSupplier(Supplier<AStarStorage> newSupplier) {
 		storageSupplier = newSupplier;
@@ -173,16 +158,15 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 			this.storage = storage;
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings ("unchecked")
 		public N getBestNode() {
 			return (N) storage.getBestNode();
 		}
 	}
 
 	/**
-	 * Creates an AStarMachine using {@link SimpleAStarStorage} as the storage
-	 * backend.
-	 * 
+	 * Creates an AStarMachine using {@link SimpleAStarStorage} as the storage backend.
+	 *
 	 * @return The created instance
 	 */
 	public static <N extends AStarNode, P extends Plan<?>> AStarMachine<N, P> createWithDefaultStorage() {
@@ -190,11 +174,9 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 	}
 
 	/**
-	 * Creates an AStarMachine that uses the given {@link Supplier
-	 * <AStarStorage>} to create {@link AStarStorage} instances.
-	 * 
-	 * @param storageSupplier
-	 *            The storage supplier
+	 * Creates an AStarMachine that uses the given {@link Supplier <AStarStorage>} to create {@link AStarStorage} instances.
+	 *
+	 * @param storageSupplier The storage supplier
 	 * @return The created instance
 	 */
 	public static <N extends AStarNode, P extends Plan<?>> AStarMachine<N, P> createWithStorage(Supplier<AStarStorage> storageSupplier) {

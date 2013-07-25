@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -29,20 +29,16 @@ package org.spout.api.util.cuboid;
 import org.spout.api.geo.cuboid.Chunk;
 
 /**
- * This class implements a Cuboid buffer wrapper.  Each sub-buffer must be exactly one
- * chunk in size.
+ * This class implements a Cuboid buffer wrapper.  Each sub-buffer must be exactly one chunk in size.
  */
 public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer> extends CuboidLightBuffer {
-	
 	private static final CuboidLightBuffer NULL_BUFFER = new NullCuboidLightBuffer();
-	
 	protected final int cTx;
 	protected final int cTy;
 	protected final int cTz;
 	protected final int cSx;
 	protected final int cSy;
 	protected final int cSz;
-	
 	private final CuboidLightBuffer[][][] cache;
 
 	protected ChunkCuboidLightBufferWrapper(int bx, int by, int bz, int sx, int sy, int sz, short id) {
@@ -55,34 +51,24 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 		this.cSz = sz >> Chunk.BLOCKS.BITS;
 		cache = new CuboidLightBuffer[cSx][cSy][cSz];
 	}
-	
+
 	/**
 	 * Gets the sub-buffer corresponding to the given block location.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
 	 */
 	public T getLightBuffer(int x, int y, int z) {
 		return getLightBuffer(x, y, z, false);
 	}
-	
+
 	/**
 	 * Gets the sub-buffer corresponding to the given block location.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public T getLightBuffer(int x, int y, int z, boolean allowNull) {
 		int cx = (x - baseX) >> Chunk.BLOCKS.BITS;
 		int cy = (y - baseY) >> Chunk.BLOCKS.BITS;
 		int cz = (z - baseZ) >> Chunk.BLOCKS.BITS;
 		if (cx < 0 || cy < 0 || cz < 0 || cx >= cSx || cy >= cSy || cz >= cSz) {
-			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");	
+			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
 		}
 		CuboidLightBuffer o = cache[cx][cy][cz];
 		if (o != null) {
@@ -100,7 +86,7 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 		}
 		return (T) o;
 	}
-	
+
 	/**
 	 * Clears the cache containing sub-buffers.
 	 */
@@ -114,8 +100,6 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 		}
 	}
 
-
-	
 	protected abstract T getLightBufferRaw(int x, int y, int z, boolean allowNull);
 
 	@Override
@@ -137,33 +121,30 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 	public void setSource(CuboidBuffer source) {
 		throw new UnsupportedOperationException("Light buffer is a wrapper");
 	}
-	
-	private static class NullCuboidLightBuffer extends CuboidLightBuffer {
 
+	private static class NullCuboidLightBuffer extends CuboidLightBuffer {
 		protected NullCuboidLightBuffer() {
 			super(null, 0, 0, 0, 0, 0, 0, 0);
 		}
 
 		@Override
 		public CuboidLightBuffer copy() {
-			throw new UnsupportedOperationException("Buffer is the null light buffer");		
+			throw new UnsupportedOperationException("Buffer is the null light buffer");
 		}
 
 		@Override
 		public byte[] serialize() {
-			throw new UnsupportedOperationException("Buffer is the null light buffer");		
+			throw new UnsupportedOperationException("Buffer is the null light buffer");
 		}
 
 		@Override
 		public void copyElement(int thisIndex, int sourceIndex, int runLength) {
-			throw new UnsupportedOperationException("Buffer is the null light buffer");				
+			throw new UnsupportedOperationException("Buffer is the null light buffer");
 		}
 
 		@Override
 		public void setSource(CuboidBuffer source) {
-			throw new UnsupportedOperationException("Buffer is the null light buffer");		
+			throw new UnsupportedOperationException("Buffer is the null light buffer");
 		}
-
 	}
-	
 }

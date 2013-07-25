@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -53,7 +53,6 @@ package org.spout.api.util.hashing;
  */
 
 public abstract class NibbleQuadHashed {
-
 	/**
 	 * Packs the first 4 least significant bits of each byte into a <code>short</code>
 	 *
@@ -69,7 +68,7 @@ public abstract class NibbleQuadHashed {
 
 	/**
 	 * Gets the first 4-bit integer value from a short key
-	 * 
+	 *
 	 * @param key to get from
 	 * @return the first 4-bit integer value in the key
 	 */
@@ -79,7 +78,7 @@ public abstract class NibbleQuadHashed {
 
 	/**
 	 * Gets the second 4-bit integer value from a short key
-	 * 
+	 *
 	 * @param key to get from
 	 * @return the second 4-bit integer value in the key
 	 */
@@ -89,7 +88,7 @@ public abstract class NibbleQuadHashed {
 
 	/**
 	 * Gets the third 4-bit integer value from a short key
-	 * 
+	 *
 	 * @param key to get from
 	 * @return the third 4-bit integer value in the key
 	 */
@@ -99,7 +98,7 @@ public abstract class NibbleQuadHashed {
 
 	/**
 	 * Gets the fourth 4-bit integer value from a short key
-	 * 
+	 *
 	 * @param key to get from
 	 * @return the fourth 4-bit integer value in the key
 	 */

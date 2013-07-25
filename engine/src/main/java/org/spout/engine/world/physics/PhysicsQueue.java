@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -42,30 +42,26 @@ import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
 public class PhysicsQueue {
-	
 	private final static int localStages = TickStage.DYNAMIC_BLOCKS | TickStage.PHYSICS;
 	private final static int globalStages = TickStage.GLOBAL_DYNAMIC_BLOCKS | TickStage.GLOBAL_PHYSICS;
-	
 	private final static int MASK = ~Chunk.BLOCKS.MASK;
-	
 	private final SpoutRegion region;
 	private final SpoutChunk chunk;
 	private Thread regionThread;
-	@SuppressWarnings("unused")
+	@SuppressWarnings ("unused")
 	private final Thread mainThread;
 	private final AtomicBoolean localActive = new AtomicBoolean(false);
 	private final AtomicBoolean globalActive = new AtomicBoolean(false);
-	
 	private final ConcurrentLinkedQueue<PhysicsUpdate> asyncQueue = new ConcurrentLinkedQueue<PhysicsUpdate>();
 	private final UpdateQueue updateQueue = new UpdateQueue();
 	private final UpdateQueue multiRegionQueue = new UpdateQueue();
-	
+
 	public PhysicsQueue(SpoutChunk chunk) {
 		this.region = chunk.getRegion();
 		this.chunk = chunk;
-		this.mainThread = ((SpoutScheduler)Spout.getScheduler()).getMainThread();
+		this.mainThread = ((SpoutScheduler) Spout.getScheduler()).getMainThread();
 	}
-	
+
 	public boolean commitAsyncQueue() {
 		boolean updated = false;
 		PhysicsUpdate update;
@@ -92,24 +88,24 @@ public class PhysicsQueue {
 		}
 		return updated;
 	}
-	
+
 	public void queueForUpdateAsync(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial) {
 		asyncQueue.add(new PhysicsUpdate(x, y, z, range, oldMaterial));
 		registerActive();
 	}
-	
+
 	public void queueForUpdate(int x, int y, int z, BlockMaterial oldMaterial) {
 		checkStages();
 		updateQueue.add(x, y, z, oldMaterial);
 		registerActive();
 	}
-	
+
 	public void queueForUpdateMultiRegion(int x, int y, int z, BlockMaterial oldMaterial) {
 		checkStages();
 		multiRegionQueue.add(x, y, z, oldMaterial);
 		registerActive();
 	}
-	
+
 	public void setInactive(boolean local) {
 		if (local) {
 			localActive.set(false);
@@ -117,23 +113,22 @@ public class PhysicsQueue {
 			globalActive.set(false);
 		}
 	}
-	
+
 	public void registerActive() {
 		chunk.setPhysicsActive(true);
 		chunk.setPhysicsActive(false);
 	}
-	
+
 	public UpdateQueue getUpdateQueue() {
 		return updateQueue;
 	}
-	
+
 	public UpdateQueue getMultiRegionQueue() {
 		return multiRegionQueue;
 	}
-	
+
 	private void checkStages() {
 		this.regionThread = region.getExecutionThread();
 		TickStage.checkStage(globalStages, localStages, regionThread);
 	}
-
 }

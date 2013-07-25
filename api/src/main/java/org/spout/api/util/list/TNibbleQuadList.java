@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,8 +33,7 @@ import gnu.trove.list.array.TShortArrayList;
 import org.spout.api.util.hashing.NibbleQuadHashed;
 
 /**
- * A simplistic map that supports a 4 nibbles (4 bits) for keys, using a trove
- * short hashset in the backend.
+ * A simplistic map that supports a 4 nibbles (4 bits) for keys, using a trove short hashset in the backend.
  */
 public class TNibbleQuadList {
 	protected final TShortList list;
@@ -54,7 +53,7 @@ public class TNibbleQuadList {
 	public boolean add(int key1, int key2, int key3, int key4) {
 		return list.add(NibbleQuadHashed.key(key1, key2, key3, key4));
 	}
-	
+
 	public boolean addRaw(short value) {
 		return list.add(value);
 	}
@@ -84,7 +83,7 @@ public class TNibbleQuadList {
 			((TShortArrayList) list).trimToSize();
 		}
 	}
-	
+
 	public int size() {
 		return list.size();
 	}

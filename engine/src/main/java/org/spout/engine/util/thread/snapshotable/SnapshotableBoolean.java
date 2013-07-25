@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -47,18 +47,15 @@ public class SnapshotableBoolean implements Snapshotable {
 
 	/**
 	 * Sets the next value for the Snapshotable
-	 * @param next
 	 */
 	@DelayedWrite
 	public void set(boolean next) {
 		this.next.set(next);
 	}
-	
+
 	/**
 	 * Sets the next value but only if the current next value is the given value
-	 * 
-	 * @param expect
-	 * @param next
+	 *
 	 * @return true on success
 	 */
 	public boolean compareAndSet(boolean expect, boolean next) {
@@ -67,6 +64,7 @@ public class SnapshotableBoolean implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value for
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -76,6 +74,7 @@ public class SnapshotableBoolean implements Snapshotable {
 
 	/**
 	 * Gets the live value
+	 *
 	 * @return the unstable Live "next" value
 	 */
 	@LiveRead

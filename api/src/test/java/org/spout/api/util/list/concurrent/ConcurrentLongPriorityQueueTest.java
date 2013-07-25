@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,8 +26,6 @@
  */
 package org.spout.api.util.list.concurrent;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Random;
@@ -35,45 +33,44 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 public class ConcurrentLongPriorityQueueTest {
-	
 	private static int LENGTH = 4096;
 	private static int COPIES = 256;
 	private static int BINSIZE = 4;
 	private static int REPEATS = 100;
-
 	long max = Long.MIN_VALUE;
-	
 	LongWithPriority[] output = new LongWithPriority[LENGTH];
 	int outputIndex;
-	
+
 	@Test
 	public void testFunctionality() {
-		
+
 		LongWithPriority[] sorted = new LongWithPriority[LENGTH];
-		
+
 		for (int i = 0; i < LENGTH; i++) {
 			sorted[i] = new LongWithPriority(i / COPIES);
 		}
-		
+
 		LongWithPriority[] shuffled = shuffle(sorted);
-		
+
 		ConcurrentLongPriorityQueue<LongWithPriority> lpq = new ConcurrentLongPriorityQueue<LongWithPriority>(BINSIZE);
-		
+
 		for (int i = 0; i < LENGTH; i++) {
 			lpq.add(shuffled[i]);
 		}
-		
+
 		int i = 0;
-		
+
 		max = Long.MIN_VALUE;
-		
+
 		outputIndex = 0;
 
 		readFromQueue(lpq, 16);
-		
+
 		readFromQueue(lpq, Long.MAX_VALUE);
-		
+
 		for (i = 0; i < LENGTH; i++) {
 			if (output[i] != null) {
 				System.out.println(sorted[i].getPriority() + ":" + output[i].getPriority());
@@ -81,33 +78,32 @@ public class ConcurrentLongPriorityQueueTest {
 				System.out.println(sorted[i].getPriority() + ":" + output[i]);
 			}
 		}
-		
 	}
-	
+
 	@Test
 	public void testSpeed() {
-		
+
 		LongWithPriority[] sorted = new LongWithPriority[LENGTH];
-		
+
 		for (int i = 0; i < LENGTH; i++) {
 			sorted[i] = new LongWithPriority(i / COPIES);
 		}
-		
+
 		LongWithPriority[] shuffled = shuffle(sorted);
 		LongWithPriority[] output = new LongWithPriority[shuffled.length];
-		
+
 		ConcurrentLongPriorityQueue<LongWithPriority> lpq = new ConcurrentLongPriorityQueue<LongWithPriority>(BINSIZE);
-		
+
 		PriorityBlockingQueue<LongWithPriority> pbq = new PriorityBlockingQueue<LongWithPriority>();
-		
+
 		Queue<LongWithPriority> q;
-		
+
 		long iteratorTime = 0;
 		long pollTime = 0;
 		long completeTime = 0;
 		long addTime = 0;
 		long startLPQ = System.nanoTime();
-		for(int r = 0; r < REPEATS; r++) {
+		for (int r = 0; r < REPEATS; r++) {
 			addTime -= System.nanoTime();
 			for (int i = 0; i < shuffled.length; i++) {
 				lpq.add(shuffled[i]);
@@ -135,17 +131,17 @@ public class ConcurrentLongPriorityQueueTest {
 			pollTime += System.nanoTime();
 		}
 		long endLPQ = System.nanoTime();
-		
+
 		System.out.println("LPQ time: " + ((endLPQ - startLPQ) / REPEATS));
 		System.out.println("LPQ add time: " + ((addTime) / REPEATS));
 		System.out.println("LPQ iterator time: " + ((iteratorTime) / REPEATS));
 		System.out.println("LPQ poll time: " + ((pollTime) / REPEATS));
 		System.out.println("LPQ complete time: " + ((completeTime) / REPEATS));
-		
+
 		addTime = 0;
-		
+
 		long startPBQ = System.nanoTime();
-		for(int r = 0; r < REPEATS; r++) {
+		for (int r = 0; r < REPEATS; r++) {
 			addTime -= System.nanoTime();
 			for (int i = 0; i < shuffled.length; i++) {
 				pbq.add(shuffled[i]);
@@ -158,14 +154,11 @@ public class ConcurrentLongPriorityQueueTest {
 			}
 		}
 		long endPBQ = System.nanoTime();
-		
+
 		System.out.println("BPQ time: " + ((endPBQ - startPBQ) / REPEATS));
 		System.out.println("BPQ add time: " + ((addTime) / REPEATS));
-		
 	}
-	
-	
-	
+
 	private void readFromQueue(ConcurrentLongPriorityQueue<LongWithPriority> lpq, long threshold) {
 		Queue<LongWithPriority> q;
 
@@ -179,9 +172,9 @@ public class ConcurrentLongPriorityQueueTest {
 					continue;
 				}
 				output[outputIndex++] = l;
-				
+
 				long p = l.getPriority();
-				
+
 				if (p > max) {
 					max = p;
 				}
@@ -194,37 +187,36 @@ public class ConcurrentLongPriorityQueueTest {
 			}
 		}
 	}
-	
+
 	private LongWithPriority[] shuffle(LongWithPriority[] a) {
-		
+
 		LongWithPriority[] newArray = new LongWithPriority[a.length];
-		
+
 		for (int i = 0; i < a.length; i++) {
 			newArray[i] = a[i];
 		}
-		
+
 		a = newArray;
-		
+
 		Random r = new Random();
-		
+
 		for (int i = 0; i < a.length; i++) {
 			int pos = r.nextInt(a.length - i) + i;
 			LongWithPriority temp = a[pos];
 			a[pos] = a[i];
 			a[i] = temp;
 		}
-		
+
 		return a;
 	}
-	
-	private class LongWithPriority implements LongPrioritized, Comparable<LongWithPriority> {
 
+	private class LongWithPriority implements LongPrioritized, Comparable<LongWithPriority> {
 		private final long priority;
-		
+
 		public LongWithPriority(long priority) {
 			this.priority = priority;
 		}
-		
+
 		@Override
 		public long getPriority() {
 			return priority;
@@ -232,10 +224,8 @@ public class ConcurrentLongPriorityQueueTest {
 
 		@Override
 		public int compareTo(LongWithPriority o) {
-			return (o.priority < priority) ? 1 : 
-				o.priority > priority ? -1 : 0;
+			return (o.priority < priority) ? 1 :
+					o.priority > priority ? -1 : 0;
 		}
-		
 	}
-	
 }

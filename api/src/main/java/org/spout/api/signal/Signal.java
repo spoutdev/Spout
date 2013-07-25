@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -37,34 +37,34 @@ public class Signal {
 	private String name;
 	private LinkedList<Subscription> subscriptions = new LinkedList<Subscription>();
 	private Iterator<Subscription> currentIterator = subscriptions.iterator();
-	
+
 	private static class Subscription {
 		public SignalInterface sender;
 		public Object receiver;
 		public Method method;
 	}
-	
-	public Signal(String name, Class<?> ...argumentTypes) {
+
+	public Signal(String name, Class<?>... argumentTypes) {
 		this.argumentTypes = argumentTypes;
 		this.name = name;
 	}
-	
-	public void emit(SignalInterface sender, Object ...arguments) {
+
+	public void emit(SignalInterface sender, Object... arguments) {
 		synchronized (currentIterator) {
 			currentIterator = subscriptions.iterator();
-			while(currentIterator.hasNext()) {
+			while (currentIterator.hasNext()) {
 				Subscription p = currentIterator.next();
-				if(p.sender != sender) {
+				if (p.sender != sender) {
 					continue;
 				}
 				Object call = p.receiver;
 				SubscriberInterface sub = null;
-				if(call instanceof SubscriberInterface) {
+				if (call instanceof SubscriberInterface) {
 					sub = (SubscriberInterface) call;
 					sub.setSender(sender);
 				}
 				Method method = p.method;
-				if(sub != null) {
+				if (sub != null) {
 					sub.setSender(null);
 				}
 				try {
@@ -77,7 +77,7 @@ public class Signal {
 					e.printStackTrace();
 				} catch (Exception e) {
 					System.out.println("---------------");
-					System.out.println("Error while executing subscribed method to "+this);
+					System.out.println("Error while executing subscribed method to " + this);
 					System.out.println("---------------");
 					e.printStackTrace();
 				}
@@ -92,7 +92,7 @@ public class Signal {
 	public String getName() {
 		return name;
 	}
-	
+
 	public void subscribe(SignalInterface sender, Object receiver, Method method) {
 		synchronized (currentIterator) {
 			if (Arrays.equals(method.getParameterTypes(), argumentTypes)) {
@@ -105,7 +105,7 @@ public class Signal {
 			}
 		}
 	}
-	
+
 	public void unsubscribe(Object receiver) {
 		synchronized (currentIterator) {
 			currentIterator = subscriptions.iterator();

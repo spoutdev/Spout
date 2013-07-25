@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -55,14 +55,13 @@ public class Binding {
 	public Binding(String cmd, int... buttons) {
 		this(cmd, new Keyboard[0], buttons, new MouseDirection[0]);
 	}
-	
+
 	public Binding(String cmd, MouseDirection... directions) {
 		this(cmd, new Keyboard[0], new int[0], directions);
 	}
 
 	/**
-	 * Returns the command that this binding is bound to. When one of the input
-	 * actions are executed, this command will be executed.
+	 * Returns the command that this binding is bound to. When one of the input actions are executed, this command will be executed.
 	 *
 	 * @return command bound to input actions
 	 */
@@ -71,9 +70,7 @@ public class Binding {
 	}
 
 	/**
-	 * Returns the key bindings bound to the command specified by
-	 * {@link #getCommand()}. When any of these are executed, the command will
-	 * be executed.
+	 * Returns the key bindings bound to the command specified by {@link #getCommand()}. When any of these are executed, the command will be executed.
 	 *
 	 * @return key bindings
 	 */
@@ -82,9 +79,7 @@ public class Binding {
 	}
 
 	/**
-	 * Returns the mouse bindings bound to the command specified by
-	 * {@link #getCommand()}. When any of these are executed, the command will
-	 * be executed.
+	 * Returns the mouse bindings bound to the command specified by {@link #getCommand()}. When any of these are executed, the command will be executed.
 	 *
 	 * @return mouse bindings
 	 */
@@ -93,9 +88,7 @@ public class Binding {
 	}
 
 	/**
-	 * Returns the mouse direction bindings bound to the command specified by
-	 * {@link #getCommand()}. When any of these are executed, the command will
-	 * be executed.
+	 * Returns the mouse direction bindings bound to the command specified by {@link #getCommand()}. When any of these are executed, the command will be executed.
 	 *
 	 * @return mouse direction bindings
 	 */
@@ -105,7 +98,7 @@ public class Binding {
 
 	/**
 	 * Whether this binding can be executed asynchronously
-	 * 
+	 *
 	 * @return async
 	 */
 	public boolean isAsync() {
@@ -114,8 +107,6 @@ public class Binding {
 
 	/**
 	 * Sets whether the binding can be executed asynchronously
-	 * 
-	 * @param async
 	 */
 	public Binding setAsync(boolean async) {
 		this.async.set(async);

@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,11 +30,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A sub-class of TInt21TripleObjectHashMap that provides methods that support the cleanup of unused keys 
- * and simplistic value manipulation in a map-of-maps system.
+ * A sub-class of TInt21TripleObjectHashMap that provides methods that support the cleanup of unused keys and simplistic value manipulation in a map-of-maps system.
  */
 public class TInt21TripleObjectHashMapOfMaps<K, V> extends TInt21TripleObjectHashMap<Map<K, V>> {
-	
 	public V put(int x, int y, int z, K key, V value) {
 		Map<K, V> get = super.get(x, y, z);
 		if (get == null) {
@@ -43,19 +41,19 @@ public class TInt21TripleObjectHashMapOfMaps<K, V> extends TInt21TripleObjectHas
 		}
 		return get.put(key, value);
 	}
-	
+
 	public V get(int x, int y, int z, K key) {
 		Map<K, V> get = super.get(x, y, z);
 		if (get == null) {
-			return null;	
+			return null;
 		}
 		return get.get(key);
 	}
-	
+
 	public V remove(int x, int y, int z, K key) {
 		Map<K, V> get = super.get(x, y, z);
 		if (get == null) {
-			return null;	
+			return null;
 		}
 		V remove = get.remove(key);
 		if (get.isEmpty()) {

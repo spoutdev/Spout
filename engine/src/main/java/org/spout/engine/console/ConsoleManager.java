@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,13 +33,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import jline.Completor;
+
 import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.logging.LoggerOutputStream;
 import org.spout.logging.MessageFormatter;
 import org.spout.logging.file.RotatingFileHandler;
@@ -69,7 +70,7 @@ public final class ConsoleManager {
 			logger.removeHandler(h);
 		}
 
-		Handler jLineHandler = new JLineHandler(new CommandTask(), Arrays.asList(new Completor[]{new SpoutCommandCompletor(engine)}));
+		Handler jLineHandler = new JLineHandler(new CommandTask(), Arrays.asList(new Completor[] {new SpoutCommandCompletor(engine)}));
 		jLineHandler.setFormatter(new MessageFormatter());
 		logger.addHandler(jLineHandler);
 

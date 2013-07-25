@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -30,6 +30,7 @@ import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
+
 import org.spout.api.Spout;
 
 /**
@@ -39,7 +40,7 @@ public class MessagePrintingHandler extends SimpleChannelHandler {
 	@Override
 	public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
 		if (e instanceof MessageEvent) {
-			Object msg = ((MessageEvent)e).getMessage();
+			Object msg = ((MessageEvent) e).getMessage();
 			Spout.getEngine().getLogger().info("Receiving: " + msg);
 		}
 		super.handleUpstream(ctx, e);
@@ -48,7 +49,7 @@ public class MessagePrintingHandler extends SimpleChannelHandler {
 	@Override
 	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
 		if (e instanceof MessageEvent) {
-			Object msg = ((MessageEvent)e).getMessage();
+			Object msg = ((MessageEvent) e).getMessage();
 			Spout.getEngine().getLogger().info("Sending: " + msg);
 		}
 		super.handleDownstream(ctx, e);

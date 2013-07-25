@@ -1,10 +1,10 @@
 /*
- * This file is part of Math.
+ * This file is part of Spout.
  *
  * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
- * Math is licensed under the Spout License Version 1.
+ * Spout is licensed under the Spout License Version 1.
  *
- * Math is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * Math is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,8 +33,7 @@ import org.spout.math.TrigMath;
 import org.spout.math.vector.Vector2;
 
 /**
- * Represent a complex number of the form <code>x + yi</code>. The x and y components are stored as
- * floats. This class is immutable.
+ * Represent a complex number of the form <code>x + yi</code>. The x and y components are stored as floats. This class is immutable.
  */
 public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
@@ -287,8 +286,7 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 	}
 
 	/**
-	 * Returns the angle in radians formed by the direction vector of this complex on the complex
-	 * plane.
+	 * Returns the angle in radians formed by the direction vector of this complex on the complex plane.
 	 *
 	 * @return The angle in radians of the direction vector of this complex
 	 */
@@ -297,8 +295,7 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 	}
 
 	/**
-	 * Returns the angle in degrees formed by the direction vector of this complex on the complex
-	 * plane.
+	 * Returns the angle in degrees formed by the direction vector of this complex on the complex plane.
 	 *
 	 * @return The angle in degrees of the direction vector of this complex
 	 */
@@ -307,9 +304,8 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 	}
 
 	/**
-	 * Returns the conjugate of this complex. <br> Conjugation of a complex <code>a</code> is an
-	 * operation returning complex <code>a'</code> such that <code>a' * a = a * a' =
-	 * |a|<sup>2</sup></code> where <code>|a|<sup>2<sup/></code> is squared length of <code>a</code>.
+	 * Returns the conjugate of this complex. <br> Conjugation of a complex <code>a</code> is an operation returning complex <code>a'</code> such that <code>a' * a = a * a' = |a|<sup>2</sup></code> where
+	 * <code>|a|<sup>2<sup/></code> is squared length of <code>a</code>.
 	 *
 	 * @return A new complex, which is the conjugate of this one
 	 */
@@ -319,11 +315,9 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 	}
 
 	/**
-	 * Returns the inverse of this complex. <br> Inversion of a complex <code>a</code> returns complex
-	 * <code>a<sup>-1</sup> = a' / |a|<sup>2</sup></code> where <code>a'</code> is {@link #conjugate()
-	 * conjugation} of <code>a</code>, and <code>|a|<sup>2</sup></code> is squared length of
-	 * <code>a</code>. <br> For any complexes <code>a, b, c</code>, such that <code>a * b = c</code>
-	 * equations <code>a<sup>-1</sup> * c = b</code> and <code>c * b<sup>-1</sup> = a</code> are true.
+	 * Returns the inverse of this complex. <br> Inversion of a complex <code>a</code> returns complex <code>a<sup>-1</sup> = a' / |a|<sup>2</sup></code> where <code>a'</code> is {@link #conjugate()
+	 * conjugation} of <code>a</code>, and <code>|a|<sup>2</sup></code> is squared length of <code>a</code>. <br> For any complexes <code>a, b, c</code>, such that <code>a * b = c</code> equations
+	 * <code>a<sup>-1</sup> * c = b</code> and <code>c * b<sup>-1</sup> = a</code> are true.
 	 *
 	 * @return A new complex, which is the inverse of this one
 	 */

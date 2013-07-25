@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -38,23 +38,17 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class HandlerList {
 	/**
-	 * Handler array. This field being an array is the key to this system's
-	 * speed.
+	 * Handler array. This field being an array is the key to this system's speed.
 	 */
 	private ListenerRegistration[] handlers = null;
 	/**
-	 * Returns the Dynamic handler lists. <br/>
-	 * These are changed using register() and unregister()<br/>
-	 * Changes automatically baked to the handlers array any time they have changed..
-	 * @return map of Registered handlers
+	 * Returns the Dynamic handler lists. <br/> These are changed using register() and unregister()<br/> Changes automatically baked to the handlers array any time they have changed..
 	 */
 	private final EnumMap<Order, List<ListenerRegistration>> handlerSlots;
-
 	private final CopyOnWriteArrayList<HandlerList> children = new CopyOnWriteArrayList<HandlerList>(); // Not modified that much, it's fine
 	private final HandlerList parent;
 	/**
 	 * List of all HandlerLists which have been created, for use in bakeAll()
-	 * @return the list of all Handlers.
 	 */
 	private static final ArrayList<HandlerList> ALL_LISTS = new ArrayList<HandlerList>();
 
@@ -83,8 +77,7 @@ public final class HandlerList {
 	}
 
 	/**
-	 * Create a new handler list and initialize using EventPriority The
-	 * HandlerList is then added to meta-list for use in bakeAll()
+	 * Create a new handler list and initialize using EventPriority The HandlerList is then added to meta-list for use in bakeAll()
 	 */
 	public HandlerList() {
 		this(null);
@@ -105,6 +98,7 @@ public final class HandlerList {
 
 	/**
 	 * Register a new listener in this handler list
+	 *
 	 * @param listener listener to register
 	 */
 	public void register(ListenerRegistration listener) {
@@ -123,6 +117,7 @@ public final class HandlerList {
 
 	/**
 	 * Remove a listener from a specific order slot
+	 *
 	 * @param listener listener to remove
 	 */
 	public void unregister(ListenerRegistration listener) {
@@ -149,6 +144,7 @@ public final class HandlerList {
 
 	/**
 	 * Bake HashMap and ArrayLists to 2d array - does nothing if not necessary
+	 *
 	 * @return The baked array of ListenerRegistrations
 	 */
 	public ListenerRegistration[] bake() {
@@ -186,6 +182,7 @@ public final class HandlerList {
 
 	/**
 	 * Gets an array of all currently ListenerRegistration, if the handlers list is currently null, it will attempt to bake new listeners prior to returning.
+	 *
 	 * @return array of ListenerRegistrations
 	 */
 	public ListenerRegistration[] getRegisteredListeners() {

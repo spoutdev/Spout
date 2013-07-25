@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -33,7 +33,6 @@ import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
 import org.spout.api.input.Binding;
 import org.spout.api.input.Keyboard;
-
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 
@@ -47,7 +46,7 @@ public class ClientCommands extends CommonCommands {
 		return (SpoutClient) super.getEngine();
 	}
 
-	@CommandDescription(aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key")
+	@CommandDescription (aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key")
 	public void bind(CommandSource source, CommandArguments args) throws CommandException {
 		Keyboard key = args.popEnumValue("key", Keyboard.class);
 		String command = args.popString("command");
@@ -55,13 +54,13 @@ public class ClientCommands extends CommonCommands {
 		getEngine().getInputManager().bind(new Binding(command, key));
 	}
 
-	@CommandDescription(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!")
+	@CommandDescription (aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!")
 	public void clientSay(CommandSource source, CommandArguments args) throws CommandException {
 		String message = args.popRemainingStrings("message");
 		getEngine().getCommandSource().sendMessage(message);
 	}
 
-	@CommandDescription(aliases = {"clear"}, usage = "[message]", desc = "Clear the client's console")
+	@CommandDescription (aliases = {"clear"}, usage = "[message]", desc = "Clear the client's console")
 	public void consoleClear(CommandSource source, CommandArguments args) throws ArgumentParseException {
 		args.assertCompletelyParsed();
 		getEngine().getScreenStack().getConsole().clearConsole();

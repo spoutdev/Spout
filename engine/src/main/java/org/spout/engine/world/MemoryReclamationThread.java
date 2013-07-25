@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -34,7 +34,7 @@ import java.util.logging.Level;
 
 import org.spout.api.Spout;
 
-public class MemoryReclamationThread extends Thread{
+public class MemoryReclamationThread extends Thread {
 	private int previousPlayers = 0;
 	private final AtomicInteger numPlayers = new AtomicInteger(0);
 
@@ -72,7 +72,7 @@ public class MemoryReclamationThread extends Thread{
 			Spout.getLogger().log(Level.INFO, "G1 Garbage Collector is  set, memory reclamation enabled.");
 		}
 
-		while(!this.isInterrupted()) {
+		while (!this.isInterrupted()) {
 			try {
 				sleep(60000);
 			} catch (InterruptedException e) {
@@ -86,7 +86,6 @@ public class MemoryReclamationThread extends Thread{
 				}
 				previousPlayers = numPlayers;
 			}
-			
 		}
 	}
 }

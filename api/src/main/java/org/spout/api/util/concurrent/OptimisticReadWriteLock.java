@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Implements a non-reentrant optimistic lock.<br>
  */
 public class OptimisticReadWriteLock {
-
 	private final AtomicInteger waiting = new AtomicInteger(0);
 	private final AtomicInteger sequence = new AtomicInteger(0);
 	public final static int UNSTABLE = 1;
@@ -81,13 +80,11 @@ public class OptimisticReadWriteLock {
 	}
 
 	/**
-	 * Unlocks the lock after reading and returns true if no changes were made
-	 * during the read. This method has no effect on the lock and only indicates
-	 * if a write operation occurred while the read lock was locked.
+	 * Unlocks the lock after reading and returns true if no changes were made during the read. This method has no effect on the lock and only indicates if a write operation occurred while the read lock
+	 * was locked.
 	 *
 	 * @param sequence the sequence number when the lock was read locked
-	 * @return true if the sequence number has not changed and the lock is not
-	 *         in the UNSTABLE state
+	 * @return true if the sequence number has not changed and the lock is not in the UNSTABLE state
 	 */
 	public boolean readUnlock(int sequence) {
 		if (sequence == UNSTABLE) {
@@ -100,8 +97,7 @@ public class OptimisticReadWriteLock {
 	/**
 	 * Attempts to write lock the lock.
 	 *
-	 * @return the old sequence number, or OptimisticReadWriteLock.UNSTABLE on
-	 *         fail
+	 * @return the old sequence number, or OptimisticReadWriteLock.UNSTABLE on fail
 	 */
 	public int tryWriteLock() {
 		return sequence.getAndSet(UNSTABLE);
@@ -157,5 +153,4 @@ public class OptimisticReadWriteLock {
 			}
 		}
 	}
-
 }

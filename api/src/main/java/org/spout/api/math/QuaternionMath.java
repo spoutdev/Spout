@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -35,6 +35,7 @@ public class QuaternionMath {
 
 	/**
 	 * Returns the length squared of the given Quaternion
+	 *
 	 * @param a The quaternion
 	 * @return The square of the length
 	 */
@@ -43,8 +44,8 @@ public class QuaternionMath {
 	}
 
 	/**
-	 * Returns the length of the given Quaternion <br/> <br/> Note: Uses
-	 * Math.sqrt.
+	 * Returns the length of the given Quaternion <br/> <br/> Note: Uses Math.sqrt.
+	 *
 	 * @param a The quaternion
 	 * @return length of the quaternion
 	 */
@@ -53,8 +54,8 @@ public class QuaternionMath {
 	}
 
 	/**
-	 * Constructs and returns a new Quaternion that is the given Quaternion but
-	 * with a length of 1
+	 * Constructs and returns a new Quaternion that is the given Quaternion but with a length of 1
+	 *
 	 * @param a The quaternion
 	 * @return normalized Quaternion
 	 */
@@ -65,6 +66,7 @@ public class QuaternionMath {
 
 	/**
 	 * Constructs and returns a new Quaternion that is A * B
+	 *
 	 * @param a The left quaternion
 	 * @param b The right quaternion
 	 * @return The product quaternion of left times b
@@ -83,6 +85,7 @@ public class QuaternionMath {
 
 	/**
 	 * Creates a quaternion of the axis angles.
+	 *
 	 * @param pitch The pitch; the rotation around x
 	 * @param yaw The yaw; the rotation around y
 	 * @param roll The roll; the rotation around z
@@ -96,8 +99,8 @@ public class QuaternionMath {
 	}
 
 	/**
-	 * Constructs and returns a new Quaternion that is rotated about the axis
-	 * and angle
+	 * Constructs and returns a new Quaternion that is rotated about the axis and angle
+	 *
 	 * @param a The quaternion
 	 * @param angle The angle around the axis
 	 * @param axis The axis
@@ -108,8 +111,8 @@ public class QuaternionMath {
 	}
 
 	/**
-	 * Constructs and returns a new Quaternion that is rotated about the axis
-	 * and angle
+	 * Constructs and returns a new Quaternion that is rotated about the axis and angle
+	 *
 	 * @param a The quaternion
 	 * @param angle The angle
 	 * @param x The x dimension of the axis
@@ -123,6 +126,7 @@ public class QuaternionMath {
 
 	/**
 	 * Returns the rotation between two vectors.
+	 *
 	 * @param from The first vector
 	 * @param to The second vector
 	 * @return the rotation between both vectors
@@ -142,11 +146,9 @@ public class QuaternionMath {
 	}
 
 	/**
-	 * Returns the angles, in degrees, about each axis of this quaternion stored
-	 * in a Vector3 <br/> <br/>
-	 * <p>
-	 * vect.X = Rotation about the X axis (Pitch) <br/> vect.Y = Rotation about
-	 * the Y axis (Yaw) <br/> vect.Z = Rotation about the Z axis (Roll) <br/>
+	 * Returns the angles, in degrees, about each axis of this quaternion stored in a Vector3 <br/> <br/> <p> vect.X = Rotation about the X axis (Pitch) <br/> vect.Y = Rotation about the Y axis (Yaw)
+	 * <br/> vect.Z = Rotation about the Z axis (Roll) <br/>
+	 *
 	 * @param a The quaternion
 	 * @return The axis angles
 	 */

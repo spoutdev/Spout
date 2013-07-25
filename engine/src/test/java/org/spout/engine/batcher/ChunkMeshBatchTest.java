@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,12 +26,13 @@
  */
 package org.spout.engine.batcher;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+
 import org.spout.api.math.Vector3;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
+import static org.junit.Assert.assertEquals;
 
 /**
  * Testing of the ChunkMeshBatch.
@@ -50,19 +51,19 @@ public class ChunkMeshBatchTest {
 
 		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(1, 7, 0)));
 		assertEquals(new Vector3(1, 0, 0), batchCoords);
-		
+
 		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(1, 8, 0)));
 		assertEquals(new Vector3(1, 8, 0), batchCoords);
-		
+
 		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(1, -1, 0)));
 		assertEquals(new Vector3(1, -1, 0), batchCoords);
-		
+
 		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(1, -7, 0)));
 		assertEquals(new Vector3(1, -1, 0), batchCoords);
-		
+
 		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(1, -8, 0)));
 		assertEquals(new Vector3(1, -1, 0), batchCoords);
-		
+
 		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(-4, -9, 0)));
 		assertEquals(new Vector3(-4, -9, 0), batchCoords);
 	}
@@ -81,7 +82,7 @@ public class ChunkMeshBatchTest {
 		chunkCoords = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(of(new Vector3(-4, -1, 4)));
 		assertEquals(new Vector3(1, 1, 1), chunkCoords);
 	}
-	
+
 	private static ChunkMesh of(Vector3 of) {
 		return new ChunkMesh(new SpoutChunkSnapshotModel(null, of.getFloorX(), of.getFloorY(), of.getFloorZ(), true, 0));
 	}

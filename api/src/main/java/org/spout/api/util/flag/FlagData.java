@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -55,8 +55,7 @@ package org.spout.api.util.flag;
 import java.util.Set;
 
 /**
- * Can be used to send in additional data<br><br>
- * During evaluation, it will return True if one of the flags contains the same key as set for this Flag
+ * Can be used to send in additional data<br><br> During evaluation, it will return True if one of the flags contains the same key as set for this Flag
  */
 public class FlagData<T> implements Flag {
 	protected final Flag key;
@@ -73,7 +72,7 @@ public class FlagData<T> implements Flag {
 
 	/**
 	 * Gets the Data contained by this Data flag
-	 * 
+	 *
 	 * @return Flag data
 	 */
 	public T getData() {
@@ -82,7 +81,7 @@ public class FlagData<T> implements Flag {
 
 	/**
 	 * Constructs this Data flag for the data specified
-	 * 
+	 *
 	 * @param data to use
 	 * @return Data flag containing the data
 	 */
@@ -92,11 +91,11 @@ public class FlagData<T> implements Flag {
 
 	/**
 	 * Attempts to obtain the data under this Flag data key
-	 * 
+	 *
 	 * @param flags to look in
 	 * @return The data value, or the default if the flag was not found
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public T getData(Set<Flag> flags) {
 		for (Flag flag : flags) {
 			if (flag instanceof FlagData && ((FlagData<?>) flag).key == this.key) {

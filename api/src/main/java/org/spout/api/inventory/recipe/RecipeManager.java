@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -33,7 +33,6 @@ import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
 public interface RecipeManager {
-
 	/**
 	 * Registers a recipe to be stored.
 	 *
@@ -58,11 +57,10 @@ public interface RecipeManager {
 	 * @return whether the recipe existed
 	 */
 	public boolean remove(Recipe recipe);
-	
+
 	/**
 	 * Replaces an old recipe with a new one.
-	 * @param oldRecipe
-	 * @param newRecipe
+	 *
 	 * @return true if fully successful
 	 */
 	public boolean replaceRecipe(Recipe oldRecipe, Recipe newRecipe);
@@ -81,6 +79,7 @@ public interface RecipeManager {
 
 	/**
 	 * Gets all the shaped recipes registered for a plugin.
+	 *
 	 * @param plugin that the recipes belongs to
 	 * @return the recipes if they're found, otherwise an empty set
 	 */
@@ -88,6 +87,7 @@ public interface RecipeManager {
 
 	/**
 	 * Gets all the shapeless recipes registered for a plugin.
+	 *
 	 * @param plugin that the recipes belongs to
 	 * @return the recipes if they're found, otherwise an empty set
 	 */
@@ -95,6 +95,7 @@ public interface RecipeManager {
 
 	/**
 	 * Match the materials to any ShapedRecipe
+	 *
 	 * @param materials by rows
 	 * @return ShapedRecipe
 	 */
@@ -102,14 +103,14 @@ public interface RecipeManager {
 
 	/**
 	 * Match the materials to any ShapelessRecipe
-	 * @param materials
+	 *
 	 * @return ShapelesRecipe
 	 */
 	public ShapelessRecipe matchShapelessRecipe(List<Material> materials);
 
 	/**
 	 * Match the materials to any ShapedRecipe for a given plugin
-	 * @param plugin
+	 *
 	 * @param materials by rows
 	 * @return ShapedRecipe
 	 */
@@ -117,8 +118,7 @@ public interface RecipeManager {
 
 	/**
 	 * Match the materials to any ShapelessRecipe for a given plugin
-	 * @param plugin
-	 * @param materials
+	 *
 	 * @return ShapelesRecipe
 	 */
 	public ShapelessRecipe matchShapelessRecipe(Plugin plugin, List<Material> materials);

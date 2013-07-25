@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -48,10 +48,6 @@ import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.SpoutRuntimeException;
 import org.spout.api.exception.UnknownDependencyException;
 import org.spout.api.meta.SpoutMetaPlugin;
-import org.spout.api.plugin.Plugin;
-import org.spout.api.plugin.PluginDescriptionFile;
-import org.spout.api.plugin.PluginLoader;
-import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.security.PluginSecurityManager;
 
 public class PluginManager {
@@ -73,6 +69,7 @@ public class PluginManager {
 
 	/**
 	 * Returns the the instance of a plugins when given its name
+	 *
 	 * @param plugin's name
 	 * @return instance of the plugin
 	 */
@@ -82,6 +79,7 @@ public class PluginManager {
 
 	/**
 	 * Returns an array of plugins that have been loaded
+	 *
 	 * @return plugins
 	 */
 	public List<Plugin> getPlugins() {
@@ -90,11 +88,9 @@ public class PluginManager {
 
 	/**
 	 * Loads the file as a plugin
+	 *
 	 * @param file to load plugin from
 	 * @return instance of the plugin
-	 * @throws InvalidPluginException
-	 * @throws InvalidDescriptionFileException
-	 * @throws UnknownDependencyException
 	 */
 	public synchronized Plugin loadPlugin(File file)
 			throws InvalidPluginException, InvalidDescriptionFileException, UnknownDependencyException {
@@ -106,9 +102,13 @@ public class PluginManager {
 	 */
 	public void installUpdates() {
 		File[] updates = engine.getUpdateFolder().listFiles();
-		if (updates == null) return;
+		if (updates == null) {
+			return;
+		}
 		for (File file : updates) {
-			if (!file.getName().endsWith(".jar")) continue;
+			if (!file.getName().endsWith(".jar")) {
+				continue;
+			}
 			try {
 				// grab the metadata for the plugin in the update folder
 				PluginDescriptionFile pdf = PluginLoader.getDescription(file);
@@ -116,12 +116,16 @@ public class PluginManager {
 				// look for an existing plugin
 				File pluginDir = engine.getPluginFolder();
 				File[] plugins = pluginDir.listFiles();
-				if (plugins == null) throw new IllegalStateException("Error listing plugins.");
+				if (plugins == null) {
+					throw new IllegalStateException("Error listing plugins.");
+				}
 
 				// see if the plugin has an existing installation
 				File target = null;
 				for (File pfile : plugins) {
-					if (!pfile.getName().endsWith(".jar")) continue;
+					if (!pfile.getName().endsWith(".jar")) {
+						continue;
+					}
 					PluginDescriptionFile ppdf = PluginLoader.getDescription(pfile);
 					String pname = ppdf.getName();
 					if (name.equals(pname)) {
@@ -142,8 +146,9 @@ public class PluginManager {
 
 				// copy file to target and mark update file for deletion
 				FileUtils.copyFile(file, target);
-				if (!file.delete()) file.deleteOnExit();
-
+				if (!file.delete()) {
+					file.deleteOnExit();
+				}
 			} catch (IOException e) {
 				throw new SpoutRuntimeException("Error installing update.", e);
 			} catch (InvalidPluginException e) {
@@ -172,6 +177,7 @@ public class PluginManager {
 
 	/**
 	 * Loads all plugins in a directory
+	 *
 	 * @param paramFile to load plugins from
 	 * @return array of plugins loaded
 	 */
@@ -265,7 +271,6 @@ public class PluginManager {
 
 	/**
 	 * Enables the plugin
-	 * @param plugin
 	 */
 	public void enablePlugin(Plugin plugin) {
 		if (plugin == metaPlugin) {
@@ -288,7 +293,6 @@ public class PluginManager {
 
 	/**
 	 * Disables the plugin
-	 * @param plugin
 	 */
 	public void disablePlugin(Plugin plugin) {
 		if (plugin == metaPlugin) {

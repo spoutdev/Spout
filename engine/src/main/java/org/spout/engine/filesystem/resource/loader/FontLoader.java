@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -32,7 +32,6 @@ import java.io.InputStream;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.resource.ResourceLoader;
-
 import org.spout.engine.filesystem.resource.ClientFont;
 
 public class FontLoader extends ResourceLoader {
@@ -49,9 +48,10 @@ public class FontLoader extends ResourceLoader {
 		try {
 			final Font raw = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(Font.BOLD, 30f);
 			fontFromResource = new ClientFont(raw);
-			
-			if(Spout.getPlatform() == Platform.CLIENT)
+
+			if (Spout.getPlatform() == Platform.CLIENT) {
 				fontFromResource.writeGPU();
+			}
 		} catch (Exception e) {
 			Spout.getLogger().severe("Exception caught when reading in a font.");
 			e.printStackTrace();

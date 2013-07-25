@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -26,8 +26,6 @@
  */
 package org.spout.engine;
 
-import static org.junit.Assert.fail;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -37,7 +35,10 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+
 import org.spout.api.util.ReflectionUtils;
+
+import static org.junit.Assert.fail;
 
 public class SerializableTest {
 	@Rule
@@ -76,7 +77,8 @@ public class SerializableTest {
 								try {
 									fail("Unserializable field " + f.getName() + " found in " + superclazz.getName());
 								} catch (Throwable t) {
-									collector.addError(t);;
+									collector.addError(t);
+									;
 								}
 							}
 						}

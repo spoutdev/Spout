@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -31,11 +31,11 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import org.spout.api.ai.AStarNode;
 import org.spout.api.ai.Agent;
 import org.spout.api.ai.Plan;
-
-import com.google.common.collect.Lists;
 
 public class PlannerNode extends AStarNode {
 	private final PlannerAgent agent;
@@ -58,8 +58,9 @@ public class PlannerNode extends AStarNode {
 		Deque<Action> actions = new ArrayDeque<Action>();
 		Iterable<PlannerNode> parents = getParents();
 		for (PlannerNode start : parents) {
-			if (start.applied != null)
+			if (start.applied != null) {
 				actions.add(start.applied);
+			}
 		}
 		Action[] plan = actions.toArray(new Action[actions.size()]);
 		return new ActionPlan(state, plan, getPathCost());
@@ -70,8 +71,9 @@ public class PlannerNode extends AStarNode {
 	}
 
 	private float getHeuristicModifier() {
-		if (applied == null)
+		if (applied == null) {
 			return 0;
+		}
 		return cachedModifier == -1 ? cachedModifier = Math.max(1, agent.getCostModifierFor(applied)) * Math.max(1, applied.getCost()) : cachedModifier;
 	}
 
@@ -80,16 +82,19 @@ public class PlannerNode extends AStarNode {
 		List<AStarNode> neighbours = Collections.emptyList();
 		for (Action action : agent.getAvailableActions()) {
 			WorldState preconditions = action.getPreconditions();
-			if (preconditions != null && state.difference(preconditions) != 0)
+			if (preconditions != null && state.difference(preconditions) != 0) {
 				continue;
+			}
 			boolean canExecute = action.evaluateContextPreconditions();
-			if (!canExecute)
+			if (!canExecute) {
 				continue;
+			}
 			WorldState effects = action.getEffects();
 			WorldState newState = state.apply(effects);
 			PlannerNode newNode = PlannerNode.create(agent, newState, action);
-			if (neighbours == Collections.EMPTY_LIST)
+			if (neighbours == Collections.EMPTY_LIST) {
 				neighbours = Lists.newArrayList();
+			}
 			neighbours.add(newNode);
 		}
 		return neighbours;

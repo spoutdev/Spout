@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -39,16 +39,10 @@ public interface WorldGenerator extends Named {
 	/**
 	 * Gets the block structure for a Chunk.
 	 *
-	 * The CuboidBuffer will always be:<br>
-	 * - One Chunk in width and length {@link org.spout.api.geo.cuboid.Chunk#CHUNKS}<br>
-	 * - One Region in height {@link org.spout.api.geo.cuboid.Region#CHUNKS}<br>
-	 * - Chunk aligned<br>
-	 * <br>
-	 * Structural blocks should not contain any lighting sources and the
-	 * generator should give repeatable results.
+	 * The CuboidBuffer will always be:<br> - One Chunk in width and length {@link org.spout.api.geo.cuboid.Chunk#CHUNKS}<br> - One Region in height {@link org.spout.api.geo.cuboid.Region#CHUNKS}<br> -
+	 * Chunk aligned<br> <br> Structural blocks should not contain any lighting sources and the generator should give repeatable results.
 	 *
-	 * It is recommended that seeded random number generators from
-	 * WorldGeneratorUtils are used.
+	 * It is recommended that seeded random number generators from WorldGeneratorUtils are used.
 	 *
 	 * @param blockData a zeroed CuboidBuffer corresponding to the Chunk
 	 * @param chunkX coordinate
@@ -59,16 +53,12 @@ public interface WorldGenerator extends Named {
 	public void generate(CuboidBlockMaterialBuffer blockData, int chunkX, int chunkY, int chunkZ, World world);
 
 	/**
-	 * Gets the surface height of the world. This is used for initialisation
-	 * purposed only, so only needs reasonable accuracy.<br> <br> The result
-	 * value should be a 2d array of size {@link  org.spout.api.geo.cuboid.Chunk#CHUNK_SIZE}
-	 * squared.<br> <br> This hint will improve lighting calculations for
-	 * players who move into new areas.
+	 * Gets the surface height of the world. This is used for initialisation purposed only, so only needs reasonable accuracy.<br> <br> The result value should be a 2d array of size {@link
+	 * org.spout.api.geo.cuboid.Chunk#CHUNK_SIZE} squared.<br> <br> This hint will improve lighting calculations for players who move into new areas.
 	 *
 	 * @param chunkX coordinate
 	 * @param chunkZ coordinate
-	 * @return the surface height array for the column, or null not to provide a
-	 * hint
+	 * @return the surface height array for the column, or null not to provide a hint
 	 */
 	public int[][] getSurfaceHeight(World world, int chunkX, int chunkZ);
 
@@ -80,8 +70,7 @@ public interface WorldGenerator extends Named {
 	public Populator[] getPopulators();
 
 	/**
-	 * Gets the name of the generator. This name should be unique to prevent two
-	 * generators overwriting the same world
+	 * Gets the name of the generator. This name should be unique to prevent two generators overwriting the same world
 	 */
 	@Override
 	public String getName();

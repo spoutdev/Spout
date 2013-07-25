@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -31,20 +31,15 @@ package org.spout.api.event;
  */
 public enum Result {
 	/**
-	 * Deny the event. Depending on the event, the action indicated by the event
-	 * will either not take place or will be reverted. Some actions may not be
-	 * denied.
+	 * Deny the event. Depending on the event, the action indicated by the event will either not take place or will be reverted. Some actions may not be denied.
 	 */
 	DENY(false),
 	/**
-	 * Neither deny nor allow the event. The server will proceed with its normal
-	 * handling.
+	 * Neither deny nor allow the event. The server will proceed with its normal handling.
 	 */
 	DEFAULT(false),
 	/**
-	 * Allow / Force the event. The action indicated by the event will take
-	 * place if possible, even if the server would not normally allow the
-	 * action. Some actions may not be allowed.
+	 * Allow / Force the event. The action indicated by the event will take place if possible, even if the server would not normally allow the action. Some actions may not be allowed.
 	 */
 	ALLOW(true);
 	private boolean result;
@@ -54,9 +49,8 @@ public enum Result {
 	}
 
 	/**
-	 * True if the event is allowed, and is taking normal operation.
-	 * False if the event is denied.
-	 * Null if neither allowed, nor denied. The server will continue to proceed with its normal handling.
+	 * True if the event is allowed, and is taking normal operation. False if the event is denied. Null if neither allowed, nor denied. The server will continue to proceed with its normal handling.
+	 *
 	 * @return the event's resolution.
 	 */
 	public boolean getResult() {

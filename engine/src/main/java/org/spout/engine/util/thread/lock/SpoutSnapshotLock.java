@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -46,19 +46,19 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	private final ConcurrentHashMap<String, Integer> coreTasks = new ConcurrentHashMap<String, Integer>();
 	private final ConcurrentHashMap<Thread, Integer> coreLockingThreads = new ConcurrentHashMap<Thread, Integer>();
 
- 	@Override
+	@Override
 	public void readLock(Object plugin) {
- 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
- 			return;
- 		}
+		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+			return;
+		}
 		lock.readLock().lock();
 		addLock(plugin);
 	}
-	
+
 	public void coreReadLock(String taskName) {
- 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
- 			return;
- 		}
+		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+			return;
+		}
 		if (taskName == null) {
 			throw new IllegalArgumentException("Taskname may not be null");
 		}
@@ -68,20 +68,20 @@ public class SpoutSnapshotLock implements SnapshotLock {
 
 	@Override
 	public boolean readTryLock(Object plugin) {
- 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
- 			return true;
- 		}
+		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+			return true;
+		}
 		boolean success = lock.readLock().tryLock();
 		if (success) {
 			addLock(plugin);
 		}
 		return success;
 	}
-	
+
 	public boolean coreReadTryLock(String taskName) {
- 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
- 			return true;
- 		}
+		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+			return true;
+		}
 		if (taskName == null) {
 			throw new IllegalArgumentException("Taskname may not be null");
 		}
@@ -91,7 +91,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		}
 		return success;
 	}
-	
+
 	@Override
 	public boolean isWriteLocked() {
 		if (!lock.readLock().tryLock()) {
@@ -107,17 +107,17 @@ public class SpoutSnapshotLock implements SnapshotLock {
 
 	@Override
 	public void readUnlock(Object plugin) {
- 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
- 			return;
- 		}
+		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+			return;
+		}
 		lock.readLock().unlock();
 		removeLock(plugin);
 	}
-	
+
 	public void coreReadUnlock(String taskName) {
- 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
- 			return;
- 		}
+		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+			return;
+		}
 		lock.readLock().unlock();
 		decrementCoreCounter(taskName);
 	}
@@ -146,11 +146,11 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		}
 		return plugins;
 	}
-	
+
 	public Set<String> getLockingTasks() {
 		return coreTasks.keySet();
 	}
-	
+
 	public Set<Thread> getCoreLockingThreads() {
 		return coreLockingThreads.keySet();
 	}
@@ -209,7 +209,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 			success = locks.replace(plugin, oldLockInfo, newLockInfo);
 		}
 	}
-	
+
 	private void incrementCoreCounter(String taskName) {
 		boolean success = false;
 		while (!success) {
@@ -220,7 +220,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 				success = coreTasks.replace(taskName, i, i + 1);
 			}
 		}
-		
+
 		success = false;
 		while (!success) {
 			Thread t = Thread.currentThread();
@@ -232,7 +232,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 			}
 		}
 	}
-	
+
 	private void decrementCoreCounter(String taskName) {
 		boolean success = false;
 		while (!success) {
@@ -245,7 +245,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 				success = coreTasks.replace(taskName, i, i - 1);
 			}
 		}
-		
+
 		success = false;
 		while (!success) {
 			Thread t = Thread.currentThread();

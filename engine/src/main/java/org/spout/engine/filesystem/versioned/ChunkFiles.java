@@ -1,7 +1,7 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Spout is licensed under the Spout License Version 1.
  *
  * Spout is free software: you can redistribute it and/or modify it under
@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import gnu.trove.procedure.TShortObjectProcedure;
-import org.spout.api.Platform;
 
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
@@ -52,8 +52,6 @@ import org.spout.api.util.hashing.NibbleQuadHashed;
 import org.spout.api.util.hashing.SignedTenBitTripleHashed;
 import org.spout.api.util.sanitation.SafeCast;
 import org.spout.api.util.typechecker.TypeChecker;
-
-import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.world.SpoutChunk;
@@ -61,7 +59,6 @@ import org.spout.engine.world.SpoutChunk.PopulationState;
 import org.spout.engine.world.SpoutChunkSnapshot;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutServerWorld;
-import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
@@ -80,7 +77,7 @@ import org.spout.nbt.util.NBTMapper;
 public class ChunkFiles {
 	public static final byte CHUNK_VERSION = 5;
 	private static final TypeChecker<List<? extends CompoundTag>> checkerListCompoundTag = TypeChecker.tList(CompoundTag.class);
-	
+
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, ChunkDataForRegion dataForRegion) {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Unable to load chunk in client mode");
@@ -101,7 +98,7 @@ public class ChunkFiles {
 			byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
 
 			boolean converted = false;
-			
+
 			if (version > CHUNK_VERSION) {
 				Spout.getLogger().log(Level.SEVERE, "Chunk version " + version + " exceeds maximum allowed value of " + CHUNK_VERSION);
 				return null;
@@ -124,12 +121,11 @@ public class ChunkFiles {
 					map = convertV4V5(map);
 				}
 			}
-			
+
 			chunk = loadChunk(r, x, y, z, dataForRegion, map, version);
 			if (converted) {
 				chunk.setModified();
 			}
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -142,13 +138,13 @@ public class ChunkFiles {
 		}
 		return chunk;
 	}
-	
+
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, ChunkDataForRegion dataForRegion, CompoundMap map, int version) throws IOException {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Unable to load chunk in client mode");
 		}
 		SpoutChunk chunk = null;
-		
+
 		int cx = r.getChunkX() + x;
 		int cy = r.getChunkY() + y;
 		int cz = r.getChunkZ() + z;
@@ -167,7 +163,7 @@ public class ChunkFiles {
 
 		byte populationState = SafeCast.toGeneric(map.get("populationState"), new ByteTag("", PopulationState.POPULATED.getId()), ByteTag.class).getValue();
 		boolean lightStable = SafeCast.toByte(NBTMapper.toTagValue(map.get("lightStable")), (byte) 0) != 0;
-		
+
 		int[] palette = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("palette")), null);
 		int blockArrayWidth = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedWidth")), -1);
 		int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("packedBlockArray")), null);
@@ -188,13 +184,13 @@ public class ChunkFiles {
 		loadDynamicUpdates(updateList, dataForRegion.loadedUpdates);
 
 		List<? extends CompoundTag> componentsList = checkerListCompoundTag.checkTag(map.get("block_components"), null);
-		
+
 		CompoundMap lightingMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("light_buffers")), null, CompoundMap.class);
 		StringToUniqueIntegerMap worldMap = ((SpoutServerWorld) r.getWorld()).getLightingMap();
 		List<LightingManager<?>> lightingManagers = new ArrayList<LightingManager<?>>();
 		List<byte[]> lightingData = new ArrayList<byte[]>();
 		loadLightingBuffers(lightingManagers, lightingData, lightingMap, worldMap);
-		
+
 		chunk.addLightingBufferData(lightingManagers, lightingData);
 
 		//Load Block components
@@ -211,7 +207,7 @@ public class ChunkFiles {
 		chunk.getBlockComponentOwners().forEachEntry(new AttachComponentProcedure());
 		return chunk;
 	}
-	
+
 	public static void saveChunk(SpoutServerWorld world, SpoutChunkSnapshot snapshot, List<DynamicBlockUpdate> blockUpdates, OutputStream dos) {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Unable to save chunk in client mode");
@@ -221,7 +217,7 @@ public class ChunkFiles {
 		//Switch block ids from engine material ids to world specific ids
 		StringToUniqueIntegerMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
 		StringToUniqueIntegerMap itemMap = world.getItemMap();
-		
+
 		StringToUniqueIntegerMap lightingMap = world.getItemMap();
 
 		int[] palette = snapshot.getPalette();
@@ -263,7 +259,7 @@ public class ChunkFiles {
 		world.getItemMap().save();
 		world.getLightingMap().save();
 	}
-	
+
 	private static void convertArray(int[] fullState, StringToUniqueIntegerMap from, StringToUniqueIntegerMap to) {
 		for (int i = 0; i < fullState.length; i++) {
 			short newId = (short) from.convertTo(to, BlockFullState.getId(fullState[i]));
@@ -280,7 +276,7 @@ public class ChunkFiles {
 		}
 		return true;
 	}
-	
+
 	private static CompoundTag saveBlockComponent(BlockComponentSnapshot snapshot) {
 		if (!snapshot.getData().isEmpty()) {
 			byte[] data = snapshot.getData().serialize();
@@ -297,7 +293,7 @@ public class ChunkFiles {
 
 		return null;
 	}
-	
+
 	private static void loadBlockComponents(SpoutChunk chunk, List<? extends CompoundTag> list) {
 		if (list == null) {
 			return;
@@ -318,7 +314,7 @@ public class ChunkFiles {
 			}
 		}
 	}
-	
+
 	private static ListTag<CompoundTag> saveBlockComponents(List<BlockComponentSnapshot> components) {
 		List<CompoundTag> list = new ArrayList<CompoundTag>(components.size());
 
@@ -383,7 +379,7 @@ public class ChunkFiles {
 		final int data = SafeCast.toInt(NBTMapper.toTagValue(map.get("data")), 0);
 		return new DynamicBlockUpdate(packed, nextUpdate, data);
 	}
-	
+
 	private static class AttachComponentProcedure implements TShortObjectProcedure<BlockComponentOwner> {
 		@Override
 		public boolean execute(short a, BlockComponentOwner b) {
@@ -397,10 +393,10 @@ public class ChunkFiles {
 			return true;
 		}
 	}
-	
+
 	private static CompoundTag saveLightingBuffers(StringToUniqueIntegerMap worldLighting, CuboidLightBuffer[] buffers) {
 		StringToUniqueIntegerMap globalLighting = ((SpoutServer) Spout.getEngine()).getEngineLightingMap();
-		
+
 		CompoundMap map = new CompoundMap();
 
 		for (int i = 0; i < buffers.length; i++) {
@@ -408,24 +404,24 @@ public class ChunkFiles {
 			int worldId = globalLighting.convertTo(worldLighting, buffer.getManagerId());
 			map.put(saveLightingBuffer(worldId, buffer));
 		}
-		
+
 		return new CompoundTag("light_buffers", map);
 	}
-	
+
 	private static CompoundTag saveLightingBuffer(int worldId, CuboidLightBuffer buffer) {
 		CompoundMap map = new CompoundMap();
 		map.put(new IntTag("manager_id", worldId));
 		map.put(new ByteArrayTag("light_data", buffer.serialize()));
 		return new CompoundTag("lighting_" + worldId, map);
 	}
-	
+
 	private static void loadLightingBuffers(List<LightingManager<?>> managers, List<byte[]> lightData, CompoundMap map, StringToUniqueIntegerMap worldLighting) {
 		if (map == null) {
 			return;
 		}
-		
+
 		StringToUniqueIntegerMap globalLighting = ((SpoutServer) Spout.getEngine()).getEngineLightingMap();
-		
+
 		for (Tag<?> t : map) {
 			if (t instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag) t;
@@ -433,7 +429,7 @@ public class ChunkFiles {
 			}
 		}
 	}
-	
+
 	private static void loadLightingBuffer(List<LightingManager<?>> managers, List<byte[]> lightData, CompoundTag tag, StringToUniqueIntegerMap globalLighting, StringToUniqueIntegerMap worldLighting) {
 		final CompoundMap map = tag.getValue();
 		int worldId = SafeCast.toInt(NBTMapper.toTagValue(map.get("manager_id")), -1);
@@ -459,50 +455,49 @@ public class ChunkFiles {
 
 	/**
 	 * Version 1 to version 2 conversion
-	 * 
+	 *
 	 * Dynamic block updates converted from using "packed" and "packedv2" to just packedPosition.  This is the same format as "packedv2".
-	 * 
+	 *
 	 * The conversion has a loader for V1 and a saver for V2.  They both use the DynamicBlockUpdateV1 class for temp storage.
 	 */
-	
 	private static class DynamicBlockUpdateV1 {
 		private final int packed;
 		private final long nextUpdate;
 		private final int data;
-		
+
 		public DynamicBlockUpdateV1(int packed, long nextUpdate, int data) {
 			this.packed = packed;
 			this.nextUpdate = nextUpdate;
 			this.data = data;
 		}
-		
+
 		public int getPacked() {
 			return packed;
 		}
-		
+
 		public long getNextUpdate() {
 			return nextUpdate;
 		}
-		
+
 		public int getData() {
 			return data;
 		}
 	}
-	
+
 	public static CompoundMap convertV1V2(CompoundMap map) {
 		List<? extends CompoundTag> updateList = checkerListCompoundTag.checkTag(map.get("dynamic_updates"));
-		
+
 		List<DynamicBlockUpdateV1> loadedUpdates = new ArrayList<DynamicBlockUpdateV1>(10);
 
 		loadDynamicUpdatesV1(updateList, loadedUpdates);
-		
+
 		ListTag<CompoundTag> newList = saveDynamicUpdatesV2(loadedUpdates);
-		
+
 		map.put(newList);
-		
+
 		return map;
 	}
-	
+
 	private static void loadDynamicUpdatesV1(List<? extends CompoundTag> list, List<DynamicBlockUpdateV1> loadedUpdates) {
 		if (list == null) {
 			return;
@@ -540,7 +535,7 @@ public class ChunkFiles {
 		final int data = SafeCast.toInt(NBTMapper.toTagValue(map.get("data")), 0);
 		return new DynamicBlockUpdateV1(packed, nextUpdate, data);
 	}
-	
+
 	private static ListTag<CompoundTag> saveDynamicUpdatesV2(List<DynamicBlockUpdateV1> updates) {
 		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
 
@@ -563,63 +558,60 @@ public class ChunkFiles {
 
 		return new CompoundTag("update", map);
 	}
-	
+
 	/**
 	 * Version 2 to version 3 conversion
-	 * 
+	 *
 	 * This removes the option to use the "blocks" and "data" tags.  The "packedWidth" and "packedBlockArray" fields are used instead.
-	 * 
+	 *
 	 * These fields were obsolete anyway.
 	 */
-	
 	private static CompoundMap convertV2V3(CompoundMap map) {
-		
+
 		int[] palette = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("palette")), null);
-		
+
 		if (palette != null) {
 			return map;
 		}
-		
+
 		short[] blocks = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("blocks")), null);
 		short[] data = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("data")), null);
-		
+
 		int[] packed = new int[4096];
-		
+
 		for (int i = 0; i < 4096; i++) {
 			short d = data == null ? 0 : data[i];
 			packed[i] = BlockFullState.getPacked(blocks[i], d);
 		}
-		
+
 		// Just use the non-compressed format.  The engine will compress the chunks over time.
-		
+
 		palette = new int[0];
 		int[] packetBlockArray = packed;
 		int packedWidth = 16;
-		
+
 		map.put(new IntArrayTag("palette", palette));
 		map.put(new IntTag("packedWidth", packedWidth));
 		map.put(new IntArrayTag("packedBlockArray", packetBlockArray));
-		
+
 		return map;
 	}
-	
+
 	/**
 	 * Version 3 to version 4 conversion
-	 * 
+	 *
 	 * Extra field for custom lighting added, so no conversion needed.
 	 */
-	
 	private static CompoundMap convertV3V4(CompoundMap map) {
 		return map;
 	}
-	
+
 	/**
 	 * Version 3 to version 4 conversion
-	 * 
+	 *
 	 * Old lighting fields depreciated, so no conversion needed.
 	 */
 	private static CompoundMap convertV4V5(CompoundMap map) {
 		return map;
 	}
-	
 }

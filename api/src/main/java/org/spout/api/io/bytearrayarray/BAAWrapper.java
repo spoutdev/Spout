@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -35,28 +35,23 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.spout.api.io.regionfile.SimpleRegionFile;
 
 public class BAAWrapper {
-	
 	private final static ByteArrayArray openInProgress = BAAOpenInProgress.getInstance();
-
 	private AtomicReference<ByteArrayArray> baaRef = new AtomicReference<ByteArrayArray>(null);
-	
 	private final File file;
 	private final int segmentSize;
 	private final int entries;
 	private final int timeout;
-	
+
 	public BAAWrapper(File file, int segmentSize, int entries, int timeout) {
 		this.file = file;
 		this.segmentSize = segmentSize;
 		this.entries = entries;
 		this.timeout = timeout;
 	}
-	
 
 	/**
-	 * This method should be called periodically in order to see if the ByteArrayArray has timed out.  It always returns immediately.<br>
-	 * <br>
-	 * It will only close the array if no block OutputStreams are open and the last access occurred more than the timeout previously
+	 * This method should be called periodically in order to see if the ByteArrayArray has timed out.  It always returns immediately.<br> <br> It will only close the array if no block OutputStreams are
+	 * open and the last access occurred more than the timeout previously
 	 */
 	public void timeoutCheck() {
 		ByteArrayArray baa = baaRef.get();
@@ -70,12 +65,11 @@ public class BAAWrapper {
 			}
 		}
 	}
-	
+
 	/**
-	 * This method should be called periodically in order to see if the ByteArrayArray has timed out.  It always returns immediately.<br>
-	 * <br>
-	 * It will only close the array if no block OutputStreams are open and the last access occurred more than the timeout previously
-	 * 
+	 * This method should be called periodically in order to see if the ByteArrayArray has timed out.  It always returns immediately.<br> <br> It will only close the array if no block OutputStreams are
+	 * open and the last access occurred more than the timeout previously
+	 *
 	 * @return true if the file is closed, or not opened
 	 */
 	public boolean attemptClose() {
@@ -95,7 +89,7 @@ public class BAAWrapper {
 
 	/**
 	 * Checks if the InputStream exists at the given index.
-	 * 
+	 *
 	 * @param i the block index
 	 * @return true if the input stream exists
 	 */
@@ -117,10 +111,10 @@ public class BAAWrapper {
 			}
 		}
 	}
-	
+
 	/**
 	 * Checks if the InputStream exists at the given index.
-	 * 
+	 *
 	 * @param i the block index
 	 * @return true if the delete was successful
 	 */
@@ -144,12 +138,9 @@ public class BAAWrapper {
 		}
 	}
 
-
 	/**
-	 * Gets the DataOutputStream corresponding to a given block.<br>
-	 * <br>
-	 * WARNING: This block will be locked until the stream is closed
-	 * 
+	 * Gets the DataOutputStream corresponding to a given block.<br> <br> WARNING: This block will be locked until the stream is closed
+	 *
 	 * @param i the block index
 	 * @return the DataOutputStream
 	 */
@@ -170,12 +161,10 @@ public class BAAWrapper {
 			return out;
 		}
 	}
-	
+
 	/**
-	 * Gets the DataInputStream corresponding to a given Chunk.<br>
-	 * <br>
-	 * The stream is based on a snapshot of the array.
-	 * 
+	 * Gets the DataInputStream corresponding to a given Chunk.<br> <br> The stream is based on a snapshot of the array.
+	 *
 	 * @param i the block index
 	 * @return the DataInputStream
 	 */
@@ -196,10 +185,10 @@ public class BAAWrapper {
 			return in;
 		}
 	}
-	
+
 	/**
 	 * Gets the filename of the file handled by this wrapper
-	 * 
+	 *
 	 * @return the filename
 	 */
 	public String getFilename() {

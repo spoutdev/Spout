@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -79,7 +79,7 @@ public class RecipeBuilder {
 		shapelessCheck();
 		return new SmeltedRecipe(this);
 	}
-	
+
 	private void shapelessCheck() {
 		if (result == null) {
 			throw new IllegalStateException("Result must be set.");
@@ -116,12 +116,10 @@ public class RecipeBuilder {
 	}
 
 	/**
-	 * Sets the {@link Character} that the {@link ItemStack} ingredient is
-	 * represented by. Used only by shaped recipes.
+	 * Sets the {@link Character} that the {@link ItemStack} ingredient is represented by. Used only by shaped recipes.
 	 *
 	 * @param c to represent specified ingredient
 	 * @param ingredient to be represented by specified character
-	 * @return  
 	 */
 	public RecipeBuilder setIngredient(Character c, Material ingredient) {
 		if (ingredient == null) {
@@ -132,11 +130,9 @@ public class RecipeBuilder {
 	}
 
 	/**
-	 * Sets all {@link Character} in the map to represent all {@link ItemStack}
-	 * in the map.
+	 * Sets all {@link Character} in the map to represent all {@link ItemStack} in the map.
 	 *
 	 * @param chars character map to represent values
-	 * @return  
 	 */
 	public RecipeBuilder setIngredients(Map<Character, Material> chars) {
 		ingredientsMap.putAll(chars);
@@ -147,7 +143,6 @@ public class RecipeBuilder {
 	 * Adds an ingredient required to craft this recipe. Used for shapeless recipes.
 	 *
 	 * @param ingredient to add
-	 * @return  
 	 */
 	public RecipeBuilder addIngredient(Material ingredient) {
 		if (ingredient == null) {
@@ -157,13 +152,11 @@ public class RecipeBuilder {
 		return this;
 	}
 
-	
 	/**
 	 * Adds an ingredient required to craft this recipe.
 	 *
 	 * @param material to add
 	 * @param amount of material to add
-	 * @return  
 	 */
 	public RecipeBuilder addIngredient(Material material, int amount) {
 		for (int i = 0; i < amount; i++) {
@@ -175,7 +168,6 @@ public class RecipeBuilder {
 	/**
 	 * Adds all specified ingredients.
 	 *
-	 * @param ingredient
 	 * @return true if all ingredients were added.
 	 */
 	public RecipeBuilder addIngredients(Collection<Material> ingredient) {
@@ -185,9 +177,6 @@ public class RecipeBuilder {
 
 	/**
 	 * Adds all specified ingredients.
-	 *
-	 * @param i
-	 * @return  
 	 */
 	public RecipeBuilder addIngredients(Material... i) {
 		ingredients.addAll(Arrays.asList(i));
@@ -196,9 +185,6 @@ public class RecipeBuilder {
 
 	/**
 	 * Removes all occurrences of the material
-	 *
-	 * @param material
-	 * @return  
 	 */
 	public RecipeBuilder removeIngredient(Material material) {
 		ingredients.remove(material);
@@ -209,7 +195,6 @@ public class RecipeBuilder {
 	 * Adds a row to the recipe.
 	 *
 	 * @param chars characters to represent {@link ItemStack}s
-	 * @return  
 	 */
 	public RecipeBuilder addRow(Character... chars) {
 		rows.add(Arrays.asList(chars));
