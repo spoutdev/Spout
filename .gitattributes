@@ -1,0 +1,10 @@
+# Normalize as LF in the repository, OS native locally
+* text
+*.java text
+
+# Binary files that should not be modified
+*.dat binary
+*.jpg binary
+*.png binary
+*.ttf binary
+*.wav binary
