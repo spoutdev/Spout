@@ -40,11 +40,11 @@ import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-import jline.ArgumentCompletor;
-import jline.Completor;
-import jline.ConsoleOperations;
-import jline.ConsoleReader;
-import jline.NullCompletor;
+import jline.console.ConsoleReader;
+import jline.console.Operation;
+import jline.console.completer.ArgumentCompleter;
+import jline.console.completer.Completer;
+import jline.console.completer.NullCompleter;
 import org.fusesource.jansi.AnsiConsole;
 
 /**
@@ -57,7 +57,7 @@ public class JLineHandler extends Handler {
 	private final AtomicBoolean closed = new AtomicBoolean(false);
 	private final CommandCallback callback;
 
-	public JLineHandler(CommandCallback callback, List<Completor> completers) {
+	public JLineHandler(CommandCallback callback, List<Completer> completers) {
 		this.callback = callback;
 		setDateFormat(new SimpleDateFormat("E HH:mm:ss"));
 
@@ -69,13 +69,13 @@ public class JLineHandler extends Handler {
 		}
 
 		@SuppressWarnings ("unchecked")
-		final Collection<Completor> completors = reader.getCompletors();
-		for (Completor c : new ArrayList<Completor>(completors)) {
-			reader.removeCompletor(c);
+		final Collection<Completer> completer = reader.getCompleters();
+		for (Completer c : new ArrayList<Completer>(completer)) {
+			reader.removeCompleter(c);
 		}
-		Completor[] list = completers.toArray(new Completor[completers.size() + 1]);
-		list[list.length - 1] = new NullCompletor();
-		reader.addCompletor(new ArgumentCompletor(list));
+		Completer[] list = completer.toArray(new Completer[completer.size() + 1]);
+		list[list.length - 1] = new NullCompleter();
+		reader.addCompleter(new ArgumentCompleter(list));
 
 		ConsoleCommandThread commandThread = new ConsoleCommandThread();
 		commandThread.start();
@@ -93,8 +93,8 @@ public class JLineHandler extends Handler {
 	public void publish(LogRecord record) {
 		try {
 			synchronized (writer) {
-				reader.printString(String.valueOf(ConsoleOperations.RESET_LINE));
-				reader.flushConsole();
+				reader.print(String.valueOf(ConsoleReader.RESET_LINE));
+				reader.flush();
 				appendDateFormat(writer);
 				String message;
 				Formatter formatter = getFormatter();
@@ -113,9 +113,9 @@ public class JLineHandler extends Handler {
 				try {
 					reader.drawLine();
 				} catch (Throwable ex) {
-					reader.getCursorBuffer().clearBuffer();
+					reader.getCursorBuffer().clear();
 				}
-				reader.flushConsole();
+				reader.flush();
 			}
 		} catch (IOException e) {
 			return;
@@ -160,7 +160,7 @@ public class JLineHandler extends Handler {
 	public void flush() {
 		if (!closed.get()) {
 			try {
-				reader.flushConsole();
+				reader.flush();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -177,7 +177,7 @@ public class JLineHandler extends Handler {
 	private void closeImpl() {
 		try {
 			reader.killLine();
-			reader.flushConsole();
+			reader.flush();
 		} catch (IOException e) {
 		}
 	}

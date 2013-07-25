@@ -34,7 +34,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import jline.Completor;
+import jline.console.completer.Completer;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -70,7 +70,7 @@ public final class ConsoleManager {
 			logger.removeHandler(h);
 		}
 
-		Handler jLineHandler = new JLineHandler(new CommandTask(), Arrays.asList(new Completor[] {new SpoutCommandCompletor(engine)}));
+		Handler jLineHandler = new JLineHandler(new CommandTask(), Arrays.asList(new Completer[] {new SpoutCommandCompleter(engine)}));
 		jLineHandler.setFormatter(new MessageFormatter());
 		logger.addHandler(jLineHandler);
 

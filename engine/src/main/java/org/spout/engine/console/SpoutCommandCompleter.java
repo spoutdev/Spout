@@ -30,18 +30,18 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import jline.Completor;
+import jline.console.completer.Completer;
 
 import org.spout.api.Engine;
 import org.spout.api.command.Command;
 
 /**
- * A copy of {@link jline.SimpleCompletor} that uses a set of strings sourced from the list of commands registered with the commands manager
+ * A copy of {@link jline.console.completer.StringsCompleter} that uses a set of strings sourced from the list of commands registered with the commands manager
  */
-public class SpoutCommandCompletor implements Completor {
+public class SpoutCommandCompleter implements Completer {
 	private final Engine engine;
 
-	public SpoutCommandCompletor(Engine engine) {
+	public SpoutCommandCompleter(Engine engine) {
 		this.engine = engine;
 	}
 
@@ -78,7 +78,7 @@ public class SpoutCommandCompletor implements Completor {
 			candidates.set(0, candidates.get(0) + " ");
 		}
 
-		// the index of the completion is always from the beginning of
+		// The index of the completion is always from the beginning of
 		// the buffer.
 		return (candidates.isEmpty()) ? (-1) : 0;
 	}

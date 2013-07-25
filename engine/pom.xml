@@ -39,8 +39,7 @@
 		<dependency>
 			<groupId>jline</groupId>
 			<artifactId>jline</artifactId>
-			<version>1.0</version>
-			<!-- 2.11 available -->
+			<version>2.11</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
