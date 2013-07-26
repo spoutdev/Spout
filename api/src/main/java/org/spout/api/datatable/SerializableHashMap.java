@@ -474,7 +474,6 @@ public class SerializableHashMap implements SerializableMap {
 		try {
 			// Because it may be a map of maps, we want to UPDATE inner maps, not overwrite
 			for (Map.Entry<String, ? extends Serializable> e : ((Map<String, ? extends Serializable>) ois.readObject()).entrySet()) {
-                System.out.println("Deserializing " + e.getKey());
 				if (e.getValue() instanceof Map && map.get(e.getKey()) instanceof Map) {
 					((Map) map.get(e.getKey())).putAll((Map) e.getValue());
 				} else {
