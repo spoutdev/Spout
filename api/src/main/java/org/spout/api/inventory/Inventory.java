@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.spout.api.inventory.shape.Cube;
@@ -766,4 +767,26 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 		in.defaultReadObject();
 		viewers = new HashSet<InventoryViewer>();
 	}
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + Objects.hashCode(this.viewers);
+        hash = 67 * hash + Arrays.deepHashCode(this.contents);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Inventory other = (Inventory) obj;
+        if (!Objects.equals(this.viewers, other.viewers))
+            return false;
+        if (!Arrays.deepEquals(this.contents, other.contents))
+            return false;
+        return true;
+    }
 }

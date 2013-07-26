@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
@@ -46,6 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.map.DefaultedKey;
+import org.spout.api.plugin.PluginClassLoader;
 
 /**
  * Manages a string keyed, serializable object hashmap that can be serialized easily to an array of bytes and deserialized from an array of bytes, intended for persistence and network transfers.
@@ -468,10 +470,11 @@ public class SerializableHashMap implements SerializableMap {
 			map.clear();
 		}
 		InputStream in = new ByteArrayInputStream(serializedData);
-		ObjectInputStream ois = new ObjectInputStream(in);
+		ObjectInputStream ois = new PluginClassResolverObjectInputStream(in);
 		try {
 			// Because it may be a map of maps, we want to UPDATE inner maps, not overwrite
-			for (Map.Entry<? extends String, ? extends Serializable> e : ((Map<? extends String, ? extends Serializable>) ois.readObject()).entrySet()) {
+			for (Map.Entry<String, ? extends Serializable> e : ((Map<String, ? extends Serializable>) ois.readObject()).entrySet()) {
+                System.out.println("Deserializing " + e.getKey());
 				if (e.getValue() instanceof Map && map.get(e.getKey()) instanceof Map) {
 					((Map) map.get(e.getKey())).putAll((Map) e.getValue());
 				} else {
@@ -479,8 +482,24 @@ public class SerializableHashMap implements SerializableMap {
 				}
 			}
 		} catch (ClassNotFoundException ex) {
-			throw new IllegalStateException("Unable to decompress SerializableHashMap: " + ex.getMessage());
+			throw new IllegalStateException("Unable to decompress SerializableHashMap", ex);
 		}
+	}
+
+	public static class PluginClassResolverObjectInputStream extends ObjectInputStream {
+
+		public PluginClassResolverObjectInputStream(InputStream in) throws IOException {
+			super(in);
+		}
+
+		protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+			try {
+				return super.resolveClass(desc);
+			} catch (ClassNotFoundException e) {
+				return PluginClassLoader.findPluginClass(desc.getName());
+			}
+		}
+
 	}
 
 	@Override
