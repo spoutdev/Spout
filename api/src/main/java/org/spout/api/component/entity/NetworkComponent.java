@@ -30,11 +30,11 @@ import java.util.Set;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Player;
+import org.spout.api.event.ProtocolEvent;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
 import org.spout.api.protocol.NetworkSynchronizer;
-import org.spout.api.protocol.event.ProtocolEvent;
 import org.spout.api.util.StringToUniqueIntegerMap;
 
 public class NetworkComponent extends EntityComponent {
@@ -84,10 +84,7 @@ public class NetworkComponent extends EntityComponent {
 	 */
 	public void callProtocolEvent(ProtocolEvent event, Player... players) {
 		for (Player player : players) {
-			NetworkSynchronizer sync = player.getNetworkSynchronizer();
-			if (sync != null) {
-				sync.callProtocolEvent(event);
-			}
+			Spout.getEventManager().callEvent(event.setPlayer(player));
 		}
 	}
 

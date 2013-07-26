@@ -26,22 +26,15 @@
  */
 package org.spout.api.protocol;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import org.spout.api.Spout;
 
 import org.spout.api.entity.Player;
-import org.spout.api.event.EventHandler;
-import org.spout.api.exception.EventException;
+import org.spout.api.event.ProtocolEvent;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.IntVector3;
-import org.spout.api.protocol.event.ProtocolEvent;
-import org.spout.api.protocol.event.ProtocolEventExecutor;
-import org.spout.api.protocol.event.ProtocolEventListener;
 import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.api.util.OutwardIterator;
@@ -50,7 +43,6 @@ public abstract class NetworkSynchronizer {
 	protected final Player player;
 	protected final Session session;
 	protected final AtomicReference<Protocol> protocol = new AtomicReference<Protocol>(null);
-	private final Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
 	private final AtomicReference<RepositionManager> rm = new AtomicReference<RepositionManager>(NullRepositionManager.getInstance());
 
 	public NetworkSynchronizer(Session session) {
@@ -66,72 +58,8 @@ public abstract class NetworkSynchronizer {
 		return player;
 	}
 
-	protected void registerProtocolEvents(final ProtocolEventListener listener) {
-		for (final Method method : listener.getClass().getDeclaredMethods()) {
-			if (method.isAnnotationPresent(EventHandler.class) && method.getParameterTypes().length == 1) {
-				Class<?> clazz = method.getParameterTypes()[0];
-				if (!ProtocolEvent.class.isAssignableFrom(clazz)) {
-					session.getEngine().getLogger().warning("Invalid protocol event handler attempted to be registered for " + player.getName());
-					continue;
-				}
-
-				Class<?> returnType = method.getReturnType();
-				if (returnType == null || returnType.equals(void.class)) {
-					session.getEngine().getLogger().warning("Protocol event handler not returning a Message tried to be registered for " + player.getName());
-					session.getEngine().getLogger().warning("Please change the return type from 'void' to Message");
-					continue;
-				} else if (!Message.class.isAssignableFrom(returnType)) {
-					Class<?> compType = returnType.getComponentType();
-					if (compType == null || !Message.class.isAssignableFrom(compType)) {
-						session.getEngine().getLogger().warning("Protocol event handler not returning a Message tried to be registered for " + player.getName());
-						continue;
-					}
-				}
-
-				method.setAccessible(true);
-				protocolEventMapping.put(clazz.asSubclass(ProtocolEvent.class), new ProtocolEventExecutor() {
-					@Override
-					public Message[] execute(ProtocolEvent event) throws EventException {
-						try {
-							Object obj = method.invoke(listener, event);
-							if (obj == null) {
-								return null;
-							} else if (obj.getClass().isArray()) {
-								return (Message[]) obj;
-							} else if (Message.class.isAssignableFrom(obj.getClass())) {
-								return new Message[] {(Message) obj};
-							}
-						} catch (InvocationTargetException e) {
-							throw new EventException(e.getCause());
-						} catch (IllegalAccessException e) {
-							throw new EventException(e);
-						}
-						return null;
-					}
-				});
-			}
-		}
-	}
-
-	public boolean callProtocolEvent(ProtocolEvent event) {
-		ProtocolEventExecutor executor = protocolEventMapping.get(event.getClass());
-		if (executor != null) {
-			try {
-				Message[] messages = executor.execute(event);
-				if (messages != null && messages.length > 0) {
-					session.sendAll(messages);
-					return true;
-				}
-			} catch (EventException e) {
-				if (e.getCause() != null) {
-					Throwable t = e.getCause();
-					session.getEngine().getLogger().severe("Error occurred while calling protocol event"
-							+ event.getClass().getSimpleName() + " for player " + player.getName() + ": " + t.getMessage());
-					t.printStackTrace();
-				}
-			}
-		}
-		return false;
+	public void callProtocolEvent(ProtocolEvent event) {
+		Spout.getEventManager().callEvent(event.setPlayer(player));
 	}
 
 	/**

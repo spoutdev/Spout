@@ -37,8 +37,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.jboss.netty.channel.Channel;
 
 import org.spout.api.Server;
+import org.spout.api.Spout;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
+import org.spout.api.event.EventHandler;
+import org.spout.api.event.Listener;
+import org.spout.api.event.Order;
+import org.spout.api.event.ProtocolEvent;
 import org.spout.api.protocol.ClientNullNetworkSynchronizer;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
@@ -55,7 +60,7 @@ import org.spout.engine.entity.SpoutPlayer;
 /**
  * A single connection to the server, which may or may not be associated with a player.
  */
-public abstract class SpoutSession<T extends SpoutEngine> implements Session {
+public abstract class SpoutSession<T extends SpoutEngine> implements Session, Listener {
 	/**
 	 * The number of ticks which are elapsed before a client is disconnected due to a timeout.
 	 */
@@ -145,6 +150,14 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			nullSynchronizer = new ClientNullNetworkSynchronizer((ClientSession) this);
 		}
 		synchronizer = new AtomicReference<NetworkSynchronizer>(nullSynchronizer);
+		Spout.getEventManager().registerEvents(this, Spout.getEngine());
+	}
+
+	@EventHandler(order = Order.MONITOR)
+	public void onProtocolEvent(ProtocolEvent event) {
+		for (Message m : event.getMessages()) {
+			send(m);
+		}
 	}
 
 	/**

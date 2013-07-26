@@ -24,14 +24,49 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.protocol.event;
+package org.spout.api.event;
 
-import org.spout.api.exception.EventException;
+import java.util.List;
+
+import org.spout.api.entity.Player;
 import org.spout.api.protocol.Message;
+import org.spout.api.util.list.concurrent.ConcurrentList;
 
-/**
- *
- */
-public interface ProtocolEventExecutor {
-	public Message[] execute(ProtocolEvent event) throws EventException;
+public abstract class ProtocolEvent extends Event {
+	private List<Message> messages = new ConcurrentList<>();
+	private Player player;
+
+	public ProtocolEvent(Player player) {
+		this.player = player;
+	}
+
+	public ProtocolEvent() {
+	}
+
+	/**
+	 * The returned List is mutable.
+	 *
+	 * @return the messages that will be sent or queued in MONITOR
+	 */
+	public List<Message> getMessages() {
+		return messages;
+	}
+
+	/**
+	 *
+	 * @return the player that the event is for
+	 */
+	public Player getPlayer() {
+		return player;
+	}
+
+	/**
+	 *
+	 * @param player the new player for this event
+	 * @return this instance
+	 */
+	public ProtocolEvent setPlayer(Player player) {
+		this.player = player;
+		return this;
+	}
 }
