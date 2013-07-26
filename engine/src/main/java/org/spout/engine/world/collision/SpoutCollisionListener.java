@@ -36,10 +36,10 @@ import org.spout.api.event.entity.EntityCollideEntityEvent;
 import org.spout.api.event.entity.EntityCollideEvent;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.physics.body.CollisionBody;
-import org.spout.physics.collision.CollisionListener;
 import org.spout.physics.collision.ContactInfo;
+import org.spout.physics.collision.GhostCollisionListener;
 
-public final class SpoutCollisionListener implements CollisionListener {
+public final class SpoutCollisionListener extends GhostCollisionListener {
 	@Override
 	public boolean onCollide(CollisionBody body1, CollisionBody body2, ContactInfo contactInfo) {
 		final Object user1 = body1.getUserPointer();
@@ -60,6 +60,7 @@ public final class SpoutCollisionListener implements CollisionListener {
 			}
 		}
 
+		//Events have priority over callbacks as well as ghost status!
 		if (event != null && Spout.getEventManager().callEvent(event).isCancelled()) {
 			return true;
 		}
@@ -80,6 +81,6 @@ public final class SpoutCollisionListener implements CollisionListener {
 			}
 		}
 		//TODO Support collision groups
-		return false;
+		return super.onCollide(body1, body2, contactInfo);
 	}
 }

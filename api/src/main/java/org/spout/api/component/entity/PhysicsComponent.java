@@ -45,11 +45,12 @@ public abstract class PhysicsComponent extends EntityComponent {
 	 *
 	 * @param mass The mass of the entity
 	 * @param shape The collidable shape of the entity
+	 * @param isGhost Is this entity a detector "ghost" object
 	 * @param isMobile Is this entity mobile (will it ever move)
 	 * @return This component, for chaining
 	 * @throws IllegalArgumentException If mass is < 1f or shape is null
 	 */
-	public abstract PhysicsComponent activate(final float mass, final CollisionShape shape, final boolean isMobile);
+	public abstract PhysicsComponent activate(final float mass, final CollisionShape shape, final boolean isGhost, final boolean isMobile);
 
 	/**
 	 * Deactivates this {@link org.spout.api.entity.Entity}, removing it from the physics space
@@ -391,6 +392,13 @@ public abstract class PhysicsComponent extends EntityComponent {
 	 * @return True if mobile, false if not
 	 */
 	public abstract boolean isMobile();
+
+	/**
+	 * Returns whether the {@link org.spout.api.entity.Entity} is activated with ghost status. <p> By default all entities are not ghosts and this simply means that the body will alert all other
+	 * bodies of collisions but this body will neither inccur a collision nor stop the other bodies from passing through.
+	 * @return True if ghost, false if not
+	 */
+	public abstract boolean isGhost();
 
 	/**
 	 * TODO: Remove during Caustic merge.

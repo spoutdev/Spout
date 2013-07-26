@@ -29,6 +29,7 @@ package org.spout.engine.world.collision;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 import org.spout.engine.world.SpoutRegion;
+import org.spout.physics.body.GhostImmobileRigidBody;
 import org.spout.physics.body.ImmobileRigidBody;
 import org.spout.physics.body.RigidBodyMaterial;
 import org.spout.physics.collision.shape.CollisionShape;
@@ -53,8 +54,14 @@ public final class SpoutLinkedWorldInfo implements LinkedWorldInfo {
 		final Matrix3x3 inertiaTensorLocal = new Matrix3x3();
 		final float mass = material.getMass();
 		shape.computeLocalInertiaTensor(inertiaTensorLocal, mass);
-		final ImmobileRigidBody body = new ImmobileRigidBody(new org.spout.physics.math.Transform(new org.spout.physics.math.Vector3(x + 0.5f, y + 0.5f, z + 0.5f),
-				new org.spout.physics.math.Quaternion(0, 0, 0, 1)), mass, inertiaTensorLocal, shape, region.getSimulation().getNextFreeID());
+		final ImmobileRigidBody body;
+		if (material.isGhost()) {
+			body = new GhostImmobileRigidBody(new org.spout.physics.math.Transform(new org.spout.physics.math.Vector3(x + 0.5f, y + 0.5f, z + 0.5f),
+					new org.spout.physics.math.Quaternion(0, 0, 0, 1)), mass, inertiaTensorLocal, shape, region.getSimulation().getNextFreeID());
+		} else {
+			body = new ImmobileRigidBody(new org.spout.physics.math.Transform(new org.spout.physics.math.Vector3(x + 0.5f, y + 0.5f, z + 0.5f),
+					new org.spout.physics.math.Quaternion(0, 0, 0, 1)), mass, inertiaTensorLocal, shape, region.getSimulation().getNextFreeID());
+		}
 		body.setMaterial(new RigidBodyMaterial(material.getRestitution(), material.getFriction()));
 		body.setUserPointer(block); //It is safe to use block as these bodies are destroyed at the end of the physics tick
 		return body;

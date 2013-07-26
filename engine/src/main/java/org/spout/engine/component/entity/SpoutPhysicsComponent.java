@@ -59,9 +59,10 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	private float mass = 0;
 	private boolean activated = false;
 	private boolean isMobile = true;
+	private boolean isGhost = false;
 
 	@Override
-	public PhysicsComponent activate(final float mass, final CollisionShape shape, final boolean isMobile) {
+	public PhysicsComponent activate(final float mass, final CollisionShape shape, final boolean isGhost, final boolean isMobile) {
 		if (mass < 1f) {
 			throw new IllegalArgumentException("Cannot activate physics with mass less than 1f");
 		}
@@ -71,6 +72,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		if (body != null) {
 			((SpoutRegion) getOwner().getRegion()).removeBody(body);
 		}
+		this.isGhost = isGhost;
 		this.isMobile = isMobile;
 		this.mass = mass;
 		this.shape = shape;
@@ -82,7 +84,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	public void activate(final SpoutRegion region) {
-		body = region.addBody(live, mass, shape, isMobile);
+		body = region.addBody(live, mass, shape, isGhost, isMobile);
 		body.setMaterial(material);
 		body.setUserPointer(getOwner());
 		activated = true;
@@ -354,6 +356,11 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	@Override
 	public boolean isMobile() {
 		return isMobile;
+	}
+
+	@Override
+	public boolean isGhost() {
+		return isGhost;
 	}
 
 	/**

@@ -78,6 +78,7 @@ public class BlockMaterial extends Material implements Placeable {
 	private float mass = 1;
 	private float friction = ReactDefaults.DEFAULT_FRICTION_COEFFICIENT;
 	private float restitution = ReactDefaults.DEFAULT_RESTITUTION_COEFFICIENT;
+	private boolean isGhost = false;
 
 	public BlockMaterial(short dataMask, String name, String model, CollisionShape shape, Class<? extends BlockComponent>... components) {
 		super(dataMask, name, model);
@@ -551,6 +552,29 @@ public class BlockMaterial extends Material implements Placeable {
 
 	public Set<Class<? extends BlockComponent>> getComponents() {
 		return components;
+	}
+
+	/**
+	 * Returns if this BlockMaterial is a ghost object.
+	 *
+	 * @return True if ghost, false if not
+	 */
+	public boolean isGhost() {
+		return isGhost;
+	}
+
+	/**
+	 * Sets if this BlockMaterial should be a detector "ghost" material.
+	 * <p>
+	 * This means any collisions with this BlockMaterial will not incur adjustments for the {@link Entity} which collided: instead callbacks will be alerted and the Entity will be able to move freely
+	 * through this BlockMaterial (by default).
+	 * <p>
+	 * If this BlockMaterial has a null {@link CollisionShape}, this setting will have no effect until a reference is set.
+	 *
+	 * @param isGhost
+	 */
+	public void setGhost(final boolean isGhost) {
+		this.isGhost = isGhost;
 	}
 
 	/**

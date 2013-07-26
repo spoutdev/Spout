@@ -1685,10 +1685,16 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return simulation;
 	}
 
-	public RigidBody addBody(final Transform transform, final float mass, final CollisionShape shape, final boolean isMobile) {
+	public RigidBody addBody(final Transform transform, final float mass, final CollisionShape shape, final boolean isGhost, final boolean isMobile) {
 		if (isMobile) {
+			if (isGhost) {
+				return simulation.createGhostMobileRigidBody(new org.spout.physics.math.Transform(ReactConverter.toReactVector3(transform.getPosition()), new Quaternion(0, 0, 0, 1)), mass, shape);
+			}
 			return simulation.createMobileRigidBody(new org.spout.physics.math.Transform(ReactConverter.toReactVector3(transform.getPosition()), new Quaternion(0, 0, 0, 1)), mass, shape);
 		} else {
+			if (isGhost) {
+				return simulation.createGhostImmobileRigidBody(new org.spout.physics.math.Transform(ReactConverter.toReactVector3(transform.getPosition()), new Quaternion(0, 0, 0, 1)), mass, shape);
+			}
 			return simulation.createImmobileRigidBody(new org.spout.physics.math.Transform(ReactConverter.toReactVector3(transform.getPosition()), new Quaternion(0, 0, 0, 1)), mass, shape);
 		}
 	}
