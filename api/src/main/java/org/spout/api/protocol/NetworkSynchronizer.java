@@ -58,7 +58,7 @@ public abstract class NetworkSynchronizer {
 	}
 
 	public void callProtocolEvent(ProtocolEvent event) {
-		session.getEngine().getEventManager().callEvent(event.setTarget(player));
+		player.getNetwork().callProtocolEvent(event, player);
 	}
 
 	/**

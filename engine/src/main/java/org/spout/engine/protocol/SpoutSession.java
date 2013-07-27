@@ -60,7 +60,7 @@ import org.spout.engine.entity.SpoutPlayer;
 /**
  * A single connection to the server, which may or may not be associated with a player.
  */
-public abstract class SpoutSession<T extends SpoutEngine> implements Session, Listener {
+public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	/**
 	 * The number of ticks which are elapsed before a client is disconnected due to a timeout.
 	 */
@@ -150,14 +150,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session, Li
 			nullSynchronizer = new ClientNullNetworkSynchronizer((ClientSession) this);
 		}
 		synchronizer = new AtomicReference<NetworkSynchronizer>(nullSynchronizer);
-		Spout.getEventManager().registerEvents(this, Spout.getEngine());
-	}
-
-	@EventHandler(order = Order.MONITOR)
-	public void onProtocolEvent(ProtocolEvent event) {
-		for (Message m : event.getMessages()) {
-			send(m);
-		}
 	}
 
 	/**

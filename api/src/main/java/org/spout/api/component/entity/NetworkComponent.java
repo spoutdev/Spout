@@ -34,6 +34,7 @@ import org.spout.api.event.ProtocolEvent;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
+import org.spout.api.protocol.Message;
 import org.spout.api.util.StringToUniqueIntegerMap;
 
 public class NetworkComponent extends EntityComponent {
@@ -83,7 +84,9 @@ public class NetworkComponent extends EntityComponent {
 	 */
 	public void callProtocolEvent(ProtocolEvent event, Player... players) {
 		for (Player player : players) {
-			Spout.getEventManager().callEvent(event.setTarget(player));
+			for (Message m : Spout.getEventManager().callEvent(event).getMessages()) {
+				player.getSession().send(m);
+			}
 		}
 	}
 
