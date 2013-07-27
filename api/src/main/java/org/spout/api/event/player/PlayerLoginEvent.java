@@ -32,7 +32,7 @@ import org.spout.api.event.HandlerList;
 /**
  * Called when a player is attempting to log in.<br/>
  */
-public class PlayerLoginEvent extends PlayerEvent {
+public class PlayerLoginEvent extends AbstractPlayerEvent {
 	private static HandlerList handlers = new HandlerList();
 	private String message;
 	private boolean allowed = true;

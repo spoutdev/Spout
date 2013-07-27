@@ -24,18 +24,22 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.entity;
+package org.spout.api.event.player;
 
-import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
+import org.spout.api.event.Event;
 
 /**
- * @author zml2008
+ * Represents a player-related event.
  */
-public interface EntityEvent {
-	/**
-	 * Gets the entity associated with this event.
-	 *
-	 * @return The entity associated with the event.
-	 */
-	Entity getEntity();
+public abstract class AbstractPlayerEvent extends Event implements PlayerEvent {
+	private final Player player;
+
+	public AbstractPlayerEvent(Player p) {
+		player = p;
+	}
+
+	public Player getPlayer() {
+		return player;
+	}
 }

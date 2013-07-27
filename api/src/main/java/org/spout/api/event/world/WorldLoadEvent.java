@@ -32,7 +32,7 @@ import org.spout.api.geo.World;
 /**
  * Called when a {@link World} is loaded into the server
  */
-public class WorldLoadEvent extends WorldEvent {
+public class WorldLoadEvent extends AbstractWorldEvent {
 	private static final HandlerList handlers = new HandlerList();
 
 	public WorldLoadEvent(World p) {

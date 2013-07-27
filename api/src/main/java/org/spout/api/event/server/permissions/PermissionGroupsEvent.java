@@ -27,14 +27,14 @@
 package org.spout.api.event.server.permissions;
 
 import org.spout.api.event.HandlerList;
-import org.spout.api.event.world.WorldEvent;
+import org.spout.api.event.world.AbstractWorldEvent;
 import org.spout.api.geo.World;
 import org.spout.api.permissions.PermissionsSubject;
 
 /**
  * This event is called when {@link PermissionsSubject#isInGroup(String)} is called.
  */
-public class PermissionGroupsEvent extends WorldEvent {
+public class PermissionGroupsEvent extends AbstractWorldEvent {
 	private static final HandlerList handlers = new HandlerList();
 	private final PermissionsSubject subject;
 	private String[] groups;

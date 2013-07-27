@@ -34,10 +34,10 @@ import org.spout.api.util.list.concurrent.ConcurrentList;
 
 public abstract class ProtocolEvent extends Event {
 	private List<Message> messages = new ConcurrentList<>();
-	private Player player;
+	private Player target;
 
-	public ProtocolEvent(Player player) {
-		this.player = player;
+	public ProtocolEvent(Player target) {
+		this.target = target;
 	}
 
 	public ProtocolEvent() {
@@ -56,17 +56,17 @@ public abstract class ProtocolEvent extends Event {
 	 *
 	 * @return the player that the event is for
 	 */
-	public Player getPlayer() {
-		return player;
+	public Player getTarget() {
+		return target;
 	}
 
 	/**
 	 *
-	 * @param player the new player for this event
+	 * @param target the new player for this event
 	 * @return this instance
 	 */
-	public ProtocolEvent setPlayer(Player player) {
-		this.player = player;
+	public ProtocolEvent setTarget(Player target) {
+		this.target = target;
 		return this;
 	}
 }

@@ -24,18 +24,22 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.entity;
+package org.spout.api.event.world;
 
-import org.spout.api.entity.Entity;
+import org.spout.api.event.Event;
+import org.spout.api.geo.World;
 
 /**
- * @author zml2008
+ * Represents a world-related event.
  */
-public interface EntityEvent {
-	/**
-	 * Gets the entity associated with this event.
-	 *
-	 * @return The entity associated with the event.
-	 */
-	Entity getEntity();
+public abstract class AbstractWorldEvent extends Event implements WorldEvent {
+	private final World world;
+
+	public AbstractWorldEvent(World p) {
+		world = p;
+	}
+
+	public World getWorld() {
+		return world;
+	}
 }

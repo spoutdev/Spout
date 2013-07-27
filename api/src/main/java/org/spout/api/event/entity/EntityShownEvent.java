@@ -30,7 +30,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
 
-public class EntityShownEvent extends EntityEvent {
+public class EntityShownEvent extends AbstractEntityEvent {
 	private static HandlerList handlers = new HandlerList();
 	private Player hiddenFrom;
 

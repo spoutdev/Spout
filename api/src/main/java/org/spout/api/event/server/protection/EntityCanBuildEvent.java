@@ -29,15 +29,15 @@ package org.spout.api.event.server.protection;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
-import org.spout.api.event.entity.EntityEvent;
+import org.spout.api.event.entity.AbstractEntityEvent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 
 /**
- * This {@link EntityEvent} is designed to be fired by plugins that wish to check if an entity can place the given block at the current {@link Point}. Protection plugins should utilize this event to
+ * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can place the given block at the current {@link Point}. Protection plugins should utilize this event to
  * deny entities building in specific locations.
  */
-public class EntityCanBuildEvent extends EntityEvent implements Cancellable {
+public class EntityCanBuildEvent extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 	private final Point point;
 	private final BlockMaterial material;

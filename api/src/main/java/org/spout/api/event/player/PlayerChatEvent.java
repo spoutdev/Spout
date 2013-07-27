@@ -33,7 +33,7 @@ import org.spout.api.event.HandlerList;
 /**
  * Called when a player speaks in chat. Implements {@link Cancellable}. Canceling this event will prevent the message from being sent to other players.
  */
-public class PlayerChatEvent extends PlayerEvent implements Cancellable {
+public class PlayerChatEvent extends AbstractPlayerEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 	private String message;
 

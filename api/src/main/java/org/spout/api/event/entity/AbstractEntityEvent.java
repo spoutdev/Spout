@@ -27,15 +27,19 @@
 package org.spout.api.event.entity;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.event.Event;
 
 /**
- * @author zml2008
+ * Represents an {@link Entity} related event.
  */
-public interface EntityEvent {
-	/**
-	 * Gets the entity associated with this event.
-	 *
-	 * @return The entity associated with the event.
-	 */
-	Entity getEntity();
+public abstract class AbstractEntityEvent extends Event implements EntityEvent {
+	private final Entity entity;
+
+	public AbstractEntityEvent(Entity e) {
+		entity = e;
+	}
+
+	public Entity getEntity() {
+		return entity;
+	}
 }

@@ -60,7 +60,7 @@ import org.spout.api.model.animation.Animation;
 /**
  * Called when an entity is teleported.
  */
-public class AnimationEndEvent extends EntityEvent implements Cancellable {
+public class AnimationEndEvent extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 	private final Animation a;
 

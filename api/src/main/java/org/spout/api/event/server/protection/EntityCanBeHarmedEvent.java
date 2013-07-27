@@ -30,13 +30,13 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.Cause;
 import org.spout.api.event.HandlerList;
-import org.spout.api.event.entity.EntityEvent;
+import org.spout.api.event.entity.AbstractEntityEvent;
 
 /**
- * This {@link EntityEvent} is designed to be fired by plugins that wish to check if an entity can be damaged by the given {@link Reason}. Protection plugins should utilize this event to prevent
+ * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can be damaged by the given {@link Reason}. Protection plugins should utilize this event to prevent
  * entities from being allowed to take damage from specific causes.
  */
-public class EntityCanBeHarmedEvent extends EntityEvent implements Cancellable {
+public class EntityCanBeHarmedEvent extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 	private final Cause<?> cause;
 

@@ -35,7 +35,7 @@ import org.spout.api.geo.World;
  *
  * This is not to be confused with {@see org.spout.api.event.entity.EntityDespawnEvent} where that event is fired when the entity is de-spawned.
  */
-public class EntityExitWorldEvent extends WorldEvent {
+public class EntityExitWorldEvent extends AbstractWorldEvent {
 	private static final HandlerList handlers = new HandlerList();
 	private final Entity entity;
 

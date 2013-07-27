@@ -26,25 +26,16 @@
  */
 package org.spout.api.event.world;
 
-import org.spout.api.event.Event;
 import org.spout.api.geo.World;
 
 /**
- * Represents a world-related event.
+ * @author zml2008
  */
-public abstract class WorldEvent extends Event {
-	private final World world;
-
-	public WorldEvent(World p) {
-		world = p;
-	}
-
+public interface WorldEvent {
 	/**
 	 * Gets the world associated with this event.
 	 *
 	 * @return The world associated with the event.
 	 */
-	public World getWorld() {
-		return world;
-	}
+	World getWorld();
 }

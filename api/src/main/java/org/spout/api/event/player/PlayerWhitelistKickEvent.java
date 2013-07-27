@@ -29,7 +29,7 @@ package org.spout.api.event.player;
 import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
 
-public class PlayerWhitelistKickEvent extends PlayerEvent {
+public class PlayerWhitelistKickEvent extends AbstractPlayerEvent {
 	private static HandlerList handlers = new HandlerList();
 	private String message;
 

@@ -60,7 +60,7 @@ import org.spout.api.geo.discrete.Point;
 /**
  * Called when an entity is teleported.
  */
-public class EntityTeleportEvent extends EntityEvent implements Cancellable {
+public class EntityTeleportEvent extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 	private final Point from;
 	private Point to;

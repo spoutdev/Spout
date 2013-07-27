@@ -35,7 +35,7 @@ import org.spout.api.geo.World;
  *
  * This is not to be confused with {@see org.spout.api.event.entity.EntitySpawnEvent} where that event is fired when the entity is initially spawned.
  */
-public class EntityEnterWorldEvent extends WorldEvent {
+public class EntityEnterWorldEvent extends AbstractWorldEvent {
 	private static final HandlerList handlers = new HandlerList();
 	private final Entity entity;
 

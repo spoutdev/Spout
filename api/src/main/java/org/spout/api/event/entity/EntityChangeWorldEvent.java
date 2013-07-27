@@ -33,7 +33,7 @@ import org.spout.api.geo.World;
 /**
  * Called when an {@link Entity} changes its {@link World}.
  */
-public class EntityChangeWorldEvent extends EntityEvent {
+public class EntityChangeWorldEvent extends AbstractEntityEvent {
 	private static HandlerList handlers = new HandlerList();
 	private final World previous;
 	private World target;

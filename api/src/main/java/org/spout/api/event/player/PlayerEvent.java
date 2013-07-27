@@ -27,19 +27,10 @@
 package org.spout.api.event.player;
 
 import org.spout.api.entity.Player;
-import org.spout.api.event.Event;
 
 /**
- * Represents a player-related event.
+ * @author zml2008
  */
-public abstract class PlayerEvent extends Event {
-	private final Player player;
-
-	public PlayerEvent(Player p) {
-		player = p;
-	}
-
-	public Player getPlayer() {
-		return player;
-	}
+public interface PlayerEvent {
+	Player getPlayer();
 }

@@ -29,15 +29,15 @@ package org.spout.api.event.server.protection;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
-import org.spout.api.event.entity.EntityEvent;
+import org.spout.api.event.entity.AbstractEntityEvent;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 
 /**
- * This {@link EntityEvent} is designed to be fired by plugins that wish to check if an entity can use the given block. Protection plugins should utilize this event to let other plugins know about
+ * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can use the given block. Protection plugins should utilize this event to let other plugins know about
  * where an entity can or can't use specific blocks.
  */
-public class EntityCanInteractBlockEvent extends EntityEvent implements Cancellable {
+public class EntityCanInteractBlockEvent extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 	private final Block block;
 	private final BlockMaterial material;

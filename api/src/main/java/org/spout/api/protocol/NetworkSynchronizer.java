@@ -28,7 +28,6 @@ package org.spout.api.protocol;
 
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
-import org.spout.api.Spout;
 
 import org.spout.api.entity.Player;
 import org.spout.api.event.ProtocolEvent;
@@ -59,7 +58,7 @@ public abstract class NetworkSynchronizer {
 	}
 
 	public void callProtocolEvent(ProtocolEvent event) {
-		Spout.getEventManager().callEvent(event.setPlayer(player));
+		session.getEngine().getEventManager().callEvent(event.setTarget(player));
 	}
 
 	/**

@@ -33,7 +33,7 @@ import org.spout.api.util.access.BanType;
 /**
  * Called when a player is kicked for being banned
  */
-public class PlayerBanKickEvent extends PlayerEvent {
+public class PlayerBanKickEvent extends AbstractPlayerEvent {
 	private static HandlerList handlers = new HandlerList();
 	private BanType type;
 	private String message;

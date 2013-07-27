@@ -31,7 +31,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 
-public abstract class EntityCollideEvent<T> extends EntityEvent implements Cancellable {
+public abstract class EntityCollideEvent<T> extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 	private final T collided;
 	private final SpoutContactInfo info;

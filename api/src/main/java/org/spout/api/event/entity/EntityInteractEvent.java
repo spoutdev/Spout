@@ -34,7 +34,7 @@ import org.spout.api.geo.discrete.Point;
 /**
  * Called when an Entity interacts with the specified generic type.
  */
-public class EntityInteractEvent<T> extends EntityEvent implements Cancellable {
+public class EntityInteractEvent<T> extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 	private final T interacted;
 	private final Point point;

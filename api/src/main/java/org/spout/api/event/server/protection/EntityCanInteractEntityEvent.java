@@ -29,13 +29,13 @@ package org.spout.api.event.server.protection;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
-import org.spout.api.event.entity.EntityEvent;
+import org.spout.api.event.entity.AbstractEntityEvent;
 
 /**
- * This {@link EntityEvent} is designed to be fired by plugins that wish to check if an entity can interact with the given other entity. Protection plugins should utilize this event to let other
+ * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can interact with the given other entity. Protection plugins should utilize this event to let other
  * plugins know about where an entity can or can't interact with a specific entity.
  */
-public class EntityCanInteractEntityEvent extends EntityEvent implements Cancellable {
+public class EntityCanInteractEntityEvent extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 	private final Entity interactedEntity;
 

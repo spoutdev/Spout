@@ -27,9 +27,9 @@
 package org.spout.api.event.player.input;
 
 import org.spout.api.entity.Player;
-import org.spout.api.event.player.PlayerEvent;
+import org.spout.api.event.player.AbstractPlayerEvent;
 
-public abstract class PlayerInputEvent extends PlayerEvent {
+public abstract class PlayerInputEvent extends AbstractPlayerEvent {
 	public PlayerInputEvent(Player p) {
 		super(p);
 	}

@@ -28,13 +28,13 @@ package org.spout.api.event.server.protection;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.event.HandlerList;
-import org.spout.api.event.entity.EntityEvent;
+import org.spout.api.event.entity.AbstractEntityEvent;
 import org.spout.api.geo.Protection;
 
 /**
- * An {@link EntityEvent} that should be fired by a plugin when an entity enters a protection.
+ * An {@link org.spout.api.event.entity.AbstractEntityEvent} that should be fired by a plugin when an entity enters a protection.
  */
-public class EntityEnterProtection extends EntityEvent {
+public class EntityEnterProtection extends AbstractEntityEvent {
 	private static HandlerList handlers = new HandlerList();
 	private final Protection protection;
 	private String message;

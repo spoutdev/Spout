@@ -33,7 +33,7 @@ import org.spout.api.geo.cuboid.Region;
 /**
  * Called when a {@link Region} is unloaded from the server.
  */
-public class RegionUnloadEvent extends WorldEvent {
+public class RegionUnloadEvent extends AbstractWorldEvent {
 	private static HandlerList handlers = new HandlerList();
 	private final Region region;
 

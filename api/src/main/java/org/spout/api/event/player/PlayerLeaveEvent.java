@@ -32,7 +32,7 @@ import org.spout.api.event.HandlerList;
 /**
  * Called when a player leaves the server, including when they are kicked.
  */
-public class PlayerLeaveEvent extends PlayerEvent {
+public class PlayerLeaveEvent extends AbstractPlayerEvent {
 	private static HandlerList handlers = new HandlerList();
 	private String message;
 
