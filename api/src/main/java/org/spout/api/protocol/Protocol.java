@@ -58,7 +58,7 @@ public abstract class Protocol {
 		this.handlerLookup = handlerLookup;
 		this.defaultPort = defaultPort;
 		this.name = name;
-		this.dynamicPacketLookup = SyncedStringMap.create(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE, this.name + "ProtocolDynamicPackets");
+		this.dynamicPacketLookup = SyncedStringMap.create(null, new MemoryStore<Integer>(), Integer.MAX_VALUE, Integer.MAX_VALUE, this.name + "ProtocolDynamicPackets");
 	}
 
 	/**

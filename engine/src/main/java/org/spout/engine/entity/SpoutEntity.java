@@ -95,7 +95,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	private Class<? extends Component>[] initialComponents = null;
 
 	public SpoutEntity(Engine engine, Transform transform) {
-		this(engine, transform, -1, null, true, (byte[]) null, (Class<? extends Component>[]) null);
+		this(engine, transform, 1, null, true, (byte[]) null, (Class<? extends Component>[]) null);
 	}
 
 	public SpoutEntity(Engine engine, Point point) {
@@ -103,7 +103,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	public SpoutEntity(Engine engine, Point point, boolean load) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), -1, null, load, (byte[]) null, (Class<? extends Component>[]) null);
+		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), 1, null, load, (byte[]) null, (Class<? extends Component>[]) null);
 	}
 
 	protected SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {

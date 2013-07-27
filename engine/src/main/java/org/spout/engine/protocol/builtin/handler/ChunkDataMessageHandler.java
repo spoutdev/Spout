@@ -57,7 +57,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 
 			BiomeManager manager;
 			try {
-				manager = managerClass.getConstructor(int.class, int.class, int.class).newInstance(message.getX(), message.getY(), message.getZ());
+				manager = managerClass.getConstructor(int.class, int.class).newInstance(message.getX(), message.getZ());
 			} catch (InstantiationException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalAccessException e) {
