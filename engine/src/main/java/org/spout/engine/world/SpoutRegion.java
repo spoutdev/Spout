@@ -73,6 +73,9 @@ import org.spout.api.math.IntVector3;
 import org.spout.api.math.ReactConverter;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
+import org.spout.api.protocol.event.ChunkDatatableSendEvent;
+import org.spout.api.protocol.event.ChunkSendEvent;
+import org.spout.api.protocol.event.UpdateBlockEvent;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
@@ -797,13 +800,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 					}
 
 					try {
-						synchronizer.updateBlock(chunk, (int) block.getX(), (int) block.getY(), (int) block.getZ());
+						synchronizer.callProtocolEvent(new UpdateBlockEvent(chunk, block.getFloorX(), block.getFloorY(), block.getFloorZ()));
 					} catch (Exception e) {
 						Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
 					}
 				}
 			} else {
-				synchronizer.sendChunk(chunk);
+				synchronizer.callProtocolEvent(new ChunkSendEvent(chunk));
 			}
 		}
 	}
@@ -869,7 +872,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 						if (Spout.getPlatform() == Platform.SERVER) {
 							if (!chunk.getDataMap().getDeltaMap().isEmpty()) {
 								for (Player entity : chunk.getObservingPlayers()) {
-									((ServerNetworkSynchronizer) entity.getSession().getNetworkSynchronizer()).sendChunkDatatable(chunk);
+									entity.getSession().getNetworkSynchronizer().callProtocolEvent(new ChunkDatatableSendEvent(chunk));
 								}
 								chunk.getDataMap().resetDelta();
 							}

@@ -37,6 +37,8 @@ import java.util.Set;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.EventHandler;
+import org.spout.api.event.Listener;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -51,6 +53,12 @@ import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
+import org.spout.api.protocol.event.ChunkDatatableSendEvent;
+import org.spout.api.protocol.event.ChunkFreeEvent;
+import org.spout.api.protocol.event.ChunkSendEvent;
+import org.spout.api.protocol.event.PositionSendEvent;
+import org.spout.api.protocol.event.UpdateBlockEvent;
+import org.spout.api.protocol.event.WorldChangeProtocolEvent;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
@@ -60,7 +68,7 @@ import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 import org.spout.engine.world.SpoutChunk;
 
-public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
+public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer implements Listener {
 	private Point lastChunkCheck = Point.invalid;
 	// Base points used so as not to load chunks unnecessarily
 	private final Set<Point> chunkInitQueue = new LinkedHashSet<Point>();
@@ -86,6 +94,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 
 	public SpoutServerNetworkSynchronizer(Session session) {
 		super(session, 3);
+		Spout.getEventManager().registerEvents(this, Spout.getEngine());
 	}
 
 	@Override
@@ -173,14 +182,14 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 		if (worldChanged) {
 			Point ep = player.getPhysics().getPosition();
 			resetChunks();
-			worldChanged(ep.getWorld());
+			session.send(new WorldChangeMessage(ep.getWorld(), session.getPlayer().getPhysics().getTransform(), ep.getWorld().getData()));
 			worldChanged = false;
 		} else {
 			unsendable.clear();
 
 			for (Point p : chunkFreeQueue) {
 				if (initializedChunks.remove(p)) {
-					freeChunk(p);
+					session.send(new ChunkDataMessage(p.getChunkX(), p.getChunkY(), p.getChunkZ()));
 					activeChunks.remove(p);
 				}
 			}
@@ -192,7 +201,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 
 			for (Point p : chunkInitQueue) {
 				if (initializedChunks.add(p)) {
-					initChunk(p);
+					// TODO: protocol - init chunks?
 				}
 			}
 
@@ -211,7 +220,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 			}
 
 			if (player.getPhysics().isTransformDirty() && sync) {
-				sendPosition(player.getPhysics().getPosition(), player.getPhysics().getRotation());
+				session.send(new UpdateEntityMessage(player.getId(), new Transform(player.getPhysics().getPosition(), player.getPhysics().getRotation(), Vector3.ONE), UpdateEntityMessage.UpdateAction.TRANSFORM, getRepositionManager()));
 				sync = false;
 			}
 
@@ -235,28 +244,20 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 		if (unsendable.contains(p)) {
 			return i;
 		}
-		if (canSendChunk(c)) {
-			Collection<Chunk> sent = sendChunk(c, true);
-			activeChunks.add(c.getBase());
-			i.remove();
-			if (sent != null) {
-				for (Chunk s : sent) {
-					Point base = s.getBase();
-					boolean removed = priorityChunkSendQueue.remove(base);
-					removed |= chunkSendQueue.remove(base);
-					if (removed) {
-						if (initializedChunks.contains(base)) {
-							activeChunks.add(base);
-						}
-						chunksSent++;
-						i = queue.iterator();
-					}
-				}
+		session.send(new ChunkDataMessage(c.getSnapshot(ChunkSnapshot.SnapshotType.BOTH, ChunkSnapshot.EntityType.NO_ENTITIES, ChunkSnapshot.ExtraData.BIOME_DATA)));
+		activeChunks.add(c.getBase());
+		i.remove();
+		Point base = c.getBase();
+		boolean removed = priorityChunkSendQueue.remove(base);
+		removed |= chunkSendQueue.remove(base);
+		if (removed) {
+			if (initializedChunks.contains(base)) {
+				activeChunks.add(base);
 			}
 			chunksSent++;
-		} else {
-			unsendable.add(p);
+			i = queue.iterator();
 		}
+		chunksSent++;
 		return i;
 	}
 
@@ -361,39 +362,34 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 		return chunks;
 	}
 
-	@Override
-	protected boolean canSendChunk(Chunk c) {
-		return true;
+	@EventHandler
+	public void onChunkSend(ChunkSendEvent event) {
+		event.getMessages().add(new ChunkDataMessage(event.getChunk().getSnapshot(ChunkSnapshot.SnapshotType.BOTH, ChunkSnapshot.EntityType.NO_ENTITIES, ChunkSnapshot.ExtraData.BIOME_DATA)));
 	}
 
-	@Override
-	public Collection<Chunk> doSendChunk(Chunk c) {
-		session.send(new ChunkDataMessage(c.getSnapshot(ChunkSnapshot.SnapshotType.BOTH, ChunkSnapshot.EntityType.NO_ENTITIES, ChunkSnapshot.ExtraData.BIOME_DATA)));
-		return Collections.singleton(c);
+	@EventHandler
+	public void onChunkFree(ChunkFreeEvent event) {
+		event.getMessages().add(new ChunkDataMessage(event.getPoint().getChunkX(), event.getPoint().getChunkY(), event.getPoint().getChunkZ()));
 	}
 
-	@Override
-	protected void freeChunk(Point p) {
-		session.send(new ChunkDataMessage(p.getChunkX(), p.getChunkY(), p.getChunkZ()));
+	@EventHandler
+	public void onPositionSend(PositionSendEvent event) {
+		event.getMessages().add(new UpdateEntityMessage(player.getId(), new Transform(event.getPoint(), event.getRotation(), Vector3.ONE), UpdateEntityMessage.UpdateAction.TRANSFORM, getRepositionManager()));
 	}
 
-	@Override
-	protected void sendPosition(Point p, Quaternion rot) {
-		session.send(new UpdateEntityMessage(player.getId(), new Transform(p, rot, Vector3.ONE), UpdateEntityMessage.UpdateAction.TRANSFORM, getRepositionManager()));
+	@EventHandler
+	public void onWorldChange(WorldChangeProtocolEvent event) {
+		event.getMessages().add(new WorldChangeMessage(event.getWorld(), session.getPlayer().getPhysics().getTransform(), event.getWorld().getData()));
+	}
+	
+	@EventHandler
+	public void onBlockUpdate(UpdateBlockEvent event) {
+		event.getMessages().add(new BlockUpdateMessage(event.getChunk().getBlock(event.getX(), event.getY(), event.getZ())));
 	}
 
-	@Override
-	protected void worldChanged(World world) {
-		session.send(new WorldChangeMessage(world, session.getPlayer().getPhysics().getTransform(), world.getData()));
-	}
-
-	@Override
-	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
-		session.send(new BlockUpdateMessage(chunk.getBlock(x, y, z)));
-	}
-
-	@Override
-	protected void initChunk(Point p) {
+	@EventHandler
+	public void onChunkDatatableSend(ChunkDatatableSendEvent event) {
+		event.getMessages().add(new ChunkDatatableMessage(((SpoutChunk) event.getChunk())));
 	}
 
 	@Override
@@ -424,10 +420,5 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer {
 			protocol = SpoutEntityProtocol.INSTANCE;
 		}
 		return protocol;
-	}
-
-	@Override
-	public void sendChunkDatatable(Chunk c) {
-		session.send(new ChunkDatatableMessage(((SpoutChunk) c)));
 	}
 }

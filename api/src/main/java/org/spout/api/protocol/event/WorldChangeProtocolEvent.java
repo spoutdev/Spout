@@ -24,23 +24,30 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.protocol;
+package org.spout.api.protocol.event;
 
-import java.util.Collections;
-import java.util.Set;
+import org.spout.api.event.HandlerList;
+import org.spout.api.event.ProtocolEvent;
+import org.spout.api.geo.World;
 
-import org.spout.api.geo.cuboid.Chunk;
+public class WorldChangeProtocolEvent extends ProtocolEvent {
+	private static final HandlerList handlers = new HandlerList();
+	private final World world;
 
-/**
- * An implementation of ServerNetworkSynchronizer that doesn't do anything used for when a ServerNetworkSynchronizer has not been set
- */
-public class ServerNullNetworkSynchronizer extends ServerNetworkSynchronizer {
-	public ServerNullNetworkSynchronizer(Session session) {
-		super(session, 0);
+	public WorldChangeProtocolEvent(World chunk) {
+		this.world = chunk;
+	}
+
+	public World getWorld() {
+		return world;
 	}
 
 	@Override
-	public Set<Chunk> getActiveChunks() {
-		return Collections.EMPTY_SET;
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

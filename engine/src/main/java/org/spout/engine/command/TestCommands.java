@@ -85,6 +85,7 @@ import org.spout.api.model.animation.Skeleton;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
+import org.spout.api.protocol.event.ChunkSendEvent;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.component.entity.SpoutModelComponent;
@@ -468,7 +469,7 @@ public class TestCommands {
 				Set<Chunk> chunks = network.getActiveChunks();
 				for (Chunk c : chunks) {
 					count++;
-					network.sendChunk(c);
+					network.callProtocolEvent(new ChunkSendEvent(c));
 					if (one) {
 						break outer;
 					}
