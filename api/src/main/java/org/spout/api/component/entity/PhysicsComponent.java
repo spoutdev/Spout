@@ -239,22 +239,26 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract PhysicsComponent impulse(Vector3 impulse);
 
 	/**
-	 * Force is, as it sounds, an instant force to the Entity. A few rules apply. <p/> - The entity must have a mass > 0 (ie not a static object). - The offset is in world space. This means the force is
-	 * applied from the offset provided. - Entities of higher masses need greater forces to move. Can't get movement to occur? Lower mass or apply greater force. <p> For example, if I want to propel an
-	 * entity right in an instant, such as simulating a two entities hitting each other, I would do the following. <p> // Vector3.RIGHT = 1, 0, 0 physics.force(Vector3.RIGHT, new
-	 * Vector3(getPosition().subtract(getTransform.getRight())); // The above forces the Entity's momentum by 1 every simulation step (if applied in onTick for example).
+	 * Force is, as it sounds, an instant force to the Entity. A few rules apply.
+	 * <p/>
+	 * - The entity must be mobile (mass > 0)
+	 * - Entities of higher masses need greater forces to move
+	 * <p/>
+	 * Can't get movement to occur? Lower the mass or increase the force.
 	 *
 	 * @param force The Vector3 force to apply.
-	 * @param offset The offset within the world to apply the force from.
+	 * @param ignoreGravity True to force without gravity, false to have gravity affect the force
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent force(Vector3 force, Vector3 offset);
+	public abstract PhysicsComponent force(Vector3 force, boolean ignoreGravity);
 
 	/**
-	 * Force is, as it sounds, an instant force to the Entity. A few rules apply. <p/> - The entity must have a mass > 0 (ie not a static object). - The offset is in world space. This means the force is
-	 * applied from the offset provided. - Entities of higher masses need greater forces to move. Can't get movement to occur? Lower mass or apply greater force. <p/> For example, if I want to propel an
-	 * entity right in an instant, such as simulating a two entities hitting each other, I would do the following. <p/> // Vector3.RIGHT = 1, 0, 0 physics.force(Vector3.RIGHT, new
-	 * Vector3(getPosition().subtract(getTransform.getRight())); // The above forces the Entity's momentum by 1 every simulation step (if applied in onTick for example).
+	 * Force is, as it sounds, an instant force to the Entity. A few rules apply.
+	 * <p/>
+	 * - The entity must be mobile (mass > 0)
+	 * - Entities of higher masses need greater forces to move
+	 * <p/>
+	 * Can't get movement to occur? Lower the mass or increase the force. Lastly, this method forces with gravity (it doesn't ignore it).
 	 *
 	 * @param force The Vector3 force to apply.
 	 * @return This component, so you can chain.

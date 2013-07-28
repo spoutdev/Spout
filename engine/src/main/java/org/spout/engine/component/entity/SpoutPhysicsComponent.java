@@ -222,17 +222,21 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public PhysicsComponent force(Vector3 force, Vector3 offset) {
-		throw new UnsupportedOperationException("Not implemented yet");
+	public PhysicsComponent force(Vector3 force, boolean ignoreGravity) {
+		if (body == null) {
+			throw new IllegalStateException("Cannot force a null body. If the entity is activated, make sure it is spawned as well");
+		}
+		if (ignoreGravity) {
+			body.setExternalForce(ReactConverter.toReactVector3(force));
+		} else {
+			body.getExternalForce().add(ReactConverter.toReactVector3(force));
+		}
+		return this;
 	}
 
 	@Override
 	public PhysicsComponent force(Vector3 force) {
-		if (body == null) {
-			throw new IllegalStateException("Cannot force a null body. If the entity is activated, make sure it is spawned as well");
-		}
-		body.setExternalForce(ReactConverter.toReactVector3(force));
-		return this;
+		return force(force, false);
 	}
 
 	@Override
