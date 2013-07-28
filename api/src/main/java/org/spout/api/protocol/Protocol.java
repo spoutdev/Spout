@@ -53,12 +53,12 @@ public abstract class Protocol {
 	private final String name;
 	private final int defaultPort;
 
-	public Protocol(String name, int defaultPort, CodecLookupService codecLookup, HandlerLookupService handlerLookup) {
-		this.codecLookup = codecLookup;
-		this.handlerLookup = handlerLookup;
-		this.defaultPort = defaultPort;
+	public Protocol(String name, int defaultPort, int maxPackets) {
 		this.name = name;
-		this.dynamicPacketLookup = SyncedStringMap.create(null, new MemoryStore<Integer>(), Integer.MAX_VALUE, Integer.MAX_VALUE, this.name + "ProtocolDynamicPackets");
+		this.dynamicPacketLookup = SyncedStringMap.create(null, new MemoryStore<Integer>(), maxPackets, maxPackets, this.name + "ProtocolDynamicPackets");
+		this.codecLookup = new CodecLookupService(getClass().getClassLoader(), dynamicPacketLookup, maxPackets);
+		this.handlerLookup = new HandlerLookupService();
+		this.defaultPort = defaultPort;
 	}
 
 	/**
@@ -107,7 +107,7 @@ public abstract class Protocol {
 	 */
 	public <T extends Message, C extends MessageCodec<T>> C registerPacket(Class<C> codecClazz, MessageHandler<T> handler) {
 		try {
-			C codec = getCodecLookupService().bind(codecClazz, dynamicPacketLookup);
+			C codec = getCodecLookupService().bind(codecClazz);
 			if (handler != null) {
 				getHandlerLookupService().bind(codec.getType(), handler);
 			}

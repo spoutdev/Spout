@@ -48,8 +48,8 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 	//private static final int INTIAL_DATA_SIZE = Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.HALF_VOLUME + Chunk.BLOCKS.HALF_VOLUME; // Block Ids, Block Data, Block light, Sky light
 	private static final int INTIAL_DATA_SIZE = Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.VOLUME * 2; // Block Ids, Block Data
 
-	public ChunkDataCodec() {
-		super(ChunkDataMessage.class, 0x06);
+	public ChunkDataCodec(int opcode) {
+		super(ChunkDataMessage.class, opcode);
 	}
 
 	@Override

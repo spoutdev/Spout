@@ -44,7 +44,7 @@ import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.api.util.SyncedMapEvent;
 import org.spout.engine.faker.EngineFaker;
 import org.spout.engine.faker.WorldFaker;
-import org.spout.engine.protocol.builtin.SpoutCodecLookupService;
+import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDatatableMessage;
@@ -63,7 +63,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 		EngineFaker.setupEngine();
 	}
 
-	private static final SpoutCodecLookupService CODEC_LOOKUP = new SpoutCodecLookupService();
+	private static final SpoutProtocol PROTOCOL = new SpoutProtocol();
 	static final boolean[] allFalse = new boolean[16];
 	static final byte[][] columnData = new byte[16][10240];
 	static final short[] chunkData = new short[16 * 16 * 16];
@@ -108,6 +108,6 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 	}
 
 	public SpoutProtocolTest() {
-		super(CODEC_LOOKUP, TEST_MESSAGES);
+		super(PROTOCOL.getCodecLookupService(), TEST_MESSAGES);
 	}
 }

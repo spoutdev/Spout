@@ -43,10 +43,33 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.ServerSession;
-import org.spout.api.protocol.Session;
 import org.spout.api.util.SyncedMapEvent;
 import org.spout.api.util.SyncedMapRegistry;
 import org.spout.api.util.SyncedStringMap;
+import org.spout.engine.protocol.builtin.codec.BlockUpdateCodec;
+import org.spout.engine.protocol.builtin.codec.ChunkDataCodec;
+import org.spout.engine.protocol.builtin.codec.ChunkDatatableCodec;
+import org.spout.engine.protocol.builtin.codec.ClickRequestCodec;
+import org.spout.engine.protocol.builtin.codec.ClickResponseCodec;
+import org.spout.engine.protocol.builtin.codec.CommandCodec;
+import org.spout.engine.protocol.builtin.codec.CuboidBlockUpdateCodec;
+import org.spout.engine.protocol.builtin.codec.EntityDatatableCodec;
+import org.spout.engine.protocol.builtin.codec.LoginCodec;
+import org.spout.engine.protocol.builtin.codec.SyncedMapCodec;
+import org.spout.engine.protocol.builtin.codec.UpdateEntityCodec;
+import org.spout.engine.protocol.builtin.codec.WorldChangeCodec;
+import org.spout.engine.protocol.builtin.handler.BlockUpdateMessageHandler;
+import org.spout.engine.protocol.builtin.handler.ChunkDataMessageHandler;
+import org.spout.engine.protocol.builtin.handler.ChunkDatatableMessageHandler;
+import org.spout.engine.protocol.builtin.handler.ClickRequestMessageHandler;
+import org.spout.engine.protocol.builtin.handler.ClickResponseMessageHandler;
+import org.spout.engine.protocol.builtin.handler.CommandMessageHandler;
+import org.spout.engine.protocol.builtin.handler.CuboidBlockUpdateMessageHandler;
+import org.spout.engine.protocol.builtin.handler.EntityDatatableMessageHandler;
+import org.spout.engine.protocol.builtin.handler.LoginMessageHandler;
+import org.spout.engine.protocol.builtin.handler.SyncedMapMessageHandler;
+import org.spout.engine.protocol.builtin.handler.UpdateEntityMessageHandler;
+import org.spout.engine.protocol.builtin.handler.WorldChangeMessageHandler;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
@@ -62,7 +85,19 @@ public class SpoutProtocol extends Protocol {
 	public static final int DEFAULT_PORT = 13756;
 
 	public SpoutProtocol() {
-		super("Spout", DEFAULT_PORT, new SpoutCodecLookupService(), new SpoutHandlerLookupService());
+		super("Spout", DEFAULT_PORT, 256);
+		registerPacket(BlockUpdateCodec.class, new BlockUpdateMessageHandler());
+		registerPacket(ChunkDataCodec.class, new ChunkDataMessageHandler());
+		registerPacket(ChunkDatatableCodec.class, new ChunkDatatableMessageHandler());
+		registerPacket(ClickRequestCodec.class, new ClickRequestMessageHandler());
+		registerPacket(ClickResponseCodec.class, new ClickResponseMessageHandler());
+		registerPacket(CommandCodec.class, new CommandMessageHandler());
+		registerPacket(CuboidBlockUpdateCodec.class, new CuboidBlockUpdateMessageHandler());
+		registerPacket(EntityDatatableCodec.class, new EntityDatatableMessageHandler());
+		registerPacket(LoginCodec.class, new LoginMessageHandler());
+		registerPacket(SyncedMapCodec.class, new SyncedMapMessageHandler());
+		registerPacket(UpdateEntityCodec.class, new UpdateEntityMessageHandler());
+		registerPacket(WorldChangeCodec.class, new WorldChangeMessageHandler());
 	}
 
 	// TODO: protocol - implement a BlockDatatable message
@@ -125,6 +160,6 @@ public class SpoutProtocol extends Protocol {
 
 	@Override
 	public void initializeClientSession(final ClientSession session) {
-		session.setNetworkSynchronizer(new SpoutClientNetworkSynchronizer((Session) session));
+		session.setNetworkSynchronizer(new SpoutClientNetworkSynchronizer(session));
 	}
 }

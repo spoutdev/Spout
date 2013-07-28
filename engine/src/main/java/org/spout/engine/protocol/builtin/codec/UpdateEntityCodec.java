@@ -36,8 +36,8 @@ import org.spout.api.util.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 
 public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
-	public UpdateEntityCodec() {
-		super(UpdateEntityMessage.class, 0x04);
+	public UpdateEntityCodec(int opcode) {
+		super(UpdateEntityMessage.class, opcode);
 	}
 
 	@Override

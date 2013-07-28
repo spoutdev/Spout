@@ -35,8 +35,8 @@ import org.spout.api.util.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.ChunkDatatableMessage;
 
 public class ChunkDatatableCodec extends MessageCodec<ChunkDatatableMessage> {
-	public ChunkDatatableCodec() {
-		super(ChunkDatatableMessage.class, 0x0B);
+	public ChunkDatatableCodec(int opcode) {
+		super(ChunkDatatableMessage.class, opcode);
 	}
 
 	@Override

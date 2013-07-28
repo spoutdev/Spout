@@ -62,7 +62,7 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 				this.onClient = false;
 				break;
 			default:
-				throw new IllegalStateException("Unknown platorm!");
+				throw new IllegalStateException("Unknown platform!");
 		}
 		this.engine = engine;
 	}

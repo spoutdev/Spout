@@ -87,7 +87,7 @@ public final class SyncedStringMap extends StringToUniqueIntegerMap implements E
 	public void handleUpdate(SyncedMapEvent message) {
 		switch (message.getAction()) {
 			case SET:
-				clear();
+				super.clear();
 			case ADD:
 				for (Pair<Integer, String> pair : message.getModifiedElements()) {
 					store.set(pair.getValue(), pair.getKey());
@@ -99,6 +99,7 @@ public final class SyncedStringMap extends StringToUniqueIntegerMap implements E
 				}
 				break;
 		}
+		callEvent(new SyncedMapEvent(this, message.getAction(), message.getModifiedElements()));
 	}
 
 	@Override

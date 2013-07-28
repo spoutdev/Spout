@@ -36,8 +36,8 @@ import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
  *
  */
 public class BlockUpdateCodec extends MessageCodec<BlockUpdateMessage> {
-	public BlockUpdateCodec() {
-		super(BlockUpdateMessage.class, 0x07);
+	public BlockUpdateCodec(int opcode) {
+		super(BlockUpdateMessage.class, opcode);
 	}
 
 	@Override
