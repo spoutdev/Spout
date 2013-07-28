@@ -26,8 +26,9 @@
  */
 package org.spout.api.lighting;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
@@ -36,12 +37,21 @@ import org.spout.api.util.cuboid.ImmutableHeightMapBuffer;
 
 @SuppressWarnings ("rawtypes")
 public class FakeLightingManager extends LightingManager {
-	private static final AtomicInteger count = new AtomicInteger();
-	private final int id;
+	private static final Map<Short, FakeLightingManager> instances = new ConcurrentHashMap<>();
+	private final short id;
 
-	public FakeLightingManager(int id) {
-		super("FAKE_" + id + "_" + count.getAndIncrement());
+	private FakeLightingManager(short id) {
+		super("FAKE_" + id);
 		this.id = id;
+	}
+	
+	public static FakeLightingManager get(short id) {
+		FakeLightingManager get = instances.get(id);
+		if (get == null) {
+			get = new FakeLightingManager(id);
+			instances.put(id, get);
+		}
+		return get;
 	}
 
 	@Override

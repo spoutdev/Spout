@@ -124,7 +124,7 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 
 	private static class NullCuboidLightBuffer extends CuboidLightBuffer {
 		protected NullCuboidLightBuffer() {
-			super(null, 0, 0, 0, 0, 0, 0, 0);
+			super(null, (short) 0, 0, 0, 0, 0, 0, 0);
 		}
 
 		@Override

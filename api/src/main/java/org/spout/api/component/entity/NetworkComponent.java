@@ -36,9 +36,10 @@ import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.StringToUniqueIntegerMap;
+import org.spout.api.util.SyncedStringMap;
 
 public class NetworkComponent extends EntityComponent {
-	private static final StringToUniqueIntegerMap protocolMap = new StringToUniqueIntegerMap(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
+	private static final SyncedStringMap protocolMap = SyncedStringMap.create(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
 	private final EntityProtocolStore protocolStore = new EntityProtocolStore();
 
 	public NetworkComponent() {

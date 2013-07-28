@@ -38,11 +38,11 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 		this(buffer.holder, buffer.getManagerId(), buffer.baseX, buffer.baseY, buffer.baseZ, buffer.sizeX, buffer.sizeY, buffer.sizeZ, buffer.lightData);
 	}
 
-	protected CuboidNibbleLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+	protected CuboidNibbleLightBuffer(Modifiable holder, short id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		this(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
 	}
 
-	protected CuboidNibbleLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
+	protected CuboidNibbleLightBuffer(Modifiable holder, short id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
 		super(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		int volume = getVolume();
 		if ((volume | 1) == volume) {

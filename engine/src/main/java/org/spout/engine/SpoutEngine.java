@@ -47,11 +47,13 @@ import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.exception.SpoutRuntimeException;
+import org.spout.api.generator.biome.BiomeRegistry;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.inventory.recipe.SimpleRecipeManager;
+import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
@@ -114,6 +116,8 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	protected MemoryReclamationThread reclamation = null;
 	private DefaultPermissions defaultPerms;
 	private SyncedStringMap engineItemMap = null;
+	private SyncedStringMap engineBiomeMap = null;
+	private SyncedStringMap engineLightingMap = null;
 
 	public SpoutEngine() {
 		logFile = "log-%D.txt";
@@ -170,6 +174,10 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 		//Setup the Material Registry
 		engineItemMap = MaterialRegistry.setupRegistry();
+		// Setup the Biome Registry
+		engineBiomeMap = BiomeRegistry.setupRegistry();
+		// Setup the Lighting Registry
+		engineLightingMap = LightingRegistry.setupRegistry();
 
 		// Register commands
 		Object exe;
@@ -479,5 +487,23 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	 */
 	public StringToUniqueIntegerMap getEngineItemMap() {
 		return engineItemMap;
+	}
+
+	/**
+	 * Gets the lighting map used across all worlds on the engine
+	 *
+	 * @return engine map
+	 */
+	public StringToUniqueIntegerMap getEngineLightingMap() {
+		return engineLightingMap;
+	}
+
+	/**
+	 * Gets the biome map used accorss all worlds on the engine
+	 *
+	 * @return biome map
+	 */
+	public StringToUniqueIntegerMap getEngineBiomeMap() {
+		return engineBiomeMap;
 	}
 }

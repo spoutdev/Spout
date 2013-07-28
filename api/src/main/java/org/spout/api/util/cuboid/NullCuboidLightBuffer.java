@@ -29,7 +29,7 @@ package org.spout.api.util.cuboid;
 import org.spout.api.lighting.Modifiable;
 
 public class NullCuboidLightBuffer extends CuboidLightBuffer {
-	protected NullCuboidLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+	protected NullCuboidLightBuffer(Modifiable holder, short id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		super(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 	}
 

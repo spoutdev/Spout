@@ -218,7 +218,7 @@ public class ChunkFiles {
 		StringToUniqueIntegerMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
 		StringToUniqueIntegerMap itemMap = world.getItemMap();
 
-		StringToUniqueIntegerMap lightingMap = world.getItemMap();
+		StringToUniqueIntegerMap lightingMap = world.getLightingMap();
 
 		int[] palette = snapshot.getPalette();
 		int[] packetBlockArray = snapshot.getPackedBlockArray();
@@ -440,14 +440,14 @@ public class ChunkFiles {
 		if (data == null) {
 			return;
 		}
-		int globalId = globalLighting.convertFrom(worldLighting, worldId);
+		short globalId = (short) worldLighting.convertTo(globalLighting, worldId);
 		if (globalId == 0) {
 			Spout.getLogger().info("Unknown manager world id " + worldId);
 			return;
 		}
-		LightingManager<?> manager = LightingRegistry.get((short) globalId);
+		LightingManager<?> manager = LightingRegistry.get(globalId);
 		if (manager == null) {
-			manager = new FakeLightingManager(globalId);
+			manager = FakeLightingManager.get(globalId);
 		}
 		managers.add(manager);
 		lightData.add(data);

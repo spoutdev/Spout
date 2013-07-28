@@ -27,12 +27,16 @@
 package org.spout.engine.protocol.builtin.codec;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.spout.api.Spout;
 
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.protocol.MessageCodec;
@@ -45,7 +49,6 @@ import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 	private static final byte ISUNLOAD = 0b1;
 	private static final byte HASBIOMES = 0b10;
-	//private static final int INTIAL_DATA_SIZE = Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.HALF_VOLUME + Chunk.BLOCKS.HALF_VOLUME; // Block Ids, Block Data, Block light, Sky light
 	private static final int INTIAL_DATA_SIZE = Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.VOLUME * 2; // Block Ids, Block Data
 
 	public ChunkDataCodec(int opcode) {
@@ -62,12 +65,15 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			buffer.writeInt(message.getY());
 			buffer.writeInt(message.getZ());
 		} else {
-			int size = 17; // 1 byte + 4 ints (4 byte each)
+			int size = 17; // 1 byte + 5 ints (4 byte each)
+			final short lightSize = (short) message.getLight().size();
 			int dataSize = INTIAL_DATA_SIZE;
 			boolean hasBiomes = message.hasBiomes();
 			if (hasBiomes) {
 				dataSize += Chunk.BLOCKS.AREA;
 			}
+			dataSize += lightSize * (4 + 4096); // One int id + 1 16^3 chunk data
+
 			byte[] uncompressedData = new byte[dataSize];
 			byte[] compressedData = new byte[dataSize];
 
@@ -80,12 +86,15 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				uncompressedData[index++] = (byte) s;
 				uncompressedData[index++] = (byte) (s >> 8);
 			}
-			/*for (byte b : message.getBlockLight()) {
-				uncompressedData[index++] = (byte) b;
+			for (Entry<Short, byte[]> e : message.getLight().entrySet()) {
+				short s = e.getKey();
+				System.out.println("Encoding light manager with id " + s);
+				uncompressedData[index++] = (byte) s;
+				uncompressedData[index++] = (byte) (s >> 8);
+				System.arraycopy(e.getValue(), 0, uncompressedData, index, e.getValue().length);
+				index += e.getValue().length;
+				
 			}
-			for (byte b : message.getSkyLight()) {
-				uncompressedData[index++] = (byte) b;
-			}*/
 			if (hasBiomes) {
 				System.arraycopy(message.getBiomeData(), 0, uncompressedData, index, message.getBiomeData().length);
 				index += message.getBiomeData().length;
@@ -95,12 +104,10 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			deflater.setInput(uncompressedData);
 			deflater.finish();
 			int compressedSize = deflater.deflate(compressedData);
-			try {
-				if (compressedSize == 0) {
-					throw new IOException("Not all data compressed!");
-				}
-			} finally {
-				deflater.end();
+			deflater.end();
+
+			if (compressedSize == 0) {
+				throw new IOException("Not all data compressed!");
 			}
 
 			size += compressedSize;
@@ -112,6 +119,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			if (hasBiomes) {
 				ChannelBufferUtils.writeString(buffer, message.getBiomeManagerClass());
 			}
+			buffer.writeShort(lightSize);
 			buffer.writeInt(compressedSize);
 			buffer.writeBytes(compressedData, 0, compressedSize);
 		}
@@ -130,10 +138,12 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			return new ChunkDataMessage(x, y, z);
 		} else {
 			final String biomeManagerClass = hasBiomes ? ChannelBufferUtils.readString(buffer) : null;
+			final short lightSize = buffer.readShort();
 			int uncompressedSize = INTIAL_DATA_SIZE;
 			if (hasBiomes) {
 				uncompressedSize += Chunk.BLOCKS.AREA;
 			}
+			uncompressedSize += lightSize * (2 + 4096); // One short id + 1 16^3 chunk data for every lighting manager
 			final byte[] uncompressedData = new byte[uncompressedSize];
 			final byte[] compressedData = new byte[buffer.readInt()];
 			buffer.readBytes(compressedData);
@@ -148,8 +158,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 
 			final short[] blockIds = new short[Chunk.BLOCKS.VOLUME];
 			final short[] blockData = new short[Chunk.BLOCKS.VOLUME];
-			//final byte[] blockLight = new byte[Chunk.BLOCKS.HALF_VOLUME];
-			//final byte[] skyLight = new byte[Chunk.BLOCKS.HALF_VOLUME];
+			final Map<Short, byte[]> light = new HashMap<>();
 			final byte[] biomeData = hasBiomes ? new byte[Chunk.BLOCKS.AREA] : null;
 
 			int index = 0;
@@ -159,15 +168,28 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			for (int i = 0; i < blockData.length; ++i) {
 				blockData[i] = (short) (uncompressedData[index++] | (uncompressedData[index++] << 8));
 			}
-			/*System.arraycopy(uncompressedData, index, blockLight, 0, blockLight.length);
-			index += blockLight.length;
-			System.arraycopy(uncompressedData, index, skyLight, 0, skyLight.length);
-			index += skyLight.length;*/
+			for (int i = 0; i < lightSize; ++i) {
+				byte[] data = new byte[4096];
+				final short lightId = (short) (uncompressedData[index++] | (uncompressedData[index++] << 8));
+				System.arraycopy(uncompressedData, index, data, 0, data.length);
+				index += data.length;
+				light.put(lightId, data);
+				
+				System.out.println("Decoded light data with id " + lightId);
+				
+			}
 			if (hasBiomes) {
 				System.arraycopy(uncompressedData, index, biomeData, 0, biomeData.length);
+				index += biomeData.length;
+			}
+			
+			if (index != uncompressedData.length) {
+				String message = "Incorrect parse size - actual:" + index + " expected: " + uncompressedData.length;
+				Spout.getLogger().severe(message);
+				throw new IllegalStateException(message);
 			}
 
-			return new ChunkDataMessage(x, y, z, blockIds, blockData, biomeData, biomeManagerClass);
+			return new ChunkDataMessage(x, y, z, blockIds, blockData, biomeData, biomeManagerClass, light);
 		}
 	}
 }

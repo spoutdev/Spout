@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -48,8 +49,8 @@ import org.spout.api.io.store.simple.SimpleStore;
  */
 public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 	private final StringToUniqueIntegerMap parent;
-	private final AtomicIntegerArray thisToParentMap;
-	private final AtomicIntegerArray parentToThisMap;
+	private final AtomicReferenceArray<Integer> thisToParentMap;
+	private final AtomicReferenceArray<Integer> parentToThisMap;
 	private final int minId;
 	private final int maxId;
 	private AtomicInteger nextId;
@@ -73,12 +74,8 @@ public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 		super(store, name);
 		this.parent = parent;
 		if (this.parent != null) {
-			thisToParentMap = new AtomicIntegerArray(maxId);
-			parentToThisMap = new AtomicIntegerArray(maxId);
-			for (int i = 0; i < maxId; i++) {
-				thisToParentMap.set(i, 0);
-				parentToThisMap.set(i, 0);
-			}
+			thisToParentMap = new AtomicReferenceArray<>(maxId);
+			parentToThisMap = new AtomicReferenceArray<>(maxId);
 		} else {
 			thisToParentMap = null;
 			parentToThisMap = null;
@@ -112,13 +109,14 @@ public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 		if (other == null) {
 			throw new IllegalStateException("Other map is null");
 		}
-		int foreignId = 0;
+		String localKey = store.reverseGet(localId);
+		if (localKey == null) {
+			throw new IllegalArgumentException("Cannot convert an id that is not registered locally.");
+		}
+
+		Integer foreignId = null;
 
 		if (other == this) {
-			if (store.reverseGet(localId) == null) {
-				return 0;
-			}
-
 			return localId;
 		} else if (other == parent) {
 			foreignId = thisToParentMap.get(localId);
@@ -127,15 +125,8 @@ public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 		}
 
 		// Cache hit
-		if (foreignId != 0) {
+		if (foreignId != null) {
 			return foreignId;
-		}
-
-		String localKey = store.reverseGet(localId);
-
-		// There is no entry in the local map to perform the translation
-		if (localKey == null) {
-			return 0;
 		}
 
 		Integer integerForeignId = other.store.get(localKey);
@@ -145,15 +136,13 @@ public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 			integerForeignId = other.register(localKey);
 		}
 
-		// Add the key/value pair to the cache, if is no problem with the foreign key
-		if (integerForeignId != 0) {
-			if (other == parent) {
-				thisToParentMap.set(localId, integerForeignId);
-				parentToThisMap.set(integerForeignId, localId);
-			} else if (other.parent == this) {
-				other.thisToParentMap.set(integerForeignId, localId);
-				other.parentToThisMap.set(localId, integerForeignId);
-			}
+		// Add the key/value pair to the cache
+		if (other == parent) {
+			thisToParentMap.set(localId, integerForeignId);
+			parentToThisMap.set(integerForeignId, localId);
+		} else if (other.parent == this) {
+			other.thisToParentMap.set(integerForeignId, localId);
+			other.parentToThisMap.set(localId, integerForeignId);
 		}
 
 		return integerForeignId;
@@ -273,8 +262,8 @@ public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 		while (this.nextId.getAndSet(minId) != minId) {
 			if (this.parent != null) {
 				for (int i = 0; i < maxId; i++) {
-					thisToParentMap.set(i, 0);
-					parentToThisMap.set(i, 0);
+					thisToParentMap.set(i, null);
+					parentToThisMap.set(i, null);
 				}
 			}
 			store.clear();

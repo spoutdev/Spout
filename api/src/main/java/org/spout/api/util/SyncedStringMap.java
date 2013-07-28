@@ -47,7 +47,7 @@ public final class SyncedStringMap extends StringToUniqueIntegerMap implements E
 		super(name);
 	}
 
-	public SyncedStringMap(StringToUniqueIntegerMap parent, SimpleStore<Integer> store, int minId, int maxId, String name) {
+	protected SyncedStringMap(StringToUniqueIntegerMap parent, SimpleStore<Integer> store, int minId, int maxId, String name) {
 		super(parent, store, minId, maxId, name);
 	}
 

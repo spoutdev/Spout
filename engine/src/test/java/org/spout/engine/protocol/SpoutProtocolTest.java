@@ -28,6 +28,7 @@ package org.spout.engine.protocol;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -80,7 +81,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 	static final byte[] TEST_SERIALIZED_DATA = new ManagedHashMap().serialize();
 	private static final Message[] TEST_MESSAGES = new Message[] {
 			new BlockUpdateMessage(0, 0, 0, (short) 0, (short) 0),
-			new ChunkDataMessage(0, 0, 0, chunkData, chunkData, null, null),
+			new ChunkDataMessage(0, 0, 0, chunkData, chunkData, null, null, new HashMap<Short, byte[]>()),
 			new ClickRequestMessage((byte) 0, (byte) 0, ClickRequestMessage.Action.LEFT),
 			new ClickResponseMessage((byte) 0, (byte) 0, ClickResponseMessage.Response.ALLOW),
 			new CommandMessage("test", "hi"),

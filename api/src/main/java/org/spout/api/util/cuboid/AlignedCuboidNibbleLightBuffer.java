@@ -41,11 +41,11 @@ public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
 		this(buffer.holder, buffer.getManagerId(), buffer.baseX, buffer.baseY, buffer.baseZ, buffer.sizeX, buffer.sizeY, buffer.sizeZ, buffer.lightData);
 	}
 
-	protected AlignedCuboidNibbleLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+	protected AlignedCuboidNibbleLightBuffer(Modifiable holder, short id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		this(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
 	}
 
-	protected AlignedCuboidNibbleLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
+	protected AlignedCuboidNibbleLightBuffer(Modifiable holder, short id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
 		super(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, data);
 		this.xMask = GenericMath.roundUpPow2(sizeX) - 1;
 		this.yMask = GenericMath.roundUpPow2(sizeY) - 1;

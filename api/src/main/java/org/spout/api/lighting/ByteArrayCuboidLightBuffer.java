@@ -42,7 +42,7 @@ public class ByteArrayCuboidLightBuffer extends CuboidLightBuffer {
 				buffer.data == null ? null : Arrays.copyOf(buffer.data, buffer.data.length));
 	}
 
-	public ByteArrayCuboidLightBuffer(int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
+	public ByteArrayCuboidLightBuffer(short id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
 		super(null, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		this.data = data;
 	}

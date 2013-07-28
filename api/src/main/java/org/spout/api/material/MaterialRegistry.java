@@ -50,7 +50,7 @@ public abstract class MaterialRegistry {
 	@SuppressWarnings ("unchecked")
 	private final static AtomicReference<Material[]>[] materialLookup = new AtomicReference[MAX_SIZE];
 	private static boolean setup = false;
-	private static SyncedStringMap materialRegistry = new SyncedStringMap(null, new MemoryStore<Integer>(), 1, Short.MAX_VALUE, Material.class.getName());
+	private static SyncedStringMap materialRegistry = SyncedStringMap.create(null, new MemoryStore<Integer>(), 1, Short.MAX_VALUE, Material.class.getName());
 	private final static Material[] NULL_MATERIAL_ARRAY = new Material[] {null};
 
 	static {

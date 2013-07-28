@@ -141,8 +141,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private final Object jmdnsSync = new Object();
 	private JmDNS jmdns = null;
 	private final SessionTask sesionTask = new SessionTask();
-	private StringToUniqueIntegerMap engineBiomeMap = null;
-	private StringToUniqueIntegerMap engineLightingMap = null;
 
 	public SpoutServer() {
 		logFile = "server-log-%D.txt";
@@ -154,11 +152,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	protected void start(boolean checkWorlds, Listener listener) {
-		// Setup the Biome Registry
-		engineBiomeMap = BiomeRegistry.setupRegistry();
-		// Setup the Lighting Registry
-		engineLightingMap = LightingRegistry.setupRegistry();
-
 		super.start();
 		if (checkWorlds) {
 			if (SpoutConfiguration.CREATE_FALLBACK_WORLD.getBoolean() && loadedWorlds.getLive().isEmpty()) {
@@ -567,29 +560,12 @@ public class SpoutServer extends SpoutEngine implements Server {
 		switch (stage) {
 			case 0:
 				getEngineItemMap().save();
-				engineBiomeMap.save();
+				getEngineBiomeMap().save();
+				getEngineLightingMap().save();
 				break;
 		}
 	}
-
-	/**
-	 * Gets the lighting map used across all worlds on the engine
-	 *
-	 * @return engine map
-	 */
-	public StringToUniqueIntegerMap getEngineLightingMap() {
-		return engineLightingMap;
-	}
-
-	/**
-	 * Gets the biome map used accorss all worlds on the engine
-	 *
-	 * @return biome map
-	 */
-	public StringToUniqueIntegerMap getBiomeMap() {
-		return engineBiomeMap;
-	}
-
+	
 	@Override
 	public Collection<World> matchWorld(String name) {
 		return StringUtil.matchName(getWorlds(), name);

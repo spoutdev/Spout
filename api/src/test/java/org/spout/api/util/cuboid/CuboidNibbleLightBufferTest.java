@@ -130,7 +130,7 @@ public class CuboidNibbleLightBufferTest {
 	@Test
 	public void rowZTest() {
 
-		AlignedCuboidNibbleLightBuffer buffer = new AlignedCuboidNibbleLightBuffer(null, 0, 128, -1024, 256, 64, 32, 16);
+		AlignedCuboidNibbleLightBuffer buffer = new AlignedCuboidNibbleLightBuffer(null, (short) 0, 128, -1024, 256, 64, 32, 16);
 
 		Random r = new Random();
 

@@ -27,26 +27,23 @@
 package org.spout.api.lighting;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.Platform;
+import static org.spout.api.Platform.CLIENT;
+import static org.spout.api.Platform.SERVER;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.io.store.simple.BinaryFileStore;
-import org.spout.api.util.StringToUniqueIntegerMap;
+import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.util.SyncedStringMap;
 
 public class LightingRegistry {
-	private final static ConcurrentHashMap<String, LightingManager<?>> nameLookup = new ConcurrentHashMap<>(10);
 	private final static int MAX_SIZE = 1 << 16;
 	@SuppressWarnings ("unchecked")
 	private final static AtomicReference<LightingManager<?>>[] lightingLookup = new AtomicReference[MAX_SIZE];
 	private final static AtomicReference<LightingManager<?>[]> managerArray = new AtomicReference<>();
 	private static boolean setup = false;
-	private final static BinaryFileStore store = new BinaryFileStore();
-	private final static StringToUniqueIntegerMap lightingRegistry = new StringToUniqueIntegerMap(null, store, 1, Short.MAX_VALUE, LightingManager.class.getName());
+	private static SyncedStringMap lightingRegistry;
 
 	static {
 		for (int i = 0; i < lightingLookup.length; i++) {
@@ -61,17 +58,22 @@ public class LightingRegistry {
 	 *
 	 * @return StringToUniqueIntegerMap of registered materials
 	 */
-	public static StringToUniqueIntegerMap setupRegistry() {
+	public static SyncedStringMap setupRegistry() {
 		if (setup) {
-			throw new IllegalStateException("Can not setup material registry twice!");
+			throw new IllegalStateException("Can not setup lighting registry twice!");
 		}
-		if (Spout.getPlatform() != Platform.SERVER) {
-			throw new UnsupportedOperationException("Cannot setup LightingRegistry in Client mode!");
-		}
-		File serverItemMap = new File(new File(((Server) Spout.getEngine()).getWorldFolder(), "worlds"), "lighting.dat");
-		store.setFile(serverItemMap);
-		if (serverItemMap.exists()) {
-			store.load();
+		switch (Spout.getPlatform()) {
+			case SERVER:
+				File lightingStoreFile = new File(new File(((Server) Spout.getEngine()).getWorldFolder(), "worlds"), "lighting.dat");
+				final BinaryFileStore store = new BinaryFileStore(lightingStoreFile);
+				if (lightingStoreFile.exists()) {
+					store.load();
+				}
+				lightingRegistry = SyncedStringMap.create(null, store, 1, Short.MAX_VALUE, LightingManager.class.getName());
+				break;
+			case CLIENT:
+				lightingRegistry = SyncedStringMap.create(null, new MemoryStore<Integer>(), 1, Short.MAX_VALUE, LightingManager.class.getName());
+				break;
 		}
 		setup = true;
 		return lightingRegistry;
@@ -84,12 +86,15 @@ public class LightingRegistry {
 	 * @return id of the material registered
 	 */
 	public static int register(LightingManager<?> manager) {
-		int id = lightingRegistry.register(manager.getName());
+		if (!setup) {
+			throw new IllegalStateException("Tried to access LightingRegistry before it's registered!");
+		}
+		int id = lightingRegistry.register(formatName(manager.getName()));
 		if (!lightingLookup[id].compareAndSet(null, manager)) {
 			throw new IllegalArgumentException(lightingLookup[id].get() + " is already mapped to id: " + manager.getId() + "!");
 		}
+		System.out.println("Registered manager " + manager.getName() + " with Id " + id);
 
-		nameLookup.put(formatName(manager.getName()), manager);
 		addToManagerArray(manager);
 		return id;
 	}
@@ -114,25 +119,7 @@ public class LightingRegistry {
 	 * @return LightingManager, or null if none found
 	 */
 	public static LightingManager<?> get(String name) {
-		return nameLookup.get(formatName(name));
-	}
-
-	/**
-	 * Gets the LightingManager by a portion of its name. Case-insensitive.
-	 *
-	 * @param name to lookup
-	 * @return LightingManager, or null if none found
-	 */
-	public static LightingManager<?> getContains(String name) {
-		String formatName = formatName(name);
-		Iterator<Entry<String, LightingManager<?>>> itr = nameLookup.entrySet().iterator();
-		while (itr.hasNext()) {
-			Entry<String, LightingManager<?>> entry = itr.next();
-			if (entry.getKey() != null && entry.getKey().contains(formatName)) {
-				return entry.getValue();
-			}
-		}
-		return null;
+		return lightingLookup[lightingRegistry.getValue(formatName(name))].get();
 	}
 
 	/**

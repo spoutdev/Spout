@@ -33,15 +33,16 @@ import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.io.store.simple.BinaryFileStore;
+import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringToUniqueIntegerMap;
+import org.spout.api.util.SyncedStringMap;
 
 public final class BiomeRegistry {
 	private final static int MAX_BIOMES = 256;
 	@SuppressWarnings ("unchecked")
 	private final static AtomicReference<Biome>[] biomes = new AtomicReference[MAX_BIOMES];
 	private static boolean setup = false;
-	private final static BinaryFileStore store = new BinaryFileStore();
-	private final static StringToUniqueIntegerMap biomeRegistry = new StringToUniqueIntegerMap(null, store, 1, MAX_BIOMES, Biome.class.getName());
+	private static SyncedStringMap biomeRegistry;
 
 	static {
 		for (int i = 0; i < biomes.length; i++) {
@@ -52,17 +53,23 @@ public final class BiomeRegistry {
 	/**
 	 * Sets up the biome registry for the first use
 	 */
-	public static StringToUniqueIntegerMap setupRegistry() {
+	public static SyncedStringMap setupRegistry() {
 		if (setup) {
 			throw new IllegalStateException("Can not setup biome registry twice!");
 		}
-		if (Spout.getPlatform() != Platform.SERVER) {
-			throw new UnsupportedOperationException("Cannot setup BiomeRegistry in Client mode!");
-		}
-		File biomeStoreFile = new File(new File(((Server) Spout.getEngine()).getWorldFolder(), "worlds"), "biomes.dat");
-		store.setFile(biomeStoreFile);
-		if (biomeStoreFile.exists()) {
-			store.load();
+		switch (Spout.getPlatform()) {
+			case SERVER:
+				File biomeStoreFile = new File(new File(((Server) Spout.getEngine()).getWorldFolder(), "worlds"), "biomes.dat");
+				final BinaryFileStore store = new BinaryFileStore();
+				store.setFile(biomeStoreFile);
+				if (biomeStoreFile.exists()) {
+					store.load();
+				}
+				biomeRegistry = SyncedStringMap.create(null, store, 1, MAX_BIOMES, Biome.class.getName());
+				break;
+			case CLIENT:
+				biomeRegistry = SyncedStringMap.create(null, new MemoryStore<Integer>(), 1, MAX_BIOMES, Biome.class.getName());
+				break;
 		}
 		setup = true;
 		return biomeRegistry;
@@ -72,6 +79,9 @@ public final class BiomeRegistry {
 	 * Registers a biome and assigns it an id
 	 */
 	protected static void register(Biome biome) {
+		if (!setup) {
+			throw new IllegalStateException("Tried to access BiomeRegistry before it's registered!");
+		}
 		int id = biomeRegistry.register(biome.getClass().getCanonicalName());
 		biomes[id].set(biome);
 		biome.setId(id);

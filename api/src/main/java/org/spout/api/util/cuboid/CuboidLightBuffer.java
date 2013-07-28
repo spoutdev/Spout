@@ -29,10 +29,10 @@ package org.spout.api.util.cuboid;
 import org.spout.api.lighting.Modifiable;
 
 public abstract class CuboidLightBuffer extends CuboidBuffer implements Modifiable {
-	private final int id;
+	private final short id;
 	protected Modifiable holder;
 
-	protected CuboidLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+	protected CuboidLightBuffer(Modifiable holder, short id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		this.id = id;
 		if (holder == null) {
@@ -54,7 +54,7 @@ public abstract class CuboidLightBuffer extends CuboidBuffer implements Modifiab
 	 *
 	 * @return id
 	 */
-	public int getManagerId() {
+	public short getManagerId() {
 		return id;
 	}
 

@@ -53,6 +53,7 @@ import gnu.trove.map.TShortObjectMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.procedure.TShortObjectProcedure;
+import java.util.Map;
 
 import org.spout.api.Engine;
 import org.spout.api.Platform;
@@ -2037,6 +2038,18 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			buffer = manager.deserialize(this, getBlockX(), getBlockY(), getBlockZ(), Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, data);
 			setIfAbsentLightBuffer(manager.getId(), buffer);
 		}
+	}
+
+	public void setLightingBufferData(Map<Short, byte[]> lightData) {
+		List<CuboidLightBuffer> list = new ArrayList<>();
+		for (Entry<Short, byte[]> e : lightData.entrySet()) {
+			LightingManager<?> manager = LightingRegistry.get(e.getKey().shortValue());
+			byte[] data = e.getValue();
+			CuboidLightBuffer buffer;
+			buffer = manager.deserialize(this, getBlockX(), getBlockY(), getBlockZ(), Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, data);
+			list.add(buffer);
+		}
+		lightBuffers.set(list.toArray(new CuboidLightBuffer[0]));
 	}
 
 	@Override

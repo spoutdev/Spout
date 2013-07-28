@@ -33,6 +33,7 @@ import org.spout.api.geo.World;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
+import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutClientWorld;
 
 public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
@@ -64,5 +65,6 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			manager.deserialize(message.getBiomeData());
 		}
 		((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData());
+		((SpoutChunk) world.getChunk(message.getX(), message.getY(), message.getZ())).setLightingBufferData(message.getLight());
 	}
 }
