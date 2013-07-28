@@ -64,7 +64,7 @@ public class LightingRegistry {
 		}
 		switch (Spout.getPlatform()) {
 			case SERVER:
-				File lightingStoreFile = new File(new File(((Server) Spout.getEngine()).getWorldFolder(), "worlds"), "lighting.dat");
+				File lightingStoreFile = new File(((Server) Spout.getEngine()).getWorldFolder(), "lighting.dat");
 				final BinaryFileStore store = new BinaryFileStore(lightingStoreFile);
 				if (lightingStoreFile.exists()) {
 					store.load();

@@ -59,7 +59,7 @@ public final class BiomeRegistry {
 		}
 		switch (Spout.getPlatform()) {
 			case SERVER:
-				File biomeStoreFile = new File(new File(((Server) Spout.getEngine()).getWorldFolder(), "worlds"), "biomes.dat");
+				File biomeStoreFile = new File(((Server) Spout.getEngine()).getWorldFolder(), "biomes.dat");
 				final BinaryFileStore store = new BinaryFileStore();
 				store.setFile(biomeStoreFile);
 				if (biomeStoreFile.exists()) {

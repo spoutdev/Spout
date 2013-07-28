@@ -86,7 +86,7 @@ public abstract class MaterialRegistry {
 	}
 
 	private static void setupServer() {
-		File serverItemMap = new File(new File(((Server) Spout.getEngine()).getWorldFolder(), "worlds"), "materials.dat");
+		File serverItemMap = new File(((Server) Spout.getEngine()).getWorldFolder(), "materials.dat");
 		BinaryFileStore store = new BinaryFileStore(serverItemMap);
 		materialRegistry = SyncedStringMap.create(null, store, 1, Short.MAX_VALUE, Material.class.getName());
 		if (serverItemMap.exists()) {

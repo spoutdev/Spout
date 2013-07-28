@@ -241,8 +241,7 @@ public class ColumnFiles {
 		int[] topmostMaterial = new int[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
 
 		StringToUniqueIntegerMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
-		StringToUniqueIntegerMap itemMap;
-		itemMap = ((SpoutServerWorld) column.getWorld()).getItemMap();
+		StringToUniqueIntegerMap itemMap = ((SpoutServerWorld) column.getWorld()).getItemMap();
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
 			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
 				int key = NibblePairHashed.intKey(x, z);

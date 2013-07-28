@@ -43,7 +43,7 @@ import java.util.Map.Entry;
  */
 public class BinaryFileStore extends MemoryStore<Integer> {
 	private File file;
-	private boolean dirty = false;
+	private boolean dirty = true;
 
 	public BinaryFileStore(File file) {
 		super();
@@ -86,6 +86,7 @@ public class BinaryFileStore extends MemoryStore<Integer> {
 				out.writeUTF(next.getKey());
 			}
 		} catch (IOException ioe) {
+			ioe.printStackTrace();
 			saved = false;
 		} finally {
 			try {
@@ -93,6 +94,7 @@ public class BinaryFileStore extends MemoryStore<Integer> {
 					out.close();
 				}
 			} catch (IOException ioe) {
+				ioe.printStackTrace();
 				saved = false;
 			}
 			if (saved) {

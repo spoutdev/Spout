@@ -151,7 +151,7 @@ public class ChunkFiles {
 
 		//Convert world block ids to engine material ids
 		SpoutServerWorld world = (SpoutServerWorld) r.getWorld();
-		StringToUniqueIntegerMap global = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
+		StringToUniqueIntegerMap globalItemMap = ((SpoutServer) Spout.getEngine()).getEngineItemMap();
 		StringToUniqueIntegerMap itemMap = world.getItemMap();
 
 		byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extraData")), null);
@@ -169,10 +169,10 @@ public class ChunkFiles {
 		int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("packedBlockArray")), null);
 
 		if (palette.length > 0) {
-			convertArray(palette, itemMap, global);
+			convertArray(palette, itemMap, globalItemMap);
 			skipScan = componentSkipCheck(palette);
 		} else {
-			convertArray(variableWidthBlockArray, itemMap, global);
+			convertArray(variableWidthBlockArray, itemMap, globalItemMap);
 			skipScan = componentSkipCheck(variableWidthBlockArray);
 		}
 		chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, extraDataMap, lightStable);
@@ -186,7 +186,7 @@ public class ChunkFiles {
 		List<? extends CompoundTag> componentsList = checkerListCompoundTag.checkTag(map.get("block_components"), null);
 
 		CompoundMap lightingMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("light_buffers")), null, CompoundMap.class);
-		StringToUniqueIntegerMap worldMap = ((SpoutServerWorld) r.getWorld()).getLightingMap();
+		StringToUniqueIntegerMap worldMap = world.getLightingMap();
 		List<LightingManager<?>> lightingManagers = new ArrayList<>();
 		List<byte[]> lightingData = new ArrayList<>();
 		loadLightingBuffers(lightingManagers, lightingData, lightingMap, worldMap);
