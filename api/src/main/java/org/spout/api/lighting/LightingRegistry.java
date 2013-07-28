@@ -69,10 +69,10 @@ public class LightingRegistry {
 				if (lightingStoreFile.exists()) {
 					store.load();
 				}
-				lightingRegistry = SyncedStringMap.create(null, store, 1, Short.MAX_VALUE, LightingManager.class.getName());
+				lightingRegistry = SyncedStringMap.create(null, store, 0, Short.MAX_VALUE, LightingManager.class.getName());
 				break;
 			case CLIENT:
-				lightingRegistry = SyncedStringMap.create(null, new MemoryStore<Integer>(), 1, Short.MAX_VALUE, LightingManager.class.getName());
+				lightingRegistry = SyncedStringMap.create(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE, LightingManager.class.getName());
 				break;
 		}
 		setup = true;

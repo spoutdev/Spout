@@ -72,7 +72,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			if (hasBiomes) {
 				dataSize += Chunk.BLOCKS.AREA;
 			}
-			dataSize += lightSize * (4 + 4096); // One int id + 1 16^3 chunk data
+			dataSize += lightSize * (2 + 2048); // One short id + 1 16^3/2 chunk data per lighting manager
 
 			byte[] uncompressedData = new byte[dataSize];
 			byte[] compressedData = new byte[dataSize];
@@ -88,7 +88,6 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			}
 			for (Entry<Short, byte[]> e : message.getLight().entrySet()) {
 				short s = e.getKey();
-				System.out.println("Encoding light manager with id " + s);
 				uncompressedData[index++] = (byte) s;
 				uncompressedData[index++] = (byte) (s >> 8);
 				System.arraycopy(e.getValue(), 0, uncompressedData, index, e.getValue().length);
@@ -143,7 +142,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			if (hasBiomes) {
 				uncompressedSize += Chunk.BLOCKS.AREA;
 			}
-			uncompressedSize += lightSize * (2 + 4096); // One short id + 1 16^3 chunk data for every lighting manager
+			uncompressedSize += lightSize * (2 + 2048); // One short id + 1 16^3/2 chunk data for every lighting manager
 			final byte[] uncompressedData = new byte[uncompressedSize];
 			final byte[] compressedData = new byte[buffer.readInt()];
 			buffer.readBytes(compressedData);
@@ -169,13 +168,11 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				blockData[i] = (short) (uncompressedData[index++] | (uncompressedData[index++] << 8));
 			}
 			for (int i = 0; i < lightSize; ++i) {
-				byte[] data = new byte[4096];
+				byte[] data = new byte[2048];
 				final short lightId = (short) (uncompressedData[index++] | (uncompressedData[index++] << 8));
 				System.arraycopy(uncompressedData, index, data, 0, data.length);
 				index += data.length;
 				light.put(lightId, data);
-				
-				System.out.println("Decoded light data with id " + lightId);
 				
 			}
 			if (hasBiomes) {

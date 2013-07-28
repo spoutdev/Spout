@@ -2043,10 +2043,9 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public void setLightingBufferData(Map<Short, byte[]> lightData) {
 		List<CuboidLightBuffer> list = new ArrayList<>();
 		for (Entry<Short, byte[]> e : lightData.entrySet()) {
-			LightingManager<?> manager = LightingRegistry.get(e.getKey().shortValue());
+			LightingManager<?> manager = LightingRegistry.get(e.getKey());
 			byte[] data = e.getValue();
-			CuboidLightBuffer buffer;
-			buffer = manager.deserialize(this, getBlockX(), getBlockY(), getBlockZ(), Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, data);
+			CuboidLightBuffer buffer = manager.deserialize(this, getBlockX(), getBlockY(), getBlockZ(), Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, data);
 			list.add(buffer);
 		}
 		lightBuffers.set(list.toArray(new CuboidLightBuffer[0]));
@@ -2111,6 +2110,8 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			CuboidLightBuffer b = array[i];
 			if (b != null) {
 				list.add(b);
+			} else {
+				System.out.println("Removed null LightBuffer");
 			}
 		}
 		return list.toArray(lightBufferExample);

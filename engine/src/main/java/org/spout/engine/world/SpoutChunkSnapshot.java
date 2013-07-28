@@ -111,12 +111,12 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		this.blockIds = blockIds;
 		this.blockData = blockData;
 		this.lightBuffers = lightBuffers;
-		if (this.lightBuffers == null) {
+		if (this.lightBuffers == null || this.lightBuffers.length == 0) {
 			this.idLightBufferMap = new CuboidLightBuffer[0];
 		} else {
-			int mx = 0;
+			short mx = 0;
 			for (int i = 0; i < lightBuffers.length; i++) {
-				int id = lightBuffers[i].getManagerId() & 0xFFFF;
+				short id = lightBuffers[i].getManagerId();
 				if (id > mx) {
 					mx = id;
 				}
@@ -124,8 +124,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			this.idLightBufferMap = new CuboidLightBuffer[mx + 1];
 			for (int i = 0; i < lightBuffers.length; i++) {
 				CuboidLightBuffer buffer = lightBuffers[i];
-				int id = buffer.getManagerId() & 0xFFFF;
-				this.idLightBufferMap[id] = buffer;
+				this.idLightBufferMap[buffer.getManagerId()] = buffer;
 			}
 		}
 
@@ -354,7 +353,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public CuboidLightBuffer getLightBuffer(short id) {
-		int index = id & 0xFFFF;
+		int index = id;
 		if (index < 0 || index >= idLightBufferMap.length) {
 			return null;
 		}

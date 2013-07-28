@@ -441,13 +441,10 @@ public class ChunkFiles {
 			return;
 		}
 		short globalId = (short) worldLighting.convertTo(globalLighting, worldId);
-		if (globalId == 0) {
-			Spout.getLogger().info("Unknown manager world id " + worldId);
-			return;
-		}
 		LightingManager<?> manager = LightingRegistry.get(globalId);
 		if (manager == null) {
-			manager = FakeLightingManager.get(globalId);
+			throw new IllegalStateException("lighting manager not avaialble with id " + globalId);
+			//manager = FakeLightingManager.get(globalId);
 		}
 		managers.add(manager);
 		lightData.add(data);

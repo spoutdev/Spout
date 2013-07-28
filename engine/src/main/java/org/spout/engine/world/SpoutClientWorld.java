@@ -29,6 +29,7 @@ package org.spout.engine.world;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,7 +37,6 @@ import org.spout.api.component.Component;
 import org.spout.api.entity.Player;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
@@ -56,12 +56,10 @@ public class SpoutClientWorld extends SpoutWorld {
 		super(name, client, 0, 0, null, uid);
 	}
 
-	public void addChunk(ChunkSnapshot c) {
-		addChunk(c.getX(), c.getY(), c.getZ(), c.getBlockIds(), c.getBlockData());
-	}
-
-	public void addChunk(int chunkX, int chunkY, int chunkZ, short[] blockIds, short[] blockData) {
-		getRegionFromBlock(chunkX, chunkY, chunkZ, LoadOption.LOAD_GEN).addChunk(chunkX, chunkY, chunkZ, blockIds, blockData).render();
+	public void addChunk(int chunkX, int chunkY, int chunkZ, short[] blockIds, short[] blockData, Map<Short, byte[]> light) {
+		SpoutChunk chunk = getRegionFromBlock(chunkX, chunkY, chunkZ, LoadOption.LOAD_GEN).addChunk(chunkX, chunkY, chunkZ, blockIds, blockData);
+		chunk.setLightingBufferData(light);
+		chunk.render();
 	}
 
 	public void removeChunk(int chunkX, int chunkY, int chunkZ) {

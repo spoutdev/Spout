@@ -157,9 +157,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (!connnect()) {
 			return;
 		}
-		// Send handshake message first
-		SpoutClientSession get = session.get();
-		get.send(true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().getRemoteAddress()));
 
 		super.start();
 
@@ -182,6 +179,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		inputManager.onClientStart();
 		filesystem.postStartup();
+		
+		// Send handshake message first
+		SpoutClientSession get = session.get();
+		get.send(true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().getRemoteAddress()));
 	}
 
 	private boolean connnect() {
