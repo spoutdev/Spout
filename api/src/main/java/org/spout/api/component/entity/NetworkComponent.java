@@ -27,6 +27,7 @@
 package org.spout.api.component.entity;
 
 import java.util.Set;
+import org.spout.api.Platform;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Player;
@@ -99,6 +100,10 @@ public class NetworkComponent extends EntityComponent {
 	 */
 	public void callProtocolEvent(ProtocolEvent event, boolean ignoreHolder) {
 		try {
+			// TODO: sequencing is wrong; client ticks components before player is placed in null chunk
+			if (getOwner().getChunk() == null && Spout.getPlatform() == Platform.CLIENT) {
+				return;
+			}
 			Set<? extends Player> players = getOwner().getChunk().getObservingPlayers();
 			Player[] thePlayers;
 			if (getOwner() instanceof Player && ignoreHolder && players.contains(getOwner())) {
