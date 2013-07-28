@@ -480,28 +480,16 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	public Entity createEntity(Point point, Class<? extends Component>... classes) {
 		SpoutEntity entity;
 		if (Spout.getPlatform() == Platform.CLIENT) {
-			entity = new SpoutEntity(getEngine(), point, false);
+			entity = new SpoutEntity(getEngine(), point, false, classes);
 		} else {
-			entity = new SpoutEntity(getEngine(), point);
-		}
-		for (Class<? extends Component> clazz : classes) {
-			entity.add(clazz);
+			entity = new SpoutEntity(getEngine(), point, classes);
 		}
 		return entity;
 	}
 
 	@Override
 	public Entity createEntity(Point point, EntityPrefab prefab) {
-		SpoutEntity entity;
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			entity = new SpoutEntity(getEngine(), point, false);
-		} else {
-			entity = new SpoutEntity(getEngine(), point);
-		}
-		for (Class<? extends Component> clazz : prefab.getComponents()) {
-			entity.add(clazz);
-		}
-		return entity;
+		return createEntity(point, prefab.getComponents().toArray(new Class[prefab.getComponents().size()]));
 	}
 
 	/**

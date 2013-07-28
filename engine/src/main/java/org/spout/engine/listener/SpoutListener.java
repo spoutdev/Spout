@@ -40,7 +40,7 @@ public class SpoutListener implements Listener {
 		final Entity entity = event.getEntity();
 		if (entity.getPhysics().isActivated()) {
 			final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) entity.getPhysics();
-			((SpoutRegion) entity.getRegion()).addBody(physics.getTransformLive(), physics.getMass(), physics.getShape(), physics.isGhost(), physics.isMobile());
+			physics.activate((SpoutRegion) physics.getOwner().getRegion());
 		}
 	}
 }

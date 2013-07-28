@@ -76,6 +76,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		this.isMobile = isMobile;
 		this.mass = mass;
 		this.shape = shape;
+		activated = true;
 		if (getOwner().isSpawned()) {
 			activate((SpoutRegion) getOwner().getRegion());
 		}
@@ -87,7 +88,6 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		body = region.addBody(live, mass, shape, isGhost, isMobile);
 		body.setMaterial(material);
 		body.setUserPointer(getOwner());
-		activated = true;
 	}
 
 	@Override
@@ -365,6 +365,11 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	@Override
 	public boolean isGhost() {
 		return isGhost;
+	}
+
+	@Override
+	public String toString() {
+		return "snapshot= {" + snapshot + "}, live= {" + live + "}, render= " + render + "}, body= {" + body + "}";
 	}
 
 	/**
