@@ -763,4 +763,15 @@ public class GenericMath {
 	public static Random getRandom() {
 		return THREAD_LOCAL_RANDOM.get();
 	}
+
+	/**
+	 * Determines if the given number is a power of two.
+	 * A number is a power of 2 if it is 1 or greater, and it contains no similar bits of the given number - 1.
+	 *
+	 * @param num
+	 * @return true if num is a power of two
+	 */
+	public static boolean isPowerOfTwo(int num) {
+		return num > 0 && ((num & (num -1)) == 0);
+	}
 }
