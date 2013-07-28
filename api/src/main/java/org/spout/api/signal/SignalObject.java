@@ -35,7 +35,7 @@ import org.spout.api.tickable.BasicTickable;
  * Defines a common implementation for a SignalInterface. If you need to use this as a delegate because your class already extends something else, use SignalObjectDelegate.
  */
 public class SignalObject extends BasicTickable implements SignalInterface {
-	private HashMap<String, Signal> signals = new HashMap<String, Signal>();
+	private HashMap<String, Signal> signals = new HashMap<>();
 
 	protected void registerSignal(Signal signal) {
 		signals.put(signal.getName(), signal);

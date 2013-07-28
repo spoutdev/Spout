@@ -349,6 +349,7 @@ public class AtomicShortIntArrayTest {
 			this.count = count;
 		}
 
+		@Override
 		public void run() {
 			try {
 				int length = a.length();

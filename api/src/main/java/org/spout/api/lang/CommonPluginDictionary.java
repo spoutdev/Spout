@@ -57,10 +57,10 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 
 	protected static final Pattern LANG_FILE_FILTER = Pattern.compile("lang-[a-zA-Z_]{2,5}.yml");
 	protected Plugin plugin;
-	private final TIntObjectHashMap<LanguageDictionary> languageDictionaries = new TIntObjectHashMap<LanguageDictionary>();
+	private final TIntObjectHashMap<LanguageDictionary> languageDictionaries = new TIntObjectHashMap<>();
 	private int nextId = 0;
-	private final HashMap<String, HashMap<String, Integer>> classes = new HashMap<String, HashMap<String, Integer>>(10);
-	private final LinkedList<Integer> idList = new LinkedList<Integer>();
+	private final HashMap<String, HashMap<String, Integer>> classes = new HashMap<>(10);
+	private final LinkedList<Integer> idList = new LinkedList<>();
 	private final LanguageDictionary codedLanguage = new LanguageDictionary(null);
 
 	public CommonPluginDictionary() {
@@ -101,17 +101,18 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 		loadLanguages();
 	}
 
+	@Override
 	public void save(Writer writer) {
 		Yaml yaml = new Yaml();
-		LinkedHashMap<String, Object> dump = new LinkedHashMap<String, Object>();
+		LinkedHashMap<String, Object> dump = new LinkedHashMap<>();
 		dump.put("nextId", nextId);
-		LinkedHashMap<Integer, LinkedHashMap<String, String>> ids = new LinkedHashMap<Integer, LinkedHashMap<String, String>>();
+		LinkedHashMap<Integer, LinkedHashMap<String, String>> ids = new LinkedHashMap<>();
 		for (Entry<String, HashMap<String, Integer>> e1 : classes.entrySet()) {
 			for (Entry<String, Integer> e2 : e1.getValue().entrySet()) {
 				String clazz = e1.getKey();
 				String source = e2.getKey();
 				int key = e2.getValue();
-				LinkedHashMap<String, String> v = new LinkedHashMap<String, String>(2);
+				LinkedHashMap<String, String> v = new LinkedHashMap<>(2);
 				v.put("class", clazz);
 				v.put("string", source);
 				ids.put(key, v);
@@ -181,6 +182,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 	 * @param foundClass the class that called the translation (used for determining which translation is correct)
 	 * @return the translation
 	 */
+	@Override
 	public String tr(String source, CommandSource receiver, String foundClass, Object[] args) {
 		String use = source;
 		Locale preferred = receiver.getPreferredLocale();
@@ -204,19 +206,22 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 		return use;
 	}
 
+	@Override
 	public Plugin getPlugin() {
 		return plugin;
 	}
 
+	@Override
 	public LanguageDictionary getDictionary(Locale locale) {
 		return languageDictionaries.get(locale.hashCode());
 	}
 
+	@Override
 	public void setKey(String source, String clazz, int id) {
 		synchronized (classes) {
 			HashMap<String, Integer> idmap = classes.get(clazz);
 			if (idmap == null) {
-				idmap = new HashMap<String, Integer>();
+				idmap = new HashMap<>();
 				classes.put(clazz, idmap);
 			}
 			idmap.put(source, id);
@@ -229,6 +234,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 		}
 	}
 
+	@Override
 	public int getKey(String source, String clazz) {
 		synchronized (classes) {
 			HashMap<String, Integer> idmap = classes.get(clazz);
@@ -244,6 +250,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 		}
 	}
 
+	@Override
 	public void broadcast(String source, CommandSource[] receivers, String clazz, Object[] args) {
 		int key = getKey(source, clazz);
 		for (CommandSource receiver : receivers) {
@@ -259,20 +266,24 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 		}
 	}
 
+	@Override
 	public int getNextKey() {
 		return nextId++;
 	}
 
+	@Override
 	public List<Integer> getIdList() {
 		synchronized (idList) {
 			return Collections.unmodifiableList(idList);
 		}
 	}
 
+	@Override
 	public void setDictionary(Locale locale, LanguageDictionary dictionary) {
 		languageDictionaries.put(locale.hashCode(), dictionary);
 	}
 
+	@Override
 	public String getCodedSource(int id) {
 		synchronized (codedLanguage) {
 			return codedLanguage.getTranslation(id);

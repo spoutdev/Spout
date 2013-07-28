@@ -41,7 +41,7 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
  * A world generator that generates using previously-specified layers of blocks
  */
 public class LayeredWorldGenerator implements WorldGenerator {
-	private List<Layer> layers = new ArrayList<Layer>();
+	private List<Layer> layers = new ArrayList<>();
 	private int minimum = Integer.MAX_VALUE;
 	private int height = Integer.MIN_VALUE;
 	private short floorid = 0, floordata = 0;

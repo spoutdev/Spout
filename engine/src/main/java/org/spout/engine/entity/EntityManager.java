@@ -54,7 +54,7 @@ public class EntityManager {
 	/**
 	 * A map of all the entity ids to the corresponding entities.
 	 */
-	private final SnapshotableHashMap<Integer, SpoutEntity> entities = new SnapshotableHashMap<Integer, SpoutEntity>(snapshotManager);
+	private final SnapshotableHashMap<Integer, SpoutEntity> entities = new SnapshotableHashMap<>(snapshotManager);
 	/**
 	 * The next id to check.
 	 */
@@ -66,7 +66,7 @@ public class EntityManager {
 	/**
 	 * Player listings plus listings of sync'd entities per player
 	 */
-	private final SnapshotableHashMap<Player, ArrayList<SpoutEntity>> players = new SnapshotableHashMap<Player, ArrayList<SpoutEntity>>(snapshotManager);
+	private final SnapshotableHashMap<Player, ArrayList<SpoutEntity>> players = new SnapshotableHashMap<>(snapshotManager);
 
 	public EntityManager(SpoutRegion region) {
 		if (region == null) {
@@ -99,7 +99,7 @@ public class EntityManager {
 	 * @return The list of players.
 	 */
 	public List<Player> getPlayers() {
-		return new ArrayList<Player>(players.get().keySet());
+		return new ArrayList<>(players.get().keySet());
 	}
 
 	/**

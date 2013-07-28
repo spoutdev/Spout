@@ -43,7 +43,7 @@ public class TSyncInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<
 	 * factor.
 	 */
 	public TSyncInt21TripleObjectHashMap() {
-		map = new TSyncLongObjectHashMap<K>(100);
+		map = new TSyncLongObjectHashMap<>(100);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class TSyncInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<
 	 * @param capacity an <code>int</code> value
 	 */
 	public TSyncInt21TripleObjectHashMap(int capacity) {
-		map = new TSyncLongObjectHashMap<K>(capacity);
+		map = new TSyncLongObjectHashMap<>(capacity);
 	}
 
 	/**

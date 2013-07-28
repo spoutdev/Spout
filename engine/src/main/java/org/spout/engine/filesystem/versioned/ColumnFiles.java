@@ -30,6 +30,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -175,7 +176,7 @@ public class ColumnFiles {
 				manager = clazz.getConstructor(params).newInstance(column.getX(), column.getZ());
 				manager.deserialize(biomes);
 				column.setBiomeManager(manager);
-			} catch (Exception e) {
+			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				Spout.getLogger().severe("Unable to find biome manager class " + biomeManagerClass + ", this may cause world corruption");
 				e.printStackTrace();
 			}

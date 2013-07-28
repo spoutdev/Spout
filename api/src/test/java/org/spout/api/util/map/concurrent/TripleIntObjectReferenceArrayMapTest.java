@@ -46,7 +46,7 @@ public class TripleIntObjectReferenceArrayMapTest {
 	private final static int THREADS = 20;
 	private final static boolean PRINT_ALL_TESTS = false;
 	private final static int REPEATS = 5;
-	private final TripleIntObjectReferenceArrayMap<FakeObject> map = new TripleIntObjectReferenceArrayMap<FakeObject>(3);
+	private final TripleIntObjectReferenceArrayMap<FakeObject> map = new TripleIntObjectReferenceArrayMap<>(3);
 
 	@Test
 	public void test() {
@@ -91,7 +91,7 @@ public class TripleIntObjectReferenceArrayMapTest {
 			}
 		}
 
-		LinkedHashSet<FakeObject> valuesCopy = new LinkedHashSet<FakeObject>(map.valueCollection());
+		LinkedHashSet<FakeObject> valuesCopy = new LinkedHashSet<>(map.valueCollection());
 
 		for (int x = -halfEdgeX; x < halfEdgeX; x++) {
 			for (int y = -halfEdgeY; y < halfEdgeY; y++) {
@@ -108,7 +108,7 @@ public class TripleIntObjectReferenceArrayMapTest {
 
 		FakeObject removed = map.remove(rx, ry, rz);
 
-		valuesCopy = new LinkedHashSet<FakeObject>(map.valueCollection());
+		valuesCopy = new LinkedHashSet<>(map.valueCollection());
 
 		assertTrue("Values collection did contained element for, " + rx + ", " + ry + ", " + rz + " after its removal", !valuesCopy.contains(removed));
 
@@ -176,7 +176,7 @@ public class TripleIntObjectReferenceArrayMapTest {
 			TripleIntObjectMapTest.testMap(new TSyncInt21TripleObjectHashMap<FakeObject>(), "TroveRWHashMap");
 
 			TLongObjectMap<FakeObject> m = TCollections.synchronizedMap(new TLongObjectHashMap<FakeObject>());
-			TripleIntObjectMapTest.testMap(new TSyncInt21TripleObjectHashMap<FakeObject>(m), "TroveSyncedMap");
+			TripleIntObjectMapTest.testMap(new TSyncInt21TripleObjectHashMap<>(m), "TroveSyncedMap");
 
 			TripleIntObjectMapTest.testMap(new ArrayMap(), "3D Array");
 

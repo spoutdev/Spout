@@ -40,7 +40,7 @@ import org.spout.api.io.store.simple.SimpleStore;
  * This class syncs a StringToUniqueIntegerMap from server to client
  */
 public final class SyncedStringMap extends StringToUniqueIntegerMap implements Eventable<SyncedMapEvent> {
-	private final CopyOnWriteArrayList<EventableListener<SyncedMapEvent>> registeredListeners = new CopyOnWriteArrayList<EventableListener<SyncedMapEvent>>();
+	private final CopyOnWriteArrayList<EventableListener<SyncedMapEvent>> registeredListeners = new CopyOnWriteArrayList<>();
 	private int id;
 
 	protected SyncedStringMap(String name) {

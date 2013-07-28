@@ -38,7 +38,7 @@ import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import static org.jboss.netty.channel.Channels.write;
 
 public abstract class PostprocessEncoder extends OneToOneEncoder implements ProcessorHandler {
-	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<ChannelProcessor>();
+	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<>();
 	private final AtomicBoolean locked = new AtomicBoolean(false);
 
 	@Override

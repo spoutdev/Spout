@@ -42,9 +42,9 @@ import org.spout.engine.scheduler.SpoutScheduler;
 
 public class SpoutSnapshotLock implements SnapshotLock {
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-	private final ConcurrentHashMap<Object, LockInfo> locks = new ConcurrentHashMap<Object, LockInfo>();
-	private final ConcurrentHashMap<String, Integer> coreTasks = new ConcurrentHashMap<String, Integer>();
-	private final ConcurrentHashMap<Thread, Integer> coreLockingThreads = new ConcurrentHashMap<Thread, Integer>();
+	private final ConcurrentHashMap<Object, LockInfo> locks = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, Integer> coreTasks = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<Thread, Integer> coreLockingThreads = new ConcurrentHashMap<>();
 
 	@Override
 	public void readLock(Object plugin) {
@@ -133,7 +133,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	}
 
 	public List<Object> getLockingPlugins(int threshold) {
-		ArrayList<Object> plugins = new ArrayList<Object>();
+		ArrayList<Object> plugins = new ArrayList<>();
 		Set<Entry<Object, LockInfo>> entries = locks.entrySet();
 
 		long currentTime = System.currentTimeMillis();

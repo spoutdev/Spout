@@ -57,7 +57,7 @@ public class BaseComponentOwner implements ComponentOwner {
 	 * For use de-serializing a list of components all at once, without having to worry about dependencies
 	 */
 	protected void add(Class<? extends Component>... components) {
-		HashSet<Component> added = new HashSet<Component>();
+		HashSet<Component> added = new HashSet<>();
 		synchronized (components) {
 			for (Class<? extends Component> type : components) {
 				if (!this.components.containsKey(type)) {
@@ -109,9 +109,7 @@ public class BaseComponentOwner implements ComponentOwner {
 
 			try {
 				component = (T) type.newInstance();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (	InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 
@@ -197,7 +195,7 @@ public class BaseComponentOwner implements ComponentOwner {
 	public <T extends Component> Collection<T> getAll(Class<T> type) {
 		Preconditions.checkNotNull(type);
 		synchronized (components) {
-			ArrayList<T> matches = new ArrayList<T>();
+			ArrayList<T> matches = new ArrayList<>();
 			for (Component component : components.values()) {
 				if (type.isAssignableFrom(component.getClass())) {
 					matches.add((T) component);
@@ -212,7 +210,7 @@ public class BaseComponentOwner implements ComponentOwner {
 	public <T extends Object> Collection<T> getAllOfType(Class<T> type) {
 		Preconditions.checkNotNull(type);
 		synchronized (components) {
-			ArrayList<T> matches = new ArrayList<T>();
+			ArrayList<T> matches = new ArrayList<>();
 			for (Component component : components.values()) {
 				if (type.isAssignableFrom(component.getClass())) {
 					matches.add((T) component);
@@ -225,7 +223,7 @@ public class BaseComponentOwner implements ComponentOwner {
 	@Override
 	public Collection<Component> values() {
 		synchronized (components) {
-			return new ArrayList<Component>(components.values());
+			return new ArrayList<>(components.values());
 		}
 	}
 

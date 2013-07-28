@@ -48,7 +48,7 @@ public class RenderPartComponent extends WidgetComponent {
 
 	@Override
 	public List<RenderPartPack> getRenderPartPacks() {
-		List<RenderPartPack> parts = new ArrayList<RenderPartPack>();
+		List<RenderPartPack> parts = new ArrayList<>();
 		parts.add(pack);
 		return parts;
 	}

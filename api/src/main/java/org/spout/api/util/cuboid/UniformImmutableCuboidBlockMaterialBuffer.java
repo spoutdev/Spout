@@ -63,22 +63,27 @@ public class UniformImmutableCuboidBlockMaterialBuffer extends ImmutableCuboidBl
 	public void setSource(CuboidBuffer source) {
 	}
 
+	@Override
 	public BlockMaterial get(int x, int y, int z) {
 		return uniform;
 	}
 
+	@Override
 	public short getId(int x, int y, int z) {
 		return id;
 	}
 
+	@Override
 	public short getData(int x, int y, int z) {
 		return data;
 	}
 
+	@Override
 	public short[] getRawId() {
 		throw new UnsupportedOperationException("Buffer is a uniform buffer, there is no array");
 	}
 
+	@Override
 	public short[] getRawData() {
 		throw new UnsupportedOperationException("Buffer is a uniform buffer, there is no array");
 	}

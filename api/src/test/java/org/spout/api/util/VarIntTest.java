@@ -82,25 +82,22 @@ public class VarIntTest {
 		}
 
 		assertTrue("Reading an int from an empty buffer did not throw an exception", thrown);
-
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-		String s1 = "String 1";
-		String s2 = null;
-		String s3 = "String - alternative length";
-		String s4 = "";
-
-		VarInt.writeString(out, s1);
-
-		VarInt.writeString(out, s2);
-
-		VarInt.writeString(out, s3);
-
-		VarInt.writeString(out, s4);
-
-		byte[] outputArray = out.toByteArray();
-
-		out.close();
+		String s1;
+		String s2;
+		String s3;
+		String s4;
+		byte[] outputArray;
+		try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+			s1 = "String 1";
+			s2 = null;
+			s3 = "String - alternative length";
+			s4 = "";
+			VarInt.writeString(out, s1);
+			VarInt.writeString(out, s2);
+			VarInt.writeString(out, s3);
+			VarInt.writeString(out, s4);
+			outputArray = out.toByteArray();
+		}
 
 		ByteArrayInputStream in = new ByteArrayInputStream(outputArray);
 
@@ -116,7 +113,7 @@ public class VarIntTest {
 	}
 
 	private void matchString(String message, String s1, String s2) {
-		boolean match = (s1 == s2) || (s1 != null && s1.equals(s2));
+		boolean match = (s1 == null ? s2 == null : s1.equals(s2)) || (s1 != null && s1.equals(s2));
 		assertTrue(message, match);
 	}
 }

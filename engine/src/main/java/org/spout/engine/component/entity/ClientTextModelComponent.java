@@ -46,7 +46,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 	private static Matrix id3 = new Matrix(3);// TODO: ClientTextModelComponent shouldn't use gui shader
 
 	public void updateMesh() {
-		ArrayList<MeshFace> faces = new ArrayList<MeshFace>();
+		ArrayList<MeshFace> faces = new ArrayList<>();
 
 		Font font = getFont();
 		Color color = Color.black;

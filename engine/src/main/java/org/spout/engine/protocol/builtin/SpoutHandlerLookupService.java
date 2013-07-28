@@ -67,7 +67,7 @@ public class SpoutHandlerLookupService extends HandlerLookupService {
 			bind(ClickRequestMessage.class, ClickRequestMessageHandler.class);
 			bind(ClickResponseMessage.class, ClickResponseMessageHandler.class);
 			bind(ChunkDatatableMessage.class, ChunkDatatableMessageHandler.class);
-		} catch (Exception e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}

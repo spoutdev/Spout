@@ -45,7 +45,7 @@ public final class BiomeRegistry {
 
 	static {
 		for (int i = 0; i < biomes.length; i++) {
-			biomes[i] = new AtomicReference<Biome>();
+			biomes[i] = new AtomicReference<>();
 		}
 	}
 

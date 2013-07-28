@@ -37,16 +37,14 @@ import org.spout.api.signal.Signal;
  */
 public class RadioComponent extends ButtonComponent {
 	public static final Signal SIGNAL_SELECTED = new Signal("selected", Boolean.class);
-	private static final DefaultedKey<Boolean> KEY_SELECTED = new DefaultedKeyImpl<Boolean>("selected", false);
+	private static final DefaultedKey<Boolean> KEY_SELECTED = new DefaultedKeyImpl<>("selected", false);
 
 	public RadioComponent() {
 		super();
 		registerSignal(SIGNAL_SELECTED);
 		try {
 			subscribe(SIGNAL_CLICKED, this, "onClick");
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
+		} catch (SecurityException | NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 	}

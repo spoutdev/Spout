@@ -66,7 +66,7 @@ import org.spout.api.Spout;
 public class SecurityHandler {
 	public static final boolean DECRYPT_MODE = false;
 	public static final boolean ENCRYPT_MODE = true;
-	private static final ConcurrentHashMap<String, AsymmetricCipherKeyPair> serverKeys = new ConcurrentHashMap<String, AsymmetricCipherKeyPair>();
+	private static final ConcurrentHashMap<String, AsymmetricCipherKeyPair> serverKeys = new ConcurrentHashMap<>();
 	private static final Provider provider;
 	private static final SecurityHandler instance;
 	private byte[] sharedSecret;
@@ -188,7 +188,7 @@ public class SecurityHandler {
 	public byte[] processAll(AsymmetricBlockCipher cipher, byte[] input) {
 		int outputSize = 0;
 		int blockSize = cipher.getInputBlockSize();
-		List<byte[]> outputBlocks = new LinkedList<byte[]>();
+		List<byte[]> outputBlocks = new LinkedList<>();
 
 		int pos = 0;
 

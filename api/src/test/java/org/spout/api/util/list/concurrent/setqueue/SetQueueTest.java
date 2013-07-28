@@ -39,7 +39,7 @@ public class SetQueueTest {
 	private final int OPERATIONS = 300;
 
 	public void testFull() {
-		SetQueue<Integer> queue = new SetQueue<Integer>(10);
+		SetQueue<Integer> queue = new SetQueue<>(10);
 
 		IntegerSetQueueElement[] elements = new IntegerSetQueueElement[10];
 		for (int i = 0; i < 20; i++) {
@@ -58,7 +58,7 @@ public class SetQueueTest {
 	@Test
 	public void testInvalid() {
 
-		SetQueue<Integer> queue = new SetQueue<Integer>(5);
+		SetQueue<Integer> queue = new SetQueue<>(5);
 
 		IntegerSetQueueElement[] elements = new IntegerSetQueueElement[10];
 		for (int i = 0; i < 10; i++) {
@@ -87,7 +87,7 @@ public class SetQueueTest {
 
 		elements[8].setInvalid();
 
-		HashSet<Integer> set = new HashSet<Integer>();
+		HashSet<Integer> set = new HashSet<>();
 
 		Integer i;
 		while ((i = queue.poll()) != null) {
@@ -101,14 +101,14 @@ public class SetQueueTest {
 	@Test
 	public void testQueueAsSet() {
 
-		SetQueue<Integer> queue = new SetQueue<Integer>(SET_SIZE);
+		SetQueue<Integer> queue = new SetQueue<>(SET_SIZE);
 
 		IntegerSetQueueElement[] elements = new IntegerSetQueueElement[SET_SIZE];
 		for (int i = 0; i < SET_SIZE; i++) {
 			elements[i] = new IntegerSetQueueElement(queue, i);
 		}
 
-		HashSet<Integer> queued = new HashSet<Integer>();
+		HashSet<Integer> queued = new HashSet<>();
 
 		Random r = new Random();
 
@@ -116,7 +116,7 @@ public class SetQueueTest {
 			if (r.nextInt(5) == 0) {
 				Integer i = queue.poll();
 				if (i == null) {
-					assertTrue("Unable to read element from non-empty queue", queued.size() == 0);
+					assertTrue("Unable to read element from non-empty queue", queued.isEmpty());
 				} else {
 					assertTrue("Unknown element removed from queue " + i, queued.remove(i));
 				}
@@ -132,7 +132,7 @@ public class SetQueueTest {
 			assertTrue("Unknown element removed from queue " + i, queued.remove(i));
 		}
 
-		assertTrue("All elements not removed from queue, " + queued.size() + " elements remaining", queued.size() == 0);
+		assertTrue("All elements not removed from queue, " + queued.size() + " elements remaining", queued.isEmpty());
 	}
 
 	private static void verifyFullAdding(SetQueueElement<Integer>[] elements, int i) {

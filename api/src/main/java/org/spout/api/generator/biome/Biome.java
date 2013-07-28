@@ -48,7 +48,7 @@ import org.spout.api.geo.cuboid.Chunk;
 public abstract class Biome implements LayeredBiomeSelectorElement {
 	private int id;
 	private boolean registered = false;
-	private final List<Decorator> decorators = new ArrayList<Decorator>();
+	private final List<Decorator> decorators = new ArrayList<>();
 
 	public Biome() {
 		BiomeRegistry.register(this);
@@ -98,10 +98,10 @@ public abstract class Biome implements LayeredBiomeSelectorElement {
 		return decorators;
 	}
 
-	private final static ConcurrentHashMap<Class<? extends Decorator>, AtomicLong> populatorProfilerMap = new ConcurrentHashMap<Class<? extends Decorator>, AtomicLong>();
+	private final static ConcurrentHashMap<Class<? extends Decorator>, AtomicLong> populatorProfilerMap = new ConcurrentHashMap<>();
 	private final static ThreadMXBean bean = ManagementFactory.getThreadMXBean();
 
-	private final void populatorAdd(Decorator populator, long delta) {
+	private void populatorAdd(Decorator populator, long delta) {
 		AtomicLong i = populatorProfilerMap.get(populator.getClass());
 		if (i == null) {
 			i = new AtomicLong();
@@ -128,7 +128,7 @@ public abstract class Biome implements LayeredBiomeSelectorElement {
 
 	public static List<Entry<Class<? extends Decorator>, Long>> getProfileResults() {
 
-		List<Entry<Class<? extends Decorator>, Long>> list = new ArrayList<Entry<Class<? extends Decorator>, Long>>(populatorProfilerMap.size());
+		List<Entry<Class<? extends Decorator>, Long>> list = new ArrayList<>(populatorProfilerMap.size());
 
 		for (Entry<Class<? extends Decorator>, AtomicLong> e : populatorProfilerMap.entrySet()) {
 			list.add(new AbstractMap.SimpleEntry<Class<? extends Decorator>, Long>(e.getKey(), e.getValue().get()));

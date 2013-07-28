@@ -32,16 +32,14 @@ import org.spout.api.signal.Signal;
 
 public class CheckBoxComponent extends ButtonComponent {
 	public static final Signal SIGNAL_CHECKED = new Signal("checked", Boolean.class);
-	private static final DefaultedKey<Boolean> KEY_CHECKED = new DefaultedKeyImpl<Boolean>("checked", false);
+	private static final DefaultedKey<Boolean> KEY_CHECKED = new DefaultedKeyImpl<>("checked", false);
 
 	public CheckBoxComponent() {
 		super();
 		registerSignal(SIGNAL_CHECKED);
 		try {
 			subscribe(SIGNAL_CLICKED, this, "onClick");
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
+		} catch (SecurityException | NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 	}

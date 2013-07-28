@@ -41,7 +41,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class MemoryStoreTest {
-	SimpleStore<Integer> subject = new MemoryStore<Integer>();
+	SimpleStore<Integer> subject = new MemoryStore<>();
 	String key = "key";
 	int value = 1;
 

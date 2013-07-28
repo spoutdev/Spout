@@ -42,15 +42,15 @@ import org.spout.api.render.SpoutRenderMaterials;
 import org.spout.api.signal.Signal;
 
 public class TextFieldComponent extends LabelComponent {
-	private static final DefaultedKey<Character> KEY_PASSWORD_CHAR = new DefaultedKeyImpl<Character>("password_char", '*');
-	private static final DefaultedKey<Boolean> KEY_PASSWORD_FIELD = new DefaultedKeyImpl<Boolean>("password_field", false);
-	private static final DefaultedKey<Boolean> KEY_SCROLLABLE = new DefaultedKeyImpl<Boolean>("scrollable", false);
-	private static final DefaultedKey<String> KEY_CACHED_TEXT = new DefaultedKeyImpl<String>("cached_text", "");
-	private static final DefaultedKey<Integer> KEY_MAX_CHARS = new DefaultedKeyImpl<Integer>("max_chars", 100);
-	private static final DefaultedKey<Integer> KEY_MAX_ROWS = new DefaultedKeyImpl<Integer>("max_rows", 20);
-	private static final DefaultedKey<Integer> KEY_ROWS = new DefaultedKeyImpl<Integer>("rows", 1);
-	private static final DefaultedKey<Integer> KEY_CURSOR_INDEX = new DefaultedKeyImpl<Integer>("cursor_index", 0);
-	private static final DefaultedKey<Integer> KEY_CURSOR_ROW = new DefaultedKeyImpl<Integer>("cursor_row", 0);
+	private static final DefaultedKey<Character> KEY_PASSWORD_CHAR = new DefaultedKeyImpl<>("password_char", '*');
+	private static final DefaultedKey<Boolean> KEY_PASSWORD_FIELD = new DefaultedKeyImpl<>("password_field", false);
+	private static final DefaultedKey<Boolean> KEY_SCROLLABLE = new DefaultedKeyImpl<>("scrollable", false);
+	private static final DefaultedKey<String> KEY_CACHED_TEXT = new DefaultedKeyImpl<>("cached_text", "");
+	private static final DefaultedKey<Integer> KEY_MAX_CHARS = new DefaultedKeyImpl<>("max_chars", 100);
+	private static final DefaultedKey<Integer> KEY_MAX_ROWS = new DefaultedKeyImpl<>("max_rows", 20);
+	private static final DefaultedKey<Integer> KEY_ROWS = new DefaultedKeyImpl<>("rows", 1);
+	private static final DefaultedKey<Integer> KEY_CURSOR_INDEX = new DefaultedKeyImpl<>("cursor_index", 0);
+	private static final DefaultedKey<Integer> KEY_CURSOR_ROW = new DefaultedKeyImpl<>("cursor_row", 0);
 	private final RenderPart cursor = new RenderPart();
 	private final RenderPart field = new RenderPart();
 	private final RenderPart border = new RenderPart();

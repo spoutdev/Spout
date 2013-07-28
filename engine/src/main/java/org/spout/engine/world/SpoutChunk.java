@@ -115,20 +115,20 @@ import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
 public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
-	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<SpoutChunk>(null);
+	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<>(null);
 	//Not static to allow the engine to parse values first
 	private final int autosaveInterval = SpoutConfiguration.AUTOSAVE_INTERVAL.getInt(60000);
 	private final Set<SpoutEntity> observers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutEntity, Boolean>());
 	private final Set<SpoutEntity> unmodifiableObservers = Collections.unmodifiableSet(observers);
 	private final Set<SpoutPlayer> observingPlayers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutPlayer, Boolean>());
 	private final Set<SpoutPlayer> unmodifiableObservingPlayers = Collections.unmodifiableSet(observingPlayers);
-	private final ConcurrentLinkedQueue<SpoutEntity> expiredObserversQueue = new ConcurrentLinkedQueue<SpoutEntity>();
-	private final LinkedHashSet<SpoutEntity> expiredObservers = new LinkedHashSet<SpoutEntity>();
+	private final ConcurrentLinkedQueue<SpoutEntity> expiredObserversQueue = new ConcurrentLinkedQueue<>();
+	private final LinkedHashSet<SpoutEntity> expiredObservers = new LinkedHashSet<>();
 	private final Set<SpoutEntity> unmodifiableExpiredObservers = Collections.unmodifiableSet(expiredObservers);
 	/**
 	 * Not thread safe, synchronize on access
 	 */
-	private final TShortObjectHashMap<BlockComponentOwner> blockComponents = new TShortObjectHashMap<BlockComponentOwner>();
+	private final TShortObjectHashMap<BlockComponentOwner> blockComponents = new TShortObjectHashMap<>();
 	/**
 	 * Multi-thread write access to the block store is only allowed during the allowed stages. During the restricted stages, only the region thread may modify the block store.
 	 */
@@ -141,7 +141,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	/**
 	 * Indicates that the chunk should be saved if unloaded
 	 */
-	protected final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>(SaveState.NONE);
+	protected final AtomicReference<SaveState> saveState = new AtomicReference<>(SaveState.NONE);
 	private final ChunkSetQueueElement<Cube> saveMarkedElement;
 	/**
 	 * The parent region that manages this chunk
@@ -198,7 +198,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	/**
 	 * An array of light buffers associated with this Chunk
 	 */
-	private final AtomicReference<CuboidLightBuffer[]> lightBuffers = new AtomicReference<CuboidLightBuffer[]>(new CuboidLightBuffer[0]);
+	private final AtomicReference<CuboidLightBuffer[]> lightBuffers = new AtomicReference<>(new CuboidLightBuffer[0]);
 	private final static CuboidLightBuffer[] lightBufferExample = new CuboidLightBuffer[0];
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
@@ -280,7 +280,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, boolean lightStable, AtomicBlockStore blockStore, boolean isBlank) {
 		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
 		parentRegion = region;
-		this.populationState = new AtomicReference<PopulationState>(popState);
+		this.populationState = new AtomicReference<>(popState);
 		this.blockStore = blockStore;
 		blockStore.resetDirtyArrays();
 
@@ -302,18 +302,18 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		lastUnloadCheck.set(world.getAge());
 
 		// loaded chunk
-		selfReference = new WeakReference<SpoutChunk>(this);
+		selfReference = new WeakReference<>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
 		this.lightStableOnLoad = lightStable;
-		this.saveMarkedElement = new ChunkSetQueueElement<Cube>(getRegion().saveMarkedQueue, this);
-		this.unloadQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().unloadQueue, this);
-		this.populationQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().populationQueue, this);
-		this.populationPriorityQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().populationPriorityQueue, this);
-		this.chunkObserversDirtyQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().chunkObserversDirtyQueue, this, true);
-		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().localPhysicsChunkQueue, this);
-		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().globalPhysicsChunkQueue, this);
-		this.dirtyChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().dirtyChunkQueue, this);
-		this.newChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().newChunkQueue, this);
+		this.saveMarkedElement = new ChunkSetQueueElement<>(getRegion().saveMarkedQueue, this);
+		this.unloadQueueElement = new ChunkSetQueueElement<>(getRegion().unloadQueue, this);
+		this.populationQueueElement = new ChunkSetQueueElement<>(getRegion().populationQueue, this);
+		this.populationPriorityQueueElement = new ChunkSetQueueElement<>(getRegion().populationPriorityQueue, this);
+		this.chunkObserversDirtyQueueElement = new ChunkSetQueueElement<>(getRegion().chunkObserversDirtyQueue, this, true);
+		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement<>(getRegion().localPhysicsChunkQueue, this);
+		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<>(getRegion().globalPhysicsChunkQueue, this);
+		this.dirtyChunkQueueElement = new ChunkSetQueueElement<>(getRegion().dirtyChunkQueue, this);
+		this.newChunkQueueElement = new ChunkSetQueueElement<>(getRegion().newChunkQueue, this);
 
 		this.isBlank = isBlank;
 	}
@@ -1313,8 +1313,8 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			return false;
 		}
 
-		final List<Populator> clearPopulators = new ArrayList<Populator>();
-		final List<Populator> populators = new ArrayList<Populator>();
+		final List<Populator> clearPopulators = new ArrayList<>();
+		final List<Populator> populators = new ArrayList<>();
 		for (Populator pop : getWorld().getGenerator().getPopulators()) {
 			if (pop.needsClearance()) {
 				clearPopulators.add(pop);
@@ -1393,7 +1393,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 	}
 
-	private final static ConcurrentHashMap<Class<? extends Populator>, AtomicLong> populatorProfilerMap = new ConcurrentHashMap<Class<? extends Populator>, AtomicLong>();
+	private final static ConcurrentHashMap<Class<? extends Populator>, AtomicLong> populatorProfilerMap = new ConcurrentHashMap<>();
 	private final static ThreadMXBean bean = ManagementFactory.getThreadMXBean();
 
 	private void populatorAdd(Populator populator, long delta) {
@@ -1423,7 +1423,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	public static List<Entry<Class<? extends Populator>, Long>> getProfileResults() {
 
-		List<Entry<Class<? extends Populator>, Long>> list = new ArrayList<Entry<Class<? extends Populator>, Long>>(populatorProfilerMap.size());
+		List<Entry<Class<? extends Populator>, Long>> list = new ArrayList<>(populatorProfilerMap.size());
 
 		for (Entry<Class<? extends Populator>, AtomicLong> e : populatorProfilerMap.entrySet()) {
 			list.add(new AbstractMap.SimpleEntry<Class<? extends Populator>, Long>(e.getKey(), e.getValue().get()));
@@ -1457,7 +1457,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	@Override
 	public List<Entity> getEntities() {
-		ArrayList<Entity> entities = new ArrayList<Entity>();
+		ArrayList<Entity> entities = new ArrayList<>();
 		for (Entity e : parentRegion.getAll()) {
 			if (e.getChunk() == this) {
 				entities.add(e);
@@ -1468,7 +1468,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	@Override
 	public List<Entity> getLiveEntities() {
-		ArrayList<Entity> entities = new ArrayList<Entity>();
+		ArrayList<Entity> entities = new ArrayList<>();
 		for (Entity e : parentRegion.getEntityManager().getAllLive()) {
 			if (((SpoutEntity) e).getChunkLive() == this) {
 				entities.add(e);
@@ -2093,7 +2093,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	protected CuboidLightBuffer[] getLightBuffers() {
 		CuboidLightBuffer[] array = lightBuffers.get();
-		ArrayList<CuboidLightBuffer> list = new ArrayList<CuboidLightBuffer>(array.length);
+		ArrayList<CuboidLightBuffer> list = new ArrayList<>(array.length);
 		for (int i = 0; i < array.length; i++) {
 			CuboidLightBuffer b = array[i];
 			if (b != null) {
@@ -2199,7 +2199,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			updatedRenderMaterials = null;
 			firstRender = false;
 		} else {
-			updatedRenderMaterials = new HashSet<RenderMaterial>();
+			updatedRenderMaterials = new HashSet<>();
 			int dirtyBlocks = getDirtyBlocks();
 			for (int i = 0; i < dirtyBlocks; i++) {
 				addMaterialToSet(updatedRenderMaterials, getDirtyOldState(i));

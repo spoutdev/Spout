@@ -69,7 +69,7 @@ public abstract class Material extends MaterialRegistry {
 	private volatile boolean submaterialsDirty = true;
 	private final short dataMask;
 	private final FlagSingle useFlag = new FlagSingle();
-	private final List<MeshEffect> meshEffects = new ArrayList<MeshEffect>();
+	private final List<MeshEffect> meshEffects = new ArrayList<>();
 
 	/**
 	 * Creates a material with a dataMask, name
@@ -278,9 +278,7 @@ public abstract class Material extends MaterialRegistry {
 						if (data >= sm.length) {
 							int newSize = GenericMath.roundUpPow2(data + (data >> 1) + 1);
 							Material[] newSubmaterials = new Material[newSize];
-							for (int i = 0; i < sm.length; i++) {
-								newSubmaterials[i] = sm[i];
-							}
+							System.arraycopy(sm, 0, newSubmaterials, 0, sm.length);
 							success = subMaterials.compareAndSet(sm, newSubmaterials);
 						} else {
 							success = true;

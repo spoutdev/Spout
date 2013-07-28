@@ -51,7 +51,7 @@ public class RecipeBuilderTest {
 		builder.addIngredient(BlockMaterial.ERROR, 2);
 		builder.setResult(BlockMaterial.UNBREAKABLE, 1);
 		ShapelessRecipe recipe = builder.buildShapelessRecipe();
-		List<Material> materials = new ArrayList<Material>();
+		List<Material> materials = new ArrayList<>();
 		materials.add(BlockMaterial.SOLID_BLUE);
 		materials.add(BlockMaterial.AIR);
 		materials.add(BlockMaterial.ERROR);
@@ -69,8 +69,8 @@ public class RecipeBuilderTest {
 		builder.addIngredient(BlockMaterial.SOLID_BROWN);
 		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapelessRecipe recipe = builder.buildShapelessRecipe();
-		List<Material> testIngredients = new ArrayList<Material>();
-		List<Material> recipeIngredients = new ArrayList<Material>();
+		List<Material> testIngredients = new ArrayList<>();
+		List<Material> recipeIngredients = new ArrayList<>();
 		recipeIngredients.addAll(recipe.getIngredients());
 		testIngredients.add(BlockMaterial.SOLID_BLUE);
 		testIngredients.add(BlockMaterial.UNBREAKABLE);
@@ -89,8 +89,8 @@ public class RecipeBuilderTest {
 		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		builder.addRow("AB");
 		ShapedRecipe recipe = builder.buildShapedRecipe();
-		List<Material> testIngredients = new ArrayList<Material>();
-		List<Material> recipeIngredients = new ArrayList<Material>();
+		List<Material> testIngredients = new ArrayList<>();
+		List<Material> recipeIngredients = new ArrayList<>();
 		recipeIngredients.addAll(recipe.getIngredients());
 		testIngredients.add(BlockMaterial.SOLID_BROWN);
 		testIngredients.add(BlockMaterial.AIR);
@@ -107,8 +107,8 @@ public class RecipeBuilderTest {
 		builder.addRow("AAA").addRow("BBB").addRow("AAA");
 		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe = builder.buildShapedRecipe();
-		List<Material> testIngredients = new ArrayList<Material>();
-		List<Material> recipeIngredients = new ArrayList<Material>();
+		List<Material> testIngredients = new ArrayList<>();
+		List<Material> recipeIngredients = new ArrayList<>();
 		recipeIngredients.addAll(recipe.getIngredients());
 		testIngredients.add(BlockMaterial.SOLID_BLUE);
 		testIngredients.add(BlockMaterial.UNBREAKABLE);

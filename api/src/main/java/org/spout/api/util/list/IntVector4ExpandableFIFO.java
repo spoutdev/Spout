@@ -60,6 +60,7 @@ public class IntVector4ExpandableFIFO extends IntVector3ExpandableFIFO {
 	/**
 	 * Reads a triple integer from the FIFO
 	 */
+	@Override
 	public IntVector4 read() {
 		if (write > read) {
 			int size = array.length;

@@ -32,7 +32,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Basic implementation of {@link Eventable}
  */
 public class EventableBase<T extends ObjectEvent<?>> implements Eventable<T> {
-	private final CopyOnWriteArrayList<EventableListener<T>> registeredListeners = new CopyOnWriteArrayList<EventableListener<T>>();
+	private final CopyOnWriteArrayList<EventableListener<T>> registeredListeners = new CopyOnWriteArrayList<>();
 
 	@Override
 	public void registerListener(EventableListener<T> listener) {

@@ -46,7 +46,7 @@ import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.SyncedStringMap;
 
 public abstract class Protocol {
-	private static final ConcurrentHashMap<String, Protocol> map = new ConcurrentHashMap<String, Protocol>();
+	private static final ConcurrentHashMap<String, Protocol> map = new ConcurrentHashMap<>();
 	private final SyncedStringMap dynamicPacketLookup;
 	private final CodecLookupService codecLookup;
 	private final HandlerLookupService handlerLookup;
@@ -112,13 +112,7 @@ public abstract class Protocol {
 				getHandlerLookupService().bind(codec.getType(), handler);
 			}
 			return codec;
-		} catch (InstantiationException e) {
-			Spout.getLogger().log(Level.SEVERE, "Error registering codec " + codecClazz + ": ", e);
-			return null;
-		} catch (IllegalAccessException e) {
-			Spout.getLogger().log(Level.SEVERE, "Error registering codec " + codecClazz + ": ", e);
-			return null;
-		} catch (InvocationTargetException e) {
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			Spout.getLogger().log(Level.SEVERE, "Error registering codec " + codecClazz + ": ", e);
 			return null;
 		}

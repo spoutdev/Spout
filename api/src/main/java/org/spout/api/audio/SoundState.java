@@ -50,7 +50,7 @@ public enum SoundState {
 	 */
 	STOPPED(3);
 	private final int id;
-	private static final TIntObjectMap<SoundState> idMap = new TIntObjectHashMap<SoundState>();
+	private static final TIntObjectMap<SoundState> idMap = new TIntObjectHashMap<>();
 
 	static {
 		for (SoundState state : SoundState.values()) {

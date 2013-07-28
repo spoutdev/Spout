@@ -52,7 +52,7 @@ public abstract class ProtectionService {
 	 * @return list of all active protections on the server
 	 */
 	public static List<Protection> getProtections() {
-		List<Protection> protections = new ArrayList<Protection>();
+		List<Protection> protections = new ArrayList<>();
 		if (isRegistered()) {
 			for (ServiceProvider<ProtectionService> rsp : Spout.getEngine().getServiceManager().getRegistrations(ProtectionService.class)) {
 				protections.addAll(rsp.getProvider().getAllProtections());
@@ -68,7 +68,7 @@ public abstract class ProtectionService {
 	 * @return List of all protections that are at the point
 	 */
 	public static List<Protection> getProtections(Point point) {
-		List<Protection> protections = new ArrayList<Protection>();
+		List<Protection> protections = new ArrayList<>();
 		if (isRegistered()) {
 			for (ServiceProvider<ProtectionService> rsp : Spout.getEngine().getServiceManager().getRegistrations(ProtectionService.class)) {
 				protections.addAll(rsp.getProvider().getAllProtections(point));
@@ -84,7 +84,7 @@ public abstract class ProtectionService {
 	 * @return List of all protections that are at the point
 	 */
 	public static List<Protection> getProtections(World world) {
-		List<Protection> protections = new ArrayList<Protection>();
+		List<Protection> protections = new ArrayList<>();
 		if (isRegistered()) {
 			for (ServiceProvider<ProtectionService> rsp : Spout.getEngine().getServiceManager().getRegistrations(ProtectionService.class)) {
 				protections.addAll(rsp.getProvider().getAllProtections(world));

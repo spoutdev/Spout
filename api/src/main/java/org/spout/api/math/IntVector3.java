@@ -125,7 +125,7 @@ public class IntVector3 extends IntVector2 {
 		if (coords.length % 3 != 0) {
 			throw new IllegalArgumentException("The number of coordinates must be a multiple of three to construct a list");
 		}
-		List<IntVector3> list = new ArrayList<IntVector3>(coords.length / 3);
+		List<IntVector3> list = new ArrayList<>(coords.length / 3);
 		for (int i = 0; i < coords.length; i += 3) {
 			IntVector3 v = new IntVector3(coords[i], coords[i + 1], coords[i + 2]);
 			list.add(v);
@@ -134,7 +134,7 @@ public class IntVector3 extends IntVector2 {
 	}
 
 	public static List<IntVector3> createList(BlockFaces blockFaces) {
-		List<IntVector3> list = new ArrayList<IntVector3>(blockFaces.size());
+		List<IntVector3> list = new ArrayList<>(blockFaces.size());
 		for (BlockFace face : blockFaces) {
 			list.add(new IntVector3(face));
 		}
@@ -142,7 +142,7 @@ public class IntVector3 extends IntVector2 {
 	}
 
 	public static List<IntVector3> createList(BlockFace... blockFaces) {
-		List<IntVector3> list = new ArrayList<IntVector3>(blockFaces.length);
+		List<IntVector3> list = new ArrayList<>(blockFaces.length);
 		for (BlockFace face : blockFaces) {
 			list.add(new IntVector3(face));
 		}

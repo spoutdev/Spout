@@ -62,7 +62,7 @@ public class ShapedRecipeTest {
 		SimpleRecipeManager manager = new SimpleRecipeManager();
 		manager.register(recipe);
 
-		List<List<Material>> materials = new ArrayList<List<Material>>();
+		List<List<Material>> materials = new ArrayList<>();
 
 		// Make sure we can't craft yet
 		assertFalse(manager.matchShapedRecipe(materials) != null);

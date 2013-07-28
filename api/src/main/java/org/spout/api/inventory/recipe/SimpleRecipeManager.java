@@ -40,13 +40,13 @@ import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
 public class SimpleRecipeManager implements RecipeManager {
-	private final Map<Plugin, Map<Integer, RecipeTree>> registeredShapedRecipes = new ConcurrentHashMap<Plugin, Map<Integer, RecipeTree>>();
-	private final Map<Plugin, Map<Integer, Set<ShapelessRecipe>>> registeredShapelessRecipes = new ConcurrentHashMap<Plugin, Map<Integer, Set<ShapelessRecipe>>>();
-	private final Map<Plugin, Map<Integer, Set<SmeltedRecipe>>> registeredSmeltedRecipes = new ConcurrentHashMap<Plugin, Map<Integer, Set<SmeltedRecipe>>>();
-	private final Map<Integer, Set<Recipe>> allRecipes = new ConcurrentHashMap<Integer, Set<Recipe>>();
-	private final Map<Integer, RecipeTree> allShapedRecipes = new ConcurrentHashMap<Integer, RecipeTree>();
-	private final Map<Integer, Set<ShapelessRecipe>> allShapelessRecipes = new ConcurrentHashMap<Integer, Set<ShapelessRecipe>>();
-	private final Map<Integer, Set<SmeltedRecipe>> allSmeltedRecipes = new ConcurrentHashMap<Integer, Set<SmeltedRecipe>>();
+	private final Map<Plugin, Map<Integer, RecipeTree>> registeredShapedRecipes = new ConcurrentHashMap<>();
+	private final Map<Plugin, Map<Integer, Set<ShapelessRecipe>>> registeredShapelessRecipes = new ConcurrentHashMap<>();
+	private final Map<Plugin, Map<Integer, Set<SmeltedRecipe>>> registeredSmeltedRecipes = new ConcurrentHashMap<>();
+	private final Map<Integer, Set<Recipe>> allRecipes = new ConcurrentHashMap<>();
+	private final Map<Integer, RecipeTree> allShapedRecipes = new ConcurrentHashMap<>();
+	private final Map<Integer, Set<ShapelessRecipe>> allShapelessRecipes = new ConcurrentHashMap<>();
+	private final Map<Integer, Set<SmeltedRecipe>> allSmeltedRecipes = new ConcurrentHashMap<>();
 
 	@Override
 	public boolean register(Recipe recipe) {
@@ -73,7 +73,7 @@ public class SimpleRecipeManager implements RecipeManager {
 		if (plugin != null) {
 			ConcurrentHashMap<Integer, RecipeTree> recipesMap = (ConcurrentHashMap<Integer, RecipeTree>) registeredShapedRecipes.get(plugin);
 			if (recipesMap == null) {
-				recipesMap = new ConcurrentHashMap<Integer, RecipeTree>();
+				recipesMap = new ConcurrentHashMap<>();
 				registeredShapedRecipes.put(plugin, recipesMap);
 			}
 			if (recipesMap.get(recipe.getIngredients().size()) == null) {
@@ -97,7 +97,7 @@ public class SimpleRecipeManager implements RecipeManager {
 		if (plugin != null) {
 			ConcurrentHashMap<Integer, Set<ShapelessRecipe>> recipesMap = (ConcurrentHashMap<Integer, Set<ShapelessRecipe>>) registeredShapelessRecipes.get(plugin);
 			if (recipesMap == null) {
-				recipesMap = new ConcurrentHashMap<Integer, Set<ShapelessRecipe>>();
+				recipesMap = new ConcurrentHashMap<>();
 				registeredShapelessRecipes.put(plugin, recipesMap);
 			}
 			if (recipesMap.get(recipe.getIngredients().size()) == null) {
@@ -121,7 +121,7 @@ public class SimpleRecipeManager implements RecipeManager {
 		if (plugin != null) {
 			ConcurrentHashMap<Integer, Set<SmeltedRecipe>> recipesMap = (ConcurrentHashMap<Integer, Set<SmeltedRecipe>>) registeredSmeltedRecipes.get(plugin);
 			if (recipesMap == null) {
-				recipesMap = new ConcurrentHashMap<Integer, Set<SmeltedRecipe>>();
+				recipesMap = new ConcurrentHashMap<>();
 				registeredSmeltedRecipes.put(plugin, recipesMap);
 			}
 			if (recipesMap.get(recipe.getIngredients().size()) == null) {
@@ -215,7 +215,7 @@ public class SimpleRecipeManager implements RecipeManager {
 
 	@Override
 	public Set<Recipe> getAllRecipes() {
-		Set<Recipe> all = new HashSet<Recipe>();
+		Set<Recipe> all = new HashSet<>();
 		for (Set<Recipe> recipes : allRecipes.values()) {
 			all.addAll(recipes);
 		}
@@ -229,7 +229,7 @@ public class SimpleRecipeManager implements RecipeManager {
 
 	@Override
 	public Set<Recipe> getShapedRecipes(Plugin plugin) {
-		Set<Recipe> set = new HashSet<Recipe>();
+		Set<Recipe> set = new HashSet<>();
 		if (registeredShapedRecipes.containsKey(plugin)) {
 			for (int i : registeredShapedRecipes.get(plugin).keySet()) {
 				set.addAll(registeredShapedRecipes.get(plugin).get(i).getAllRecipes());
@@ -240,7 +240,7 @@ public class SimpleRecipeManager implements RecipeManager {
 
 	@Override
 	public Set<Recipe> getShapelessRecipes(Plugin plugin) {
-		Set<Recipe> set = new HashSet<Recipe>();
+		Set<Recipe> set = new HashSet<>();
 		if (registeredShapelessRecipes.containsKey(plugin)) {
 			for (int i : registeredShapelessRecipes.get(plugin).keySet()) {
 				set.addAll(registeredShapelessRecipes.get(plugin).get(i));
@@ -251,12 +251,12 @@ public class SimpleRecipeManager implements RecipeManager {
 
 	@Override
 	public ShapedRecipe matchShapedRecipe(List<List<Material>> materials) {
-		Set<Material> set = new HashSet<Material>();
-		List<List<Material>> list = new ArrayList<List<Material>>();
-		List<List<Material>> parentList = new ArrayList<List<Material>>();
+		Set<Material> set = new HashSet<>();
+		List<List<Material>> list = new ArrayList<>();
+		List<List<Material>> parentList = new ArrayList<>();
 		for (List<Material> materialsRow : materials) {
-			List<Material> parentRow = new ArrayList<Material>();
-			List<Material> row = new ArrayList<Material>();
+			List<Material> parentRow = new ArrayList<>();
+			List<Material> row = new ArrayList<>();
 			for (Material m : materialsRow) {
 				row.add(m);
 				Material parent = m;
@@ -284,8 +284,8 @@ public class SimpleRecipeManager implements RecipeManager {
 
 	@Override
 	public ShapelessRecipe matchShapelessRecipe(List<Material> materials) {
-		Set<Material> unique = new HashSet<Material>();
-		List<Material> parentList = new ArrayList<Material>();
+		Set<Material> unique = new HashSet<>();
+		List<Material> parentList = new ArrayList<>();
 		for (Material m : materials) {
 			while (m.isSubMaterial()) {
 				m = m.getParentMaterial();
@@ -301,8 +301,8 @@ public class SimpleRecipeManager implements RecipeManager {
 		}
 		for (ShapelessRecipe r : allShapelessRecipes.get(unique.size())) {
 			if (r.getIncludeData()) {
-				List<Material> materialsCopy = new ArrayList<Material>(materials);
-				List<Material> ingredientsCopy = new ArrayList<Material>(r.getIngredients());
+				List<Material> materialsCopy = new ArrayList<>(materials);
+				List<Material> ingredientsCopy = new ArrayList<>(r.getIngredients());
 				Collections.sort(materialsCopy, new MaterialComparable());
 				Collections.sort(ingredientsCopy, new MaterialComparable());
 				if (materialsCopy.equals(ingredientsCopy)) {
@@ -310,8 +310,8 @@ public class SimpleRecipeManager implements RecipeManager {
 					break;
 				}
 			} else {
-				List<Material> parentsCopy = new ArrayList<Material>(parentList);
-				List<Material> ingredientsCopy = new ArrayList<Material>(r.getIngredients());
+				List<Material> parentsCopy = new ArrayList<>(parentList);
+				List<Material> ingredientsCopy = new ArrayList<>(r.getIngredients());
 				Collections.sort(parentsCopy, new MaterialComparable());
 				Collections.sort(ingredientsCopy, new MaterialComparable());
 				if (parentsCopy.equals(ingredientsCopy)) {
@@ -325,10 +325,10 @@ public class SimpleRecipeManager implements RecipeManager {
 
 	@Override
 	public ShapedRecipe matchShapedRecipe(Plugin plugin, List<List<Material>> materials) {
-		Set<Material> set = new HashSet<Material>();
-		List<List<Material>> parentList = new ArrayList<List<Material>>();
+		Set<Material> set = new HashSet<>();
+		List<List<Material>> parentList = new ArrayList<>();
 		for (List<Material> row : materials) {
-			List<Material> parentRow = new ArrayList<Material>();
+			List<Material> parentRow = new ArrayList<>();
 			for (Material m : row) {
 				parentRow.add(m);
 				if (m != null) {
@@ -355,8 +355,8 @@ public class SimpleRecipeManager implements RecipeManager {
 
 	@Override
 	public ShapelessRecipe matchShapelessRecipe(Plugin plugin, List<Material> materials) {
-		Set<Material> unique = new HashSet<Material>();
-		List<Material> parentList = new ArrayList<Material>();
+		Set<Material> unique = new HashSet<>();
+		List<Material> parentList = new ArrayList<>();
 		for (Material m : materials) {
 			if (m.isSubMaterial()) {
 				m = m.getParentMaterial();
@@ -370,8 +370,8 @@ public class SimpleRecipeManager implements RecipeManager {
 		if (registeredShapelessRecipes.containsKey(plugin) && registeredShapelessRecipes.get(plugin).containsKey(unique.size())) {
 			for (ShapelessRecipe r : registeredShapelessRecipes.get(plugin).get(unique.size())) {
 				if (r.getIncludeData()) {
-					List<Material> materialsCopy = new ArrayList<Material>(materials);
-					List<Material> ingredientsCopy = new ArrayList<Material>(r.getIngredients());
+					List<Material> materialsCopy = new ArrayList<>(materials);
+					List<Material> ingredientsCopy = new ArrayList<>(r.getIngredients());
 					Collections.sort(materialsCopy, new MaterialComparable());
 					Collections.sort(ingredientsCopy, new MaterialComparable());
 					if (materialsCopy.equals(ingredientsCopy)) {
@@ -379,8 +379,8 @@ public class SimpleRecipeManager implements RecipeManager {
 						break;
 					}
 				} else {
-					List<Material> parentsCopy = new ArrayList<Material>(parentList);
-					List<Material> ingredientsCopy = new ArrayList<Material>(r.getIngredients());
+					List<Material> parentsCopy = new ArrayList<>(parentList);
+					List<Material> ingredientsCopy = new ArrayList<>(r.getIngredients());
 					Collections.sort(parentsCopy, new MaterialComparable());
 					Collections.sort(ingredientsCopy, new MaterialComparable());
 					if (parentsCopy.equals(ingredientsCopy)) {

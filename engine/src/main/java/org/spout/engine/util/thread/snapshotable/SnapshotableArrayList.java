@@ -40,7 +40,7 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
  * A snapshotable object for ArrayLists
  */
 public class SnapshotableArrayList<T> implements Snapshotable {
-	private final ConcurrentLinkedQueue<T> dirty = new ConcurrentLinkedQueue<T>();
+	private final ConcurrentLinkedQueue<T> dirty = new ConcurrentLinkedQueue<>();
 	private final List<T> snapshot;
 	private final List<T> live;
 
@@ -50,11 +50,11 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	public SnapshotableArrayList(SnapshotManager manager, ArrayList<T> initial) {
 		if (initial != null) {
-			snapshot = new ArrayList<T>(initial);
+			snapshot = new ArrayList<>(initial);
 		} else {
-			snapshot = new ArrayList<T>();
+			snapshot = new ArrayList<>();
 		}
-		live = Collections.synchronizedList(new ArrayList<T>(snapshot));
+		live = Collections.synchronizedList(new ArrayList<>(snapshot));
 		manager.add(this);
 	}
 
@@ -132,7 +132,7 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 	 */
 	@LiveRead
 	public List<T> getDirtyList() {
-		return Collections.unmodifiableList(new ArrayList<T>(dirty));
+		return Collections.unmodifiableList(new ArrayList<>(dirty));
 	}
 
 	/**

@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 public class TInt21TripleObjectHashMapofMapsTest {
 	@Test
 	public void test() {
-		TInt21TripleObjectHashMapOfMaps<String, Object> map = new TInt21TripleObjectHashMapOfMaps<String, Object>();
+		TInt21TripleObjectHashMapOfMaps<String, Object> map = new TInt21TripleObjectHashMapOfMaps<>();
 		assertTrue(map.isEmpty());
 		map.put(0, 0, 0, "One", "One-Value");
 		map.put(0, 0, 0, "Two", "Two-Value");

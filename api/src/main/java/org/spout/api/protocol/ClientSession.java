@@ -42,5 +42,6 @@ public interface ClientSession extends Session {
 	 *
 	 * @return the synchronizer
 	 */
+	@Override
 	public ClientNetworkSynchronizer getNetworkSynchronizer();
 }

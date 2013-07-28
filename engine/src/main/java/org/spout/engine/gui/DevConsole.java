@@ -51,7 +51,7 @@ public class DevConsole extends Screen {
 	private final Widget textfield = new SpoutWidget();
 	private final Font font;
 	private DateFormat dateFormat;
-	private List<Widget> lines = new ArrayList<Widget>();
+	private List<Widget> lines = new ArrayList<>();
 	private float scroll = 0;
 
 	public DevConsole(Font font) {

@@ -39,6 +39,7 @@ public abstract class AbstractWorldEvent extends Event implements WorldEvent {
 		world = p;
 	}
 
+	@Override
 	public World getWorld() {
 		return world;
 	}

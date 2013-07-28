@@ -77,7 +77,7 @@ public class RectangularPacker {
 
 		root = new Node(0, 0, w, h);
 
-		fits = new HashMap<Texture, Node>();
+		fits = new HashMap<>();
 
 		for (int n = 0; n < len; n++) {
 			Texture texture = textures[n];

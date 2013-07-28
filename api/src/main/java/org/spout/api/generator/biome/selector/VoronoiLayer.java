@@ -40,7 +40,7 @@ import org.spout.api.math.GenericMath;
  * A layer where each voronoi cell is a {@link LayeredBiomeSelectorElement}. This layer uses a voronoi source passed through a turbulence modifier. Useful for land with various unorganized biomes.
  */
 public class VoronoiLayer implements BiomeSelectorLayer, Cloneable {
-	private final List<LayeredBiomeSelectorElement> selectorElements = new ArrayList<LayeredBiomeSelectorElement>();
+	private final List<LayeredBiomeSelectorElement> selectorElements = new ArrayList<>();
 	private final Voronoi voronoi = new Voronoi();
 	private final Turbulence turbulence = new Turbulence();
 	private final int uniquenessValue;

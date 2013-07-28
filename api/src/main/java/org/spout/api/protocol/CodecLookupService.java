@@ -49,7 +49,7 @@ public abstract class CodecLookupService {
 	/**
 	 * A table which maps messages to codecs. This is generally used to map outgoing packets to a codec.
 	 */
-	protected final Map<Class<? extends Message>, MessageCodec<?>> classTable = new HashMap<Class<? extends Message>, MessageCodec<?>>();
+	protected final Map<Class<? extends Message>, MessageCodec<?>> classTable = new HashMap<>();
 
 	/**
 	 * Binds a codec by adding entries for it to the tables.

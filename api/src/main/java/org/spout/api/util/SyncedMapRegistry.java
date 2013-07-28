@@ -45,7 +45,7 @@ import org.spout.api.event.object.EventableBase;
 public final class SyncedMapRegistry extends EventableBase<SyncedMapEvent> {
 	public static final byte REGISTRATION_MAP = -1;
 	protected static final SyncedStringMap STRING_MAP_REGISTRATION = new SyncedStringMap("REGISTRATION_MAP"); // This is a special case
-	protected static final ConcurrentMap<String, WeakReference<SyncedStringMap>> REGISTERED_MAPS = new ConcurrentHashMap<String, WeakReference<SyncedStringMap>>();
+	protected static final ConcurrentMap<String, WeakReference<SyncedStringMap>> REGISTERED_MAPS = new ConcurrentHashMap<>();
 
 	public static SyncedStringMap get(String name) {
 		WeakReference<SyncedStringMap> ref = REGISTERED_MAPS.get(name);
@@ -79,7 +79,7 @@ public final class SyncedMapRegistry extends EventableBase<SyncedMapEvent> {
 
 	public static Collection<SyncedStringMap> getAll() {
 		Collection<WeakReference<SyncedStringMap>> rawMaps = REGISTERED_MAPS.values();
-		List<SyncedStringMap> maps = new ArrayList<SyncedStringMap>(rawMaps.size());
+		List<SyncedStringMap> maps = new ArrayList<>(rawMaps.size());
 		for (WeakReference<SyncedStringMap> ref : rawMaps) {
 			SyncedStringMap map = ref.get();
 			if (map != null) {
@@ -95,7 +95,7 @@ public final class SyncedMapRegistry extends EventableBase<SyncedMapEvent> {
 
 	public static int register(SyncedStringMap map) {
 		int id = STRING_MAP_REGISTRATION.register(map.getName());
-		REGISTERED_MAPS.put(map.getName(), new WeakReference<SyncedStringMap>(map));
+		REGISTERED_MAPS.put(map.getName(), new WeakReference<>(map));
 		return id;
 	}
 }

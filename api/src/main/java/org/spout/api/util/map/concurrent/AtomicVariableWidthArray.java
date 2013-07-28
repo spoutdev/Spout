@@ -213,7 +213,7 @@ public class AtomicVariableWidthArray implements Serializable {
 		return unPack(prev, subIndex);
 	}
 
-	private final int addAndGet(int i, int delta, boolean old) {
+	private int addAndGet(int i, int delta, boolean old) {
 		if (fullWidth) {
 			if (old) {
 				return array.getAndAdd(i, delta);
@@ -316,20 +316,20 @@ public class AtomicVariableWidthArray implements Serializable {
 		return getAndAdd(i, -1);
 	}
 
-	private final int getIndex(int i) {
+	private int getIndex(int i) {
 		return i >> indexShift;
 	}
 
-	private final int getSubIndex(int i) {
+	private int getSubIndex(int i) {
 		return subIndexMask & i;
 	}
 
-	private final int unPack(int packed, int subIndex) {
+	private int unPack(int packed, int subIndex) {
 		int v = (packed & valueBitmask[subIndex]) >>> valueShift[subIndex];
 		return v;
 	}
 
-	private final int pack(int prev, int newValue, int subIndex) {
+	private int pack(int prev, int newValue, int subIndex) {
 		int bitmask = valueBitmask[subIndex];
 		int shift = valueShift[subIndex];
 		int result = (prev & ~bitmask) | (bitmask & (newValue << shift));

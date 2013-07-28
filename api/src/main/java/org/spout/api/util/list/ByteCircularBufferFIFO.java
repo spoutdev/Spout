@@ -171,7 +171,7 @@ public class ByteCircularBufferFIFO {
 			}
 			mask = newSize - 1;
 			buf = newBuf;
-			end = end - start;
+			end -= start;
 			start = 0;
 		}
 	}
@@ -184,7 +184,7 @@ public class ByteCircularBufferFIFO {
 			return 1;
 		}
 
-		x = x - 1;
+		x -= 1;
 		x |= (x >> 1);
 		x |= (x >> 2);
 		x |= (x >> 4);

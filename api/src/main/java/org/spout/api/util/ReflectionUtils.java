@@ -89,7 +89,7 @@ public class ReflectionUtils {
 	 * @see Class#getFields()
 	 */
 	public static List<Field> getFieldsRecur(Class<?> clazz, boolean includeObject, Class<? extends Annotation>... annotations) {
-		final List<Field> fields = new ArrayList<Field>();
+		final List<Field> fields = new ArrayList<>();
 		while (clazz != null && (includeObject || !Object.class.equals(clazz))) {
 			for (Field field : clazz.getFields()) {
 				if (annotations == null || hasAnyAnnotation(field, annotations)) {
@@ -143,7 +143,7 @@ public class ReflectionUtils {
 	 * @see Class#getDeclaredFields()
 	 */
 	public static List<Field> getDeclaredFieldsRecur(Class<?> clazz, boolean includeObject, Class<? extends Annotation>... annotations) {
-		final List<Field> fields = new ArrayList<Field>();
+		final List<Field> fields = new ArrayList<>();
 		while (clazz != null && (includeObject || !Object.class.equals(clazz))) {
 			for (Field field : clazz.getDeclaredFields()) {
 				if (annotations == null || hasAnyAnnotation(field, annotations)) {
@@ -164,7 +164,7 @@ public class ReflectionUtils {
 	 * @throws ClassNotFoundException if the package had invalid classes, or does not exist
 	 */
 	public static List<Class<?>> getClassesForPackage(String packageName, boolean recursive, String... excludes) throws ClassNotFoundException {
-		ArrayList<File> directories = new ArrayList<File>();
+		ArrayList<File> directories = new ArrayList<>();
 		try {
 			ClassLoader cld = Thread.currentThread().getContextClassLoader();
 			if (cld == null) {
@@ -190,7 +190,7 @@ public class ReflectionUtils {
 		@SuppressWarnings ("unchecked")
 		final List<String> excludeList = (excludes != null && excludes.length > 0 ? Arrays.asList(excludes) : Collections.EMPTY_LIST);
 
-		ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+		ArrayList<Class<?>> classes = new ArrayList<>();
 		for (File directory : directories) {
 			if (directory.exists()) {
 				String[] files = directory.list();
@@ -213,7 +213,7 @@ public class ReflectionUtils {
 							if (!skip) {
 								classes.add(Class.forName(name));
 							}
-						} catch (Throwable ex) {
+						} catch (IOException | ClassNotFoundException ex) {
 							throw new ClassNotFoundException("Exception was thrown when loading " + name + " from file " + file, ex);
 						}
 					}
@@ -282,7 +282,7 @@ public class ReflectionUtils {
 	 * @see Class#getMethods()
 	 */
 	public static List<Method> getMethodsRecur(Class<?> clazz, boolean includeObject, Class<? extends Annotation>... annotations) {
-		final List<Method> methods = new ArrayList<Method>();
+		final List<Method> methods = new ArrayList<>();
 		while (clazz != null && (includeObject || !Object.class.equals(clazz))) {
 			for (Method method : clazz.getMethods()) {
 				if (annotations == null || hasAnyAnnotation(method, annotations)) {
@@ -336,7 +336,7 @@ public class ReflectionUtils {
 	 * @see Class#getDeclaredMethods()
 	 */
 	public static List<Method> getDeclaredMethodsRecur(Class<?> clazz, boolean includeObject, Class<? extends Annotation>... annotations) {
-		final List<Method> methods = new ArrayList<Method>();
+		final List<Method> methods = new ArrayList<>();
 		while (clazz != null && (includeObject || !Object.class.equals(clazz))) {
 			for (Method method : clazz.getDeclaredMethods()) {
 				if (annotations == null || hasAnyAnnotation(method, annotations)) {
@@ -377,7 +377,7 @@ public class ReflectionUtils {
 			clazz.getDeclaredMethod("writeObject", new Class[] {ObjectOutputStream.class});
 			clazz.getDeclaredMethod("readObject", new Class[] {ObjectInputStream.class});
 			return true;
-		} catch (Exception e) {
+		} catch (NoSuchMethodException | SecurityException e) {
 			return false;
 		}
 	}

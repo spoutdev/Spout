@@ -133,10 +133,13 @@ public class SpinLock implements Lock {
 
 		while (true) {
 			a.lock();
-			if (b.tryLock()) {
-				return;
+			try {
+				if (b.tryLock()) {
+					return;
+				}
+			} finally {
+				a.unlock();
 			}
-			a.unlock();
 			b.lock();
 			if (a.tryLock()) {
 				return;

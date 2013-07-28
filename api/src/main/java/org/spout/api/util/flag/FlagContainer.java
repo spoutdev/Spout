@@ -62,7 +62,7 @@ import java.util.Set;
  * A container used for storing multiple flags and performing AND-matching operations on them
  */
 public class FlagContainer {
-	private final List<Flag> flags = new ArrayList<Flag>();
+	private final List<Flag> flags = new ArrayList<>();
 
 	/**
 	 * Checks if all the flags contained are set

@@ -36,7 +36,7 @@ import org.spout.api.model.Model;
  * A Component that adds a model to an entity.
  */
 public abstract class ModelComponent extends EntityComponent {
-	private List<Model> models = new ArrayList<Model>();
+	private List<Model> models = new ArrayList<>();
 
 	@Override
 	public boolean canTick() {

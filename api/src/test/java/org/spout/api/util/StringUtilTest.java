@@ -56,7 +56,7 @@ public class StringUtilTest {
 		}
 	}
 
-	private List<NameTest> values = new ArrayList<NameTest>();
+	private List<NameTest> values = new ArrayList<>();
 
 	@Before
 	public void setUp() {

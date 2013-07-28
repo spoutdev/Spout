@@ -81,17 +81,17 @@ public class SafeCastTest {
 	public void testString() {
 		String string = "Valid string";
 		String backup = "Backup";
-		assertTrue("Unable to process valid cast", SafeCast.toString(string, backup) == string);
-		assertTrue("Default did not work (wrong type)", SafeCast.toString(new Integer(22), backup) == backup);
-		assertTrue("Default did not work (null)", SafeCast.toString(null, backup) == backup);
+		assertTrue("Unable to process valid cast", (SafeCast.toString(string, backup) == null ? string == null : SafeCast.toString(string, backup).equals(string)));
+		assertTrue("Default did not work (wrong type)", (SafeCast.toString(new Integer(22), backup) == null ? backup == null : SafeCast.toString(new Integer(22), backup).equals(backup)));
+		assertTrue("Default did not work (null)", (SafeCast.toString(null, backup) == null ? backup == null : SafeCast.toString(null, backup).equals(backup)));
 	}
 
 	@Test
 	public void testGeneric() {
 		String string = "Valid string";
 		String backup = "Backup";
-		assertTrue("Unable to process valid cast", SafeCast.toGeneric(string, backup, String.class) == string);
-		assertTrue("Default did not work (wrong type)", SafeCast.toGeneric(new Integer(22), backup, String.class) == backup);
-		assertTrue("Default did not work (null)", SafeCast.toGeneric(null, backup, String.class) == backup);
+		assertTrue("Unable to process valid cast", (SafeCast.toGeneric(string, backup, String.class) == null ? string == null : SafeCast.toGeneric(string, backup, String.class).equals(string)));
+		assertTrue("Default did not work (wrong type)", (SafeCast.toGeneric(new Integer(22), backup, String.class) == null ? backup == null : SafeCast.toGeneric(new Integer(22), backup, String.class).equals(backup)));
+		assertTrue("Default did not work (null)", (SafeCast.toGeneric(null, backup, String.class) == null ? backup == null : SafeCast.toGeneric(null, backup, String.class).equals(backup)));
 	}
 }

@@ -39,7 +39,7 @@ public class SetQueue<T> implements Iterable<T> {
 	private final Queue<SetQueueElement<T>> queue;
 
 	public SetQueue(int capacity) {
-		queue = new ArrayBlockingQueue<SetQueueElement<T>>(capacity);
+		queue = new ArrayBlockingQueue<>(capacity);
 	}
 
 	protected void add(SetQueueElement<T> e) {
@@ -79,6 +79,7 @@ public class SetQueue<T> implements Iterable<T> {
 		}
 	}
 
+	@Override
 	public Iterator<T> iterator() {
 		return new SetQueueIterator(queue.iterator());
 	}
