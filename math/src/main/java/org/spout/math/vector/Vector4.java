@@ -44,10 +44,6 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 	private transient volatile boolean hashed = false;
 	private transient volatile int hashCode = 0;
 
-	public Vector4() {
-		this(0, 0, 0, 0);
-	}
-
 	public Vector4(Vector2 v) {
 		this(v, 0, 0);
 	}

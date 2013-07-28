@@ -47,10 +47,6 @@ public class Vector3 implements Vector, Comparable<Vector3>, Serializable, Clone
 	private transient volatile boolean hashed = false;
 	private transient volatile int hashCode = 0;
 
-	public Vector3() {
-		this(0, 0, 0);
-	}
-
 	public Vector3(Vector2 v) {
 		this(v, 0);
 	}
