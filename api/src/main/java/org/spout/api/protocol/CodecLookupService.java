@@ -98,8 +98,10 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 			nextId = nextId > codec.getOpcode() ? nextId : codec.getOpcode() + 1;
 		}
 
+		codec = register(codec);
+
 		dynamicPacketMap.register(clazz.getName(), codec.getOpcode());
-		return register(codec);
+		return codec;
 	}
 
 	private <T extends Message, C extends MessageCodec<T>> C register(C codec) {
