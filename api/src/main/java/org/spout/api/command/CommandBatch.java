@@ -34,7 +34,7 @@ import java.util.List;
  * Represents a collection of commands to be executed in a 'batch'.
  */
 public class CommandBatch {
-	private final List<String> cmds = new ArrayList<String>();
+	private final List<String> cmds = new ArrayList<>();
 
 	/**
 	 * Returns the command in the batch.

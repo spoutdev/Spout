@@ -37,8 +37,8 @@ import java.util.Set;
  * map
  */
 public class WeakValueHashMap<K, V> {
-	private final ReferenceQueue<V> referenceQueue = new ReferenceQueue<V>();
-	protected final HashMap<K, KeyReference> map = new HashMap<K, KeyReference>();
+	private final ReferenceQueue<V> referenceQueue = new ReferenceQueue<>();
+	protected final HashMap<K, KeyReference> map = new HashMap<>();
 
 	/**
 	 * Puts the given key, value pair into the map.  Any expired keys are automatically flushed.

@@ -41,8 +41,8 @@ import org.spout.api.util.OutwardIterator;
 public abstract class NetworkSynchronizer {
 	protected final Player player;
 	protected final Session session;
-	protected final AtomicReference<Protocol> protocol = new AtomicReference<Protocol>(null);
-	private final AtomicReference<RepositionManager> rm = new AtomicReference<RepositionManager>(NullRepositionManager.getInstance());
+	protected final AtomicReference<Protocol> protocol = new AtomicReference<>(null);
+	private final AtomicReference<RepositionManager> rm = new AtomicReference<>(NullRepositionManager.getInstance());
 
 	public NetworkSynchronizer(Session session) {
 		this.session = session;

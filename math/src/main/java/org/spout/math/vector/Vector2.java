@@ -42,10 +42,6 @@ public class Vector2 implements Vector, Comparable<Vector2>, Serializable, Clone
 	private transient volatile boolean hashed = false;
 	private transient volatile int hashCode = 0;
 
-	public Vector2() {
-		this(0, 0);
-	}
-
 	public Vector2(Vector2 v) {
 		this(v.x, v.y);
 	}

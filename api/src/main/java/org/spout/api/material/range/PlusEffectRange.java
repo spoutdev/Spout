@@ -36,8 +36,8 @@ public class PlusEffectRange extends ListEffectRange {
 		super(createList(range, includeAboveBelow));
 	}
 
-	private final static List<IntVector3> createList(int range, boolean includeAboveBelow) {
-		List<IntVector3> list = new ArrayList<IntVector3>();
+	private static List<IntVector3> createList(int range, boolean includeAboveBelow) {
+		List<IntVector3> list = new ArrayList<>();
 		list.add(new IntVector3(0, 0, 0));
 		if (includeAboveBelow) {
 			list.add(new IntVector3(0, 1, 0));

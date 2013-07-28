@@ -93,6 +93,7 @@ public class IntVector4 extends IntVector3 {
 		return StringUtil.toString(getW(), getX(), getY(), getZ());
 	}
 
+	@Override
 	public IntVector4 copy() {
 		return new IntVector4(getW(), getX(), getY(), getZ());
 	}

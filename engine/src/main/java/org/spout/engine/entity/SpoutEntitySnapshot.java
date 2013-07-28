@@ -61,7 +61,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 			throw new IllegalArgumentException("Can not take a snapshot of a removed entity");
 		}
 
-		this.entity = new WeakReference<Entity>(e);
+		this.entity = new WeakReference<>(e);
 		this.entityId = e.getId();
 		this.uniqueId = e.getUID();
 		this.location = e.getPhysics().getTransform();
@@ -75,7 +75,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 		} else {
 			this.dataMap = new ManagedHashMap();
 		}
-		components = new ArrayList<Class<? extends Component>>();
+		components = new ArrayList<>();
 		for (Component c : e.values()) {
 			if (c.isDetachable()) {
 				this.components.add(c.getClass());
@@ -84,7 +84,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 	}
 
 	public SpoutEntitySnapshot(UUID id, Transform t, UUID worldId, int view, boolean observer, byte[] dataMap, List<Class<? extends Component>> types) {
-		this.entity = new WeakReference<Entity>(null);
+		this.entity = new WeakReference<>(null);
 		this.entityId = -1;
 		this.uniqueId = id;
 		this.location = t;
@@ -101,7 +101,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 				throw new RuntimeException("Unable to deserialize data", e);
 			}
 		}
-		this.components = new ArrayList<Class<? extends Component>>(types);
+		this.components = new ArrayList<>(types);
 	}
 
 	@Override
@@ -161,7 +161,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 
 	@SuppressWarnings ("unchecked")
 	public SpoutEntity toEntity(SpoutEngine engine) {
-		return new SpoutEntity(engine, location, viewDistance, uniqueId, false, dataMap, components.toArray(new Class[0]));
+		return new SpoutEntity(engine, location, viewDistance, uniqueId, false, dataMap, components.toArray(new Class[components.size()]));
 	}
 
 	@Override

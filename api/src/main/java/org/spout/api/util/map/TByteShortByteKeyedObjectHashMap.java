@@ -41,11 +41,11 @@ public class TByteShortByteKeyedObjectHashMap<K> extends ByteShortByteHashed {
 	protected final TIntObjectHashMap<K> map;
 
 	public TByteShortByteKeyedObjectHashMap() {
-		map = new TIntObjectHashMap<K>(5);
+		map = new TIntObjectHashMap<>(5);
 	}
 
 	public TByteShortByteKeyedObjectHashMap(int capacity) {
-		map = new TIntObjectHashMap<K>(capacity);
+		map = new TIntObjectHashMap<>(capacity);
 	}
 
 	public K put(int key1, int key2, int key3, K value) {

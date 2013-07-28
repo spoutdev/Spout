@@ -63,7 +63,7 @@ public class DefaultNumberHandler extends LocaleNumberHandler {
 
 	@Override
 	public Object save() {
-		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> map = new LinkedHashMap<>();
 		map.put("singular", singular);
 		map.put("plural", plural);
 		return map;

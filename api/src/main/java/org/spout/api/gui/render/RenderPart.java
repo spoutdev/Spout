@@ -124,7 +124,7 @@ public class RenderPart implements Comparable<RenderPart> {
 	 * @return vertices of part
 	 */
 	public List<Vertex> getVertices() {
-		List<Vertex> face = new ArrayList<Vertex>();
+		List<Vertex> face = new ArrayList<>();
 		Vector3 p1 = new Vector3(sprite.getX(), sprite.getY(), 0);
 		Vector3 p2 = new Vector3(sprite.getX() + sprite.getWidth(), sprite.getY(), 0);
 		Vector3 p3 = new Vector3(sprite.getX() + sprite.getWidth(), sprite.getY() - sprite.getHeight(), 0);

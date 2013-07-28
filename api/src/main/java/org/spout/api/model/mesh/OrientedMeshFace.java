@@ -41,7 +41,7 @@ import org.spout.api.math.Vector3;
  */
 public class OrientedMeshFace extends MeshFace {
 	public final static BlockFace[] shouldRender = new BlockFace[] {BlockFace.TOP, BlockFace.BOTTOM, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
-	private final static Map<BlockFace, List<Vector3>> faceMap = new HashMap<BlockFace, List<Vector3>>();
+	private final static Map<BlockFace, List<Vector3>> faceMap = new HashMap<>();
 	private static final long serialVersionUID = 1L;
 
 	static {
@@ -57,12 +57,12 @@ public class OrientedMeshFace extends MeshFace {
 
 		//TODO : extract vector in variable
 
-		faceMap.put(BlockFace.TOP, new ArrayList<Vector3>(Arrays.asList(new Vector3(-1, 1, -1).normalize(), new Vector3(1, 1, -1).normalize(), new Vector3(-1, 1, 1).normalize(), new Vector3(1, 1, 1).normalize())));
-		faceMap.put(BlockFace.BOTTOM, new ArrayList<Vector3>(Arrays.asList(new Vector3(-1, -1, -1).normalize(), new Vector3(1, -1, -1).normalize(), new Vector3(-1, -1, 1).normalize(), new Vector3(1, -1, 1).normalize())));
-		faceMap.put(BlockFace.NORTH, new ArrayList<Vector3>(Arrays.asList(new Vector3(-1, -1, -1).normalize(), new Vector3(-1, 1, -1).normalize(), new Vector3(-1, 1, 1).normalize(), new Vector3(-1, -1, 1).normalize())));
-		faceMap.put(BlockFace.SOUTH, new ArrayList<Vector3>(Arrays.asList(new Vector3(1, -1, -1).normalize(), new Vector3(1, -1, 1).normalize(), new Vector3(1, 1, -1).normalize(), new Vector3(1, 1, 1).normalize())));
-		faceMap.put(BlockFace.WEST, new ArrayList<Vector3>(Arrays.asList(new Vector3(-1, 1, 1).normalize(), new Vector3(-1, -1, 1).normalize(), new Vector3(1, -1, 1).normalize(), new Vector3(1, 1, 1).normalize())));
-		faceMap.put(BlockFace.EAST, new ArrayList<Vector3>(Arrays.asList(new Vector3(-1, -1, -1).normalize(), new Vector3(-1, 1, -1).normalize(), new Vector3(1, -1, -1).normalize(), new Vector3(1, 1, -1).normalize())));
+		faceMap.put(BlockFace.TOP, new ArrayList<>(Arrays.asList(new Vector3(-1, 1, -1).normalize(), new Vector3(1, 1, -1).normalize(), new Vector3(-1, 1, 1).normalize(), new Vector3(1, 1, 1).normalize())));
+		faceMap.put(BlockFace.BOTTOM, new ArrayList<>(Arrays.asList(new Vector3(-1, -1, -1).normalize(), new Vector3(1, -1, -1).normalize(), new Vector3(-1, -1, 1).normalize(), new Vector3(1, -1, 1).normalize())));
+		faceMap.put(BlockFace.NORTH, new ArrayList<>(Arrays.asList(new Vector3(-1, -1, -1).normalize(), new Vector3(-1, 1, -1).normalize(), new Vector3(-1, 1, 1).normalize(), new Vector3(-1, -1, 1).normalize())));
+		faceMap.put(BlockFace.SOUTH, new ArrayList<>(Arrays.asList(new Vector3(1, -1, -1).normalize(), new Vector3(1, -1, 1).normalize(), new Vector3(1, 1, -1).normalize(), new Vector3(1, 1, 1).normalize())));
+		faceMap.put(BlockFace.WEST, new ArrayList<>(Arrays.asList(new Vector3(-1, 1, 1).normalize(), new Vector3(-1, -1, 1).normalize(), new Vector3(1, -1, 1).normalize(), new Vector3(1, 1, 1).normalize())));
+		faceMap.put(BlockFace.EAST, new ArrayList<>(Arrays.asList(new Vector3(-1, -1, -1).normalize(), new Vector3(-1, 1, -1).normalize(), new Vector3(1, -1, -1).normalize(), new Vector3(1, 1, -1).normalize())));
 	}
 
 	private boolean[] seeFromFace = new boolean[shouldRender.length];

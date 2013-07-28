@@ -36,7 +36,7 @@ import com.google.common.collect.Maps;
 public class SimpleAStarStorage implements AStarStorage {
 	private final Map<AStarNode, Float> closed = Maps.newHashMap();
 	private final Map<AStarNode, Float> open = Maps.newHashMap();
-	private final Queue<AStarNode> queue = new PriorityQueue<AStarNode>();
+	private final Queue<AStarNode> queue = new PriorityQueue<>();
 
 	@Override
 	public void close(AStarNode node) {

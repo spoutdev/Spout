@@ -70,10 +70,10 @@ public abstract class CommonFileSystem implements FileSystem {
 	public static final File UPDATES_DIRECTORY = new File("updates");
 	public static final File DATA_DIRECTORY = new File("data");
 	public static final File WORLDS_DIRECTORY = new File("worlds");
-	protected final Set<ResourceLoader> loaders = new HashSet<ResourceLoader>();
-	protected final Map<URI, Object> loadedResources = new HashMap<URI, Object>();
-	protected final List<ResourcePathResolver> pathResolvers = new ArrayList<ResourcePathResolver>();
-	protected final Map<String, URI> requestedInstallations = new HashMap<String, URI>();
+	protected final Set<ResourceLoader> loaders = new HashSet<>();
+	protected final Map<URI, Object> loadedResources = new HashMap<>();
+	protected final List<ResourcePathResolver> pathResolvers = new ArrayList<>();
+	protected final Map<String, URI> requestedInstallations = new HashMap<>();
 	protected boolean initialized;
 
 	private void createDirs() {
@@ -259,17 +259,13 @@ public abstract class CommonFileSystem implements FileSystem {
 		if (resolver == null) {
 			throw new ResourceNotFoundException(uri.toString());
 		}
-		InputStream in = new BufferedInputStream(resolver.getStream(uri));
-
-		// finally load
-		Object resource = loader.load(in);
-		if (resource == null) {
-			throw new IllegalStateException("Loader for scheme '" + scheme + "' returned a null resource.");
+		try (InputStream in = new BufferedInputStream(resolver.getStream(uri))) {
+			Object resource = loader.load(in);
+			if (resource == null) {
+				throw new IllegalStateException("Loader for scheme '" + scheme + "' returned a null resource.");
+			}
+			loadedResources.put(uri, resource);
 		}
-		loadedResources.put(uri, resource);
-
-		// close the stream
-		in.close();
 	}
 
 	@Override
@@ -342,7 +338,7 @@ public abstract class CommonFileSystem implements FileSystem {
 		}
 
 		String[] files = resolver.list(uri);
-		List<R> resources = new ArrayList<R>();
+		List<R> resources = new ArrayList<>();
 		for (String file : files) {
 			resources.add((R) getResource(uri.getScheme() + "://" + uri.getHost() + uri.getPath() + file));
 		}
@@ -387,7 +383,7 @@ public abstract class CommonFileSystem implements FileSystem {
 						URI uri = requestedInstallations.get(plugin);
 						in = new BufferedInputStream(uri.toURL().openStream());
 						String path = uri.toString();
-						File file = new File(UPDATES_DIRECTORY, path.substring(path.lastIndexOf("/") + 1));
+						File file = new File(UPDATES_DIRECTORY, path.substring(path.lastIndexOf('/') + 1));
 
 						// copy to updates
 						source.sendMessage("Downloading " + plugin + " to the updates folder...");

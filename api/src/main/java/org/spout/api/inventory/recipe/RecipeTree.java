@@ -58,7 +58,7 @@ public class RecipeTree {
 		}
 
 		public RecipeNode(RecipeNode parent, int x, int y, ShapedRecipe recipe) {
-			this.children = new HashMap<Material, RecipeNode>();
+			this.children = new HashMap<>();
 			this.x = x;
 			this.y = y;
 			this.parent = parent == null ? this : parent;
@@ -97,7 +97,7 @@ public class RecipeTree {
 		}
 
 		public Set<ShapedRecipe> getAllRecipes() {
-			Set<ShapedRecipe> recipes = new HashSet<ShapedRecipe>();
+			Set<ShapedRecipe> recipes = new HashSet<>();
 			for (RecipeNode child : children.values()) {
 				recipes.addAll(child.getAllRecipes());
 			}
@@ -112,7 +112,7 @@ public class RecipeTree {
 		// Trim rows
 		// Above
 		while (!materials.isEmpty()) {
-			List<Material> clone = new ArrayList<Material>(materials.get(0));
+			List<Material> clone = new ArrayList<>(materials.get(0));
 			clone.removeAll(Collections.singletonList(null));
 			if (clone.isEmpty()) {
 				materials.remove(0);
@@ -122,7 +122,7 @@ public class RecipeTree {
 		}
 		// Below
 		for (int i = materials.size() - 1; i >= 0; i--) {
-			List<Material> clone = new ArrayList<Material>(materials.get(i));
+			List<Material> clone = new ArrayList<>(materials.get(i));
 			clone.removeAll(Collections.singletonList(null));
 			if (clone.isEmpty()) {
 				materials.remove(i);

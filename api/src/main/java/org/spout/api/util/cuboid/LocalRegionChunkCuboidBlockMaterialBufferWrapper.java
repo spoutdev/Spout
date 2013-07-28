@@ -125,6 +125,7 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 		return buffer;
 	}
 
+	@Override
 	public void forEach(CuboidBlockMaterialProcedure procedure) {
 		throw new UnsupportedOperationException("Buffer is a buffer wrapper, there is no id array for fast iteration");
 	}

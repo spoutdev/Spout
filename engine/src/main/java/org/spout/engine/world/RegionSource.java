@@ -60,7 +60,7 @@ public class RegionSource implements Iterable<Region> {
 
 	public RegionSource(SpoutWorld world) {
 		this.world = world;
-		loadedRegions = new TripleIntObjectReferenceArrayMap<Region>(REGION_MAP_BITS);
+		loadedRegions = new TripleIntObjectReferenceArrayMap<>(REGION_MAP_BITS);
 	}
 
 	@DelayedWrite

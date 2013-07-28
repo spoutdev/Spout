@@ -60,21 +60,21 @@ import org.spout.engine.world.SpoutWorld;
 public class DynamicBlockUpdateTree {
 	private final SpoutRegion region;
 	private final SpoutWorld world;
-	private final TreeSet<DynamicBlockUpdate> queuedUpdates = new TreeSet<DynamicBlockUpdate>();
-	private final TIntObjectHashMap<DynamicBlockUpdate> blockToUpdateMap = new TIntObjectHashMap<DynamicBlockUpdate>();
-	private final TIntObjectHashMap<HashSet<DynamicBlockUpdate>> chunkToUpdateMap = new TIntObjectHashMap<HashSet<DynamicBlockUpdate>>();
+	private final TreeSet<DynamicBlockUpdate> queuedUpdates = new TreeSet<>();
+	private final TIntObjectHashMap<DynamicBlockUpdate> blockToUpdateMap = new TIntObjectHashMap<>();
+	private final TIntObjectHashMap<HashSet<DynamicBlockUpdate>> chunkToUpdateMap = new TIntObjectHashMap<>();
 	/**
 	 * Keeps a queue of a lists of DynamicBlockUpdates. Lists are only added when previously saved chunks are loaded, and added to the queue
 	 */
-	private final ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
+	private final ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<>();
 	/**
 	 * A queue of the reset block update requests (which triggers the firstUpdate of DynamicBlockMaterials)
 	 */
-	private final ConcurrentLinkedQueue<Point> resetPending = new ConcurrentLinkedQueue<Point>();
+	private final ConcurrentLinkedQueue<Point> resetPending = new ConcurrentLinkedQueue<>();
 	/**
 	 * A map of reset block update requests, which prevents duplicate reset requests at a single x, y, z location
 	 */
-	private final ConcurrentHashMap<Point, Boolean> resetPendingMap = new ConcurrentHashMap<Point, Boolean>();
+	private final ConcurrentHashMap<Point, Boolean> resetPendingMap = new ConcurrentHashMap<>();
 	private Thread regionThread;
 	@SuppressWarnings ("unused")
 	private final Thread mainThread;
@@ -244,7 +244,7 @@ public class DynamicBlockUpdateTree {
 			return true;
 		}
 
-		List<DynamicBlockUpdate> list = new ArrayList<DynamicBlockUpdate>(toRemove);
+		List<DynamicBlockUpdate> list = new ArrayList<>(toRemove);
 		for (DynamicBlockUpdate dm : list) {
 			if (remove(dm) == null) {
 				throw new IllegalStateException("Expected update not present when removing all updates for chunk " + c);
@@ -308,7 +308,7 @@ public class DynamicBlockUpdateTree {
 		while ((first = getNextUpdate(thresholdTime)) != null) {
 			if (!updateDynamicBlock(currentTime, first, false).isLocal()) {
 				if (multiRegionUpdates == null) {
-					multiRegionUpdates = new ArrayList<DynamicBlockUpdate>();
+					multiRegionUpdates = new ArrayList<>();
 				}
 				multiRegionUpdates.add(first);
 			}
@@ -444,7 +444,7 @@ public class DynamicBlockUpdateTree {
 		queuedUpdates.add(update);
 		HashSet<DynamicBlockUpdate> chunkSet = chunkToUpdateMap.get(update.getChunkPacked());
 		if (chunkSet == null) {
-			chunkSet = new HashSet<DynamicBlockUpdate>();
+			chunkSet = new HashSet<>();
 			chunkToUpdateMap.put(update.getChunkPacked(), chunkSet);
 		}
 		chunkSet.add(update);

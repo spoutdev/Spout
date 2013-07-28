@@ -39,7 +39,7 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 	/**
 	 * A list of the sessions.
 	 */
-	private final ConcurrentMap<SpoutSession<?>, Boolean> sessions = new ConcurrentHashMap<SpoutSession<?>, Boolean>();
+	private final ConcurrentMap<SpoutSession<?>, Boolean> sessions = new ConcurrentHashMap<>();
 
 	/**
 	 * Pulses all the sessions

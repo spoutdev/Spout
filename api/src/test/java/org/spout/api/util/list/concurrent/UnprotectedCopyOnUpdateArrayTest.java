@@ -41,8 +41,8 @@ public class UnprotectedCopyOnUpdateArrayTest {
 	@Test
 	public void testList() {
 
-		UnprotectedCopyOnUpdateArray<Integer> testArray = new UnprotectedCopyOnUpdateArray<Integer>(Integer.class);
-		ArrayList<Integer> refArray = new ArrayList<Integer>();
+		UnprotectedCopyOnUpdateArray<Integer> testArray = new UnprotectedCopyOnUpdateArray<>(Integer.class);
+		ArrayList<Integer> refArray = new ArrayList<>();
 
 		Random r = new Random();
 		int size = r.nextInt(20) + 20;
@@ -102,8 +102,8 @@ public class UnprotectedCopyOnUpdateArrayTest {
 	@Test
 	public void testSet() {
 
-		UnprotectedCopyOnUpdateArray<Integer> testArray = new UnprotectedCopyOnUpdateArray<Integer>(Integer.class, true);
-		HashSet<Integer> refArray = new HashSet<Integer>();
+		UnprotectedCopyOnUpdateArray<Integer> testArray = new UnprotectedCopyOnUpdateArray<>(Integer.class, true);
+		HashSet<Integer> refArray = new HashSet<>();
 
 		Random r = new Random();
 		int size = r.nextInt(20) + 20;
@@ -141,9 +141,9 @@ public class UnprotectedCopyOnUpdateArrayTest {
 	@Test
 	public void testGenerics() {
 
-		UnprotectedCopyOnUpdateArray<AtomicReference<Integer>> testArray = new UnprotectedCopyOnUpdateArray<AtomicReference<Integer>>(AtomicReference.class, true);
+		UnprotectedCopyOnUpdateArray<AtomicReference<Integer>> testArray = new UnprotectedCopyOnUpdateArray<>(AtomicReference.class, true);
 
-		AtomicReference<Integer> one = new AtomicReference<Integer>(1);
+		AtomicReference<Integer> one = new AtomicReference<>(1);
 
 		testArray.add(one);
 

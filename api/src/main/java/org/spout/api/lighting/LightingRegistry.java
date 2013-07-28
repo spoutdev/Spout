@@ -39,18 +39,18 @@ import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.util.StringToUniqueIntegerMap;
 
 public class LightingRegistry {
-	private final static ConcurrentHashMap<String, LightingManager<?>> nameLookup = new ConcurrentHashMap<String, LightingManager<?>>(10);
+	private final static ConcurrentHashMap<String, LightingManager<?>> nameLookup = new ConcurrentHashMap<>(10);
 	private final static int MAX_SIZE = 1 << 16;
 	@SuppressWarnings ("unchecked")
 	private final static AtomicReference<LightingManager<?>>[] lightingLookup = new AtomicReference[MAX_SIZE];
-	private final static AtomicReference<LightingManager<?>[]> managerArray = new AtomicReference<LightingManager<?>[]>();
+	private final static AtomicReference<LightingManager<?>[]> managerArray = new AtomicReference<>();
 	private static boolean setup = false;
 	private final static BinaryFileStore store = new BinaryFileStore();
 	private final static StringToUniqueIntegerMap lightingRegistry = new StringToUniqueIntegerMap(null, store, 1, Short.MAX_VALUE, LightingManager.class.getName());
 
 	static {
 		for (int i = 0; i < lightingLookup.length; i++) {
-			lightingLookup[i] = new AtomicReference<LightingManager<?>>();
+			lightingLookup[i] = new AtomicReference<>();
 		}
 	}
 

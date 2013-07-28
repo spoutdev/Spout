@@ -41,7 +41,7 @@ public class Vector3Tag extends ListTag<FloatTag> {
 	}
 
 	private static List<FloatTag> vector3ToList(Vector3 v) {
-		List<FloatTag> list = new ArrayList<FloatTag>(3);
+		List<FloatTag> list = new ArrayList<>(3);
 		list.add(new FloatTag("", v.getX()));
 		list.add(new FloatTag("", v.getY()));
 		list.add(new FloatTag("", v.getZ()));

@@ -73,7 +73,7 @@ public final class AnnotatedCommandExecutorFactory {
 	}
 
 	private static AnnotatedCommandExecutor create(Class<?> commands, Object instance, org.spout.api.command.Command parent) {
-		Map<org.spout.api.command.Command, Method> cmdMap = new HashMap<org.spout.api.command.Command, Method>();
+		Map<org.spout.api.command.Command, Method> cmdMap = new HashMap<>();
 		while (commands != null) {
 			for (Method method : commands.getDeclaredMethods()) {
 				method.setAccessible(true);

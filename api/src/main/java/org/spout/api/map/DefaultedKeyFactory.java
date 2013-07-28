@@ -39,9 +39,7 @@ public class DefaultedKeyFactory<T> implements DefaultedKey<T> {
 	public T getDefaultValue() {
 		try {
 			return defaultValue.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		return null;

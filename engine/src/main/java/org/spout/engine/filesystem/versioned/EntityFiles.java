@@ -216,7 +216,7 @@ public class EntityFiles {
 		}
 
 		ListTag<StringTag> components = (ListTag<StringTag>) map.get("components");
-		List<Class<? extends Component>> types = new ArrayList<Class<? extends Component>>(components.getValue().size());
+		List<Class<? extends Component>> types = new ArrayList<>(components.getValue().size());
 		for (StringTag component : components.getValue()) {
 			try {
 				try {
@@ -269,11 +269,11 @@ public class EntityFiles {
 			map.put(new ByteTag("controller_data_exists", false));
 		}
 
-		List<StringTag> components = new ArrayList<StringTag>();
+		List<StringTag> components = new ArrayList<>();
 		for (Class<? extends Component> clazz : e.getComponents()) {
 			components.add(new StringTag("component", clazz.getName()));
 		}
-		map.put(new ListTag<StringTag>("components", StringTag.class, components));
+		map.put(new ListTag<>("components", StringTag.class, components));
 
 		CompoundTag tag = null;
 		if (e instanceof PlayerSnapshot) {

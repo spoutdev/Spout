@@ -41,7 +41,7 @@ public final class GenericMathTest {
 		}
 	}
 
-	private final void modCheck(final int a, final int d) {
+	private void modCheck(final int a, final int d) {
 
 		int newA = a;
 

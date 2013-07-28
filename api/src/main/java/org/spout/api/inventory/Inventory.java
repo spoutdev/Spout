@@ -54,7 +54,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * A set of {@link InventoryViewer} to send updates every time a slot is set.<br> Note: Do not make changes to this variable, it is intended to be final, but transient variables cannot be set to
 	 * final.
 	 */
-	private transient Set<InventoryViewer> viewers = new HashSet<InventoryViewer>();
+	private transient Set<InventoryViewer> viewers = new HashSet<>();
 	/**
 	 * An array of {@link ItemStack}s that act as a mapping between slots and items.
 	 */
@@ -765,7 +765,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
-		viewers = new HashSet<InventoryViewer>();
+		viewers = new HashSet<>();
 	}
 
     @Override

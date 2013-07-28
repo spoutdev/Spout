@@ -52,6 +52,7 @@ public class LocalRegionChunkCuboidLightBufferWrapper<T extends CuboidLightBuffe
 		this.id = id;
 	}
 
+	@Override
 	protected T getLightBufferRaw(int x, int y, int z, boolean allowNull) {
 		int cx = (x - baseX - Region.BLOCKS.SIZE) >> Chunk.BLOCKS.BITS;
 		int cy = (y - baseY - Region.BLOCKS.SIZE) >> Chunk.BLOCKS.BITS;

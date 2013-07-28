@@ -44,12 +44,12 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
  * A snapshotable class for HashMaps
  */
 public class SnapshotableHashMap<K, V> implements Snapshotable {
-	private final Map<K, V> snapshot = new LinkedHashMap<K, V>();
+	private final Map<K, V> snapshot = new LinkedHashMap<>();
 	private final Map<K, V> unmodifySnapshot = Collections.unmodifiableMap(snapshot);
-	private final ConcurrentMap<K, V> live = new ConcurrentHashMap<K, V>();
+	private final ConcurrentMap<K, V> live = new ConcurrentHashMap<>();
 	private final Map<K, V> unmodifyLive = Collections.unmodifiableMap(live);
-	private final ConcurrentLinkedQueue<K> dirtyKeys = new ConcurrentLinkedQueue<K>();
-	private final ConcurrentLinkedQueue<V> dirtyValues = new ConcurrentLinkedQueue<V>();
+	private final ConcurrentLinkedQueue<K> dirtyKeys = new ConcurrentLinkedQueue<>();
+	private final ConcurrentLinkedQueue<V> dirtyValues = new ConcurrentLinkedQueue<>();
 
 	public SnapshotableHashMap(SnapshotManager manager) {
 		manager.add(this);
@@ -151,7 +151,7 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	 */
 	public List<K> getDirtyKeyList() {
 		TickStage.checkStage(TickStage.PRESNAPSHOT);
-		return Collections.unmodifiableList(new ArrayList<K>(dirtyKeys));
+		return Collections.unmodifiableList(new ArrayList<>(dirtyKeys));
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	 */
 	public List<V> getDirtyValueList() {
 		TickStage.checkStage(TickStage.PRESNAPSHOT);
-		return Collections.unmodifiableList(new ArrayList<V>(dirtyValues));
+		return Collections.unmodifiableList(new ArrayList<>(dirtyValues));
 	}
 
 	/**

@@ -52,7 +52,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	/**
 	 * The associated session
 	 */
-	private AtomicReference<Session> session = new AtomicReference<Session>(null);
+	private AtomicReference<Session> session = new AtomicReference<>(null);
 	/**
 	 * Indicates if it is an upstream channel pipeline
 	 */

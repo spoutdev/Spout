@@ -425,6 +425,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * @param cause that is setting the cuboid volume
 	 */
 	@Threadsafe
+	@Override
 	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause);
 
 	/**
@@ -433,6 +434,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * @param cause that is setting the cuboid volume
 	 */
 	@Threadsafe
+	@Override
 	public void setCuboid(int x, int y, int z, CuboidBlockMaterialBuffer buffer, Cause<?> cause);
 
 	/**
@@ -446,6 +448,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * @param sz size z-coordinate
 	 */
 	@Threadsafe
+	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz);
 
 	/**
@@ -456,6 +459,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * @param bz base z-coordinate
 	 */
 	@Threadsafe
+	@Override
 	public void getCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer);
 
 	/**
@@ -464,6 +468,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * @param buffer the buffer
 	 */
 	@Threadsafe
+	@Override
 	public void getCuboid(CuboidBlockMaterialBuffer buffer);
 
 	/**

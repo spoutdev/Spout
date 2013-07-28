@@ -43,7 +43,7 @@ public final class ListFile {
 	/**
 	 * The list as we currently know it.
 	 */
-	private final ArrayList<String> list = new ArrayList<String>();
+	private final ArrayList<String> list = new ArrayList<>();
 	/**
 	 * The file the list is associated with.
 	 */
@@ -66,16 +66,16 @@ public final class ListFile {
 		synchronized (list) {
 			list.clear();
 			try {
-				Scanner input = new Scanner(file);
-				while (input.hasNextLine()) {
-					String line = input.nextLine().trim().toLowerCase();
-					if (line.length() > 0) {
-						if (!list.contains(line)) {
-							list.add(line);
+				try (Scanner input = new Scanner(file)) {
+					while (input.hasNextLine()) {
+						String line = input.nextLine().trim().toLowerCase();
+						if (line.length() > 0) {
+							if (!list.contains(line)) {
+								list.add(line);
+							}
 						}
 					}
 				}
-				input.close();
 				Collections.sort(list);
 				save();
 			} catch (FileNotFoundException ex) {
@@ -89,12 +89,12 @@ public final class ListFile {
 	 */
 	private void save() {
 		try {
-			PrintWriter out = new PrintWriter(new FileWriter(file));
-			for (String str : list) {
-				out.println(str);
+			try (PrintWriter out = new PrintWriter(new FileWriter(file))) {
+				for (String str : list) {
+					out.println(str);
+				}
+				out.flush();
 			}
-			out.flush();
-			out.close();
 		} catch (IOException ex) {
 			// Pfft.
 		}

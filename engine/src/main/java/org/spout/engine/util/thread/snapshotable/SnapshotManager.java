@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SnapshotManager {
-	private List<Snapshotable> managed = new ArrayList<Snapshotable>();
+	private List<Snapshotable> managed = new ArrayList<>();
 
 	public synchronized void add(Snapshotable s) {
 		synchronized (managed) {

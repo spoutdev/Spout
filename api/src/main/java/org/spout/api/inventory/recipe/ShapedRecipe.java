@@ -107,9 +107,9 @@ public class ShapedRecipe extends Recipe {
 	 * @return rows of the recipe
 	 */
 	public List<List<Material>> getIngredientRows() {
-		List<List<Material>> ingredientRows = new ArrayList<List<Material>>();
+		List<List<Material>> ingredientRows = new ArrayList<>();
 		for (List<Character> row : rows) {
-			List<Material> ingredientRow = new ArrayList<Material>();
+			List<Material> ingredientRow = new ArrayList<>();
 			for (char c : row) {
 				ingredientRow.add(ingredientsMap.get(c));
 			}
@@ -122,7 +122,7 @@ public class ShapedRecipe extends Recipe {
 
 	@Override
 	public List<Material> getIngredients() {
-		return Collections.unmodifiableList(new ArrayList<Material>(ingredientsMap.values()));
+		return Collections.unmodifiableList(new ArrayList<>(ingredientsMap.values()));
 	}
 
 	@Override

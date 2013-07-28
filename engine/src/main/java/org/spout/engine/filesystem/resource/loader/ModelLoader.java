@@ -63,7 +63,7 @@ public class ModelLoader extends ResourceLoader {
 			skeleton = Spout.getFileSystem().getResource((String) resourceProperties.get("Skeleton"));
 		}
 
-		Map<String, Animation> animations = new HashMap<String, Animation>();
+		Map<String, Animation> animations = new HashMap<>();
 
 		if (resourceProperties.containsKey("Animation")) {
 

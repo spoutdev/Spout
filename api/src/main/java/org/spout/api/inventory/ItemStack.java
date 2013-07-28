@@ -325,9 +325,9 @@ public class ItemStack implements Serializable, Cloneable {
 
 		if (nbtData != null && !nbtData.isEmpty()) {
 			out.writeBoolean(true);
-			NBTOutputStream os = new NBTOutputStream(out, false);
-			os.writeTag(new CompoundTag("nbtData", nbtData));
-			os.close();
+			try (NBTOutputStream os = new NBTOutputStream(out, false)) {
+				os.writeTag(new CompoundTag("nbtData", nbtData));
+			}
 		} else {
 			out.writeBoolean(false);
 		}
@@ -353,10 +353,10 @@ public class ItemStack implements Serializable, Cloneable {
 
 		boolean hasNBTData = in.readBoolean();
 		if (hasNBTData) {
-			NBTInputStream is = new NBTInputStream(in, false);
-			CompoundTag tag = (CompoundTag) is.readTag();
-			nbtData = tag.getValue();
-			is.close();
+			try (NBTInputStream is = new NBTInputStream(in, false)) {
+				CompoundTag tag = (CompoundTag) is.readTag();
+				nbtData = tag.getValue();
+			}
 		}
 
 		if (material == null) {

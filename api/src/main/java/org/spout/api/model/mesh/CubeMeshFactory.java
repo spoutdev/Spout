@@ -36,7 +36,7 @@ import org.spout.api.math.Vector3;
 
 public class CubeMeshFactory {
 	public static OrientedMesh generateCubeMesh(Vector2[][] uvs) {
-		ArrayList<OrientedMeshFace> list = new ArrayList<OrientedMeshFace>(12);
+		ArrayList<OrientedMeshFace> list = new ArrayList<>(12);
 
 		Vector3 vertex0 = new Vector3(0, 0, 0);
 		Vector3 vertex1 = new Vector3(0, 1, 0);
@@ -63,43 +63,43 @@ public class CubeMeshFactory {
 		v2 = Vertex.createVertexPositionNormaTexture0(vertex2, BlockFace.TOP.getOffset(), getUV(uvs, 0, 2));
 		v3 = Vertex.createVertexPositionNormaTexture0(vertex6, BlockFace.TOP.getOffset(), getUV(uvs, 0, 1));
 		v4 = Vertex.createVertexPositionNormaTexture0(vertex5, BlockFace.TOP.getOffset(), getUV(uvs, 0, 0));
-		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.TOP))));
-		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.TOP))));
+		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<>(Arrays.asList(BlockFace.TOP))));
+		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<>(Arrays.asList(BlockFace.TOP))));
 
 		v1 = Vertex.createVertexPositionNormaTexture0(vertex0, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 0));
 		v2 = Vertex.createVertexPositionNormaTexture0(vertex4, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 3));
 		v3 = Vertex.createVertexPositionNormaTexture0(vertex7, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 2));
 		v4 = Vertex.createVertexPositionNormaTexture0(vertex3, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 1));
-		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.BOTTOM))));
-		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.BOTTOM))));
+		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<>(Arrays.asList(BlockFace.BOTTOM))));
+		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<>(Arrays.asList(BlockFace.BOTTOM))));
 
 		v1 = Vertex.createVertexPositionNormaTexture0(vertex0, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 1));
 		v2 = Vertex.createVertexPositionNormaTexture0(vertex1, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 0));
 		v3 = Vertex.createVertexPositionNormaTexture0(vertex5, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 3));
 		v4 = Vertex.createVertexPositionNormaTexture0(vertex4, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 2));
-		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.NORTH))));
-		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.NORTH))));
+		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<>(Arrays.asList(BlockFace.NORTH))));
+		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<>(Arrays.asList(BlockFace.NORTH))));
 
 		v1 = Vertex.createVertexPositionNormaTexture0(vertex7, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 1));
 		v2 = Vertex.createVertexPositionNormaTexture0(vertex6, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 0));
 		v3 = Vertex.createVertexPositionNormaTexture0(vertex2, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 3));
 		v4 = Vertex.createVertexPositionNormaTexture0(vertex3, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 2));
-		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.SOUTH))));
-		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.SOUTH))));
+		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<>(Arrays.asList(BlockFace.SOUTH))));
+		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<>(Arrays.asList(BlockFace.SOUTH))));
 
 		v1 = Vertex.createVertexPositionNormaTexture0(vertex0, BlockFace.EAST.getOffset(), getUV(uvs, 4, 2));
 		v2 = Vertex.createVertexPositionNormaTexture0(vertex3, BlockFace.EAST.getOffset(), getUV(uvs, 4, 1));
 		v3 = Vertex.createVertexPositionNormaTexture0(vertex2, BlockFace.EAST.getOffset(), getUV(uvs, 4, 0));
 		v4 = Vertex.createVertexPositionNormaTexture0(vertex1, BlockFace.EAST.getOffset(), getUV(uvs, 4, 3));
-		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.EAST))));
-		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.EAST))));
+		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<>(Arrays.asList(BlockFace.EAST))));
+		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<>(Arrays.asList(BlockFace.EAST))));
 
 		v1 = Vertex.createVertexPositionNormaTexture0(vertex5, BlockFace.WEST.getOffset(), getUV(uvs, 5, 0));
 		v2 = Vertex.createVertexPositionNormaTexture0(vertex6, BlockFace.WEST.getOffset(), getUV(uvs, 5, 3));
 		v3 = Vertex.createVertexPositionNormaTexture0(vertex7, BlockFace.WEST.getOffset(), getUV(uvs, 5, 2));
 		v4 = Vertex.createVertexPositionNormaTexture0(vertex4, BlockFace.WEST.getOffset(), getUV(uvs, 5, 1));
-		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.WEST))));
-		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.WEST))));
+		list.add(new OrientedMeshFace(v1, v2, v3, new HashSet<>(Arrays.asList(BlockFace.WEST))));
+		list.add(new OrientedMeshFace(v3, v4, v1, new HashSet<>(Arrays.asList(BlockFace.WEST))));
 
 		return new OrientedMesh(list);
 	}

@@ -37,7 +37,7 @@ import java.util.List;
  * elements are not added already sorted, they must be sorted at least once before use using {@link #sortElements()}.
  */
 public abstract class NoiseRangeLayer implements BiomeSelectorLayer {
-	protected final List<ElementRange> ranges = new ArrayList<ElementRange>();
+	protected final List<ElementRange> ranges = new ArrayList<>();
 
 	/**
 	 * Adds an element to the layer within the range specified by minimum and maximum.

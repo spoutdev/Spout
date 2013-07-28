@@ -45,8 +45,8 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
  */
 public abstract class BiomeGenerator implements WorldGenerator {
 	protected final BiomeMap biomes = new BiomeMap();
-	private final ArrayList<Populator> populators = new ArrayList<Populator>();
-	private final ArrayList<GeneratorPopulator> generatorPopulators = new ArrayList<GeneratorPopulator>();
+	private final ArrayList<Populator> populators = new ArrayList<>();
+	private final ArrayList<GeneratorPopulator> generatorPopulators = new ArrayList<>();
 
 	public BiomeGenerator() {
 		registerBiomes();

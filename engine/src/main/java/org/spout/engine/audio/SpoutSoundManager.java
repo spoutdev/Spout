@@ -49,8 +49,8 @@ import static org.lwjgl.openal.AL10.alIsBuffer;
 import static org.lwjgl.openal.AL10.alIsSource;
 
 public class SpoutSoundManager implements SoundManager {
-	private final Set<SoundSource> sources = new HashSet<SoundSource>();
-	private final Set<Sound> sounds = new HashSet<Sound>();
+	private final Set<SoundSource> sources = new HashSet<>();
+	private final Set<Sound> sounds = new HashSet<>();
 	private final SoundListener listener = new SpoutSoundListener();
 	private float gain = 1, musicGain = 1;
 

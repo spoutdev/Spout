@@ -41,7 +41,6 @@ import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
 import jline.console.ConsoleReader;
-import jline.console.Operation;
 import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
 import jline.console.completer.NullCompleter;
@@ -70,7 +69,7 @@ public class JLineHandler extends Handler {
 
 		@SuppressWarnings ("unchecked")
 		final Collection<Completer> completer = reader.getCompleters();
-		for (Completer c : new ArrayList<Completer>(completer)) {
+		for (Completer c : new ArrayList<>(completer)) {
 			reader.removeCompleter(c);
 		}
 		Completer[] list = completer.toArray(new Completer[completer.size() + 1]);
@@ -117,8 +116,8 @@ public class JLineHandler extends Handler {
 				}
 				reader.flush();
 			}
-		} catch (IOException e) {
-			return;
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 	}
 
@@ -178,7 +177,8 @@ public class JLineHandler extends Handler {
 		try {
 			reader.killLine();
 			reader.flush();
-		} catch (IOException e) {
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 	}
 }

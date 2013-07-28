@@ -43,14 +43,14 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.tickable.BasicTickable;
 
 public class Screen extends BasicTickable implements Container {
-	private final HashMap<Widget, Plugin> widgets = new LinkedHashMap<Widget, Plugin>();
+	private final HashMap<Widget, Plugin> widgets = new LinkedHashMap<>();
 	private Widget focusedWidget = null;
 	private boolean takesInput = true;
 	private boolean grabsMouse = true;
 
 	@Override
 	public List<Widget> getWidgets() {
-		return Collections.unmodifiableList(new ArrayList<Widget>(widgets.keySet()));
+		return Collections.unmodifiableList(new ArrayList<>(widgets.keySet()));
 	}
 
 	@Override

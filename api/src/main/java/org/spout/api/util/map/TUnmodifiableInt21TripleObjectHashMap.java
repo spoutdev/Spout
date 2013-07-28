@@ -33,7 +33,7 @@ import gnu.trove.impl.unmodifiable.TUnmodifiableLongObjectMap;
  */
 public class TUnmodifiableInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<K> {
 	public TUnmodifiableInt21TripleObjectHashMap(TInt21TripleObjectHashMap<K> map) {
-		this.map = new TUnmodifiableLongObjectMap<K>(map.getInternalMap());
+		this.map = new TUnmodifiableLongObjectMap<>(map.getInternalMap());
 	}
 
 	/**
@@ -46,6 +46,6 @@ public class TUnmodifiableInt21TripleObjectHashMap<K> extends TInt21TripleObject
 			throw new IllegalArgumentException("The backend can not be null.");
 		}
 
-		map = new TUnmodifiableLongObjectMap<K>(newMap.getInternalMap());
+		map = new TUnmodifiableLongObjectMap<>(newMap.getInternalMap());
 	}
 }

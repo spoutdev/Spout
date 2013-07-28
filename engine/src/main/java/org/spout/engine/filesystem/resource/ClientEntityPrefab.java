@@ -42,8 +42,8 @@ import org.spout.engine.entity.SpoutEntity;
 
 public class ClientEntityPrefab implements EntityPrefab {
 	private String name;
-	private List<Class<? extends Component>> components = new ArrayList<Class<? extends Component>>();
-	private Map<String, Object> data = new HashMap<String, Object>();
+	private List<Class<? extends Component>> components = new ArrayList<>();
+	private Map<String, Object> data = new HashMap<>();
 	private final Client client;
 
 	public ClientEntityPrefab(Client client, String name, List<Class<? extends Component>> components, Map<String, Object> data) {

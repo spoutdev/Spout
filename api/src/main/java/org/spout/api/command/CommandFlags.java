@@ -83,7 +83,7 @@ public class CommandFlags {
 	}
 
 	private final CommandArguments args;
-	private final Map<String, Flag> flags = new HashMap<String, Flag>();
+	private final Map<String, Flag> flags = new HashMap<>();
 
 	public CommandFlags(CommandArguments args) {
 		this.args = args;

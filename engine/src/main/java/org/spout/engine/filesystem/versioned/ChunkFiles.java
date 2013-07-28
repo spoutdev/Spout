@@ -187,8 +187,8 @@ public class ChunkFiles {
 
 		CompoundMap lightingMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("light_buffers")), null, CompoundMap.class);
 		StringToUniqueIntegerMap worldMap = ((SpoutServerWorld) r.getWorld()).getLightingMap();
-		List<LightingManager<?>> lightingManagers = new ArrayList<LightingManager<?>>();
-		List<byte[]> lightingData = new ArrayList<byte[]>();
+		List<LightingManager<?>> lightingManagers = new ArrayList<>();
+		List<byte[]> lightingData = new ArrayList<>();
 		loadLightingBuffers(lightingManagers, lightingData, lightingMap, worldMap);
 
 		chunk.addLightingBufferData(lightingManagers, lightingData);
@@ -316,7 +316,7 @@ public class ChunkFiles {
 	}
 
 	private static ListTag<CompoundTag> saveBlockComponents(List<BlockComponentSnapshot> components) {
-		List<CompoundTag> list = new ArrayList<CompoundTag>(components.size());
+		List<CompoundTag> list = new ArrayList<>(components.size());
 
 		for (BlockComponentSnapshot snapshot : components) {
 			CompoundTag tag = saveBlockComponent(snapshot);
@@ -324,11 +324,11 @@ public class ChunkFiles {
 				list.add(tag);
 			}
 		}
-		return new ListTag<CompoundTag>("block_components", CompoundTag.class, list);
+		return new ListTag<>("block_components", CompoundTag.class, list);
 	}
 
 	private static ListTag<CompoundTag> saveDynamicUpdates(List<DynamicBlockUpdate> updates) {
-		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
+		List<CompoundTag> list = new ArrayList<>(updates.size());
 
 		for (DynamicBlockUpdate update : updates) {
 			CompoundTag tag = saveDynamicUpdate(update);
@@ -337,7 +337,7 @@ public class ChunkFiles {
 			}
 		}
 
-		return new ListTag<CompoundTag>("dynamic_updates", CompoundTag.class, list);
+		return new ListTag<>("dynamic_updates", CompoundTag.class, list);
 	}
 
 	private static CompoundTag saveDynamicUpdate(DynamicBlockUpdate update) {
@@ -487,7 +487,7 @@ public class ChunkFiles {
 	public static CompoundMap convertV1V2(CompoundMap map) {
 		List<? extends CompoundTag> updateList = checkerListCompoundTag.checkTag(map.get("dynamic_updates"));
 
-		List<DynamicBlockUpdateV1> loadedUpdates = new ArrayList<DynamicBlockUpdateV1>(10);
+		List<DynamicBlockUpdateV1> loadedUpdates = new ArrayList<>(10);
 
 		loadDynamicUpdatesV1(updateList, loadedUpdates);
 
@@ -537,7 +537,7 @@ public class ChunkFiles {
 	}
 
 	private static ListTag<CompoundTag> saveDynamicUpdatesV2(List<DynamicBlockUpdateV1> updates) {
-		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
+		List<CompoundTag> list = new ArrayList<>(updates.size());
 
 		for (DynamicBlockUpdateV1 update : updates) {
 			CompoundTag tag = saveDynamicUpdateV2(update);
@@ -546,7 +546,7 @@ public class ChunkFiles {
 			}
 		}
 
-		return new ListTag<CompoundTag>("dynamic_updates", CompoundTag.class, list);
+		return new ListTag<>("dynamic_updates", CompoundTag.class, list);
 	}
 
 	private static CompoundTag saveDynamicUpdateV2(DynamicBlockUpdateV1 update) {

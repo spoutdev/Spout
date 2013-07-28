@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 public class ConcurrentListTest {
 	@Test
 	public void delayedAddAllTest() {
-		ConcurrentList<Integer> list = new ConcurrentList<Integer>();
+		ConcurrentList<Integer> list = new ConcurrentList<>();
 		list.addAllDelayed(Arrays.asList(2, 3, 5));
 		list.sync();
 		assertEquals(list.size(), 3);
@@ -47,7 +47,7 @@ public class ConcurrentListTest {
 
 	@Test
 	public void delayedRemoveAllTest() {
-		ConcurrentList<Integer> list = new ConcurrentList<Integer>();
+		ConcurrentList<Integer> list = new ConcurrentList<>();
 		list.addAllDelayed(Arrays.asList(2, 3, 5));
 		list.removeAllDelayed(Arrays.asList(5, 2, 3));
 		list.sync();
@@ -56,7 +56,7 @@ public class ConcurrentListTest {
 
 	@Test
 	public void delayedAddTest() {
-		ConcurrentList<Integer> list = new ConcurrentList<Integer>();
+		ConcurrentList<Integer> list = new ConcurrentList<>();
 		list.addDelayed(5);
 		list.addDelayed(3);
 		list.sync();
@@ -67,7 +67,7 @@ public class ConcurrentListTest {
 
 	@Test
 	public void delayedRemoveTest() {
-		ConcurrentList<Integer> list = new ConcurrentList<Integer>();
+		ConcurrentList<Integer> list = new ConcurrentList<>();
 		list.addDelayed(5);
 		list.removeDelayed(5);
 		list.sync();
@@ -76,7 +76,7 @@ public class ConcurrentListTest {
 
 	@Test
 	public void delayedClearTest() {
-		ConcurrentList<Integer> list = new ConcurrentList<Integer>();
+		ConcurrentList<Integer> list = new ConcurrentList<>();
 		list.addAllDelayed(Arrays.asList(2, 3, 5));
 		list.clearDelayed();
 		list.addDelayed(2);
@@ -86,7 +86,7 @@ public class ConcurrentListTest {
 
 	@Test
 	public void orderTest() {
-		ConcurrentList<Integer> list = new ConcurrentList<Integer>();
+		ConcurrentList<Integer> list = new ConcurrentList<>();
 		list.removeAllDelayed(Arrays.asList(2, 3, 5));
 		list.addAllDelayed(Arrays.asList(2, 3, 5));
 		list.removeDelayed(7);

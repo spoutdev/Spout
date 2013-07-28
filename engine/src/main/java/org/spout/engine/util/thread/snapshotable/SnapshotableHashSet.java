@@ -43,12 +43,12 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
  * A snapshotable class for HashSets
  */
 public class SnapshotableHashSet<T> implements Snapshotable {
-	private final Set<T> snapshot = new HashSet<T>();
+	private final Set<T> snapshot = new HashSet<>();
 	private final Set<T> unmodifySnapshot = Collections.unmodifiableSet(snapshot);
 	private final Set<T> live = Collections.newSetFromMap(new ConcurrentHashMap<T, Boolean>());
 	private final Set<T> unmodifyLive = Collections.unmodifiableSet(live);
-	private final ConcurrentLinkedQueue<T> dirty = new ConcurrentLinkedQueue<T>();
-	private final ArrayList<T> dirtyList = new ArrayList<T>();
+	private final ConcurrentLinkedQueue<T> dirty = new ConcurrentLinkedQueue<>();
+	private final ArrayList<T> dirtyList = new ArrayList<>();
 
 	public SnapshotableHashSet(SnapshotManager manager) {
 		this(manager, null);
@@ -117,7 +117,7 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	 */
 	public List<T> getDirtyList() {
 		TickStage.checkStage(TickStage.PRESNAPSHOT);
-		return Collections.unmodifiableList(new ArrayList<T>(dirty));
+		return Collections.unmodifiableList(new ArrayList<>(dirty));
 	}
 
 	/**

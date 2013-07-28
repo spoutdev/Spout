@@ -42,6 +42,7 @@ public class BoneTransform {
 		return matrix;
 	}
 
+	@Override
 	public String toString() {
 		return matrix.toString();
 	}

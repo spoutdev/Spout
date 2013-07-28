@@ -172,7 +172,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	private static List<EntitySnapshot> getEntities(SpoutChunk chunk) {
-		ArrayList<EntitySnapshot> entities = new ArrayList<EntitySnapshot>();
+		ArrayList<EntitySnapshot> entities = new ArrayList<>();
 		for (Entity e : chunk.getLiveEntities()) {
 			entities.add(e.snapshot());
 		}
@@ -295,7 +295,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			this.x = x;
 			this.y = y;
 			this.z = z;
-			Set<Class<? extends BlockComponent>> temp = new HashSet<Class<? extends BlockComponent>>();
+			Set<Class<? extends BlockComponent>> temp = new HashSet<>();
 			for (Component c : holder.values()) {
 				temp.add((Class<? extends BlockComponent>) c.getClass());
 			}
@@ -331,7 +331,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	private static class BlockSnapshotProcedure implements TShortObjectProcedure<BlockComponentOwner> {
 		private final SpoutChunk chunk;
-		private final ArrayList<BlockComponentSnapshot> snapshots = new ArrayList<BlockComponentSnapshot>();
+		private final ArrayList<BlockComponentSnapshot> snapshots = new ArrayList<>();
 
 		private BlockSnapshotProcedure(SpoutChunk chunk) {
 			this.chunk = chunk;

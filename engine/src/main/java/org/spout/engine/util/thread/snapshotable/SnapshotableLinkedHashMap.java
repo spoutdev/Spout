@@ -46,14 +46,14 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
  * A snapshotable class for LinkedHashMaps
  */
 public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
-	private final Map<K, V> snapshot = new LinkedHashMap<K, V>();
+	private final Map<K, V> snapshot = new LinkedHashMap<>();
 	private final Map<K, V> unmodifySnapshot = Collections.unmodifiableMap(snapshot);
 	private final Collection<V> unmodifyValues = Collections.unmodifiableCollection(snapshot.values());
-	private final ConcurrentMap<K, V> live = new ConcurrentHashMap<K, V>();
+	private final ConcurrentMap<K, V> live = new ConcurrentHashMap<>();
 	private final Map<K, V> unmodifyLive = Collections.unmodifiableMap(live);
-	private final ConcurrentLinkedQueue<K> dirty = new ConcurrentLinkedQueue<K>();
-	private final ArrayList<K> dirtyList = new ArrayList<K>();
-	private final HashSet<K> dirtyListTemp = new HashSet<K>();
+	private final ConcurrentLinkedQueue<K> dirty = new ConcurrentLinkedQueue<>();
+	private final ArrayList<K> dirtyList = new ArrayList<>();
+	private final HashSet<K> dirtyListTemp = new HashSet<>();
 	private final List<K> unmodifyDirty = Collections.unmodifiableList(dirtyList);
 	private boolean dirtyListGenerated = false;
 

@@ -59,7 +59,7 @@ import org.spout.engine.world.SpoutChunkSnapshotModel;
  * Represents a mesh for a chunk.
  */
 public class ChunkMesh {
-	private HashMap<RenderMaterial, BufferContainer> meshs = new HashMap<RenderMaterial, BufferContainer>();
+	private HashMap<RenderMaterial, BufferContainer> meshs = new HashMap<>();
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
 	private final World world;
@@ -138,7 +138,7 @@ public class ChunkMesh {
 	}
 
 	public List<MeshFace> buildBlock(ChunkSnapshotModel chunkSnapshotModel, Material blockMaterial, Vector3 position, boolean toRender[], OrientedMesh mesh) {
-		List<MeshFace> meshs = new ArrayList<MeshFace>();
+		List<MeshFace> meshs = new ArrayList<>();
 		Vector3 model = new Vector3(position.getX(), position.getY(), position.getZ());
 		for (OrientedMeshFace meshFace : mesh) {
 

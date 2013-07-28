@@ -26,6 +26,7 @@
  */
 package org.spout.api.util.map;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class WeakValueHashMapTest {
 			return;
 		}
 
-		WeakValueHashMap<Integer, byte[]> map = new WeakValueHashMap<Integer, byte[]>();
+		WeakValueHashMap<Integer, byte[]> map = new WeakValueHashMap<>();
 
 		HashMap<Integer, WeakValueHashMap<Integer, byte[]>.KeyReference> internalMap = map.map;
 
@@ -65,7 +66,7 @@ public class WeakValueHashMapTest {
 		}
 
 		for (int i = 0; i < 10; i++) {
-			assertTrue("Hard linked array lost " + i, map.get(i).equals(hardArray[i]));
+			assertTrue("Hard linked array lost " + i, Arrays.equals(map.get(i), hardArray[i]));
 		}
 
 		assertTrue("Weak references weren't completely garbage collected, exp 10, got " + internalMap.size(), internalMap.size() < 15);

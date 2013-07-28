@@ -113,7 +113,7 @@ import org.spout.physics.math.Quaternion;
 
 public class SpoutRegion extends Region implements AsyncManager {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
-	protected final SetQueue<Cube> saveMarkedQueue = new SetQueue<Cube>(CHUNKS.VOLUME + 1);
+	protected final SetQueue<Cube> saveMarkedQueue = new SetQueue<>(CHUNKS.VOLUME + 1);
 	private final RegionSetQueueElement saveMarkedElement = new RegionSetQueueElement(saveMarkedQueue, this);
 	private Thread executionThread;
 	@SuppressWarnings ("unchecked")
@@ -138,8 +138,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 * Reference to the persistent ByteArrayArray that stores chunk data
 	 */
 	private final BAAWrapper chunkStore;
-	private final Queue<SpoutChunkSnapshotFuture> snapshotQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotFuture>();
-	protected SetQueue<SpoutChunk> unloadQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
+	private final Queue<SpoutChunkSnapshotFuture> snapshotQueue = new ConcurrentLinkedQueue<>();
+	protected SetQueue<SpoutChunk> unloadQueue = new SetQueue<>(CHUNKS.VOLUME);
 	/**
 	 * The sequence number for executing inter-region physics and dynamic updates
 	 */
@@ -147,17 +147,17 @@ public class SpoutRegion extends Region implements AsyncManager {
 	/**
 	 * A queue of chunks that need to be populated
 	 */
-	protected final SetQueue<SpoutChunk> populationQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
-	protected final SetQueue<SpoutChunk> populationPriorityQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
+	protected final SetQueue<SpoutChunk> populationQueue = new SetQueue<>(CHUNKS.VOLUME);
+	protected final SetQueue<SpoutChunk> populationPriorityQueue = new SetQueue<>(CHUNKS.VOLUME);
 	private final RegionGenerator generator;
 	private final SpoutTaskManager taskManager;
 	private final SpoutScheduler scheduler;
-	private final LinkedHashMap<SpoutPlayer, TByteTripleHashSet> observers = new LinkedHashMap<SpoutPlayer, TByteTripleHashSet>();
-	protected final SetQueue<SpoutChunk> chunkObserversDirtyQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
-	protected final SetQueue<SpoutChunk> localPhysicsChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
-	protected final SetQueue<SpoutChunk> globalPhysicsChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
-	protected final SetQueue<SpoutChunk> dirtyChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
-	protected final SetQueue<SpoutChunk> newChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
+	private final LinkedHashMap<SpoutPlayer, TByteTripleHashSet> observers = new LinkedHashMap<>();
+	protected final SetQueue<SpoutChunk> chunkObserversDirtyQueue = new SetQueue<>(CHUNKS.VOLUME);
+	protected final SetQueue<SpoutChunk> localPhysicsChunkQueue = new SetQueue<>(CHUNKS.VOLUME);
+	protected final SetQueue<SpoutChunk> globalPhysicsChunkQueue = new SetQueue<>(CHUNKS.VOLUME);
+	protected final SetQueue<SpoutChunk> dirtyChunkQueue = new SetQueue<>(CHUNKS.VOLUME);
+	protected final SetQueue<SpoutChunk> newChunkQueue = new SetQueue<>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutColumn> dirtyColumnQueue;
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
@@ -184,7 +184,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-					chunks[dx][dy][dz] = new AtomicReference<SpoutChunk>(null);
+					chunks[dx][dy][dz] = new AtomicReference<>(null);
 				}
 			}
 		}
@@ -197,7 +197,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		for (int dx = 0; dx < 3; dx++) {
 			for (int dy = 0; dy < 3; dy++) {
 				for (int dz = 0; dz < 3; dz++) {
-					neighbours[dx][dy][dz] = new AtomicReference<SpoutRegion>(world.getRegion(rx + dx - 1, ry + dy - 1, rz + dz - 1, LoadOption.NO_LOAD));
+					neighbours[dx][dy][dz] = new AtomicReference<>(world.getRegion(rx + dx - 1, ry + dy - 1, rz + dz - 1, LoadOption.NO_LOAD));
 				}
 			}
 		}
@@ -820,7 +820,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		if (chunk.isDirtyOverflow()) {    /* If overflow, notify for whole chunk */
 			evt = new ChunkUpdatedEvent(chunk, null);
 		} else {
-			ArrayList<Vector3> lst = new ArrayList<Vector3>();
+			ArrayList<Vector3> lst = new ArrayList<>();
 			boolean done = false;
 			for (int i = 0; !done; i++) {
 				Vector3 v = chunk.getDirtyBlock(i);
@@ -985,7 +985,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 		}
 
-		List<SpoutChunk> newChunksList = new LinkedList<SpoutChunk>();
+		List<SpoutChunk> newChunksList = new LinkedList<>();
 
 		int newChunksCount = 0;
 		SpoutChunk newChunk;
@@ -1404,7 +1404,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	public List<DynamicBlockUpdate> getDynamicBlockUpdates(Chunk c) {
 		Set<DynamicBlockUpdate> updates = dynamicBlockTree.getDynamicBlockUpdates(c);
 		int size = updates == null ? 0 : updates.size();
-		List<DynamicBlockUpdate> list = new ArrayList<DynamicBlockUpdate>(size);
+		List<DynamicBlockUpdate> list = new ArrayList<>(size);
 		if (updates != null) {
 			list.addAll(updates);
 		}

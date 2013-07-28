@@ -50,7 +50,7 @@ public class TInt10TripleSet {
 
 	public TInt10TripleSet(int bx, int by, int bz, int initialCapacity) {
 		hash = new Int10TripleHashed(bx, by, bz);
-		set = new TLinkedHashSet<Integer>(initialCapacity);
+		set = new TLinkedHashSet<>(initialCapacity);
 	}
 
 	public boolean add(int x, int y, int z) {

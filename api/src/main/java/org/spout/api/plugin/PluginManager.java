@@ -56,8 +56,8 @@ public class PluginManager {
 	private final double key;
 	private final SpoutMetaPlugin metaPlugin;
 	private final PluginLoader loader;
-	private final Map<String, Plugin> names = new HashMap<String, Plugin>();
-	private final List<Plugin> plugins = new ArrayList<Plugin>();
+	private final Map<String, Plugin> names = new HashMap<>();
+	private final List<Plugin> plugins = new ArrayList<>();
 
 	public PluginManager(final Engine engine, final PluginSecurityManager manager, final double key) {
 		this.engine = engine;
@@ -188,8 +188,8 @@ public class PluginManager {
 
 		loadMetaPlugin();
 
-		List<Plugin> result = new ArrayList<Plugin>();
-		LinkedList<File> files = new LinkedList<File>(Arrays.asList(paramFile.listFiles()));
+		List<Plugin> result = new ArrayList<>();
+		LinkedList<File> files = new LinkedList<>(Arrays.asList(paramFile.listFiles()));
 		boolean failed = false;
 		boolean lastPass = false;
 

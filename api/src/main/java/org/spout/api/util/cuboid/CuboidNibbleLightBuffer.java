@@ -126,6 +126,7 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 		}
 	}
 
+	@Override
 	public CuboidNibbleLightBuffer copy() {
 		return new CuboidNibbleLightBuffer(this);
 	}
@@ -134,6 +135,7 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 		System.arraycopy(lightData, 0, target, start, lightData.length);
 	}
 
+	@Override
 	public byte[] serialize() {
 		return Arrays.copyOf(lightData, lightData.length);
 	}

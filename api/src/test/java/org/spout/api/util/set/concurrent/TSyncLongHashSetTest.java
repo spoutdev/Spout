@@ -52,7 +52,7 @@ public class TSyncLongHashSetTest {
 	public void setUp() {
 		Random rand = new Random();
 
-		HashSet<Long> set = new HashSet<Long>();
+		HashSet<Long> set = new HashSet<>();
 
 		values = 0;
 

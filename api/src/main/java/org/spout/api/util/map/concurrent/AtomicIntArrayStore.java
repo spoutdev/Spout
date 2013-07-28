@@ -72,9 +72,9 @@ public final class AtomicIntArrayStore {
 		this.length.set(GenericMath.roundUpPow2(initialSize));
 		this.entries.set(0);
 
-		intArray = new AtomicReference<int[]>(new int[this.length.get()]);
-		seqArray = new AtomicReference<AtomicIntegerArray>(new AtomicIntegerArray(this.length.get()));
-		emptyArray = new AtomicReference<boolean[]>(new boolean[this.length.get()]);
+		intArray = new AtomicReference<>(new int[this.length.get()]);
+		seqArray = new AtomicReference<>(new AtomicIntegerArray(this.length.get()));
+		emptyArray = new AtomicReference<>(new boolean[this.length.get()]);
 		emptyFill(emptyArray.get(), seqArray.get());
 		waiting = new AtomicInteger[WAIT_COUNT];
 		for (int i = 0; i < WAIT_COUNT; i++) {
@@ -88,8 +88,8 @@ public final class AtomicIntArrayStore {
 	 *
 	 * @return true if the id is reserved
 	 */
-	public final boolean isReserved(int id) {
-		id = id & 0x0000FFFF;
+	public boolean isReserved(int id) {
+		id &= 0x0000FFFF;
 		return (id & reservedMask) == reservedMask;
 	}
 
@@ -99,7 +99,7 @@ public final class AtomicIntArrayStore {
 	 * @param index the index
 	 * @return the int value
 	 */
-	public final int getInt(int index) {
+	public int getInt(int index) {
 		index = toInternal(index);
 		int spins = 0;
 		boolean interrupted = false;
@@ -165,7 +165,7 @@ public final class AtomicIntArrayStore {
 	 * @param index the index
 	 * @return the int value
 	 */
-	public final short getId(int index) {
+	public short getId(int index) {
 		return (short) (getInt(index) >> 16);
 	}
 
@@ -175,7 +175,7 @@ public final class AtomicIntArrayStore {
 	 * @param index the index
 	 * @return the int value
 	 */
-	public final short getData(int index) {
+	public short getData(int index) {
 		return (short) getInt(index);
 	}
 
@@ -188,7 +188,7 @@ public final class AtomicIntArrayStore {
 	 * @param auxData the auxiliary data
 	 * @return the index that the entry was stored in the array
 	 */
-	public final int add(short id, short data) {
+	public int add(short id, short data) {
 		entries.incrementAndGet();
 
 		while (true) {
@@ -380,7 +380,7 @@ public final class AtomicIntArrayStore {
 	 * @param internal the internal index
 	 * @return the equivalent external index
 	 */
-	private final int toExternal(int internal) {
+	private int toExternal(int internal) {
 		return (internal | reservedMask) & 0xFFFF;
 	}
 
@@ -390,7 +390,7 @@ public final class AtomicIntArrayStore {
 	 * @param external the external index
 	 * @return the equivalent internal index
 	 */
-	private final int toInternal(int external) {
+	private int toInternal(int external) {
 		return external & ~reservedMask & 0xFFFF;
 	}
 
@@ -399,7 +399,7 @@ public final class AtomicIntArrayStore {
 	 *
 	 * @param array the array to fill
 	 */
-	private final void emptyFill(boolean[] array, AtomicIntegerArray iArray) {
+	private void emptyFill(boolean[] array, AtomicIntegerArray iArray) {
 		for (int i = 0; i < array.length; i++) {
 			array[i] = true;
 			if (iArray != null) {
@@ -413,7 +413,7 @@ public final class AtomicIntArrayStore {
 	 *
 	 * @return the size of the arrays
 	 */
-	public final int getSize() {
+	public int getSize() {
 		return length.get();
 	}
 
@@ -422,7 +422,7 @@ public final class AtomicIntArrayStore {
 	 *
 	 * @return the size of the arrays
 	 */
-	public final int getEntries() {
+	public int getEntries() {
 		return entries.get();
 	}
 
@@ -433,7 +433,7 @@ public final class AtomicIntArrayStore {
 	 *
 	 * @return true if the array needs to be resized
 	 */
-	private final boolean needsResize() {
+	private boolean needsResize() {
 		int lengthThreshold = length.get();
 		lengthThreshold -= lengthThreshold >> 2;
 		return length.get() < maxLength && entries.get() >= lengthThreshold;
@@ -442,7 +442,7 @@ public final class AtomicIntArrayStore {
 	/**
 	 * Returns true if the array size is above minimum
 	 */
-	public final boolean isAboveMinimumSize() {
+	public boolean isAboveMinimumSize() {
 		return length.get() > this.INITIAL_MIN_SIZE;
 	}
 
@@ -451,7 +451,7 @@ public final class AtomicIntArrayStore {
 	 *
 	 * @return true if interrupted during the wait
 	 */
-	private final boolean atomicWait(int index) {
+	private boolean atomicWait(int index) {
 		AtomicInteger i = getWaitingInternal(index);
 		i.incrementAndGet();
 		try {
@@ -474,7 +474,7 @@ public final class AtomicIntArrayStore {
 	/**
 	 * Notifies all waiting threads
 	 */
-	private final void atomicNotify(int index) {
+	private void atomicNotify(int index) {
 		AtomicInteger i = getWaitingInternal(index);
 		if (!i.compareAndSet(0, 0)) {
 			synchronized (i) {
@@ -486,11 +486,11 @@ public final class AtomicIntArrayStore {
 	/**
 	 * Gets the waiting counter for the given index
 	 */
-	public final AtomicInteger getWaiting(int index) {
+	public AtomicInteger getWaiting(int index) {
 		return getWaitingInternal(toInternal(index));
 	}
 
-	private final AtomicInteger getWaitingInternal(int index) {
+	private AtomicInteger getWaitingInternal(int index) {
 		return waiting[index & WAIT_MASK];
 	}
 }

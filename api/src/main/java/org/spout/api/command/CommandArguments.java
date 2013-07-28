@@ -56,15 +56,15 @@ import org.spout.api.plugin.Plugin;
  */
 public class CommandArguments {
 	private final StringBuilder commandString = new StringBuilder();
-	private final Map<String, Object> parsedArgs = new HashMap<String, Object>();
-	private final Map<String, String> argOverrides = new HashMap<String, String>();
+	private final Map<String, Object> parsedArgs = new HashMap<>();
+	private final Map<String, String> argOverrides = new HashMap<>();
 	private final List<String> args;
 	private final CommandFlags flags;
 	int index = 0;
 
 	public CommandArguments(String commandName, List<String> args) {
 		this.commandString.append(commandName);
-		this.args = new ArrayList<String>(args);
+		this.args = new ArrayList<>(args);
 		this.flags = new CommandFlags(this);
 	}
 

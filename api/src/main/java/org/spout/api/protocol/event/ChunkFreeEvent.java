@@ -28,7 +28,6 @@ package org.spout.api.protocol.event;
 
 import org.spout.api.event.HandlerList;
 import org.spout.api.event.ProtocolEvent;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 
 public class ChunkFreeEvent extends ProtocolEvent {

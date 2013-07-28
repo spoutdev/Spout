@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class FileUtil {
-	private static final HashMap<String, String> fileNameCache = new HashMap<String, String>();
+	private static final HashMap<String, String> fileNameCache = new HashMap<>();
 
 	/**
 	 * Computes a long CRC of a File
@@ -144,7 +144,7 @@ public class FileUtil {
 		int end = url.lastIndexOf('?');
 		int lastDot = url.lastIndexOf('.');
 		int slash = url.lastIndexOf('/');
-		int forwardSlash = url.lastIndexOf("\\");
+		int forwardSlash = url.lastIndexOf('\\');
 		slash = slash > forwardSlash ? slash : forwardSlash;
 		end = end == -1 || lastDot > end ? url.length() : end;
 		String result = url.substring(slash + 1, end).replaceAll("%20", " ");
@@ -211,14 +211,12 @@ public class FileUtil {
 		String line;
 
 		try {
-			Collection<String> strings = new LinkedList<String>();
+			Collection<String> strings = new LinkedList<>();
 			while ((line = br.readLine()) != null) {
 				strings.add(line);
 			}
 			return strings;
-		} catch (IOException ioe) {
-			return null;
-		} catch (NumberFormatException nfe) {
+		} catch (IOException | NumberFormatException ioe) {
 			return null;
 		} finally {
 			try {
@@ -228,7 +226,7 @@ public class FileUtil {
 		}
 	}
 
-	private static final Collection<String> emptyCollection = new ArrayList<String>();
+	private static final Collection<String> emptyCollection = new ArrayList<>();
 
 	/**
 	 * Creates a blank file

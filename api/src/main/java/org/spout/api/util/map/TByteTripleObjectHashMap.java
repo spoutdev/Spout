@@ -41,11 +41,11 @@ public class TByteTripleObjectHashMap<K> extends ByteTripleHashed {
 	protected final TIntObjectHashMap<K> map;
 
 	public TByteTripleObjectHashMap() {
-		map = new TIntObjectHashMap<K>(100);
+		map = new TIntObjectHashMap<>(100);
 	}
 
 	public TByteTripleObjectHashMap(int capacity) {
-		map = new TIntObjectHashMap<K>(capacity);
+		map = new TIntObjectHashMap<>(capacity);
 	}
 
 	public K put(byte key1, byte key2, byte key3, K value) {

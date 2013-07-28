@@ -186,7 +186,7 @@ public class ValueHolderBase implements ValueHolder {
 		if (val instanceof List<?>) {
 			return (List<?>) val;
 		} else if (val instanceof Collection<?>) {
-			return new ArrayList<Object>((Collection<?>) val);
+			return new ArrayList<>((Collection<?>) val);
 		} else {
 			return def == null ? Collections.emptyList() : def;
 		}
@@ -200,7 +200,7 @@ public class ValueHolderBase implements ValueHolder {
 	@Override
 	public List<String> getStringList(List<String> def) {
 		List<?> val = getList(def);
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		for (Object item : val) {
 			ret.add(item == null ? null : item.toString());
 		}
@@ -215,7 +215,7 @@ public class ValueHolderBase implements ValueHolder {
 	@Override
 	public List<Integer> getIntegerList(List<Integer> def) {
 		List<?> val = getList(def);
-		List<Integer> ret = new ArrayList<Integer>();
+		List<Integer> ret = new ArrayList<>();
 		for (Object item : val) {
 			Integer asInt = GenericMath.castInt(item);
 			if (asInt == null) {
@@ -234,7 +234,7 @@ public class ValueHolderBase implements ValueHolder {
 	@Override
 	public List<Double> getDoubleList(List<Double> def) {
 		List<?> val = getList(def);
-		List<Double> ret = new ArrayList<Double>();
+		List<Double> ret = new ArrayList<>();
 		for (Object item : val) {
 			Double asDouble = GenericMath.castDouble(item);
 			if (asDouble == null) {
@@ -253,7 +253,7 @@ public class ValueHolderBase implements ValueHolder {
 	@Override
 	public List<Boolean> getBooleanList(List<Boolean> def) {
 		List<?> val = getList(def);
-		List<Boolean> ret = new ArrayList<Boolean>();
+		List<Boolean> ret = new ArrayList<>();
 		for (Object item : val) {
 			Boolean asBoolean = GenericMath.castBoolean(item);
 			if (asBoolean == null) {

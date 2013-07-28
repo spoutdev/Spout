@@ -86,7 +86,7 @@ public class RegionGenerator implements Named {
 
 		for (int x = 0; x < sections; x++) {
 			for (int z = 0; z < sections; z++) {
-				this.generatedColumns[x][z] = new AtomicReference<GenerateState>(GenerateState.NONE);
+				this.generatedColumns[x][z] = new AtomicReference<>(GenerateState.NONE);
 				this.columnLocks[x][z] = new NamedReentrantLock(x, z);
 			}
 		}

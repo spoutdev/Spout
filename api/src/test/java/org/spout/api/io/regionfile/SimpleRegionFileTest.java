@@ -195,10 +195,9 @@ public class SimpleRegionFileTest {
 	}
 
 	private void updateEntry(int entry, byte[] data) throws IOException {
-		//System.out.println("Writing " + data.length + " to entry " + entry);
-		DataOutputStream out = new DataOutputStream(srf.getOutputStream(entry));
-		out.write(data);
-		out.close();
+		try (DataOutputStream out = new DataOutputStream(srf.getOutputStream(entry))) {
+			out.write(data);
+		}
 		dataCache[entry] = data;
 	}
 

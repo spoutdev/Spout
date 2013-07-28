@@ -196,7 +196,7 @@ public class PluginLoader {
 	protected synchronized void processSoftDependencies(PluginDescriptionFile description) throws UnknownSoftDependencyException {
 		List<String> softdepend = description.getSoftDepends();
 		if (softdepend == null) {
-			softdepend = new ArrayList<String>();
+			softdepend = new ArrayList<>();
 		}
 
 		for (String depend : softdepend) {
@@ -212,7 +212,7 @@ public class PluginLoader {
 	protected synchronized void processDependencies(PluginDescriptionFile desc) throws UnknownDependencyException {
 		List<String> depends = desc.getDepends();
 		if (depends == null) {
-			depends = new ArrayList<String>();
+			depends = new ArrayList<>();
 		}
 
 		for (String depend : depends) {
@@ -272,7 +272,7 @@ public class PluginLoader {
 	}
 
 	protected Class<?> getClassByName(final String name, final PluginClassLoader commonLoader) {
-		Set<String> ignore = new HashSet<String>();
+		Set<String> ignore = new HashSet<>();
 
 		for (String dependency : commonLoader.getDepends()) {
 			try {

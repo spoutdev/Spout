@@ -41,7 +41,7 @@ public class UUIDTag extends ListTag<LongTag> {
 	}
 
 	private static List<LongTag> UUIDToList(UUID u) {
-		List<LongTag> list = new ArrayList<LongTag>(2);
+		List<LongTag> list = new ArrayList<>(2);
 		list.add(new LongTag("", u.getMostSignificantBits()));
 		list.add(new LongTag("", u.getLeastSignificantBits()));
 		return list;

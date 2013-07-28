@@ -40,12 +40,6 @@ import org.spout.math.vector.VectorN;
 
 public class Vector3Test {
 	@Test
-	public void testDefaultConstructor() {
-		Vector3 vector = new Vector3();
-		TestUtil.assertEquals(vector, 0, 0, 0);
-	}
-
-	@Test
 	public void testCopyVector2DefaultZConstructor() {
 		Vector3 vector = new Vector3(new Vector2(0, 1));
 		TestUtil.assertEquals(vector, 0, 1, 0);

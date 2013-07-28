@@ -353,7 +353,7 @@ public class Point extends Vector3 implements WorldSource {
 			field = Point.class.getDeclaredField("world");
 			field.setAccessible(true);
 			field.set(this, w);
-		} catch (Exception e) {
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			if (Spout.debugMode()) {
 				e.printStackTrace();
 			}
