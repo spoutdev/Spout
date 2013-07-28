@@ -71,7 +71,7 @@ public class AtomicFloat extends Number {
 		return value.weakCompareAndSet(Float.floatToRawIntBits(expect), Float.floatToRawIntBits(newValue));
 	}
 
-	private final float add(float delta, boolean returnOldValue) {
+	private float add(float delta, boolean returnOldValue) {
 		while (true) {
 			int oldIntValue = value.get();
 			float oldValue = Float.intBitsToFloat(oldIntValue);

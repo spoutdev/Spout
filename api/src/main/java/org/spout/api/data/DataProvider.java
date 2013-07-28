@@ -37,7 +37,7 @@ import org.spout.api.event.server.RetrieveDataEvent;
  * Collection of data to easily set data for {@link DataSubject}s. Must be registered as a {@link Listener}.
  */
 public class DataProvider implements Listener {
-	private final HashMap<DataSubject, Map<String, ValueHolder>> queue = new HashMap<DataSubject, Map<String, ValueHolder>>();
+	private final HashMap<DataSubject, Map<String, ValueHolder>> queue = new HashMap<>();
 
 	public void set(DataSubject subject, String key, ValueHolder value) {
 		// get the subjects data, create if null

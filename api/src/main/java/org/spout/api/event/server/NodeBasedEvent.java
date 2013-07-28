@@ -42,7 +42,7 @@ public abstract class NodeBasedEvent extends Event {
 	}
 
 	public String[] getNodes() {
-		List<String> nodes = new ArrayList<String>();
+		List<String> nodes = new ArrayList<>();
 		nodes.add(node);
 		//Checks all the parent nodes of this node
 		//If this method is called with node equal

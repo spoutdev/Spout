@@ -106,7 +106,8 @@ public class RotatingFileHandler extends Handler {
 			if (writer != null) {
 				writer.close();
 			}
-		} catch (IOException ignore) {
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 		if (logFlush != null) {
 			logFlush.interrupt();
@@ -121,13 +122,15 @@ public class RotatingFileHandler extends Handler {
 				logFileName = calculateFilename();
 				try {
 					writer.close();
-				} catch (IOException ignore) {
+				} catch (IOException ex) {
+					ex.printStackTrace();
 				}
 				initImpl();
 			}
 			try {
 				writer.flush();
-			} catch (IOException ignore) {
+			} catch (IOException ex) {
+				ex.printStackTrace();
 			}
 		} finally {
 			writerLock.unlock();
@@ -165,8 +168,8 @@ public class RotatingFileHandler extends Handler {
 			if (autoFlush) {
 				flush();
 			}
-		} catch (IOException e) {
-			return;
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		} finally {
 			writerLock.unlock();
 		}

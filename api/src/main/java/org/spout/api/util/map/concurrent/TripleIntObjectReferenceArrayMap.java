@@ -50,7 +50,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 	private final AtomicReference<Entry<T>> root;
 	private final LinkedHashSet<T> values;
 	private final LinkedHashSet<LeafEntry> leafEntries;
-	private final AtomicReference<Collection<T>> valuesSnapshot = new AtomicReference<Collection<T>>(null);
+	private final AtomicReference<Collection<T>> valuesSnapshot = new AtomicReference<>(null);
 	private int removed = 0;
 
 	public TripleIntObjectReferenceArrayMap(int bits) {
@@ -63,10 +63,10 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		int width = 1 << bits;
 		this.bitMask = width - 1;
 		this.arraySize = (width) * (width) * (width);
-		this.root = new AtomicReference<Entry<T>>();
+		this.root = new AtomicReference<>();
 		this.root.set(new AtomicReferenceArrayEntry(depth));
-		this.values = new LinkedHashSet<T>();
-		this.leafEntries = new LinkedHashSet<LeafEntry>();
+		this.values = new LinkedHashSet<>();
+		this.leafEntries = new LinkedHashSet<>();
 	}
 
 	@Override
@@ -169,7 +169,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 			if (newValues != null) {
 				return newValues;
 			}
-			newValues = Collections.unmodifiableCollection(new LinkedHashSet<T>(this.values));
+			newValues = Collections.unmodifiableCollection(new LinkedHashSet<>(this.values));
 			this.valuesSnapshot.set(newValues);
 			return newValues;
 		}
@@ -229,7 +229,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 	private synchronized void resizeMap() {
 		TripleIntObjectReferenceArrayMap.Entry<T> oldRoot = this.root.get();
 		int newDepth = oldRoot.getDepth() + 1;
-		TripleIntObjectReferenceArrayMap<T> temp = new TripleIntObjectReferenceArrayMap<T>(bits, newDepth);
+		TripleIntObjectReferenceArrayMap<T> temp = new TripleIntObjectReferenceArrayMap<>(bits, newDepth);
 
 		for (LeafEntry le : leafEntries) {
 			T value = le.getValue();
@@ -303,7 +303,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 
 		public AtomicReferenceArrayEntry(int depth) {
 			this.depth = depth;
-			this.array = new AtomicReferenceArray<Entry<T>>(arraySize);
+			this.array = new AtomicReferenceArray<>(arraySize);
 			this.initialShift = depth * bits;
 		}
 
@@ -368,7 +368,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 			this.x = x;
 			this.y = y;
 			this.z = z;
-			this.value = new AtomicReference<T>();
+			this.value = new AtomicReference<>();
 		}
 
 		@Override
@@ -443,9 +443,9 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 	}
 
 	private int getIndex(int x, int y, int z, int shift) {
-		x = x >> shift;
-		y = y >> shift;
-		z = z >> shift;
+		x >>= shift;
+		y >>= shift;
+		z >>= shift;
 		x &= bitMask;
 		y &= bitMask;
 		z &= bitMask;

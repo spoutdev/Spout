@@ -61,7 +61,7 @@ public class SerializableHashMap implements SerializableMap {
 	public static final String NILTYPE = "NULL";
 
 	public SerializableHashMap() {
-		this.map = new ConcurrentHashMap<String, Serializable>();
+		this.map = new ConcurrentHashMap<>();
 	}
 
 	@Override
@@ -264,8 +264,8 @@ public class SerializableHashMap implements SerializableMap {
 		Serializable next, current;
 		int index = 0;
 		int expectedAmount = map.size();
-		ArrayList<Serializable> values = new ArrayList<Serializable>();
-		ArrayList<String> keys = new ArrayList<String>();
+		ArrayList<Serializable> values = new ArrayList<>();
+		ArrayList<String> keys = new ArrayList<>();
 
 		EntryIterator() {
 			for (String s : map.keySet()) {
@@ -343,8 +343,8 @@ public class SerializableHashMap implements SerializableMap {
 		Serializable next, current;
 		int index = 0;
 		int expectedAmount = map.size();
-		ArrayList<Serializable> values = new ArrayList<Serializable>();
-		ArrayList<String> keys = new ArrayList<String>();
+		ArrayList<Serializable> values = new ArrayList<>();
+		ArrayList<String> keys = new ArrayList<>();
 
 		ValueIterator() {
 			for (String s : map.keySet()) {
@@ -491,6 +491,7 @@ public class SerializableHashMap implements SerializableMap {
 			super(in);
 		}
 
+		@Override
 		protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
 			try {
 				return super.resolveClass(desc);

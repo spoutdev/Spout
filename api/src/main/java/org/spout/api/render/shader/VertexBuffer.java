@@ -33,7 +33,7 @@ import org.spout.api.render.RenderMaterial;
 /**
  * Abstract, API Neutral VertexBuffer interface
  */
-public abstract class VertexBuffer {
+public interface VertexBuffer {
 	/**
 	 * Clears the buffer and uploads new data to the GPU
 	 */

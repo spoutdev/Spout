@@ -39,12 +39,12 @@ import static org.junit.Assert.assertEquals;
 public class NBTMapperTest {
 	@Test
 	public void transformTest() {
-		ArrayList<FloatTag> list = new ArrayList<FloatTag>();
+		ArrayList<FloatTag> list = new ArrayList<>();
 		FloatTag test = new FloatTag("test", 1f);
 		FloatTag test2 = new FloatTag("test2", 2f);
 		list.add(test);
 		list.add(test2);
-		ListTag<FloatTag> testList = new ListTag<FloatTag>("test_transform", FloatTag.class, list);
+		ListTag<FloatTag> testList = new ListTag<>("test_transform", FloatTag.class, list);
 		float ftest = SafeCast.toFloat(testList.getValue().get(0).getValue(), 3f);
 		float ftest2 = SafeCast.toFloat(testList.getValue().get(1).getValue(), 4f);
 		System.out.println("Safe cast of first test tag returned: " + ftest);

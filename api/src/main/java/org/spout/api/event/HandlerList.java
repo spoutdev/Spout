@@ -45,12 +45,12 @@ public final class HandlerList {
 	 * Returns the Dynamic handler lists. <br/> These are changed using register() and unregister()<br/> Changes automatically baked to the handlers array any time they have changed..
 	 */
 	private final EnumMap<Order, List<ListenerRegistration>> handlerSlots;
-	private final CopyOnWriteArrayList<HandlerList> children = new CopyOnWriteArrayList<HandlerList>(); // Not modified that much, it's fine
+	private final CopyOnWriteArrayList<HandlerList> children = new CopyOnWriteArrayList<>(); // Not modified that much, it's fine
 	private final HandlerList parent;
 	/**
 	 * List of all HandlerLists which have been created, for use in bakeAll()
 	 */
-	private static final ArrayList<HandlerList> ALL_LISTS = new ArrayList<HandlerList>();
+	private static final ArrayList<HandlerList> ALL_LISTS = new ArrayList<>();
 
 	/**
 	 * Bake all handler lists. Best used just after all normal event registration is complete.
@@ -84,7 +84,7 @@ public final class HandlerList {
 	}
 
 	public HandlerList(HandlerList parent) {
-		handlerSlots = new EnumMap<Order, List<ListenerRegistration>>(Order.class);
+		handlerSlots = new EnumMap<>(Order.class);
 		for (Order o : Order.values()) {
 			handlerSlots.put(o, new ArrayList<ListenerRegistration>());
 		}
@@ -152,7 +152,7 @@ public final class HandlerList {
 		if (handlers != null) {
 			return handlers; // don't re-bake when still valid
 		}
-		List<ListenerRegistration> entries = new ArrayList<ListenerRegistration>();
+		List<ListenerRegistration> entries = new ArrayList<>();
 		for (Order order : Order.values()) {
 			addToEntries(entries, order);
 		}

@@ -38,7 +38,7 @@ import org.yaml.snakeyaml.nodes.Tag;
 
 public class LanguageDictionary {
 	private Locale locale;
-	HashMap<Integer, Object> translations = new HashMap<Integer, Object>();
+	HashMap<Integer, Object> translations = new HashMap<>();
 
 	public LanguageDictionary(Locale locale) {
 		this.locale = locale;
@@ -69,9 +69,9 @@ public class LanguageDictionary {
 
 	public void save(FileWriter fileWriter) {
 		Yaml yaml = new Yaml();
-		LinkedHashMap<String, Object> dump = new LinkedHashMap<String, Object>();
+		LinkedHashMap<String, Object> dump = new LinkedHashMap<>();
 		dump.put("locale", locale.getCode());
-		LinkedHashMap<Integer, Object> tr = new LinkedHashMap<Integer, Object>();
+		LinkedHashMap<Integer, Object> tr = new LinkedHashMap<>();
 		for (Entry<Integer, Object> e : translations.entrySet()) {
 			if (e.getValue() instanceof String) {
 				tr.put(e.getKey(), e.getValue());

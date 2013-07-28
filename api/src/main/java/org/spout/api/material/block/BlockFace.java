@@ -51,7 +51,7 @@ public enum BlockFace implements ByteBitMask, Serializable {
 	private final IntVector3 intOffset;
 	private final Quaternion direction;
 	private BlockFace opposite = this;
-	private static final TIntObjectHashMap<BlockFace> OFFSET_MAP = new TIntObjectHashMap<BlockFace>(7);
+	private static final TIntObjectHashMap<BlockFace> OFFSET_MAP = new TIntObjectHashMap<>(7);
 	private static final long serialVersionUID = 1L;
 
 	static {

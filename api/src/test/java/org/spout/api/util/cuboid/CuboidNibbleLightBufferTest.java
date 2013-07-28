@@ -54,7 +54,7 @@ public class CuboidNibbleLightBufferTest {
 
 			int vol = sx * sy * sz;
 			if ((vol | 1) == vol) {
-				sx = sx & (~1);
+				sx &= (~1);
 			}
 			short destId = (short) r.nextInt();
 			CuboidNibbleLightBuffer dest = new CuboidNibbleLightBuffer(null, destId, bx, by, bz, sx, sy, sz);
@@ -71,7 +71,7 @@ public class CuboidNibbleLightBufferTest {
 
 			int vol2 = sx2 * sy2 * sz2;
 			if ((vol2 | 1) == vol2) {
-				sx2 = sx2 & (~1);
+				sx2 &= (~1);
 			}
 
 			short srcId = (short) r.nextInt();

@@ -42,8 +42,8 @@ import org.spout.engine.world.SpoutRegion;
 
 public class ParallelTaskInfo {
 	public static final ParallelTaskInfo[] EMPTY_ARRAY = new ParallelTaskInfo[0];
-	private final Set<RegionIdPair> children = new HashSet<RegionIdPair>();
-	private final Map<SpoutRegion, SpoutTask> regions = new HashMap<SpoutRegion, SpoutTask>();
+	private final Set<RegionIdPair> children = new HashSet<>();
+	private final Map<SpoutRegion, SpoutTask> regions = new HashMap<>();
 	private final SpoutTask task;
 	private boolean alive = true;
 

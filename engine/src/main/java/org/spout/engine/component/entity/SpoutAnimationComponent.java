@@ -59,7 +59,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 	/**
 	 * Entity can have more than one model, this Map allow to handle a list of animation for each model
 	 */
-	private Map<Model, List<AnimationPlayed>> animations = new HashMap<Model, List<AnimationPlayed>>();
+	private Map<Model, List<AnimationPlayed>> animations = new HashMap<>();
 	/**
 	 * Matrices array at the size of managed skeleton used to fill shader when no animation to play
 	 */
@@ -89,7 +89,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		List<AnimationPlayed> list = animations.get(model);
 
 		if (list == null) {
-			list = new ArrayList<AnimationPlayed>();
+			list = new ArrayList<>();
 			animations.put(model, list);
 		}
 

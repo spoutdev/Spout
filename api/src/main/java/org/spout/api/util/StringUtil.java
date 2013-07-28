@@ -73,7 +73,7 @@ public class StringUtil {
 	 * @return a collection of values that matched
 	 */
 	public static <T> Collection<T> matchToString(Collection<T> values, String name) {
-		List<T> result = new ArrayList<T>();
+		List<T> result = new ArrayList<>();
 		for (T value : values) {
 			if (value == null) {
 				continue;
@@ -93,7 +93,7 @@ public class StringUtil {
 	 * @return a collection of values that matched
 	 */
 	public static <T extends Named> Collection<T> matchName(Collection<T> values, String name) {
-		List<T> result = new ArrayList<T>();
+		List<T> result = new ArrayList<>();
 		for (T value : values) {
 			if (value == null) {
 				continue;
@@ -113,7 +113,7 @@ public class StringUtil {
 	 * @return a collection of values that matched
 	 */
 	public static Collection<File> matchFile(Collection<File> values, String name) {
-		List<File> result = new ArrayList<File>();
+		List<File> result = new ArrayList<>();
 		for (File value : values) {
 			if (value == null) {
 				continue;

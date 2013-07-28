@@ -82,7 +82,7 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 	/**
 	 * A set of all players currently connected to this world
 	 */
-	private final List<Player> players = new ConcurrentList<Player>();
+	private final List<Player> players = new ConcurrentList<>();
 	/**
 	 * The directory where the world data is stored
 	 */
@@ -100,8 +100,8 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 	 * A WeakReference to this world
 	 */
 	private final WeakReference<SpoutServerWorld> selfReference;
-	public static final WeakReference<SpoutServerWorld> NULL_WEAK_REFERENCE = new WeakReference<SpoutServerWorld>(null);
-	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<Long, SetQueue<SpoutColumn>>();
+	public static final WeakReference<SpoutServerWorld> NULL_WEAK_REFERENCE = new WeakReference<>(null);
+	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<>();
 
 	// TODO set up number of stages ?
 	public SpoutServerWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringToUniqueIntegerMap itemMap, StringToUniqueIntegerMap lightingMap) {
@@ -117,7 +117,7 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 
 		this.age = new SnapshotableLong(snapshotManager, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 20, 1), Quaternion.IDENTITY, Vector3.ONE));
-		selfReference = new WeakReference<SpoutServerWorld>(this);
+		selfReference = new WeakReference<>(this);
 
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);
 

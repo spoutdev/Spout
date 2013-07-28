@@ -53,9 +53,9 @@ public class StringToUniqueIntegerMapTest {
 	private SimpleStore<Integer> world2Store;
 	private File world1File = new File("world1.dat");
 	private File world2File = new File("world2.dat");
-	private HashMap<String, Integer> serverCache = new HashMap<String, Integer>();
-	private HashMap<String, Integer> world1Cache = new HashMap<String, Integer>();
-	private HashMap<String, Integer> world2Cache = new HashMap<String, Integer>();
+	private HashMap<String, Integer> serverCache = new HashMap<>();
+	private HashMap<String, Integer> world1Cache = new HashMap<>();
+	private HashMap<String, Integer> world2Cache = new HashMap<>();
 	private final String firstKey = "firstKey";
 	private final String lastKey = "lastKey";
 	private final int minValue = 100;
@@ -67,7 +67,7 @@ public class StringToUniqueIntegerMapTest {
 		world1File.delete();
 		world2File.delete();
 
-		serverStore = new MemoryStore<Integer>();
+		serverStore = new MemoryStore<>();
 		serverMap = new StringToUniqueIntegerMap(null, serverStore, minValue, maxValue, "serverMap");
 
 		readWorldFiles();
@@ -215,11 +215,11 @@ public class StringToUniqueIntegerMapTest {
 	}
 
 	private void readWorldFiles() {
-		world1Store = new FlatFileStore<Integer>(world1File, Integer.class);
+		world1Store = new FlatFileStore<>(world1File, Integer.class);
 		world1Store.load();
 		world1Map = new StringToUniqueIntegerMap(serverMap, world1Store, minValue, maxValue, "world1");
 
-		world2Store = new FlatFileStore<Integer>(world2File, Integer.class);
+		world2Store = new FlatFileStore<>(world2File, Integer.class);
 		world2Store.load();
 		world2Map = new StringToUniqueIntegerMap(serverMap, world2Store, minValue, maxValue, "world2");
 	}

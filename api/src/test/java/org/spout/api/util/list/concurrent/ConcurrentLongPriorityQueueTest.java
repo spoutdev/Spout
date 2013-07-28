@@ -26,6 +26,7 @@
  */
 package org.spout.api.util.list.concurrent;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Random;
@@ -55,7 +56,7 @@ public class ConcurrentLongPriorityQueueTest {
 
 		LongWithPriority[] shuffled = shuffle(sorted);
 
-		ConcurrentLongPriorityQueue<LongWithPriority> lpq = new ConcurrentLongPriorityQueue<LongWithPriority>(BINSIZE);
+		ConcurrentLongPriorityQueue<LongWithPriority> lpq = new ConcurrentLongPriorityQueue<>(BINSIZE);
 
 		for (int i = 0; i < LENGTH; i++) {
 			lpq.add(shuffled[i]);
@@ -92,9 +93,9 @@ public class ConcurrentLongPriorityQueueTest {
 		LongWithPriority[] shuffled = shuffle(sorted);
 		LongWithPriority[] output = new LongWithPriority[shuffled.length];
 
-		ConcurrentLongPriorityQueue<LongWithPriority> lpq = new ConcurrentLongPriorityQueue<LongWithPriority>(BINSIZE);
+		ConcurrentLongPriorityQueue<LongWithPriority> lpq = new ConcurrentLongPriorityQueue<>(BINSIZE);
 
-		PriorityBlockingQueue<LongWithPriority> pbq = new PriorityBlockingQueue<LongWithPriority>();
+		PriorityBlockingQueue<LongWithPriority> pbq = new PriorityBlockingQueue<>();
 
 		Queue<LongWithPriority> q;
 
@@ -143,9 +144,7 @@ public class ConcurrentLongPriorityQueueTest {
 		long startPBQ = System.nanoTime();
 		for (int r = 0; r < REPEATS; r++) {
 			addTime -= System.nanoTime();
-			for (int i = 0; i < shuffled.length; i++) {
-				pbq.add(shuffled[i]);
-			}
+			pbq.addAll(Arrays.asList(shuffled));
 			addTime += System.nanoTime();
 			LongWithPriority l;
 			int i = 0;
@@ -191,10 +190,7 @@ public class ConcurrentLongPriorityQueueTest {
 	private LongWithPriority[] shuffle(LongWithPriority[] a) {
 
 		LongWithPriority[] newArray = new LongWithPriority[a.length];
-
-		for (int i = 0; i < a.length; i++) {
-			newArray[i] = a[i];
-		}
+		System.arraycopy(a, 0, newArray, 0, a.length);
 
 		a = newArray;
 

@@ -39,11 +39,11 @@ import org.spout.api.math.Rectangle;
 import org.spout.api.render.SpoutRenderMaterials;
 
 public class ControlComponent extends WidgetComponent {
-	private static final DefaultedKey<Integer> KEY_TAB_INDEX = new DefaultedKeyImpl<Integer>("tabIndex", 0);
+	private static final DefaultedKey<Integer> KEY_TAB_INDEX = new DefaultedKeyImpl<>("tabIndex", 0);
 
 	@Override
 	public List<RenderPartPack> getRenderPartPacks() {
-		LinkedList<RenderPartPack> ret = new LinkedList<RenderPartPack>();
+		LinkedList<RenderPartPack> ret = new LinkedList<>();
 		if (getOwner().isFocused()) {
 			RenderPartPack pack = new RenderPartPack(SpoutRenderMaterials.GUI_COLOR);
 			RenderPart part = new RenderPart();

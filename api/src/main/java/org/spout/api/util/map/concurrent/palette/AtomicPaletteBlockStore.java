@@ -321,7 +321,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		return index;
 	}
 
-	private final int getIndex(int x, int y, int z) {
+	private int getIndex(int x, int y, int z) {
 		return (y << doubleShift) + (z << shift) + x;
 	}
 

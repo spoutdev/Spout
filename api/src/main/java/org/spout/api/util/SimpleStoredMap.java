@@ -114,9 +114,9 @@ public class SimpleStoredMap<T> implements StoredMap<T> {
 
 	@Override
 	public List<Pair<T, String>> getItems() {
-		List<Pair<T, String>> items = new ArrayList<Pair<T, String>>();
+		List<Pair<T, String>> items = new ArrayList<>();
 		for (Map.Entry<String, T> entry : store.getEntrySet()) {
-			items.add(new ImmutablePair<T, String>(entry.getValue(), entry.getKey()));
+			items.add(new ImmutablePair<>(entry.getValue(), entry.getKey()));
 		}
 		return items;
 	}

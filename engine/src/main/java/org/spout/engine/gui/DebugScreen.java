@@ -58,9 +58,9 @@ public class DebugScreen extends Screen implements DebugHud {
 	// The internal Spout-dummy plugin
 	private final SpoutMetaPlugin plugin;
 	// Spout's debug messages
-	private final Map<Integer, Widget> spoutMessages = new HashMap<Integer, Widget>();
+	private final Map<Integer, Widget> spoutMessages = new HashMap<>();
 	// The hashmap that contains the plugin's debug messages
-	private final Map<Plugin, Widget> messages = new HashMap<Plugin, Widget>();
+	private final Map<Plugin, Widget> messages = new HashMap<>();
 
 	public DebugScreen() {
 		plugin = Spout.getPluginManager().getMetaPlugin();

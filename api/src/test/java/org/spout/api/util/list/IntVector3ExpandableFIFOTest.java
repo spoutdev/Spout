@@ -97,8 +97,8 @@ public class IntVector3ExpandableFIFOTest {
 	@Test
 	public void testBurst() {
 
-		Queue<IntVector3> input = new ConcurrentLinkedQueue<IntVector3>();
-		Queue<IntVector3> output = new ConcurrentLinkedQueue<IntVector3>();
+		Queue<IntVector3> input = new ConcurrentLinkedQueue<>();
+		Queue<IntVector3> output = new ConcurrentLinkedQueue<>();
 
 		IntVector3FIFO fifo = new IntVector3ExpandableFIFO(16);
 

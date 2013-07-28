@@ -65,7 +65,7 @@ public class IntVector3CompositeIteratorTest {
 			z[i] = randomArray(length, MASK, r);
 			arr[i] = new IntVector3Array(x[i], y[i], z[i], length);
 
-			length = length >> 1;
+			length >>= 1;
 		}
 
 		arr[3] = arr[2];

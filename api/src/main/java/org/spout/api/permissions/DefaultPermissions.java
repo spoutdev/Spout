@@ -56,8 +56,8 @@ public class DefaultPermissions extends ConfigurationHolderConfiguration impleme
 	private final ConfigurationHolder DEFAULTS = new ConfigurationHolder(new ArrayList<>(Arrays.asList("spout.*")), "defaults");
 	private final Engine engine;
 	private final YamlConfiguration config;
-	private final Set<String> defaultPermissions = new HashSet<String>();
-	private final Set<String> pluginDefaultPermissions = new HashSet<String>();
+	private final Set<String> defaultPermissions = new HashSet<>();
+	private final Set<String> pluginDefaultPermissions = new HashSet<>();
 
 	public DefaultPermissions(Engine engine, File configFile) {
 		super(null);
@@ -146,7 +146,7 @@ public class DefaultPermissions extends ConfigurationHolderConfiguration impleme
 		if (!ENABLED.getBoolean()) {
 			return Collections.emptySet();
 		}
-		HashSet<String> perms = new HashSet<String>(defaultPermissions);
+		HashSet<String> perms = new HashSet<>(defaultPermissions);
 		perms.addAll(pluginDefaultPermissions);
 		return Collections.unmodifiableSet(perms);
 	}

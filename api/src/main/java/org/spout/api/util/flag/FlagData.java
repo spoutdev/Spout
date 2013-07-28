@@ -86,7 +86,7 @@ public class FlagData<T> implements Flag {
 	 * @return Data flag containing the data
 	 */
 	public FlagData<T> forData(T data) {
-		return new FlagData<T>(this.key, data);
+		return new FlagData<>(this.key, data);
 	}
 
 	/**

@@ -44,7 +44,7 @@ import org.spout.engine.world.SpoutWorld;
  * Handle client-specific session tasks
  */
 public class SpoutClientSession extends SpoutSession<SpoutClient> implements ClientSession {
-	private final AtomicReference<SpoutWorld> activeWorld = new AtomicReference<SpoutWorld>();
+	private final AtomicReference<SpoutWorld> activeWorld = new AtomicReference<>();
 
 	/**
 	 * Creates a new session.

@@ -45,7 +45,7 @@ import org.spout.api.plugin.Plugin;
  * queried from the services manager in order to use a service (if one is available). If multiple plugins register a service, then the service with the highest priority takes precedence.
  */
 public class ServiceManager {
-	private final Map<Class<?>, List<ServiceProvider<?>>> providers = new HashMap<Class<?>, List<ServiceProvider<?>>>();
+	private final Map<Class<?>, List<ServiceProvider<?>>> providers = new HashMap<>();
 
 	/**
 	 * Register a provider of a service.
@@ -62,10 +62,10 @@ public class ServiceManager {
 			List<ServiceProvider<?>> registered = providers.get(service);
 
 			if (registered == null) {
-				registered = new ArrayList<ServiceProvider<?>>();
+				registered = new ArrayList<>();
 				providers.put(service, registered);
 			}
-			ServiceProvider<T> serviceProvider = new ServiceProvider<T>(service, provider, priority, plugin);
+			ServiceProvider<T> serviceProvider = new ServiceProvider<>(service, provider, priority, plugin);
 			ServiceRegisterEvent event = Spout.getEventManager().callEvent(new ServiceRegisterEvent(serviceProvider, priority));
 			registered.add(serviceProvider.setPriority(event.getPriority()));
 
@@ -103,7 +103,7 @@ public class ServiceManager {
 					}
 
 					// Get rid of the empty list
-					if (entry.getValue().size() == 0) {
+					if (entry.getValue().isEmpty()) {
 						it.remove();
 					}
 				}
@@ -147,7 +147,7 @@ public class ServiceManager {
 					}
 
 					// Get rid of the empty list
-					if (entry.getValue().size() == 0) {
+					if (entry.getValue().isEmpty()) {
 						it.remove();
 					}
 				}
@@ -184,7 +184,7 @@ public class ServiceManager {
 					}
 
 					// Get rid of the empty list
-					if (entry.getValue().size() == 0) {
+					if (entry.getValue().isEmpty()) {
 						it.remove();
 					}
 				}
@@ -243,7 +243,7 @@ public class ServiceManager {
 	 */
 	public List<ServiceProvider<?>> getRegistrations(Plugin plugin) {
 		synchronized (providers) {
-			List<ServiceProvider<?>> ret = new ArrayList<ServiceProvider<?>>();
+			List<ServiceProvider<?>> ret = new ArrayList<>();
 
 			for (List<ServiceProvider<?>> registered : providers.values()) {
 				for (ServiceProvider<?> provider : registered) {
@@ -273,7 +273,7 @@ public class ServiceManager {
 				return Collections.unmodifiableList(new ArrayList<ServiceProvider<T>>());
 			}
 
-			List<ServiceProvider<T>> ret = new ArrayList<ServiceProvider<T>>();
+			List<ServiceProvider<T>> ret = new ArrayList<>();
 
 			for (ServiceProvider<?> provider : registered) {
 				ret.add((ServiceProvider<T>) provider);

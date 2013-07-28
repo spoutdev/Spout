@@ -58,8 +58,8 @@ import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 
 public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
-	private final Set<Binding> bindings = new HashSet<Binding>();
-	private final Set<InputExecutor> inputExecutors = new HashSet<InputExecutor>();
+	private final Set<Binding> bindings = new HashSet<>();
+	private final Set<InputExecutor> inputExecutors = new HashSet<>();
 	private boolean redirected = false;
 
 	public SpoutInputManager() {
@@ -106,7 +106,7 @@ public class SpoutInputManager implements InputManager {
 
 	@Override
 	public Set<Binding> getKeyBindingsFor(Keyboard key) {
-		Set<Binding> bound = new HashSet<Binding>();
+		Set<Binding> bound = new HashSet<>();
 		for (Binding binding : bindings) {
 			for (Keyboard k : binding.getKeyBindings()) {
 				if (k == key) {
@@ -120,7 +120,7 @@ public class SpoutInputManager implements InputManager {
 
 	@Override
 	public Set<Binding> getMouseBindingsFor(int mouse) {
-		Set<Binding> bound = new HashSet<Binding>();
+		Set<Binding> bound = new HashSet<>();
 		for (Binding binding : bindings) {
 			for (int button : binding.getMouseBindings()) {
 				if (button == mouse) {
@@ -134,7 +134,7 @@ public class SpoutInputManager implements InputManager {
 
 	@Override
 	public Set<Binding> getMouseDirectionBindingsFor(MouseDirection direction) {
-		Set<Binding> bound = new HashSet<Binding>();
+		Set<Binding> bound = new HashSet<>();
 		for (Binding binding : bindings) {
 			for (MouseDirection d : binding.getMouseDirectionBindings()) {
 				if (d == direction) {

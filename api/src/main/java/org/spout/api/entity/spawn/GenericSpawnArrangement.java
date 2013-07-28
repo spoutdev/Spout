@@ -36,7 +36,7 @@ public abstract class GenericSpawnArrangement implements SpawnArrangement {
 	private final int number;
 
 	public GenericSpawnArrangement(Point center, int number) {
-		this.points = new AtomicReference<Point[]>(null);
+		this.points = new AtomicReference<>(null);
 		this.center = center;
 		this.number = number;
 	}

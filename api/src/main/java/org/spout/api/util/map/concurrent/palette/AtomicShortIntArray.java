@@ -43,7 +43,7 @@ public class AtomicShortIntArray {
 	/**
 	 * A reference to the store.  When the palette fills, or when the store is compressed.  A new store is created.
 	 */
-	private final AtomicReference<AtomicShortIntBackingArray> store = new AtomicReference<AtomicShortIntBackingArray>();
+	private final AtomicReference<AtomicShortIntBackingArray> store = new AtomicReference<>();
 	/**
 	 * Locks<br> A ReadWrite lock is used to managing locking<br> When copying to a new store instance, and updating to new the store reference, all updates must be stopped.  The write lock is used as
 	 * the resize lock.<br> When making changes to the data stored in an array instance, multiple threads can access the array concurrently.  The read lock is used for the update lock. Reads to the array

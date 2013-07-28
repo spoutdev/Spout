@@ -36,8 +36,8 @@ public class SimpleFuture<T> implements Future<T> {
 	private static Object THROWABLE = new Object();
 	private static Object CANCEL = new Object();
 	private static Object NULL = new Object();
-	private AtomicReference<T> resultRef = new AtomicReference<T>(null);
-	private AtomicReference<Throwable> throwable = new AtomicReference<Throwable>(null);
+	private AtomicReference<T> resultRef = new AtomicReference<>(null);
+	private AtomicReference<Throwable> throwable = new AtomicReference<>(null);
 
 	@SuppressWarnings ("unchecked")
 	public boolean setThrowable(Throwable t) {

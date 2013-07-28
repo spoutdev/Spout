@@ -36,6 +36,7 @@ public class IntVector3ExpandableFIFO extends IntVector3FIFO {
 	 *
 	 * @return true if the FIFO is full
 	 */
+	@Override
 	public boolean write(int x, int y, int z) {
 		if (write + 3 > read + array.length) {
 			resize(array.length + (array.length >> 1) + 1);
@@ -49,6 +50,7 @@ public class IntVector3ExpandableFIFO extends IntVector3FIFO {
 	 *
 	 * @return true if the fifo is full
 	 */
+	@Override
 	public boolean isFull() {
 		return false;
 	}

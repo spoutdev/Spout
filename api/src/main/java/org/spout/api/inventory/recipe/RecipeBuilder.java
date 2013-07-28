@@ -42,9 +42,9 @@ import org.spout.api.plugin.Plugin;
 public class RecipeBuilder {
 	public Plugin plugin = null;
 	public ItemStack result = null;
-	public Map<Character, Material> ingredientsMap = new HashMap<Character, Material>();
-	public List<List<Character>> rows = new ArrayList<List<Character>>();
-	public List<Material> ingredients = new ArrayList<Material>();
+	public Map<Character, Material> ingredientsMap = new HashMap<>();
+	public List<List<Character>> rows = new ArrayList<>();
+	public List<Material> ingredients = new ArrayList<>();
 	public boolean includeData = false;
 
 	public ShapedRecipe buildShapedRecipe() throws IllegalStateException {
@@ -54,7 +54,7 @@ public class RecipeBuilder {
 		if (rows.isEmpty()) {
 			throw new IllegalStateException("Must add rows.");
 		}
-		ArrayList<Material> nullCheck = new ArrayList<Material>(ingredientsMap.values());
+		ArrayList<Material> nullCheck = new ArrayList<>(ingredientsMap.values());
 		nullCheck.removeAll(Collections.singletonList(null));
 		if (nullCheck.isEmpty()) { // Make sure there is at least one ingredient
 			throw new IllegalStateException("Must specify the ingredients.");
@@ -84,7 +84,7 @@ public class RecipeBuilder {
 		if (result == null) {
 			throw new IllegalStateException("Result must be set.");
 		}
-		ArrayList<Material> nullCheck = new ArrayList<Material>(ingredients);
+		ArrayList<Material> nullCheck = new ArrayList<>(ingredients);
 		nullCheck.removeAll(Collections.singletonList(null));
 		if (nullCheck.isEmpty()) {
 			throw new IllegalStateException("Must add materials.");
@@ -208,7 +208,7 @@ public class RecipeBuilder {
 
 	public RecipeBuilder addRow(String str) {
 		char[] chars = str.toCharArray();
-		ArrayList<Character> row = new ArrayList<Character>();
+		ArrayList<Character> row = new ArrayList<>();
 		for (char c : chars) {
 			row.add(c);
 		}
@@ -241,7 +241,7 @@ public class RecipeBuilder {
 		}
 		rows.remove(rowNumber);
 		char[] chars = str.toCharArray();
-		ArrayList<Character> row = new ArrayList<Character>();
+		ArrayList<Character> row = new ArrayList<>();
 		for (char c : chars) {
 			row.add(c);
 		}

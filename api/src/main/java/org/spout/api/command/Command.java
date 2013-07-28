@@ -48,12 +48,12 @@ import org.spout.api.util.SpoutToStringStyle;
  */
 public final class Command implements Named {
 	private final String name;
-	private final List<String> aliases = new ArrayList<String>();
-	private final Set<Command> children = new HashSet<Command>();
+	private final List<String> aliases = new ArrayList<>();
+	private final Set<Command> children = new HashSet<>();
 	private String help, usage, permission;
 	private Executor executor;
-	private List<CommandFlags.Flag> flags = new ArrayList<CommandFlags.Flag>();
-	private Set<CommandFilter> filters = new HashSet<CommandFilter>();
+	private List<CommandFlags.Flag> flags = new ArrayList<>();
+	private Set<CommandFilter> filters = new HashSet<>();
 	private boolean parseFlags = true;
 
 	protected Command(String name, String... names) {

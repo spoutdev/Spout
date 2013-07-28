@@ -155,7 +155,7 @@ public class AtomicByteArray implements Serializable {
 		return true;
 	}
 
-	private final byte addAndGet(int index, byte delta, boolean old) {
+	private byte addAndGet(int index, byte delta, boolean old) {
 		boolean success = false;
 		byte newValue = 0;
 		byte oldValue = 0;

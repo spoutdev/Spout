@@ -50,12 +50,12 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 	private final TUnmodifiableInt21TripleObjectHashMap<V> unmutableLive;
 
 	public SnapshotableTripleIntHashMap(SnapshotManager manager) {
-		live = new TInt21TripleObjectHashMap<V>();
-		snapshot = new TInt21TripleObjectHashMap<V>();
-		unmutableSnapshot = new TUnmodifiableInt21TripleObjectHashMap<V>(snapshot);
-		unmutableLive = new TUnmodifiableInt21TripleObjectHashMap<V>(live);
-		dirtyQueue = new ConcurrentLinkedQueue<TripleInt>();
-		dirtyMap = new ConcurrentHashMap<TripleInt, Boolean>();
+		live = new TInt21TripleObjectHashMap<>();
+		snapshot = new TInt21TripleObjectHashMap<>();
+		unmutableSnapshot = new TUnmodifiableInt21TripleObjectHashMap<>(snapshot);
+		unmutableLive = new TUnmodifiableInt21TripleObjectHashMap<>(live);
+		dirtyQueue = new ConcurrentLinkedQueue<>();
+		dirtyMap = new ConcurrentHashMap<>();
 		manager.add(this);
 	}
 
@@ -224,7 +224,7 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 	@LiveRead
 	@SnapshotRead
 	public Iterable<V> getValues() {
-		LinkedHashSet<V> values = new LinkedHashSet<V>(snapshot.size());
+		LinkedHashSet<V> values = new LinkedHashSet<>(snapshot.size());
 		synchronized (live) {
 			values.addAll(Arrays.asList(live.values()));
 		}

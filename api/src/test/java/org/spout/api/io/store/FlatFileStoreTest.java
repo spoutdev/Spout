@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 
 public class FlatFileStoreTest {
 	File file = new File("test.txt");
-	SimpleStore<Integer> subject = new FlatFileStore<Integer>(file, Integer.class);
+	SimpleStore<Integer> subject = new FlatFileStore<>(file, Integer.class);
 	String[] keys = new String[] {"key1", "key2", "key3", "key4"};
 	int[] ids = new int[] {1, 2, -1, 1000, 77};
 
@@ -53,7 +53,7 @@ public class FlatFileStoreTest {
 		file.delete();
 		set();
 		subject.save();
-		subject = new FlatFileStore<Integer>(file, Integer.class);
+		subject = new FlatFileStore<>(file, Integer.class);
 		subject.load();
 		check();
 		file.delete();

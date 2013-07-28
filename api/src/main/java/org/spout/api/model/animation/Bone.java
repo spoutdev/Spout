@@ -33,7 +33,7 @@ public class Bone {
 	private String name; //Debug
 	private int id;
 	private Bone parent = null;
-	private List<Bone> children = new ArrayList<Bone>();
+	private List<Bone> children = new ArrayList<>();
 	int[] verticies;
 	float[] weights;
 
@@ -69,7 +69,7 @@ public class Bone {
 
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(str + "Verticies " + verticies.length + ": ");
+		sb.append(str).append("Verticies ").append(verticies.length).append(": ");
 		for (int v : verticies) {
 			sb.append(v).append(", ");
 		}
@@ -77,7 +77,7 @@ public class Bone {
 
 		sb = new StringBuilder();
 
-		sb.append(str + "Weights " + weights.length + ": ");
+		sb.append(str).append("Weights ").append(weights.length).append(": ");
 		for (float w : weights) {
 			sb.append(w).append(", ");
 		}

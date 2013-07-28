@@ -261,9 +261,9 @@ public class StringToUniqueIntegerMap extends SimpleStoredMap<Integer> {
 
 	@Override
 	public List<Pair<Integer, String>> getItems() {
-		List<Pair<Integer, String>> items = new ArrayList<Pair<Integer, String>>();
+		List<Pair<Integer, String>> items = new ArrayList<>();
 		for (Map.Entry<String, Integer> entry : store.getEntrySet()) {
-			items.add(new ImmutablePair<Integer, String>(entry.getValue(), entry.getKey()));
+			items.add(new ImmutablePair<>(entry.getValue(), entry.getKey()));
 		}
 		return items;
 	}

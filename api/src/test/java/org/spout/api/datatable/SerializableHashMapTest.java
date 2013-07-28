@@ -78,7 +78,7 @@ public class SerializableHashMapTest {
 
         test.put(randomString, randomValue);
 
-        DefaultedKey<Integer> defaultedKey = new DefaultedKeyImpl<Integer>(defaultedKeyString, defaultedValue);
+        DefaultedKey<Integer> defaultedKey = new DefaultedKeyImpl<>(defaultedKeyString, defaultedValue);
 
         Integer getValue = test.get(defaultedKey);
 
@@ -146,10 +146,10 @@ public class SerializableHashMapTest {
 
         test.clear();
 
-        assertTrue("Map size is incorrect", test.size() == 0);
-        assertTrue("Key set size is incorrect. Was " + test.keySet().size() + " but 0 was expected.", test.keySet().size() == 0);
-        assertTrue("Value collection size is incorrect", test.values().size() == 0);
-        assertTrue("Entry set size is incorrect", test.entrySet().size() == 0);
+        assertTrue("Map size is incorrect", test.isEmpty());
+        assertTrue("Key set size is incorrect. Was " + test.keySet().size() + " but 0 was expected.", test.keySet().isEmpty());
+        assertTrue("Value collection size is incorrect", test.values().isEmpty());
+        assertTrue("Entry set size is incorrect", test.entrySet().isEmpty());
     }
 
     private void testMapContents(SerializableHashMap test, boolean matchRandom) {

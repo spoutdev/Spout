@@ -45,7 +45,7 @@ import org.spout.api.util.SyncedStringMap;
  * Handles all registered materials on the server statically.
  */
 public abstract class MaterialRegistry {
-	private final static ConcurrentHashMap<String, Material> nameLookup = new ConcurrentHashMap<String, Material>(1000);
+	private final static ConcurrentHashMap<String, Material> nameLookup = new ConcurrentHashMap<>(1000);
 	private final static int MAX_SIZE = 1 << 16;
 	@SuppressWarnings ("unchecked")
 	private final static AtomicReference<Material[]>[] materialLookup = new AtomicReference[MAX_SIZE];
@@ -55,7 +55,7 @@ public abstract class MaterialRegistry {
 
 	static {
 		for (int i = 0; i < materialLookup.length; i++) {
-			materialLookup[i] = new AtomicReference<Material[]>();
+			materialLookup[i] = new AtomicReference<>();
 			materialLookup[i].set(NULL_MATERIAL_ARRAY);
 		}
 	}
@@ -211,7 +211,7 @@ public abstract class MaterialRegistry {
 	 */
 	public static Material[] values() {
 		//TODO: This is wrong, need to count # of registered materials
-		HashSet<Material> set = new HashSet<Material>(1000);
+		HashSet<Material> set = new HashSet<>(1000);
 		for (int i = 0; i < materialLookup.length; i++) {
 			if (materialLookup[i].get() != null) {
 				set.add(materialLookup[i].get()[0]);

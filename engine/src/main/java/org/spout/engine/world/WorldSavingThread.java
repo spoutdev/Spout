@@ -49,7 +49,7 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 public class WorldSavingThread extends Thread {
 	private static final WorldSavingThread instance = new WorldSavingThread();
 	private final AtomicBoolean queueRunning = new AtomicBoolean(true);
-	private final LinkedBlockingQueue<Callable<SpoutServerWorld>> queue = new LinkedBlockingQueue<Callable<SpoutServerWorld>>();
+	private final LinkedBlockingQueue<Callable<SpoutServerWorld>> queue = new LinkedBlockingQueue<>();
 
 	public WorldSavingThread() {
 		super("World Saving Thread");

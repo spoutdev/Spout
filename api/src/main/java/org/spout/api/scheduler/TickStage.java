@@ -35,7 +35,7 @@ public class TickStage {
 	/**
 	 * All tasks submitted to the main thread are executed during TICKSTART.<br> <br> This stage is single threaded
 	 */
-	public final static int TICKSTART = 1 << 0;
+	public final static int TICKSTART = 1;
 	/**
 	 * This is the first stage of the execution of the tick
 	 */
@@ -86,7 +86,7 @@ public class TickStage {
 
 	public static String getStage(int num) {
 		switch (num) {
-			case 1 << 0:
+			case 1:
 				return "TICKSTART";
 			case 1 << 1:
 				return "STAGE1";
@@ -128,7 +128,7 @@ public class TickStage {
 				}
 				sb.append(getStage(checkNum));
 			}
-			scan = scan << 1;
+			scan <<= 1;
 		}
 		return sb.toString();
 	}

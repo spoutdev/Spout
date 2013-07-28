@@ -39,7 +39,7 @@ import org.spout.api.util.bytebit.ByteBitMask;
  * Contains several BlockFace array constants and functions to operate on them
  */
 public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
-	private static TByteObjectHashMap<BlockFaces> offsetHash = new TByteObjectHashMap<BlockFaces>();
+	private static TByteObjectHashMap<BlockFaces> offsetHash = new TByteObjectHashMap<>();
 
 	static {
 		for (BlockFace face1 : new BlockFace[] {BlockFace.THIS, BlockFace.TOP,
@@ -214,12 +214,8 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 	 */
 	public BlockFaces append(BlockFace... blockFaces) {
 		BlockFace[] faces = new BlockFace[this.faces.length + blockFaces.length];
-		for (int i = 0; i < this.faces.length; i++) {
-			faces[i] = this.faces[i];
-		}
-		for (int i = 0; i < blockFaces.length; i++) {
-			faces[i + this.faces.length] = blockFaces[i];
-		}
+		System.arraycopy(this.faces, 0, faces, 0, this.faces.length);
+		System.arraycopy(blockFaces, 0, faces, this.faces.length, blockFaces.length);
 		return new BlockFaces(faces);
 	}
 

@@ -35,7 +35,7 @@ import org.spout.api.util.concurrent.OptimisticReadWriteLock;
  */
 public class EntityProtocolStore {
 	private OptimisticReadWriteLock lock = new OptimisticReadWriteLock();
-	private AtomicReference<EntityProtocol[]> entityProtocols = new AtomicReference<EntityProtocol[]>();
+	private AtomicReference<EntityProtocol[]> entityProtocols = new AtomicReference<>();
 
 	public EntityProtocol getEntityProtocol(int id) {
 		while (true) {

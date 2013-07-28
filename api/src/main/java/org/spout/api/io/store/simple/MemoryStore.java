@@ -42,8 +42,8 @@ public class MemoryStore<T> implements SimpleStore<T> {
 	private final Map<T, String> reverseMap;
 
 	public MemoryStore() {
-		map = new HashMap<String, T>();
-		reverseMap = new HashMap<T, String>();
+		map = new HashMap<>();
+		reverseMap = new HashMap<>();
 	}
 
 	@Override

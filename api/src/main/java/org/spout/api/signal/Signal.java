@@ -35,7 +35,7 @@ import java.util.LinkedList;
 public class Signal {
 	private Class<?> argumentTypes[];
 	private String name;
-	private LinkedList<Subscription> subscriptions = new LinkedList<Subscription>();
+	private LinkedList<Subscription> subscriptions = new LinkedList<>();
 	private Iterator<Subscription> currentIterator = subscriptions.iterator();
 
 	private static class Subscription {
@@ -69,11 +69,7 @@ public class Signal {
 				}
 				try {
 					method.invoke(call, arguments);
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
+				} catch (		IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
 					e.printStackTrace();
 				} catch (Exception e) {
 					System.out.println("---------------");

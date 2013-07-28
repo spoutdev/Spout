@@ -41,7 +41,7 @@ import org.spout.api.permissions.PermissionsSubject;
  * This event is called to gather the PermissionsSubjects with the given permission set.</br> Plugins responsible for managing PermissionsSubjects should add them to the list of subjects.
  */
 public class PermissionGetAllWithNodeEvent extends NodeBasedEvent {
-	private final Map<PermissionsSubject, Result> receivers = new HashMap<PermissionsSubject, Result>();
+	private final Map<PermissionsSubject, Result> receivers = new HashMap<>();
 	private static final HandlerList handlers = new HandlerList();
 
 	public PermissionGetAllWithNodeEvent(String node) {
@@ -58,7 +58,7 @@ public class PermissionGetAllWithNodeEvent extends NodeBasedEvent {
 	}
 
 	public Set<PermissionsSubject> getAllowedReceivers() {
-		Set<PermissionsSubject> ret = new HashSet<PermissionsSubject>();
+		Set<PermissionsSubject> ret = new HashSet<>();
 		for (Map.Entry<PermissionsSubject, Result> entry : receivers.entrySet()) {
 			if (entry.getValue() == Result.ALLOW) {
 				ret.add(entry.getKey());

@@ -45,7 +45,7 @@ public class TInt21TripleObjectHashMap<K> extends Int21TripleHashed {
 	 * Creates a new <code>TInt21TripleObjectHashMap</code> instance backend by a {@see TLongObjectHashMap} instance with an capacity of 100 and the default load factor.
 	 */
 	public TInt21TripleObjectHashMap() {
-		map = new TLongObjectHashMap<K>(100);
+		map = new TLongObjectHashMap<>(100);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class TInt21TripleObjectHashMap<K> extends Int21TripleHashed {
 	 * @param capacity an <code>int</code> value
 	 */
 	public TInt21TripleObjectHashMap(int capacity) {
-		map = new TLongObjectHashMap<K>(capacity);
+		map = new TLongObjectHashMap<>(capacity);
 	}
 
 	/**

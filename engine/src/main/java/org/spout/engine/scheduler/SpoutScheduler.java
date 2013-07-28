@@ -128,7 +128,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * A list of all AsyncManagers
 	 */
-	private final SnapshotableArrayList<AsyncManager> asyncManagers = new SnapshotableArrayList<AsyncManager>(snapshotManager, null);
+	private final SnapshotableArrayList<AsyncManager> asyncManagers = new SnapshotableArrayList<>(snapshotManager, null);
 	/**
 	 * Update count for physics and dynamic updates
 	 */
@@ -144,9 +144,9 @@ public final class SpoutScheduler implements Scheduler {
 	private final SpoutTaskManager taskManager;
 	private SpoutParallelTaskManager parallelTaskManager = null;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
-	private final ConcurrentLinkedQueue<Runnable> coreTaskQueue = new ConcurrentLinkedQueue<Runnable>();
-	private final LinkedBlockingDeque<Runnable> finalTaskQueue = new LinkedBlockingDeque<Runnable>();
-	private final ConcurrentLinkedQueue<Runnable> lastTickTaskQueue = new ConcurrentLinkedQueue<Runnable>();
+	private final ConcurrentLinkedQueue<Runnable> coreTaskQueue = new ConcurrentLinkedQueue<>();
+	private final LinkedBlockingDeque<Runnable> finalTaskQueue = new LinkedBlockingDeque<>();
+	private final ConcurrentLinkedQueue<Runnable> lastTickTaskQueue = new ConcurrentLinkedQueue<>();
 	// Scheduler tasks
 	private final StartTickTask[] startTickTask = new StartTickTask[] {
 			new StartTickTask(0),
@@ -192,7 +192,7 @@ public final class SpoutScheduler implements Scheduler {
 		private int fps = 0;
 		boolean tooLongFrame = false;
 		private SpoutRenderer renderer;
-		private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
+		private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<>();
 		Canvas parent = null;
 
 		public RenderThread() {
@@ -341,7 +341,7 @@ public final class SpoutScheduler implements Scheduler {
 						throw new IllegalStateException("Attempt made to start a tick before the previous one ended");
 					}
 					lastTick = startTime;
-				} catch (Exception ex) {
+				} catch (InterruptedException | IllegalStateException ex) {
 					Spout.severe("Error while pulsing: {0}", ex.getMessage());
 					ex.printStackTrace();
 				}
@@ -486,7 +486,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	private static final Deque<SpoutChunkSnapshotModel> models = new ConcurrentLinkedDeque<SpoutChunkSnapshotModel>();
+	private static final Deque<SpoutChunkSnapshotModel> models = new ConcurrentLinkedDeque<>();
 	;
 
 	public class MeshGeneratorThread extends Thread {
@@ -836,7 +836,7 @@ public final class SpoutScheduler implements Scheduler {
 			} else {
 				TickStage.setStage(globalStage);
 			}
-			List<Future<?>> futures = new ArrayList<Future<?>>(managers.size());
+			List<Future<?>> futures = new ArrayList<>(managers.size());
 			for (AsyncManager manager : managers) {
 				if (s == -1 || s == manager.getSequence()) {
 					Runnable r = taskFactory.getTask(manager, s);

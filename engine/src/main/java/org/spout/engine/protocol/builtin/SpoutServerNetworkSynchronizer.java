@@ -27,8 +27,6 @@
 package org.spout.engine.protocol.builtin;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -45,9 +43,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.IntVector3;
-import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
@@ -71,24 +67,24 @@ import org.spout.engine.world.SpoutChunk;
 public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer implements Listener {
 	private Point lastChunkCheck = Point.invalid;
 	// Base points used so as not to load chunks unnecessarily
-	private final Set<Point> chunkInitQueue = new LinkedHashSet<Point>();
-	private final Set<Point> priorityChunkSendQueue = new LinkedHashSet<Point>();
-	private final Set<Point> chunkSendQueue = new LinkedHashSet<Point>();
-	private final Set<Point> chunkFreeQueue = new LinkedHashSet<Point>();
+	private final Set<Point> chunkInitQueue = new LinkedHashSet<>();
+	private final Set<Point> priorityChunkSendQueue = new LinkedHashSet<>();
+	private final Set<Point> chunkSendQueue = new LinkedHashSet<>();
+	private final Set<Point> chunkFreeQueue = new LinkedHashSet<>();
 	/**
 	 * Chunks that have initialized on the client. May also have chunks that have been sent.
 	 */
-	private final Set<Point> initializedChunks = new LinkedHashSet<Point>();
+	private final Set<Point> initializedChunks = new LinkedHashSet<>();
 	/**
 	 * Chunks that have been sent to the client
 	 */
-	private final Set<Point> activeChunks = new LinkedHashSet<Point>();
+	private final Set<Point> activeChunks = new LinkedHashSet<>();
 	private volatile boolean worldChanged = true;
-	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
+	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<>();
 	/**
 	 * Includes chunks that need to be observed. When observation is successfully attained or no longer wanted, point is removed
 	 */
-	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
+	private final Set<Point> chunksToObserve = new LinkedHashSet<>();
 	private boolean sync = false;
 	protected int tickCounter = 0;
 
@@ -174,7 +170,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer im
 	}
 
 	private int chunksSent = 0;
-	private Set<Point> unsendable = new HashSet<Point>();
+	private Set<Point> unsendable = new HashSet<>();
 
 	@Override
 	public void preSnapshot() {
@@ -355,7 +351,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer im
 	 */
 	@Override
 	public Set<Chunk> getActiveChunks() {
-		HashSet<Chunk> chunks = new HashSet<Chunk>();
+		HashSet<Chunk> chunks = new HashSet<>();
 		for (Point p : activeChunks) {
 			chunks.add(p.getWorld().getChunkFromBlock(p));
 		}
@@ -397,7 +393,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer im
 	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
 		super.syncEntity(e, liveTransform, spawn, destroy, update);
 		EntityProtocol protocol = getEntityProtocol(e);
-		List<Message> messages = new ArrayList<Message>(3);
+		List<Message> messages = new ArrayList<>(3);
 		if (destroy) {
 			messages.addAll(protocol.getDestroyMessages(e));
 		}

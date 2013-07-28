@@ -30,7 +30,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -139,6 +138,7 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 		return Collections.unmodifiableCollection(classTable.values());
 	}
 
+	@Override
 	public void onEvent(SyncedMapEvent event) {
 		switch (event.getAction()) {
 			// TODO: Only reassign opcodes for mis-id'd packets that are already created (w/o calling Class.forName)

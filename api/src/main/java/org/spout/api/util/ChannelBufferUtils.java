@@ -117,7 +117,7 @@ public final class ChannelBufferUtils {
 	 * @return The parameters.
 	 */
 	public static List<Parameter<?>> readParameters(ChannelBuffer buf) throws IOException {
-		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
+		List<Parameter<?>> parameters = new ArrayList<>();
 
 		for (int b = buf.readUnsignedByte(); b != 127; b = buf.readUnsignedByte()) {
 			int type = (b & 0xE0) >> 5;
@@ -125,26 +125,26 @@ public final class ChannelBufferUtils {
 
 			switch (type) {
 				case Parameter.TYPE_BYTE:
-					parameters.add(new Parameter<Byte>(type, index, buf.readByte()));
+					parameters.add(new Parameter<>(type, index, buf.readByte()));
 					break;
 				case Parameter.TYPE_SHORT:
-					parameters.add(new Parameter<Short>(type, index, buf.readShort()));
+					parameters.add(new Parameter<>(type, index, buf.readShort()));
 					break;
 				case Parameter.TYPE_INT:
-					parameters.add(new Parameter<Integer>(type, index, buf.readInt()));
+					parameters.add(new Parameter<>(type, index, buf.readInt()));
 					break;
 				case Parameter.TYPE_FLOAT:
-					parameters.add(new Parameter<Float>(type, index, buf.readFloat()));
+					parameters.add(new Parameter<>(type, index, buf.readFloat()));
 					break;
 				case Parameter.TYPE_STRING:
-					parameters.add(new Parameter<String>(type, index, readString(buf)));
+					parameters.add(new Parameter<>(type, index, readString(buf)));
 					break;
 				case Parameter.TYPE_ITEM:
 					short id = buf.readShort();
 					int count = buf.readByte();
 					short data = buf.readShort();
 					ItemStack item = new ItemStack(Material.get(id), data, count);
-					parameters.add(new Parameter<ItemStack>(type, index, item));
+					parameters.add(new Parameter<>(type, index, item));
 					break;
 			}
 		}

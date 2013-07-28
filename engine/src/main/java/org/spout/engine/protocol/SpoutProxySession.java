@@ -50,15 +50,15 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 	/**
 	 * Information about the connection required for proxying
 	 */
-	private final AtomicReference<ConnectionInfo> channelInfo = new AtomicReference<ConnectionInfo>();
+	private final AtomicReference<ConnectionInfo> channelInfo = new AtomicReference<>();
 	/**
 	 * The aux channel for proxy connections. This sends messages upstream.
 	 */
-	private final AtomicReference<Channel> auxChannel = new AtomicReference<Channel>();
+	private final AtomicReference<Channel> auxChannel = new AtomicReference<>();
 	/**
 	 * Information about the connection required for proxying
 	 */
-	private final AtomicReference<ConnectionInfo> auxChannelInfo = new AtomicReference<ConnectionInfo>();
+	private final AtomicReference<ConnectionInfo> auxChannelInfo = new AtomicReference<>();
 	/**
 	 * Indicated if the session is in passthrough proxy mode
 	 */
@@ -135,7 +135,6 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 				message = ((TransformableMessage) message).transform(false, connects.get(), channelInfo.get(), auxChannelInfo.get());
 			}
 			send(message);
-			return;
 		}
 	}
 

@@ -41,7 +41,7 @@ public class DiscSpawnArrangement extends GenericSpawnArrangement {
 	@Override
 	public Point[] generatePoints(Point center, int number) {
 
-		ArrayList<Integer> shells = new ArrayList<Integer>();
+		ArrayList<Integer> shells = new ArrayList<>();
 
 		int remaining = number;
 		int shell = 0;

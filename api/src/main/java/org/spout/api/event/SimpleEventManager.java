@@ -106,7 +106,7 @@ public class SimpleEventManager implements EventManager {
 			Method method = getRegistrationClass(type).getDeclaredMethod("getHandlerList");
 			method.setAccessible(true);
 			return (HandlerList) method.invoke(null);
-		} catch (Exception e) {
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new IllegalPluginAccessException(e.toString());
 		}
 	}
@@ -125,8 +125,8 @@ public class SimpleEventManager implements EventManager {
 	}
 
 	public Map<Class<? extends Event>, Set<ListenerRegistration>> createRegisteredListeners(final Listener listener, Object plugin) {
-		Map<Class<? extends Event>, Set<ListenerRegistration>> ret = new HashMap<Class<? extends Event>, Set<ListenerRegistration>>();
-		List<Method> methods = new ArrayList<Method>();
+		Map<Class<? extends Event>, Set<ListenerRegistration>> ret = new HashMap<>();
+		List<Method> methods = new ArrayList<>();
 		Class<?> listenerClass = listener.getClass();
 		while (listenerClass != null && !listenerClass.equals(Object.class) && !listenerClass.equals(Listener.class)) {
 			try {
@@ -159,7 +159,7 @@ public class SimpleEventManager implements EventManager {
 			method.setAccessible(true);
 			Set<ListenerRegistration> eventSet = ret.get(eventClass);
 			if (eventSet == null) {
-				eventSet = new HashSet<ListenerRegistration>();
+				eventSet = new HashSet<>();
 				ret.put(eventClass, eventSet);
 			}
 			eventSet.add(new ListenerRegistration(new EventExecutor() {

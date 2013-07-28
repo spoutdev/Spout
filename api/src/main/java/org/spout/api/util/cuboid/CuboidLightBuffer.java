@@ -71,6 +71,7 @@ public abstract class CuboidLightBuffer extends CuboidBuffer implements Modifiab
 	/**
 	 * Used to dispose of calls to setModified for wrapped buffers
 	 */
+	@Override
 	public final void setModified() {
 	}
 }

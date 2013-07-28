@@ -35,7 +35,7 @@ import org.spout.api.math.GenericMath;
 public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 	private final long keyMask;
 	private final long keyStep;
-	protected final ConcurrentSkipListMap<Long, RedirectableConcurrentLinkedQueue<T>> queueMap = new ConcurrentSkipListMap<Long, RedirectableConcurrentLinkedQueue<T>>();
+	protected final ConcurrentSkipListMap<Long, RedirectableConcurrentLinkedQueue<T>> queueMap = new ConcurrentSkipListMap<>();
 
 	public ConcurrentLongPriorityQueue(long resolution) {
 		if (resolution < 1) {
@@ -43,7 +43,7 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 		}
 		long mask = GenericMath.roundUpPow2(resolution);
 		while (mask > resolution) {
-			mask = mask >> 1;
+			mask >>= 1;
 		}
 		this.keyMask = ~(mask - 1);
 		this.keyStep = mask;
@@ -67,7 +67,7 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 		Long key = getKey(o.getPriority());
 		RedirectableConcurrentLinkedQueue<T> queue = queueMap.get(key);
 		if (queue == null) {
-			queue = new RedirectableConcurrentLinkedQueue<T>(key);
+			queue = new RedirectableConcurrentLinkedQueue<>(key);
 			RedirectableConcurrentLinkedQueue<T> previous = queueMap.putIfAbsent(key, queue);
 			if (previous != null) {
 				queue = previous;

@@ -71,6 +71,7 @@ public abstract class SetQueueElement<T> {
 
 	protected abstract boolean isValid();
 
+	@Override
 	public String toString() {
 		return "DirtyQueueElement{" + value + "}";
 	}

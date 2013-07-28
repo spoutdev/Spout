@@ -101,7 +101,7 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 	}
 
 	public List<SpoutTask> getTasks() {
-		List<SpoutTask> list = new ArrayList<SpoutTask>();
+		List<SpoutTask> list = new ArrayList<>();
 		Iterator<RedirectableConcurrentLinkedQueue<SpoutTask>> iq = queueMap.values().iterator();
 		while (iq.hasNext()) {
 			Iterator<SpoutTask> i = iq.next().iterator();

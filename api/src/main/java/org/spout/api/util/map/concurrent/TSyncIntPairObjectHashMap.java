@@ -40,7 +40,7 @@ public class TSyncIntPairObjectHashMap<K> extends TIntPairObjectHashMap<K> {
 	 * Creates a new <code>TSyncIntPairObjectHashMap</code> instance backend by a synchronized (thread-safe) {@see TSyncLongObjectHashMap} instance with an capacity of 100 and the default load factor.
 	 */
 	public TSyncIntPairObjectHashMap() {
-		map = new TSyncLongObjectHashMap<K>(100);
+		map = new TSyncLongObjectHashMap<>(100);
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class TSyncIntPairObjectHashMap<K> extends TIntPairObjectHashMap<K> {
 	 * @param capacity an <code>int</code> value
 	 */
 	public TSyncIntPairObjectHashMap(int capacity) {
-		map = new TSyncLongObjectHashMap<K>(capacity);
+		map = new TSyncLongObjectHashMap<>(capacity);
 	}
 
 	/**
