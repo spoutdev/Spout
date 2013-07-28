@@ -39,11 +39,6 @@ import org.spout.math.vector.Vector4;
 import org.spout.math.vector.VectorN;
 
 public class Vector2Test {
-	@Test
-	public void testDefaultConstructor() {
-		Vector2 vector = new Vector2();
-		TestUtil.assertEquals(vector, 0, 0);
-	}
 
 	@Test
 	public void testCopyVector2Constructor() {
@@ -416,7 +411,7 @@ public class Vector2Test {
 	@Test
 	public void testCreateDirectionFromRandom() {
 		Random random = new Random();
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0 ; i < 10 ; i++) {
 			Vector2 vector = Vector2.createRandomDirection(random);
 			TestUtil.assertEquals(vector.length(), 1);
 		}
