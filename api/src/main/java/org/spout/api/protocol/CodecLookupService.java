@@ -150,7 +150,11 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 				for (Pair<Integer, String> item : event.getModifiedElements()) {
 					final int id = item.getLeft();
 					final String clazzName = item.getRight();
-					if (id >= opcodeTable.length || (opcodeTable[id] != null && opcodeTable[id].getClass().getName().equals(clazzName))) { // If the packet has already been registered non-dynamically, don't override
+					if (id >= opcodeTable.length) {
+						throw new IllegalStateException("Server sent a packet id which is greater than the client has allowed.");
+					}
+					 // If the packet has already been registered non-dynamically, don't override
+					if ((opcodeTable[id] != null && opcodeTable[id].getClass().getName().equals(clazzName))) {
 						continue;
 					}
 					try {
