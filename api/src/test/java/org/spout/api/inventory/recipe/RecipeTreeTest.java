@@ -52,7 +52,7 @@ public class RecipeTreeTest {
 		builder.addRow("AAA").addRow("BBB").addRow("AAA");
 		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe = builder.buildShapedRecipe();
-		List<List<Material>> testIngredients = new ArrayList<List<Material>>();
+		List<List<Material>> testIngredients = new ArrayList<>();
 		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE)));
 		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.UNBREAKABLE, BlockMaterial.UNBREAKABLE, BlockMaterial.UNBREAKABLE)));
 		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE)));
@@ -68,7 +68,7 @@ public class RecipeTreeTest {
 		builder.addRow("BB").addRow("AA");
 		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe = builder.buildShapedRecipe();
-		List<List<Material>> testIngredients = new ArrayList<List<Material>>();
+		List<List<Material>> testIngredients = new ArrayList<>();
 		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.UNBREAKABLE, BlockMaterial.UNBREAKABLE)));
 		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE)));
 		RecipeTree tree = new RecipeTree();
@@ -83,8 +83,8 @@ public class RecipeTreeTest {
 		builder.addRow("BB").addRow("AA");
 		builder.setResult(BlockMaterial.SOLID_BLUE, 1);
 		ShapedRecipe recipe = builder.buildShapedRecipe();
-		List<List<Material>> testIngredients = new ArrayList<List<Material>>();
-		testIngredients.add(new ArrayList<Material>(Arrays.asList(null, null, (Material) null)));
+		List<List<Material>> testIngredients = new ArrayList<>();
+		testIngredients.add(new ArrayList<>(Arrays.asList(null, null, (Material) null)));
 		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.UNBREAKABLE, BlockMaterial.UNBREAKABLE, null)));
 		testIngredients.add(new ArrayList<Material>(Arrays.asList(BlockMaterial.SOLID_BLUE, BlockMaterial.SOLID_BLUE, null)));
 		RecipeTree tree = new RecipeTree();

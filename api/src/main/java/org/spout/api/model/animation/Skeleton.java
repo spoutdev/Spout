@@ -32,10 +32,10 @@ import java.util.Map;
 
 public class Skeleton {
 	private Bone root;
-	private ArrayList<Bone> bones = new ArrayList<Bone>();
-	private Map<String, Bone> bonesName = new HashMap<String, Bone>();
-	private ArrayList<ArrayList<Integer>> verticies = new ArrayList<ArrayList<Integer>>();
-	private ArrayList<ArrayList<Float>> weights = new ArrayList<ArrayList<Float>>();
+	private ArrayList<Bone> bones = new ArrayList<>();
+	private Map<String, Bone> bonesName = new HashMap<>();
+	private ArrayList<ArrayList<Integer>> verticies = new ArrayList<>();
+	private ArrayList<ArrayList<Float>> weights = new ArrayList<>();
 	private int maxBonePerVertice = 0;
 	private Map<String, Animation> animations;
 
@@ -133,9 +133,9 @@ public class Skeleton {
 		StringBuilder str = new StringBuilder();
 		str.append("Skeleton : \n");
 		for (int i = 0; i < verticies.size(); i++) {
-			str.append(" Vertice " + i + " : ");
+			str.append(" Vertice ").append(i).append(" : ");
 			for (int j = 0; j < verticies.get(i).size(); j++) {
-				str.append(verticies.get(i).get(j) + ", ");
+				str.append(verticies.get(i).get(j)).append(", ");
 			}
 			str.append("\n");
 		}

@@ -46,8 +46,8 @@ public class TypeCheckerTest {
 
 	@Test
 	public void testSuccess() throws Exception {
-		List<Map<String, List<Integer>>> source = new ArrayList<Map<String, List<Integer>>>();
-		final HashMap<String, List<Integer>> map = new HashMap<String, List<Integer>>();
+		List<Map<String, List<Integer>>> source = new ArrayList<>();
+		final HashMap<String, List<Integer>> map = new HashMap<>();
 		map.put("random key", Arrays.asList(1, 2, 3, 4));
 		source.add(map);
 
@@ -58,7 +58,7 @@ public class TypeCheckerTest {
 
 	@Test (expected = ClassCastException.class)
 	public void testFailure1() throws Exception {
-		List<String> source = new ArrayList<String>();
+		List<String> source = new ArrayList<>();
 		source.add("Hi there, I break your program!");
 
 		checker.check((Object) source);
@@ -66,8 +66,8 @@ public class TypeCheckerTest {
 
 	@Test (expected = ClassCastException.class)
 	public void testFailure2() throws Exception {
-		List<Map<String, List<Object>>> source = new ArrayList<Map<String, List<Object>>>();
-		final HashMap<String, List<Object>> map = new HashMap<String, List<Object>>();
+		List<Map<String, List<Object>>> source = new ArrayList<>();
+		final HashMap<String, List<Object>> map = new HashMap<>();
 
 		map.put("random key", Arrays.<Object>asList(1, 2, 3, "Hi there, I break your program!"));
 		source.add(map);
@@ -77,7 +77,7 @@ public class TypeCheckerTest {
 
 	@Test (expected = ClassCastException.class)
 	public void testFailure3() throws Exception {
-		Set<Map<String, List<Integer>>> source = new HashSet<Map<String, List<Integer>>>();
+		Set<Map<String, List<Integer>>> source = new HashSet<>();
 
 		checker.check((Object) source);
 	}

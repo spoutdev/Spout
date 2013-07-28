@@ -43,13 +43,13 @@ import org.spout.api.render.Font;
  * Represents an element that contains characters.
  */
 public class LabelComponent extends WidgetComponent {
-	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKeyImpl<String>("text", "(your text here)");
-	private static final DefaultedKey<Color> KEY_COLOR = new DefaultedKeyImpl<Color>("text-color", Color.black);
-	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKeyImpl<Font>("font", (Font) Spout.getFileSystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf"));
+	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKeyImpl<>("text", "(your text here)");
+	private static final DefaultedKey<Color> KEY_COLOR = new DefaultedKeyImpl<>("text-color", Color.black);
+	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKeyImpl<>("font", (Font) Spout.getFileSystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf"));
 
 	@Override
 	public List<RenderPartPack> getRenderPartPacks() {
-		List<RenderPartPack> ret = new LinkedList<RenderPartPack>();
+		List<RenderPartPack> ret = new LinkedList<>();
 
 		if (getFont() == null) {
 			return ret;

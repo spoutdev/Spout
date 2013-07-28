@@ -36,7 +36,7 @@ import org.spout.api.geo.cuboid.Chunk;
  */
 public final class BiomePopulator extends Populator {
 	@Override
-	public final void populate(Chunk chunk, Random random) {
+	public void populate(Chunk chunk, Random random) {
 		final Biome biome = chunk.getBiome(7, 7, 7);
 		if (biome != null) {
 			biome.decorate(chunk, random);

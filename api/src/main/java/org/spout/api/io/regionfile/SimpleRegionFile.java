@@ -46,7 +46,7 @@ import java.util.zip.InflaterInputStream;
 import org.spout.api.io.bytearrayarray.ByteArrayArray;
 
 public class SimpleRegionFile implements ByteArrayArray {
-	private static ConcurrentHashMap<String, Boolean> openMap = new ConcurrentHashMap<String, Boolean>();
+	private static ConcurrentHashMap<String, Boolean> openMap = new ConcurrentHashMap<>();
 	private static final int VERSION = 1;
 	private static final int DEFAULT_TIMEOUT = 120000; // timeout delay
 	public static final int FILE_CLOSED = -1;
@@ -125,7 +125,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 			throw new SRFException("Number of entries mismatch for file " + this.filePath + ", expected " + entries + " got " + this.entries);
 		}
 
-		inuse = new AtomicReference<AtomicBoolean[]>(new AtomicBoolean[0]);
+		inuse = new AtomicReference<>(new AtomicBoolean[0]);
 
 		int headerSegments = sizeToSegments(headerSize);
 
@@ -249,6 +249,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 	 * @param buf the buffer
 	 * @param length the actual block length
 	 */
+	@Override
 	public void delete(int i) throws IOException {
 		refreshAccess();
 		Lock lock = blockLock[i].writeLock();
@@ -521,10 +522,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 			}
 
 			AtomicBoolean[] newArray = new AtomicBoolean[newSize];
-
-			for (int i = 0; i < oldArray.length; i++) {
-				newArray[i] = oldArray[i];
-			}
+			System.arraycopy(oldArray, 0, newArray, 0, oldArray.length);
 
 			for (int i = oldArray.length; i < newSize; i++) {
 				newArray[i] = new AtomicBoolean(false);

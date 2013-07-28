@@ -47,7 +47,7 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 	 */
 	public UnprotectedCopyOnUpdateArray(Class<?> clazz) {
 		this.clazz = clazz;
-		this.ref = new AtomicReference<T[]>(newArray(0));
+		this.ref = new AtomicReference<>(newArray(0));
 		if (clazz == null) {
 			throw new NullPointerException("Provided class is null");
 		}
@@ -62,7 +62,7 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 	 */
 	public UnprotectedCopyOnUpdateArray(Class<?> clazz, boolean asSet) {
 		this.clazz = clazz;
-		this.ref = new AtomicReference<T[]>(newArray(0));
+		this.ref = new AtomicReference<>(newArray(0));
 		if (clazz == null) {
 			throw new NullPointerException("Provided class is null");
 		}

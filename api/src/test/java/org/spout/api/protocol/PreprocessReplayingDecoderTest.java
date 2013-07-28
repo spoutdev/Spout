@@ -54,7 +54,7 @@ public class PreprocessReplayingDecoderTest {
 
 		Preprocessor p = new Preprocessor(512, BREAK, LENGTH);
 
-		List<ChannelEvent> outputList = new LinkedList<ChannelEvent>();
+		List<ChannelEvent> outputList = new LinkedList<>();
 
 		ChannelHandlerContext fake = new FakeChannelHandlerContext(outputList);
 

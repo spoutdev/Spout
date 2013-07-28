@@ -178,7 +178,7 @@ public class AtomicShortArray implements Serializable {
 		return true;
 	}
 
-	private final short addAndGet(int index, short delta, boolean old) {
+	private short addAndGet(int index, short delta, boolean old) {
 		boolean success = false;
 		short newValue = 0;
 		short oldValue = 0;

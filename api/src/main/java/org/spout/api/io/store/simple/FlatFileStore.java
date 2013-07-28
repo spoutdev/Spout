@@ -49,7 +49,6 @@ public class FlatFileStore<T> extends MemoryStore<T> {
 		if (file != null) {
 			if (!file.exists()) {
 				if (!FileUtil.createFile(file)) {
-					return;
 				}
 			}
 		}
@@ -106,7 +105,7 @@ public class FlatFileStore<T> extends MemoryStore<T> {
 
 	private synchronized Collection<String> getStrings() {
 		Iterator<Entry<String, T>> itr = super.getEntrySet().iterator();
-		ArrayList<String> strings = new ArrayList<String>(super.getSize());
+		ArrayList<String> strings = new ArrayList<>(super.getSize());
 		while (itr.hasNext()) {
 			Entry<String, T> entry = itr.next();
 			String encodedKey = encode(entry.getKey());

@@ -41,7 +41,7 @@ public class QuaternionTag extends ListTag<FloatTag> {
 	}
 
 	private static List<FloatTag> quaternionToList(Quaternion q) {
-		List<FloatTag> list = new ArrayList<FloatTag>(4);
+		List<FloatTag> list = new ArrayList<>(4);
 		list.add(new FloatTag("", q.getX()));
 		list.add(new FloatTag("", q.getY()));
 		list.add(new FloatTag("", q.getZ()));

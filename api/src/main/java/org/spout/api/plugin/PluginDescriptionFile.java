@@ -57,15 +57,15 @@ public class PluginDescriptionFile {
 			"in.spout"));
 	private static final DamerauLevenshteinAlgorithm dla = new DamerauLevenshteinAlgorithm(1, 1, 1, 1);
 	private final ConfigurationProperty<Map<String, String>> data = new DataProperty("data");
-	private final ConfigurationProperty<String> name = new BasicProperty<String>("name", String.class);
-	private final ConfigurationProperty<String> version = new BasicProperty<String>("version", String.class);
-	private final ConfigurationProperty<String> description = new BasicProperty<String>("description", String.class);
+	private final ConfigurationProperty<String> name = new BasicProperty<>("name", String.class);
+	private final ConfigurationProperty<String> version = new BasicProperty<>("version", String.class);
+	private final ConfigurationProperty<String> description = new BasicProperty<>("description", String.class);
 	private final ConfigurationProperty<List<String>> authors = new RegexListProperty("author", "author(s)?", true);
-	private final ConfigurationProperty<String> website = new BasicProperty<String>("website", null, String.class);
-	private final ConfigurationProperty<Boolean> reload = new BasicProperty<Boolean>("reload", false, Boolean.class);
-	private final ConfigurationProperty<String> platform = new BasicProperty<String>("platform", String.class);
-	private final ConfigurationProperty<LoadOrder> load = new BasicProperty<LoadOrder>("load", LoadOrder.POSTWORLD, LoadOrder.class);
-	private final ConfigurationProperty<String> main = new BasicProperty<String>("main", String.class);
+	private final ConfigurationProperty<String> website = new BasicProperty<>("website", null, String.class);
+	private final ConfigurationProperty<Boolean> reload = new BasicProperty<>("reload", false, Boolean.class);
+	private final ConfigurationProperty<String> platform = new BasicProperty<>("platform", String.class);
+	private final ConfigurationProperty<LoadOrder> load = new BasicProperty<>("load", LoadOrder.POSTWORLD, LoadOrder.class);
+	private final ConfigurationProperty<String> main = new BasicProperty<>("main", String.class);
 	private final ConfigurationProperty<List<String>> depends = new RegexListProperty("depends", "depend(s)?", false);
 	private final ConfigurationProperty<List<String>> softdepends = new RegexListProperty("softdepends", "softdepend(s)?", false);
 	private final ConfigurationProperty<Locale> codedLocale = new LocaleProperty("codedlocale", Locale.ENGLISH);
@@ -102,16 +102,14 @@ public class PluginDescriptionFile {
 
 	private List<ConfigurationProperty<?>> getConfigurationProperties() {
 		Field[] fields = PluginDescriptionFile.class.getDeclaredFields();
-		List<ConfigurationProperty<?>> properties = new ArrayList<ConfigurationProperty<?>>();
+		List<ConfigurationProperty<?>> properties = new ArrayList<>();
 		for (Field f : fields) {
 			if (!Modifier.isStatic(f.getModifiers())) {
 				if (f.getType().isAssignableFrom(ConfigurationProperty.class)) {
 					f.setAccessible(true);
 					try {
 						properties.add((ConfigurationProperty<?>) f.get(this));
-					} catch (IllegalArgumentException e) {
-						throw new RuntimeException(e);
-					} catch (IllegalAccessException e) {
+					} catch (			IllegalArgumentException | IllegalAccessException e) {
 						throw new RuntimeException(e);
 					}
 				}
@@ -123,7 +121,7 @@ public class PluginDescriptionFile {
 	private void load(YamlConfiguration yaml) throws InvalidDescriptionFileException {
 		Map<String, ConfigurationNode> children = yaml.getChildren();
 		List<ConfigurationProperty<?>> properties = getConfigurationProperties();
-		List<String> unmatchedProperties = new LinkedList<String>();
+		List<String> unmatchedProperties = new LinkedList<>();
 		for (Entry<String, ConfigurationNode> e : children.entrySet()) {
 			final String entry = e.getKey();
 

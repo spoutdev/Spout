@@ -34,7 +34,7 @@ import java.util.Set;
  * Handles the creation and accessibility of {@link Command}s.
  */
 public final class CommandManager {
-	private final Set<Command> commands = new HashSet<Command>();
+	private final Set<Command> commands = new HashSet<>();
 
 	/**
 	 * Returns a set of all commands.

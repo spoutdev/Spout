@@ -37,9 +37,9 @@ import org.spout.api.math.Vector3;
  * Common default data mappings one could expect each game to have. These are used instead of strings when retrieving values from an object that holds a datatable. IF you wish to provide your own keys
  * for a plugin you are constructing, simply make a class and construct keys like the below.
  */
-public class Data {
+public interface Data {
 	public static final DefaultedKey<ItemStack> HELD_ITEM = new ItemStackDefaultedKey("held_item", BlockMaterial.AIR, 1);
-	public static final DefaultedKey<String> HELD_MATERIAL_NAME = new DefaultedKeyImpl<String>("held_material_name", BlockMaterial.AIR.getName());
-	public static final DefaultedKey<String> NAME = new DefaultedKeyImpl<String>("name", "");
-	public static final DefaultedKey<Vector3> VELOCITY = new DefaultedKeyImpl<Vector3>("velocity", Vector3.ONE);
+	public static final DefaultedKey<String> HELD_MATERIAL_NAME = new DefaultedKeyImpl<>("held_material_name", BlockMaterial.AIR.getName());
+	public static final DefaultedKey<String> NAME = new DefaultedKeyImpl<>("name", "");
+	public static final DefaultedKey<Vector3> VELOCITY = new DefaultedKeyImpl<>("velocity", Vector3.ONE);
 }

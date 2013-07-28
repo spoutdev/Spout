@@ -191,10 +191,12 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 		}
 	}
 
+	@Override
 	public short[] getRawId() {
 		return id;
 	}
 
+	@Override
 	public short[] getRawData() {
 		return data;
 	}

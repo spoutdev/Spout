@@ -37,14 +37,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class PluginClassLoader extends URLClassLoader {
-	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
+	private final Map<String, Class<?>> classes = new HashMap<>();
 	private final PluginLoader loader;
 	private Plugin plugin;
 	private final Map<String, String> componentRemapping;
 	private final List<String> depends;
 	private final List<String> softDepends;
-	private static HashMap<String, Plugin> pluginsForClassNames = new HashMap<String, Plugin>(500);
-	private static Set<PluginClassLoader> loaders = new HashSet<PluginClassLoader>();
+	private static HashMap<String, Plugin> pluginsForClassNames = new HashMap<>(500);
+	private static Set<PluginClassLoader> loaders = new HashSet<>();
 
 	public PluginClassLoader(final PluginLoader loader, final ClassLoader parent, PluginDescriptionFile desc) {
 		super(new URL[0], parent);

@@ -123,7 +123,7 @@ public class TSyncIntObjectHashMap<V> implements TSyncIntObjectMap<V> {
 		mapArray = new TIntObjectHashMap[mapCount];
 		lockArray = new ReadWriteLock[mapCount];
 		for (int i = 0; i < mapCount; i++) {
-			mapArray[i] = new TIntObjectHashMap<V>(initialCapacity / mapCount, loadFactor, noEntryKey);
+			mapArray[i] = new TIntObjectHashMap<>(initialCapacity / mapCount, loadFactor, noEntryKey);
 			lockArray[i] = new ReentrantReadWriteLock();
 		}
 		this.no_entry_key = noEntryKey;
@@ -360,7 +360,7 @@ public class TSyncIntObjectHashMap<V> implements TSyncIntObjectMap<V> {
 
 	@Override
 	public Collection<V> valueCollection() {
-		HashSet<V> collection = new HashSet<V>();
+		HashSet<V> collection = new HashSet<>();
 		for (int m = 0; m < mapCount; m++) {
 			lockArray[m].readLock().lock();
 		}

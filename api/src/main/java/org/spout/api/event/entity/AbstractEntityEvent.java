@@ -39,6 +39,7 @@ public abstract class AbstractEntityEvent extends Event implements EntityEvent {
 		entity = e;
 	}
 
+	@Override
 	public Entity getEntity() {
 		return entity;
 	}

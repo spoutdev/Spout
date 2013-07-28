@@ -42,11 +42,11 @@ public class TNibbleQuadObjectHashMap<K> {
 	protected final TShortObjectMap<K> map;
 
 	public TNibbleQuadObjectHashMap() {
-		map = new TShortObjectHashMap<K>(100);
+		map = new TShortObjectHashMap<>(100);
 	}
 
 	public TNibbleQuadObjectHashMap(int capacity) {
-		map = new TShortObjectHashMap<K>(capacity);
+		map = new TShortObjectHashMap<>(capacity);
 	}
 
 	public TNibbleQuadObjectHashMap(TShortObjectMap<K> map) {

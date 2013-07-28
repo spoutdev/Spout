@@ -39,7 +39,7 @@ import org.spout.api.io.store.simple.FlatFileStore;
 public class CRCStore {
 	private static FlatFileStore<String> urlCRCStore;
 	private final static Object urlCRCStoreSync = new Object();
-	private final static ConcurrentHashMap<String, Long> lastCheck = new ConcurrentHashMap<String, Long>();
+	private final static ConcurrentHashMap<String, Long> lastCheck = new ConcurrentHashMap<>();
 
 	public static void setConfigFile(FlatFileStore<String> config) {
 		synchronized (urlCRCStoreSync) {
@@ -137,7 +137,7 @@ public class CRCStore {
 		}
 	}
 
-	private static ConcurrentHashMap<String, Thread> CRCDownloads = new ConcurrentHashMap<String, Thread>();
+	private static ConcurrentHashMap<String, Thread> CRCDownloads = new ConcurrentHashMap<>();
 	private static AtomicInteger urlCheckCount = new AtomicInteger(0);
 
 	public static class URLCheck extends Thread {

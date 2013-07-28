@@ -180,6 +180,6 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 	 * @return The created instance
 	 */
 	public static <N extends AStarNode, P extends Plan<?>> AStarMachine<N, P> createWithStorage(Supplier<AStarStorage> storageSupplier) {
-		return new AStarMachine<N, P>(storageSupplier);
+		return new AStarMachine<>(storageSupplier);
 	}
 }

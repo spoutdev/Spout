@@ -61,11 +61,11 @@ public class SpoutColumn {
 	private final AtomicInteger dirtyColumns = new AtomicInteger(0);
 	private final AtomicInteger lowestY = new AtomicInteger();
 	private final AtomicInteger highestY = new AtomicInteger();
-	private final AtomicReference<int[][]> heights = new AtomicReference<int[][]>();
+	private final AtomicReference<int[][]> heights = new AtomicReference<>();
 	private final AtomicBoolean dirty = new AtomicBoolean(false);
 	private final AtomicBoolean dirtyArray[][];
 	private final BlockMaterial[][] topmostBlocks;
-	private final AtomicReference<BiomeManager> biomes = new AtomicReference<BiomeManager>();
+	private final AtomicReference<BiomeManager> biomes = new AtomicReference<>();
 	private final SetQueueElement<SpoutColumn> heightDirtyQueue;
 
 	public SpoutColumn(InputStream in, SpoutWorld world, int x, int z) {

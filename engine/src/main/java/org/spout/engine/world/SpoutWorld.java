@@ -130,8 +130,8 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	/**
 	 * A map of the loaded columns
 	 */
-	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
-	protected final Set<SpoutColumn> columnSet = new LinkedHashSet<SpoutColumn>();
+	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<>();
+	protected final Set<SpoutColumn> columnSet = new LinkedHashSet<>();
 	private final ReentrantLock[] columnLockMap = new ReentrantLock[16];
 	/**
 	 * A map of column height map files
@@ -153,8 +153,8 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	 * A WeakReference to this world
 	 */
 	private final WeakReference<SpoutWorld> selfReference;
-	public static final WeakReference<SpoutWorld> NULL_WEAK_REFERENCE = new WeakReference<SpoutWorld>(null);
-	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<Long, SetQueue<SpoutColumn>>();
+	public static final WeakReference<SpoutWorld> NULL_WEAK_REFERENCE = new WeakReference<>(null);
+	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<>();
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid) {
@@ -170,7 +170,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 		this.generator = generator;
 		regions = new RegionSource(this);
 
-		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
+		heightMapBAAs = new TSyncIntPairObjectHashMap<>();
 
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 
@@ -180,10 +180,10 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 		parallelTaskManager = new SpoutParallelTaskManager(engine.getScheduler(), this);
 
-		lightingManagers = new UnprotectedCopyOnUpdateArray<LightingManager<?>>(LightingManager.class, true);
+		lightingManagers = new UnprotectedCopyOnUpdateArray<>(LightingManager.class, true);
 
 		this.age = new SnapshotableLong(snapshotManager, age);
-		selfReference = new WeakReference<SpoutWorld>(this);
+		selfReference = new WeakReference<>(this);
 	}
 
 	@Override
@@ -634,7 +634,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	@Override
 	public List<Entity> getAll() {
-		ArrayList<Entity> entities = new ArrayList<Entity>();
+		ArrayList<Entity> entities = new ArrayList<>();
 		for (Region region : regions) {
 			entities.addAll(region.getAll());
 		}
@@ -666,7 +666,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	@Override
 	public List<Entity> getNearbyEntities(Point position, Entity ignore, int range) {
-		ArrayList<Entity> foundEntities = new ArrayList<Entity>();
+		ArrayList<Entity> foundEntities = new ArrayList<>();
 		final int RANGE_SQUARED = range * range;
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
@@ -730,7 +730,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Point position, Player ignore, int range) {
-		ArrayList<Player> foundPlayers = new ArrayList<Player>();
+		ArrayList<Player> foundPlayers = new ArrayList<>();
 		for (Entity entity : getNearbyEntities(position, ignore, range)) {
 			if (entity instanceof Player) {
 				foundPlayers.add((Player) entity);
@@ -831,7 +831,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	private List<Entity> getEntitiesNearRegion(Point position, int range) {
 		Region center = this.getRegionFromBlock(position, LoadOption.NO_LOAD);
 
-		ArrayList<Entity> entities = new ArrayList<Entity>();
+		ArrayList<Entity> entities = new ArrayList<>();
 		if (center != null) {
 			final int regions = (range + Region.BLOCKS.SIZE - 1) / Region.BLOCKS.SIZE; //round up 1 region size
 			for (int dx = -regions; dx < regions; dx++) {
@@ -1305,7 +1305,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 			setQueue = regionColumnDirtyQueueMap.get(key);
 
 			if (setQueue == null) {
-				setQueue = new SetQueue<SpoutColumn>(Region.CHUNKS.SIZE * Region.CHUNKS.SIZE);
+				setQueue = new SetQueue<>(Region.CHUNKS.SIZE * Region.CHUNKS.SIZE);
 				regionColumnDirtyQueueMap.put(key, setQueue);
 			}
 		}

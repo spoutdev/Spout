@@ -154,7 +154,7 @@ public enum Keyboard {
 	KEY_APPS(0xDD),
 	KEY_POWER(0xDE),
 	KEY_SLEEP(0xDF);
-	private static final TIntObjectMap<Keyboard> idMap = new TIntObjectHashMap<Keyboard>(Keyboard.values().length);
+	private static final TIntObjectMap<Keyboard> idMap = new TIntObjectHashMap<>(Keyboard.values().length);
 	private final int id;
 
 	static {

@@ -35,7 +35,7 @@ import org.spout.api.gui.render.RenderPartPack;
  * Represents a {@link WidgetComponent} with multiple {@link RenderPartPack}s.
  */
 public class RenderPartPacksComponent extends WidgetComponent {
-	private final List<RenderPartPack> parts = new ArrayList<RenderPartPack>();
+	private final List<RenderPartPack> parts = new ArrayList<>();
 
 	@Override
 	public List<RenderPartPack> getRenderPartPacks() {

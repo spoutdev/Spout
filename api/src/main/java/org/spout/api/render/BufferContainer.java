@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BufferContainer {
-	private final Map<Integer, Object> buffers = new HashMap<Integer, Object>();
+	private final Map<Integer, Object> buffers = new HashMap<>();
 	public int element = 0;
 
 	public Map<Integer, Object> getBuffers() {

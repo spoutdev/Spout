@@ -106,7 +106,7 @@ public class TypeChecker<T> {
 		}
 
 		// No specialized type checker found? just return a regular one
-		return new TypeChecker<T>(type);
+		return new TypeChecker<>(type);
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class TypeChecker<T> {
 	 * @return a typechecker for a Collection containing elements passing the specified type checker
 	 */
 	public static <T> TypeChecker<Collection<? extends T>> tCollection(TypeChecker<? extends T> elementChecker) {
-		return new CollectionTypeChecker<T, Collection<? extends T>>(Collection.class, elementChecker);
+		return new CollectionTypeChecker<>(Collection.class, elementChecker);
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class TypeChecker<T> {
 	 * @return a typechecker for a List containing elements passing the specified type checker
 	 */
 	public static <T> TypeChecker<List<? extends T>> tList(TypeChecker<? extends T> elementChecker) {
-		return new CollectionTypeChecker<T, List<? extends T>>(List.class, elementChecker);
+		return new CollectionTypeChecker<>(List.class, elementChecker);
 	}
 
 	/**
@@ -166,7 +166,7 @@ public class TypeChecker<T> {
 	 * @return a typechecker for a Set containing elements passing the specified type checker
 	 */
 	public static <T> TypeChecker<Set<? extends T>> tSet(TypeChecker<? extends T> elementChecker) {
-		return new CollectionTypeChecker<T, Set<? extends T>>(Set.class, elementChecker);
+		return new CollectionTypeChecker<>(Set.class, elementChecker);
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class TypeChecker<T> {
 	 * @return a typechecker for a Queue containing elements passing the specified type checker
 	 */
 	public static <T> TypeChecker<Queue<? extends T>> tQueue(TypeChecker<? extends T> elementChecker) {
-		return new CollectionTypeChecker<T, Queue<? extends T>>(Queue.class, elementChecker);
+		return new CollectionTypeChecker<>(Queue.class, elementChecker);
 	}
 
 	/**
@@ -230,7 +230,7 @@ public class TypeChecker<T> {
 	 * @return a typechecker for a Map containing keys and values passing the specified type checkers
 	 */
 	public static <K, V> TypeChecker<Map<? extends K, ? extends V>> tMap(TypeChecker<? extends K> keyChecker, TypeChecker<? extends V> valueChecker) {
-		return new MapTypeChecker<K, V, Map<? extends K, ? extends V>>(Map.class, keyChecker, valueChecker);
+		return new MapTypeChecker<>(Map.class, keyChecker, valueChecker);
 	}
 
 	/**

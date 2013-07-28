@@ -53,6 +53,7 @@ public class PlayerInteractEntityEvent extends EntityInteractEntityEvent {
 		return action;
 	}
 
+	@Override
 	public Player getEntity() {
 		return (Player) super.getEntity();
 	}

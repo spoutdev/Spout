@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 public class Locale {
-	private static final LinkedHashMap<String, Locale> BY_CODE = new LinkedHashMap<String, Locale>(5);
+	private static final LinkedHashMap<String, Locale> BY_CODE = new LinkedHashMap<>(5);
 	public static final Locale ENGLISH_US = new Locale(java.util.Locale.US, DefaultNumberHandler.class);
 	public static final Locale ENGLISH_UK = new Locale(java.util.Locale.UK, DefaultNumberHandler.class);
 	public static final Locale GERMAN_DE = new Locale(java.util.Locale.GERMANY, DefaultNumberHandler.class);
@@ -123,7 +123,7 @@ public class Locale {
 	}
 
 	public List<Locale> getLocales() {
-		ArrayList<Locale> locales = new ArrayList<Locale>(BY_CODE.size());
+		ArrayList<Locale> locales = new ArrayList<>(BY_CODE.size());
 		for (Entry<String, Locale> l : BY_CODE.entrySet()) {
 			locales.add(l.getValue());
 		}

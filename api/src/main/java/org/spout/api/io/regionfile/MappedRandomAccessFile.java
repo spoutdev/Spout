@@ -39,7 +39,7 @@ public class MappedRandomAccessFile {
 	private final File filePath;
 	private final String permissions;
 	private long pos = 0;
-	private final ArrayList<MappedByteBuffer> pages = new ArrayList<MappedByteBuffer>();
+	private final ArrayList<MappedByteBuffer> pages = new ArrayList<>();
 	private final int PAGE_SHIFT;
 	private final int PAGE_SIZE;
 	private final long PAGE_MASK;
@@ -77,7 +77,7 @@ public class MappedRandomAccessFile {
 		intArray[0] = (byte) (i >> 24);
 		intArray[1] = (byte) (i >> 16);
 		intArray[2] = (byte) (i >> 8);
-		intArray[3] = (byte) (i >> 0);
+		intArray[3] = (byte) (i);
 		write(intArray, 0, 4);
 	}
 
@@ -87,7 +87,7 @@ public class MappedRandomAccessFile {
 		i |= (intArray[0] & 0xFF) << 24;
 		i |= (intArray[1] & 0xFF) << 16;
 		i |= (intArray[2] & 0xFF) << 8;
-		i |= (intArray[3] & 0xFF) << 0;
+		i |= (intArray[3] & 0xFF);
 		return i;
 	}
 

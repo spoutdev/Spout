@@ -42,8 +42,8 @@ public class MemoryStoreMap<K, V> implements SimpleStoreMap<K, V> {
 	private final Map<V, K> reverseMap;
 
 	public MemoryStoreMap() {
-		map = new HashMap<K, V>();
-		reverseMap = new HashMap<V, K>();
+		map = new HashMap<>();
+		reverseMap = new HashMap<>();
 	}
 
 	@Override

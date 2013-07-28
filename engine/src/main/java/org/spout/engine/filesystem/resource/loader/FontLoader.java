@@ -27,6 +27,8 @@
 package org.spout.engine.filesystem.resource.loader;
 
 import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.spout.api.Platform;
@@ -52,7 +54,7 @@ public class FontLoader extends ResourceLoader {
 			if (Spout.getPlatform() == Platform.CLIENT) {
 				fontFromResource.writeGPU();
 			}
-		} catch (Exception e) {
+		} catch (FontFormatException | IOException e) {
 			Spout.getLogger().severe("Exception caught when reading in a font.");
 			e.printStackTrace();
 		}

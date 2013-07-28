@@ -36,7 +36,7 @@ import org.spout.api.io.regionfile.SimpleRegionFile;
 
 public class BAAWrapper {
 	private final static ByteArrayArray openInProgress = BAAOpenInProgress.getInstance();
-	private AtomicReference<ByteArrayArray> baaRef = new AtomicReference<ByteArrayArray>(null);
+	private AtomicReference<ByteArrayArray> baaRef = new AtomicReference<>(null);
 	private final File file;
 	private final int segmentSize;
 	private final int entries;

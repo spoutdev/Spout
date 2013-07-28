@@ -129,9 +129,9 @@ public abstract class EffectRangeImpl implements EffectRange {
 
 	@Override
 	public boolean isRegionLocal(int x, int y, int z) {
-		x = x & Region.BLOCKS.MASK;
-		y = y & Region.BLOCKS.MASK;
-		z = z & Region.BLOCKS.MASK;
+		x &= Region.BLOCKS.MASK;
+		y &= Region.BLOCKS.MASK;
+		z &= Region.BLOCKS.MASK;
 		return !(x + maxX > regionMax || y + maxY > regionMax || z + maxZ > regionMax || x + minX < 0 || y + minY < 0 || z + minZ < 0);
 	}
 
@@ -143,7 +143,7 @@ public abstract class EffectRangeImpl implements EffectRange {
 	@Override
 	public EffectRange translate(IntVector3 offset) {
 		// Basic implementation, should be overridden if a better method is available
-		List<IntVector3> blocks = new ArrayList<IntVector3>();
+		List<IntVector3> blocks = new ArrayList<>();
 		EffectIterator iter = new EffectIterator();
 		this.initEffectIterator(iter);
 		while (iter.hasNext()) {

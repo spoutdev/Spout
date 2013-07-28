@@ -39,6 +39,7 @@ public abstract class AbstractPlayerEvent extends Event implements PlayerEvent {
 		player = p;
 	}
 
+	@Override
 	public Player getPlayer() {
 		return player;
 	}

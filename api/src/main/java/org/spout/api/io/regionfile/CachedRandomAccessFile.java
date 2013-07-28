@@ -37,7 +37,7 @@ public class CachedRandomAccessFile {
 	private final RandomAccessFile file;
 	private long pos = 0;
 	private boolean posDirty = false;
-	private final ArrayList<byte[]> pages = new ArrayList<byte[]>();
+	private final ArrayList<byte[]> pages = new ArrayList<>();
 	private final int PAGE_SHIFT;
 	private final int PAGE_SIZE;
 	private final long PAGE_MASK;
@@ -81,7 +81,7 @@ public class CachedRandomAccessFile {
 			writeCacheByte((byte) (i >> 24));
 			writeCacheByte((byte) (i >> 16));
 			writeCacheByte((byte) (i >> 8));
-			writeCacheByte((byte) (i >> 0));
+			writeCacheByte((byte) (i));
 		} finally {
 			timeEnd();
 		}
@@ -94,7 +94,7 @@ public class CachedRandomAccessFile {
 			i |= (readCacheByte() & 0xFF) << 24;
 			i |= (readCacheByte() & 0xFF) << 16;
 			i |= (readCacheByte() & 0xFF) << 8;
-			i |= (readCacheByte() & 0xFF) << 0;
+			i |= (readCacheByte() & 0xFF);
 			return i;
 		} finally {
 			timeEnd();

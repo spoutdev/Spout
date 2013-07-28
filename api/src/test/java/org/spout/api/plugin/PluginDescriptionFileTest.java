@@ -49,70 +49,70 @@ public class PluginDescriptionFileTest {
 
 	@Test
 	public void testValid() throws InvalidDescriptionFileException, IOException {
-		InputStream stream = getFile("/valid_properties.yml");
-		assertTrue("Failed to find properties", stream != null);
-		PluginDescriptionFile desc = new PluginDescriptionFile(stream);
-		assertEquals("Name does not match", "TestProperties", desc.getName());
-		assertEquals("version does not match", "1.0", desc.getVersion());
-		assertEquals("Fullname does not match", "TestProperties v1.0", desc.getFullName());
-		assertEquals("Website does not match", "www.example.com", desc.getWebsite());
-		assertEquals("Author does not match", "JohnDoe", desc.getAuthors().get(0));
-		assertEquals("Main does not match", "com.example", desc.getMain());
-		assertEquals("LoadOrder does not match", LoadOrder.STARTUP, desc.getLoad());
-		assertEquals("Data does not match", "testData", desc.getData("test_key"));
-		stream.close();
+		try (InputStream stream = getFile("/valid_properties.yml")) {
+			assertTrue("Failed to find properties", stream != null);
+			PluginDescriptionFile desc = new PluginDescriptionFile(stream);
+			assertEquals("Name does not match", "TestProperties", desc.getName());
+			assertEquals("version does not match", "1.0", desc.getVersion());
+			assertEquals("Fullname does not match", "TestProperties v1.0", desc.getFullName());
+			assertEquals("Website does not match", "www.example.com", desc.getWebsite());
+			assertEquals("Author does not match", "JohnDoe", desc.getAuthors().get(0));
+			assertEquals("Main does not match", "com.example", desc.getMain());
+			assertEquals("LoadOrder does not match", LoadOrder.STARTUP, desc.getLoad());
+			assertEquals("Data does not match", "testData", desc.getData("test_key"));
+		}
 	}
 
 	@Test
 	public void testFullProperties() throws InvalidDescriptionFileException, IOException {
-		InputStream stream = getFile("/full_properties.yml");
-		assertTrue("Failed to find properties", stream != null);
-		PluginDescriptionFile desc = new PluginDescriptionFile(stream);
-		assertEquals("Name does not match", "TestProperties12", desc.getName());
-		assertEquals("version does not match", "9999.9999", desc.getVersion());
-		assertEquals("Fullname does not match", "TestProperties12 v9999.9999", desc.getFullName());
-		assertEquals("Description does not match", "This is a really long description...", desc.getDescription());
-		assertEquals("Author does not match", "JaneDoe", desc.getAuthors().get(0));
-		assertEquals("Author does not match", "JohnDoe", desc.getAuthors().get(1));
-		assertEquals("Author does not match", "Foo", desc.getAuthors().get(2));
-		assertEquals("Author does not match", "Bar", desc.getAuthors().get(3));
-		assertEquals("Author does not match", "Baz", desc.getAuthors().get(4));
-		assertEquals("Website does not match", "www.example.com?param=test", desc.getWebsite());
-		assertEquals("Reload does not match", true, desc.allowsReload());
-		assertEquals("LoadOrder does not match", LoadOrder.POSTWORLD, desc.getLoad());
-		assertEquals("Main does not match", "com.example.main.Main", desc.getMain());
-		assertEquals("Depends does not match", "foo", desc.getDepends().get(0));
-		assertEquals("Depends does not match", "bar", desc.getDepends().get(1));
-		assertEquals("Softdepends does not match", "baz", desc.getSoftDepends().get(0));
-		assertEquals("Softdepends does not match", "foo", desc.getSoftDepends().get(1));
-		assertEquals("Softdepends does not match", "bar", desc.getSoftDepends().get(2));
-		assertEquals("Locale does not match", Locale.GERMANY.getLanguage(), desc.getCodedLocale().getLanguage());
-		assertEquals("Data does not match", "testData", desc.getData("test_key"));
-		assertEquals("Data does not match", "1234", desc.getData("other_key"));
-		assertEquals("Data does not match", "true", desc.getData("false"));
-		stream.close();
+		try (InputStream stream = getFile("/full_properties.yml")) {
+			assertTrue("Failed to find properties", stream != null);
+			PluginDescriptionFile desc = new PluginDescriptionFile(stream);
+			assertEquals("Name does not match", "TestProperties12", desc.getName());
+			assertEquals("version does not match", "9999.9999", desc.getVersion());
+			assertEquals("Fullname does not match", "TestProperties12 v9999.9999", desc.getFullName());
+			assertEquals("Description does not match", "This is a really long description...", desc.getDescription());
+			assertEquals("Author does not match", "JaneDoe", desc.getAuthors().get(0));
+			assertEquals("Author does not match", "JohnDoe", desc.getAuthors().get(1));
+			assertEquals("Author does not match", "Foo", desc.getAuthors().get(2));
+			assertEquals("Author does not match", "Bar", desc.getAuthors().get(3));
+			assertEquals("Author does not match", "Baz", desc.getAuthors().get(4));
+			assertEquals("Website does not match", "www.example.com?param=test", desc.getWebsite());
+			assertEquals("Reload does not match", true, desc.allowsReload());
+			assertEquals("LoadOrder does not match", LoadOrder.POSTWORLD, desc.getLoad());
+			assertEquals("Main does not match", "com.example.main.Main", desc.getMain());
+			assertEquals("Depends does not match", "foo", desc.getDepends().get(0));
+			assertEquals("Depends does not match", "bar", desc.getDepends().get(1));
+			assertEquals("Softdepends does not match", "baz", desc.getSoftDepends().get(0));
+			assertEquals("Softdepends does not match", "foo", desc.getSoftDepends().get(1));
+			assertEquals("Softdepends does not match", "bar", desc.getSoftDepends().get(2));
+			assertEquals("Locale does not match", Locale.GERMANY.getLanguage(), desc.getCodedLocale().getLanguage());
+			assertEquals("Data does not match", "testData", desc.getData("test_key"));
+			assertEquals("Data does not match", "1234", desc.getData("other_key"));
+			assertEquals("Data does not match", "true", desc.getData("false"));
+		}
 	}
 
 	@Test
 	public void testMisspelling() throws InvalidDescriptionFileException, IOException {
-		InputStream stream = getFile("/misspelled_properties.yml");
-		assertTrue("Failed to find properties", stream != null);
-		PluginDescriptionFile desc = new PluginDescriptionFile(stream);
-		assertEquals("Name does not match", "TestProperties12", desc.getName());
-		assertEquals("version does not match", "9999.9999", desc.getVersion());
-		assertEquals("Fullname does not match", "TestProperties12 v9999.9999", desc.getFullName());
-		assertEquals("Description does not match", "This is a really long description...", desc.getDescription());
-		assertEquals("Author does not match", "JaneDoe", desc.getAuthors().get(0));
-		assertEquals("Author does not match", "JohnDoe", desc.getAuthors().get(1));
-		assertEquals("Author does not match", "Foo", desc.getAuthors().get(2));
-		assertEquals("Author does not match", "Bar", desc.getAuthors().get(3));
-		assertEquals("Author does not match", "Baz", desc.getAuthors().get(4));
-		assertEquals("Reload does not match", true, desc.allowsReload());
-		assertEquals("Main does not match", "com.example.main.Main", desc.getMain());
-		assertEquals("Data does not match", "testData", desc.getData("test_key"));
-		assertEquals("Data does not match", "1234", desc.getData("other_key"));
-		assertEquals("Data does not match", "true", desc.getData("false"));
-		stream.close();
+		try (InputStream stream = getFile("/misspelled_properties.yml")) {
+			assertTrue("Failed to find properties", stream != null);
+			PluginDescriptionFile desc = new PluginDescriptionFile(stream);
+			assertEquals("Name does not match", "TestProperties12", desc.getName());
+			assertEquals("version does not match", "9999.9999", desc.getVersion());
+			assertEquals("Fullname does not match", "TestProperties12 v9999.9999", desc.getFullName());
+			assertEquals("Description does not match", "This is a really long description...", desc.getDescription());
+			assertEquals("Author does not match", "JaneDoe", desc.getAuthors().get(0));
+			assertEquals("Author does not match", "JohnDoe", desc.getAuthors().get(1));
+			assertEquals("Author does not match", "Foo", desc.getAuthors().get(2));
+			assertEquals("Author does not match", "Bar", desc.getAuthors().get(3));
+			assertEquals("Author does not match", "Baz", desc.getAuthors().get(4));
+			assertEquals("Reload does not match", true, desc.allowsReload());
+			assertEquals("Main does not match", "com.example.main.Main", desc.getMain());
+			assertEquals("Data does not match", "testData", desc.getData("test_key"));
+			assertEquals("Data does not match", "1234", desc.getData("other_key"));
+			assertEquals("Data does not match", "true", desc.getData("false"));
+		}
 	}
 
 	@Test

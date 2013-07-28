@@ -26,16 +26,11 @@
  */
 package org.spout.api.protocol;
 
-import java.util.Collection;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.material.BlockMaterial;
-import org.spout.api.math.Quaternion;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.set.concurrent.TSyncIntHashSet;
 

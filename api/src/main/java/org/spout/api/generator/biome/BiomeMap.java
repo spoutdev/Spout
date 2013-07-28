@@ -41,7 +41,7 @@ public final class BiomeMap {
 	private BiomeSelector selector;
 
 	public BiomeMap() {
-		map = new MemoryStoreMap<Integer, Biome>();
+		map = new MemoryStoreMap<>();
 	}
 
 	public Biome getBiomeRaw(int index) {
@@ -73,7 +73,7 @@ public final class BiomeMap {
 	}
 
 	public Set<Biome> getBiomes() {
-		return new HashSet<Biome>(map.getValues());
+		return new HashSet<>(map.getValues());
 	}
 
 	public BiomeSelector getSelector() {

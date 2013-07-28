@@ -171,7 +171,7 @@ public class TSyncIntObjectHashMapTest {
 		public TroveReadWriteMap(long seed) {
 			rand = new Random(seed);
 			count.set(LENGTH - 1);
-			map = new TSyncIntObjectHashMap<Integer>(LENGTH / 128);
+			map = new TSyncIntObjectHashMap<>(LENGTH / 128);
 		}
 
 		@Override
@@ -201,7 +201,7 @@ public class TSyncIntObjectHashMapTest {
 
 		public JavaMap(long seed) {
 			rand = new Random(seed);
-			map = new ConcurrentHashMap<Integer, Integer>(LENGTH / 128);
+			map = new ConcurrentHashMap<>(LENGTH / 128);
 			count.set(LENGTH - 1);
 		}
 

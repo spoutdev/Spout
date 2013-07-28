@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class RedirectableConcurrentLinkedQueue<T extends LongPrioritized> extends ConcurrentLinkedQueue<T> implements LongPrioritized {
 	private static final long serialVersionUID = 1L;
-	private final AtomicReference<ConcurrentLongPriorityQueue<T>> redirect = new AtomicReference<ConcurrentLongPriorityQueue<T>>();
+	private final AtomicReference<ConcurrentLongPriorityQueue<T>> redirect = new AtomicReference<>();
 	private final long priority;
 
 	public RedirectableConcurrentLinkedQueue(long priority) {

@@ -77,9 +77,7 @@ public class MacOSXUtils {
 		if (fullScreenUtilities_setWindowCanFullScreenMethod != null) {
 			try {
 				fullScreenUtilities_setWindowCanFullScreenMethod.invoke(null, window, val);
-			} catch (IllegalAccessException ignore) {
-				ignore.printStackTrace();
-			} catch (InvocationTargetException ignore) {
+			} catch (	IllegalAccessException | InvocationTargetException ignore) {
 				ignore.printStackTrace();
 			}
 		}
@@ -93,9 +91,7 @@ public class MacOSXUtils {
 			Class<?> applicationClass = Class.forName("com.apple.eawt.Application");
 			try {
 				app = applicationClass.getMethod("getApplication").invoke(null);
-			} catch (IllegalAccessException ignore) {
-			} catch (InvocationTargetException ignore) {
-			} catch (NoSuchMethodException ignore) {
+			} catch (	IllegalAccessException | InvocationTargetException | NoSuchMethodException ignore) {
 			}
 		} catch (ClassNotFoundException ignore) {
 		}

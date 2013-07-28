@@ -76,16 +76,16 @@ import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutServerWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
-	private final AtomicReference<SpoutSession<?>> sessionLive = new AtomicReference<SpoutSession<?>>();
+	private final AtomicReference<SpoutSession<?>> sessionLive = new AtomicReference<>();
 	private SpoutSession<?> session;
 	private final String name;
-	private final AtomicReference<String> displayName = new AtomicReference<String>();
+	private final AtomicReference<String> displayName = new AtomicReference<>();
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
 	private final int hashcode;
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
-	private List<Entity> hiddenEntities = new ConcurrentList<Entity>();
+	private List<Entity> hiddenEntities = new ConcurrentList<>();
 
 	public SpoutPlayer(Engine engine, String name) {
 		this(engine, name, null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
@@ -412,7 +412,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public List<Entity> getInvisibleEntities() {
-		return new ArrayList<Entity>(hiddenEntities);
+		return new ArrayList<>(hiddenEntities);
 	}
 
 	@Override

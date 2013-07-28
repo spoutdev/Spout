@@ -69,7 +69,7 @@ public class Int21TripleHashed {
 		return keyInt(key & 0x1FFFFF);
 	}
 
-	private static final int keyInt(long key) {
+	private static int keyInt(long key) {
 		return (int) (key - ((key & 0x100000) << 1));
 	}
 }

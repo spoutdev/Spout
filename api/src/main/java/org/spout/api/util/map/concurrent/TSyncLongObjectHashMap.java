@@ -123,7 +123,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		mapArray = new TLongObjectHashMap[mapCount];
 		lockArray = new ReadWriteLock[mapCount];
 		for (int i = 0; i < mapCount; i++) {
-			mapArray[i] = new TLongObjectHashMap<V>(initialCapacity / mapCount, loadFactor, noEntryKey);
+			mapArray[i] = new TLongObjectHashMap<>(initialCapacity / mapCount, loadFactor, noEntryKey);
 			lockArray[i] = new ReentrantReadWriteLock();
 		}
 		this.no_entry_key = noEntryKey;
@@ -360,7 +360,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 
 	@Override
 	public Collection<V> valueCollection() {
-		HashSet<V> collection = new HashSet<V>();
+		HashSet<V> collection = new HashSet<>();
 		for (int m = 0; m < mapCount; m++) {
 			lockArray[m].readLock().lock();
 		}

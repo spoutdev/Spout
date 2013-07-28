@@ -52,7 +52,7 @@ public class TSyncIntHashSetTest {
 	public void setUp() {
 		Random rand = new Random();
 
-		HashSet<Integer> set = new HashSet<Integer>();
+		HashSet<Integer> set = new HashSet<>();
 
 		values = 0;
 

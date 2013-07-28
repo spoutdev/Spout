@@ -61,11 +61,11 @@ public class SyncedMapCodec extends MessageCodec<SyncedMapMessage> {
 		final int map = buffer.readInt();
 		final byte action = buffer.readByte();
 		final int elementCount = buffer.readInt();
-		List<Pair<Integer, String>> elements = new ArrayList<Pair<Integer, String>>(elementCount);
+		List<Pair<Integer, String>> elements = new ArrayList<>(elementCount);
 		for (int i = 0; i < elementCount; ++i) {
 			final int key = buffer.readInt();
 			final String value = ChannelBufferUtils.readString(buffer);
-			elements.add(new ImmutablePair<Integer, String>(key, value));
+			elements.add(new ImmutablePair<>(key, value));
 		}
 		return new SyncedMapMessage(map, action, elements);
 	}

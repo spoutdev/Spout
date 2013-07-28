@@ -76,9 +76,9 @@ public class SpoutBlock implements Block {
 			}
 		}
 		if (chunk != null) {
-			this.chunk = new AtomicReference<WeakReference<SpoutChunk>>(chunk.getWeakReference());
+			this.chunk = new AtomicReference<>(chunk.getWeakReference());
 		} else {
-			this.chunk = new AtomicReference<WeakReference<SpoutChunk>>(SpoutChunk.NULL_WEAK_REFERENCE);
+			this.chunk = new AtomicReference<>(SpoutChunk.NULL_WEAK_REFERENCE);
 		}
 	}
 

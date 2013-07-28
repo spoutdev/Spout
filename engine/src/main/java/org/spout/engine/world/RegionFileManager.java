@@ -45,7 +45,7 @@ public class RegionFileManager {
 	 */
 	public static final int TIMEOUT = 30000;
 	private final File regionDirectory;
-	private final ConcurrentHashMap<String, BAAWrapper> cache = new ConcurrentHashMap<String, BAAWrapper>();
+	private final ConcurrentHashMap<String, BAAWrapper> cache = new ConcurrentHashMap<>();
 	private final TimeoutThread timeoutThread;
 
 	public RegionFileManager(File worldDirectory) {

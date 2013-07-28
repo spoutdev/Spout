@@ -42,11 +42,11 @@ import org.spout.api.protocol.replayable.ReplayableError;
 
 public abstract class PreprocessReplayingDecoder extends FrameDecoder implements ProcessorHandler {
 	private final int capacity;
-	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<ChannelProcessor>();
+	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<>();
 	private final AtomicBoolean locked = new AtomicBoolean(false);
 	private final ReplayableChannelBuffer replayableBuffer = new ReplayableChannelBuffer();
 	private ChannelBuffer processedBuffer = null;
-	private List<Object> frames = new LinkedList<Object>();
+	private List<Object> frames = new LinkedList<>();
 
 	/**
 	 * Constructs a new replaying decoder.<br> <br> The internal buffer is dynamically sized, but if it grows larger than the given capacity, it will be resized downwards when possible.  This allows

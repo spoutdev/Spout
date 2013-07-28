@@ -111,7 +111,7 @@ public class JarFilePathResolver implements ResourcePathResolver {
 			}
 			// iterate through the JarEntries
 			Enumeration<JarEntry> entries = jar.entries();
-			List<String> list = new ArrayList<String>();
+			List<String> list = new ArrayList<>();
 			path = path.substring(1);
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();

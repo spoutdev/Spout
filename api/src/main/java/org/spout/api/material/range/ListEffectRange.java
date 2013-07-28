@@ -57,7 +57,7 @@ public class ListEffectRange extends EffectRangeImpl {
 	protected ListEffectRange(List<IntVector3> effectList, boolean copy) {
 		super(effectList);
 		if (copy) {
-			this.effectList = new ArrayList<IntVector3>(effectList.size());
+			this.effectList = new ArrayList<>(effectList.size());
 			for (IntVector3 v : effectList) {
 				this.effectList.add(v.copy());
 			}
@@ -74,7 +74,7 @@ public class ListEffectRange extends EffectRangeImpl {
 
 	@Override
 	public EffectRange translate(IntVector3 offset) {
-		List<IntVector3> newEffectList = new ArrayList<IntVector3>(effectList.size());
+		List<IntVector3> newEffectList = new ArrayList<>(effectList.size());
 		for (IntVector3 effect : effectList) {
 			IntVector3 translated = effect.copy();
 			translated.add(offset);
@@ -84,7 +84,7 @@ public class ListEffectRange extends EffectRangeImpl {
 	}
 
 	private static List<IntVector3> combineRanges(EffectRange[] ranges) {
-		List<IntVector3> list = new ArrayList<IntVector3>();
+		List<IntVector3> list = new ArrayList<>();
 		EffectIterator i = new EffectIterator();
 		TByteShortByteKeyedHashSet set = new TByteShortByteKeyedHashSet(8);
 		for (EffectRange e : ranges) {

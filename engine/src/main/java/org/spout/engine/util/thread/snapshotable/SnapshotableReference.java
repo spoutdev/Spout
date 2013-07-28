@@ -38,7 +38,7 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
  * @param <T> the underlying type
  */
 public class SnapshotableReference<T> implements Snapshotable {
-	private AtomicReference<T> next = new AtomicReference<T>();
+	private AtomicReference<T> next = new AtomicReference<>();
 	private T snapshot;
 
 	public SnapshotableReference(SnapshotManager manager, T initial) {

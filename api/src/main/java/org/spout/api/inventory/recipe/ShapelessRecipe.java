@@ -66,8 +66,8 @@ public class ShapelessRecipe extends Recipe {
 		if (this.result != other.result && (this.result == null || !this.result.equals(other.result))) {
 			return false;
 		}
-		List<Material> materials = new ArrayList<Material>();
-		List<Material> materials2 = new ArrayList<Material>();
+		List<Material> materials = new ArrayList<>();
+		List<Material> materials2 = new ArrayList<>();
 		materials.addAll(ingredients);
 		materials2.addAll(other.ingredients);
 		materials.removeAll(other.ingredients);

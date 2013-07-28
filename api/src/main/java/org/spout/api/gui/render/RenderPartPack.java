@@ -36,7 +36,7 @@ import org.spout.api.render.SpoutRenderMaterials;
  * A group of render parts that share the same RenderMaterial
  */
 public class RenderPartPack implements Comparable<RenderPartPack> {
-	private final List<RenderPart> parts = new ArrayList<RenderPart>();
+	private final List<RenderPart> parts = new ArrayList<>();
 	private RenderMaterial material;
 	private int zIndex = 0;
 

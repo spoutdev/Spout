@@ -75,10 +75,11 @@ public class JavaPluginDictionary extends CommonPluginDictionary {
 	}
 
 	@SuppressWarnings ("resource")
+	@Override
 	protected void loadLanguages() {
 		// Search for other languages
 		try {
-			Set<String> loaded = new HashSet<String>();
+			Set<String> loaded = new HashSet<>();
 
 			// Look in plugins datadir first
 			File langDir = getLangDirectory();

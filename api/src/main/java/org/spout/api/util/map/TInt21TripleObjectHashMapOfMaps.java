@@ -36,7 +36,7 @@ public class TInt21TripleObjectHashMapOfMaps<K, V> extends TInt21TripleObjectHas
 	public V put(int x, int y, int z, K key, V value) {
 		Map<K, V> get = super.get(x, y, z);
 		if (get == null) {
-			get = new HashMap<K, V>();
+			get = new HashMap<>();
 			super.put(x, y, z, get);
 		}
 		return get.put(key, value);

@@ -82,41 +82,35 @@ public class VarIntTest {
 		}
 
 		assertTrue("Reading an int from an empty buffer did not throw an exception", thrown);
+		String s1;
+		String s2;
+		String s3;
+		String s4;
+		byte[] outputArray;
+		try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+			s1 = "String 1";
+			s2 = null;
+			s3 = "String - alternative length";
+			s4 = "";
+			VarInt.writeString(out, s1);
+			VarInt.writeString(out, s2);
+			VarInt.writeString(out, s3);
+			VarInt.writeString(out, s4);
+			outputArray = out.toByteArray();
+		}
+		try (ByteArrayInputStream in = new ByteArrayInputStream(outputArray)) {
+			matchString("String mismatch with read/write string " + s1, s1, VarInt.readString(in));
 
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
+			matchString("String mismatch with read/write string " + s2, s2, VarInt.readString(in));
 
-		String s1 = "String 1";
-		String s2 = null;
-		String s3 = "String - alternative length";
-		String s4 = "";
+			matchString("String mismatch with read/write string " + s3, s3, VarInt.readString(in));
 
-		VarInt.writeString(out, s1);
-
-		VarInt.writeString(out, s2);
-
-		VarInt.writeString(out, s3);
-
-		VarInt.writeString(out, s4);
-
-		byte[] outputArray = out.toByteArray();
-
-		out.close();
-
-		ByteArrayInputStream in = new ByteArrayInputStream(outputArray);
-
-		matchString("String mismatch with read/write string " + s1, s1, VarInt.readString(in));
-
-		matchString("String mismatch with read/write string " + s2, s2, VarInt.readString(in));
-
-		matchString("String mismatch with read/write string " + s3, s3, VarInt.readString(in));
-
-		matchString("String mismatch with read/write string " + s4, s4, VarInt.readString(in));
-
-		in.close();
+			matchString("String mismatch with read/write string " + s4, s4, VarInt.readString(in));
+		}
 	}
 
 	private void matchString(String message, String s1, String s2) {
-		boolean match = (s1 == s2) || (s1 != null && s1.equals(s2));
+		boolean match = (s1 == null ? s2 == null : s1.equals(s2)) || (s1 != null && s1.equals(s2));
 		assertTrue(message, match);
 	}
 }

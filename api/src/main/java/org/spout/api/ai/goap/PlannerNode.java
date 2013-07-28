@@ -55,7 +55,7 @@ public class PlannerNode extends AStarNode {
 
 	@Override
 	public Plan<Agent> buildPlan() {
-		Deque<Action> actions = new ArrayDeque<Action>();
+		Deque<Action> actions = new ArrayDeque<>();
 		Iterable<PlannerNode> parents = getParents();
 		for (PlannerNode start : parents) {
 			if (start.applied != null) {

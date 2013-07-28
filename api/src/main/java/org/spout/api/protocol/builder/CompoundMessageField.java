@@ -127,7 +127,7 @@ public class CompoundMessageField extends MessageFieldImpl {
 	}
 
 	public static MessageField[] compressFields(MessageField[] fields) {
-		List<MessageField> compressedArray = new ArrayList<MessageField>();
+		List<MessageField> compressedArray = new ArrayList<>();
 		int i = 0;
 		while (i < fields.length) {
 			int fixedLength = 0;

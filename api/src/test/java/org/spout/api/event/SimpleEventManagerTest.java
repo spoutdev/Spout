@@ -71,7 +71,7 @@ public class SimpleEventManagerTest {
 	@Test
 	public void testEventPriorities() {
 		final EventManager eventManager = new SimpleEventManager();
-		final List<Order> calledOrders = new ArrayList<Order>();
+		final List<Order> calledOrders = new ArrayList<>();
 		for (final Order order : Order.values()) {
 			eventManager.registerEvent(TestEvent.class, order, new EventExecutor() {
 				@Override

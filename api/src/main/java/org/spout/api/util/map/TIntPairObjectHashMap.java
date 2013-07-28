@@ -42,11 +42,11 @@ public class TIntPairObjectHashMap<K> extends IntPairHashed {
 	protected TLongObjectMap<K> map;
 
 	public TIntPairObjectHashMap() {
-		map = new TLongObjectHashMap<K>(100);
+		map = new TLongObjectHashMap<>(100);
 	}
 
 	public TIntPairObjectHashMap(int capacity) {
-		map = new TLongObjectHashMap<K>(capacity);
+		map = new TLongObjectHashMap<>(capacity);
 	}
 
 	public K put(int key1, int key2, K value) {

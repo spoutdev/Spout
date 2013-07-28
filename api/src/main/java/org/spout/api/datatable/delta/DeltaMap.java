@@ -46,12 +46,12 @@ import org.spout.api.map.DefaultedKey;
  */
 public class DeltaMap extends SerializableHashMap {
 	private static final long serialVersionUID = 1L;
-	private transient WeakReference<DeltaMap> reference = new WeakReference<DeltaMap>(this);
+	private transient WeakReference<DeltaMap> reference = new WeakReference<>(this);
 	private DeltaType type;
 	private final String key;
 	// If we have a parent, we aren't going to serialize it
 	protected transient final DeltaMap parent;
-	protected transient List<WeakReference<DeltaMap>> children = new ArrayList<WeakReference<DeltaMap>>();
+	protected transient List<WeakReference<DeltaMap>> children = new ArrayList<>();
 
 	public DeltaMap(DeltaType type) {
 		this.type = type;
@@ -62,7 +62,7 @@ public class DeltaMap extends SerializableHashMap {
 	public DeltaMap(DeltaMap parent, DeltaType type, String key) {
 		this.type = type;
 		this.parent = parent;
-		this.parent.children.add(new WeakReference<DeltaMap>(this));
+		this.parent.children.add(new WeakReference<>(this));
 		this.key = key;
 
 		// We want to update the parent for us
@@ -177,7 +177,7 @@ public class DeltaMap extends SerializableHashMap {
 
 	private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
 		s.defaultReadObject();
-		reference = new WeakReference<DeltaMap>(this);
-		children = new ArrayList<WeakReference<DeltaMap>>();
+		reference = new WeakReference<>(this);
+		children = new ArrayList<>();
 	}
 }

@@ -52,7 +52,7 @@ public class PhysicsQueue {
 	private final Thread mainThread;
 	private final AtomicBoolean localActive = new AtomicBoolean(false);
 	private final AtomicBoolean globalActive = new AtomicBoolean(false);
-	private final ConcurrentLinkedQueue<PhysicsUpdate> asyncQueue = new ConcurrentLinkedQueue<PhysicsUpdate>();
+	private final ConcurrentLinkedQueue<PhysicsUpdate> asyncQueue = new ConcurrentLinkedQueue<>();
 	private final UpdateQueue updateQueue = new UpdateQueue();
 	private final UpdateQueue multiRegionQueue = new UpdateQueue();
 

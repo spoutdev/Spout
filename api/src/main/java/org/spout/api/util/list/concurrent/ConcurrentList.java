@@ -34,11 +34,11 @@ public class ConcurrentList<T> extends ArrayList<T> {
 	/**
 	 * A list of elements pending to be added
 	 */
-	private final ArrayList<T> toAdd = new ArrayList<T>();
+	private final ArrayList<T> toAdd = new ArrayList<>();
 	/**
 	 * A list of elements pending to be removed
 	 */
-	private final ArrayList<T> toRemove = new ArrayList<T>();
+	private final ArrayList<T> toRemove = new ArrayList<>();
 
 	/**
 	 * Adds all current values to the removal queue
