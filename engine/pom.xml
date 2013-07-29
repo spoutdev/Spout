@@ -7,6 +7,7 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<url>http://www.spout.org</url>
+	<inceptionYear>2011</inceptionYear>
 	<description>Open source, multithreaded, voxel game engine and platform, written in Java.</description>
 
 	<!-- Parent information -->
@@ -87,6 +88,14 @@
 			<!-- Static resources -->
 			<resource>
 				<filtering>false</filtering>
+				<directory>../</directory>
+				<targetPath>.</targetPath>
+				<includes>
+					<include>LICENSE.txt</include>
+				</includes>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
 				<directory>src/main/resources</directory>
 				<targetPath>.</targetPath>
 				<includes>
@@ -97,6 +106,41 @@
 
 		<!-- Build plugins -->
 		<plugins>
+			<!-- License header plugin -->
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.10.b1</version>
+				<executions>
+					<execution>
+						<configuration>
+							<properties>
+								<url>${project.organization.url}</url>
+								<inceptionYear>${project.inceptionYear}</inceptionYear>
+								<organization>${project.organization.name}</organization>
+							</properties>
+							<quiet>true</quiet>
+							<encoding>UTF-8</encoding>
+							<strictCheck>true</strictCheck>
+							<header>../HEADER.txt</header>
+							<mapping>
+								<java>SLASHSTAR_STYLE</java>
+							</mapping>
+							<keywords>
+								<keyword>license</keyword>
+							</keywords>
+							<includes>
+								<include>src/main/java/**</include>
+								<include>src/test/java/**</include>
+							</includes>
+						</configuration>
+						<phase>clean</phase>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<!-- JAR creation plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -107,10 +151,10 @@
 						<manifestEntries>
 							<Main-Class>${mainClass}</Main-Class>
 							<Implementation-Title>${project.name}</Implementation-Title>
-							<Implementation-Version>${project.version}-b${buildNumber}</Implementation-Version>
+							<Implementation-Version>${project.version}+${ciSystem}-b${buildNumber}.git-${commit}</Implementation-Version>
 							<Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-							<Specification-Title>${project.name}API</Specification-Title>
-							<Specification-Version>${project.version}-b${buildNumber}</Specification-Version>
+							<Specification-Title>${project.name} API</Specification-Title>
+							<Specification-Version>${project.version}+${ciSystem}-b${buildNumber}.git-${commit}</Specification-Version>
 							<Specification-Vendor>${project.organization.name}</Specification-Vendor>
 							<Sealed>true</Sealed>
 						</manifestEntries>
