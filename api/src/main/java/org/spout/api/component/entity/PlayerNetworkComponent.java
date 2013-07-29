@@ -21,10 +21,11 @@ public abstract class PlayerNetworkComponent extends NetworkComponent {
 	private AtomicReference<Session> session = new AtomicReference<>(null);
 
 	@Override
-	public final void onAttached() {
+	public void onAttached() {
 		if (!(getOwner() instanceof Player)) {
 			throw new IllegalStateException("The PlayerNetworkComponent may only be given to Players");
 		}
+		setObserver(true);
 	}
 
 	/**
@@ -60,7 +61,7 @@ public abstract class PlayerNetworkComponent extends NetworkComponent {
 	 *
 	 * @param event to send
 	 */
-	public void callProtocolEvent(final ProtocolEvent event) {
+	public final void callProtocolEvent(final ProtocolEvent event) {
 		callProtocolEvent(event, false);
 	}
 
@@ -70,7 +71,7 @@ public abstract class PlayerNetworkComponent extends NetworkComponent {
 	 * @param event to send
 	 * @param ignoreOwner True to ignore the owning Player, false to include
 	 */
-	public void callProtocolEvent(final ProtocolEvent event, final boolean ignoreOwner) {
+	public final void callProtocolEvent(final ProtocolEvent event, final boolean ignoreOwner) {
 		final List<Player> players = getOwner().getWorld().getPlayers();
 		final Point position = getOwner().getPhysics().getPosition();
 		final List<Message> messages = getEngine().getEventManager().callEvent(event).getMessages();
@@ -96,7 +97,7 @@ public abstract class PlayerNetworkComponent extends NetworkComponent {
 	 * @param event to send
 	 * @param players to send to
 	 */
-	public void callProtocolEvent(final ProtocolEvent event, final Player... players) {
+	public final void callProtocolEvent(final ProtocolEvent event, final Player... players) {
 		final List<Message> messages = getEngine().getEventManager().callEvent(event).getMessages();
 		for (final Player player : players) {
 			for (final Message message : messages) {

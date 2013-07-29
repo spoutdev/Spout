@@ -53,13 +53,6 @@ public abstract class NetworkComponent extends EntityComponent {
 	private AtomicInteger syncDistance = new AtomicInteger(0);
 
 	@Override
-	public void onAttached() {
-		if (getOwner() instanceof Player) {
-			observer.set(true);
-		}
-	}
-
-	@Override
 	public boolean isDetachable() {
 		return false;
 	}
