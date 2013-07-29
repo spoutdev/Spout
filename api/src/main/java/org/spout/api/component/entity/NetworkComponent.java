@@ -27,19 +27,36 @@
 package org.spout.api.component.entity;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.spout.api.Platform;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Player;
 import org.spout.api.event.ProtocolEvent;
+import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.Session;
 import org.spout.api.util.SyncedStringMap;
 
+/**
+ * The networking behind {@link org.spout.api.entity.Entity}s.
+ */
 public abstract class NetworkComponent extends EntityComponent {
 	private static final SyncedStringMap protocolMap = SyncedStringMap.create(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
+	//TODO: Move all observer code to NetworkComponent
+	private AtomicBoolean observer = new AtomicBoolean(false);
+	private AtomicInteger syncDistance = new AtomicInteger(0);
 
-	public NetworkComponent() {
+	@Override
+	public void onAttached() {
+		if (getOwner() instanceof Player) {
+			observer.set(true);
+		}
 	}
 
 	@Override
@@ -48,78 +65,75 @@ public abstract class NetworkComponent extends EntityComponent {
 	}
 
 	/**
+	 * Returns if the owning {@link org.spout.api.entity.Entity} is an observer.
+	 * <p/>
+	 * Observer means the Entity can trigger network updates (such as chunk creation) within its sync distance.
+	 *
+	 * @return True if observer, false if not
+	 */
+	public boolean isObserver() {
+		return observer.get();
+	}
+
+	/**
+	 * Sets the observer status for the owning {@link org.spout.api.entity.Entity}.
+	 *
+	 * @param observer True if observer, false if not
+	 */
+	public void setObserver(final boolean observer) {
+		this.observer.set(observer);
+	}
+
+	/**
+	 * Gets the sync distance of the owning {@link org.spout.api.entity.Entity}.
+	 * </p>
+	 * Sync distance is a value indicating the radius outwards from the entity where network updates (such as chunk creation) will be triggered.
+	 * @return The current sync distance
+	 */
+	public int getSyncDistance() {
+		return syncDistance.get();
+	}
+
+	/**
+	 * Sets the sync distance of the owning {@link org.spout.api.entity.Entity}.
+	 *
+	 * @param syncDistance The new sync distance
+	 */
+	public void setSyncDistance(final int syncDistance) {
+		//TODO: Enforce server maximum (but that is set in Spout...)
+		this.syncDistance.set(syncDistance * Chunk.BLOCKS.SIZE);
+	}
+
+	/**
+	 * Called when the owner is set to be synchronized to other NetworkComponents.
+	 *
+	 * TODO: Common logic between Spout and a plugin needing to implement this component?
+	 * TODO: Add sequence checks to the PhysicsComponent to prevent updates to live?
+	 *
+	 * @param live A copy of the owner's live transform state
+	 */
+	public void finalizeRun(final Transform live) {
+
+	}
+
+	/**
+	 * Called just before a snapshot is taken of the owner.
+	 *
+	 * TODO: Add sequence checks to the PhysicsComponent to prevent updates to live?
+	 *
+	 * @param live A copy of the owner's live transform state
+	 */
+	public void preSnapshot(final Transform live) {
+
+	}
+
+	/**
+	 * Registers the protocol name and gets the id assigned.
+	 *
 	 * @param protocolName The name of the protocol class to get an id for
 	 * @return The id for the specified protocol class
 	 */
 	public static int getProtocolId(String protocolName) {
 		return protocolMap.register(protocolName);
-	}
-
-	/**
-	 * Sends a protocol event to specific players.
-	 *
-	 * @param event to send
-	 */
-	public void callProtocolEvent(ProtocolEvent event, Player... players) {
-		for (Player player : players) {
-			for (Message m : Spout.getEventManager().callEvent(event).getMessages()) {
-				player.getSession().send(m);
-			}
-		}
-	}
-
-	/**
-	 * Sends a protocol event to players observing this holder
-	 *
-	 * @param event to send
-	 * @param ignoreHolder If true, the holder will be excluded from being sent the protocol event (only valid if the holder has a NetworkSynchronier i.e. Player)
-	 */
-	public void callProtocolEvent(ProtocolEvent event, boolean ignoreHolder) {
-		try {
-			// TODO: sequencing is wrong; client ticks components before player is placed in null chunk
-			if (getOwner().getChunk() == null && Spout.getPlatform() == Platform.CLIENT) {
-				return;
-			}
-			Set<? extends Player> players = getOwner().getChunk().getObservingPlayers();
-			Player[] thePlayers;
-			if (getOwner() instanceof Player && ignoreHolder && players.contains(getOwner())) {
-				thePlayers = new Player[players.size() - 1];
-			} else {
-				thePlayers = new Player[players.size()];
-			}
-			int index = 0;
-			for (Player p : players) {
-				if (!ignoreHolder || getOwner() != p) {
-					thePlayers[index++] = p;
-				}
-			}
-			callProtocolEvent(event, thePlayers);
-		} catch (NullPointerException npe) {
-			//NPE logging to diagnose VANILLA-338
-			Spout.getLogger().info("Exception handling protocol event: " + npe.getClass().getSimpleName() + "\n" +
-					"    Owner: " + getOwner() + "\n" +
-					"    Chunk: " + (getOwner() != null ? getOwner().getChunk() : null) + "\n" +
-					"    Position: " + (getOwner() != null ? getOwner().getPhysics().getPosition() : null) + "\n" +
-					"    Is Owner Alive: " + (getOwner() != null ? getOwner().isRemoved() : "owner is null") + "\n");
-			npe.printStackTrace();
-		}
-	}
-
-	/**
-	 * Sends a protocol event to players observing this holder and the holder itself
-	 *
-	 * @param event to send
-	 */
-	public void callProtocolEvent(ProtocolEvent event) {
-		callProtocolEvent(event, false);
-	}
-	
-	/**
-	 * Called just before the pre-snapshot stage.<br> This stage can make changes but they should be checked to make sure they are non-conflicting.
-	 */
-	public void finalizeTick() {
-	}
-
-	public void preSnapshot() {
 	}
 }

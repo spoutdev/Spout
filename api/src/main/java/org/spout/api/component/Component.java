@@ -96,12 +96,6 @@ public abstract class Component implements Tickable {
 	}
 
 	/**
-	 * Called when the owner is set to be synchronized. <p> This method is READ ONLY. You cannot update in this method.
-	 */
-	public void onSync() {
-	}
-
-	/**
 	 * Gets the {@link SerializableMap} which a ComponentOwner always has <p> This is merely a convenience method.
 	 *
 	 * @return SerializableMap of the owner

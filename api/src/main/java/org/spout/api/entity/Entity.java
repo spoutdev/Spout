@@ -58,7 +58,7 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	public int getId();
 
 	/**
-	 * Gets the entity's persistent unique id. <p> Can be used to look up the entity, and persists between starts.
+	 * Gets the entity's persistent unique id. <p> Can be used to look up the entity and persists between starts.
 	 *
 	 * @return persistent uuid
 	 */
@@ -110,47 +110,6 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	public boolean isSavable();
 
 	/**
-	 * Sets the maximum distance at which the entity can be seen.<br/> <br/> The actual view distance used by the server may not be exactly the value that is set.<br/>
-	 *
-	 * @param distance in blocks at which the entity can be seen
-	 */
-	@LiveWrite
-	public void setViewDistance(int distance);
-
-	/**
-	 * Gets the maximum distance at which the entity can be seen.<br/>
-	 *
-	 * @return the distance in blocks at which the entity can be seen
-	 */
-	@LiveRead
-	public int getViewDistance();
-
-	/**
-	 * Sets whether or not the entity is an observer.<br/> An observer is any entity that is allowed to keep chunks from being unloaded.</br>
-	 *
-	 * @param obs True if the entity should be an observer, false if not
-	 */
-	@DelayedWrite
-	public void setObserver(boolean obs);
-
-	/**
-	 * Sets the entity as an observer using a custom view volume.<br/> An observer is any entity that is allowed to keep chunks from being unloaded.</br> Note: The custom view volume does not move with
-	 * the entity
-	 *
-	 * @param custom True if the entity should be an observer, false if not
-	 */
-	@DelayedWrite
-	public void setObserver(Iterator<IntVector3> custom);
-
-	/**
-	 * Checks whether or not the entity is currently observing the region it is in.<br/> An observer is any entity that is allowed to keep chunks from being unloaded.<br/>
-	 *
-	 * @return true if the entity is currently an observer, false if not
-	 */
-	@SnapshotRead
-	public boolean isObserver();
-
-	/**
 	 * Gets the {@link Chunk} this entity resides in, or null if removed.
 	 *
 	 * @return chunk the entity is in, or null if removed.
@@ -165,15 +124,6 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	 */
 	@SnapshotRead
 	public Region getRegion();
-
-	/**
-	 * Interacts this Entity.
-	 *
-	 * This will trigger all owned {@link org.spout.api.component.entity.EntityComponent #onInteract(EntityInteractEvent)}.
-	 *
-	 * @param event {@see org.spout.api.event.entity.EntityInteractEvent}
-	 */
-	public void interact(final EntityInteractEvent<?> event);
 
 	/**
 	 * Gets the {@link org.spout.api.component.entity.PhysicsComponent} which is the representation of this Entity within space. <p> It provides the {@link Transform} which is Position, Rotation, Scale

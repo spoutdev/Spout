@@ -30,6 +30,7 @@ import java.net.InetAddress;
 import java.util.List;
 
 import org.spout.api.command.CommandSource;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -38,17 +39,19 @@ import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface Player extends CommandSource, Entity {
+	@Override
+	public PlayerNetworkComponent getNetwork();
+
 	/**
-	 * Gets the player's name. This method is thread-safe.
+	 * Gets the player's name.
 	 *
 	 * @return the player's name
 	 */
-	@Override
 	@Threadsafe
 	public String getName();
 
 	/**
-	 * Gets the player's display name. This method is thread-safe.
+	 * Gets the player's display name.
 	 *
 	 * @return the player's display name
 	 */
@@ -56,7 +59,7 @@ public interface Player extends CommandSource, Entity {
 	public String getDisplayName();
 
 	/**
-	 * Sets the player's display name. This method is thread-safe.
+	 * Sets the player's display name.
 	 *
 	 * @param name the player's new display name
 	 */
@@ -64,32 +67,11 @@ public interface Player extends CommandSource, Entity {
 	public void setDisplayName(String name);
 
 	/**
-	 * Gets the ServerNetworkSynchronizer associated with this player.<br>
-	 *
-	 * @return the synchronizer
-	 */
-	public NetworkSynchronizer getNetworkSynchronizer();
-
-	/**
-	 * Gets the session associated with the Player.
-	 *
-	 * @return the session, or null if the player is offline
-	 */
-	public Session getSession();
-
-	/**
 	 * Gets if the player is online
 	 *
 	 * @return true if online
 	 */
 	public boolean isOnline();
-
-	/**
-	 * Gets the sessions address This is equivalent to getSession().getAddress().getAddress();
-	 *
-	 * @return The session's address
-	 */
-	public InetAddress getAddress();
 
 	/**
 	 * Kicks the player without giving a reason, or forcing it.
@@ -129,20 +111,6 @@ public interface Player extends CommandSource, Entity {
 	 * @return current input state
 	 */
 	public PlayerInputState input();
-
-	/**
-	 * Teleports the player to the given location and inform's the player's client
-	 *
-	 * @param loc the new location
-	 */
-	public void teleport(Point loc);
-
-	/**
-	 * Teleports the player to the given position and direction and inform's the player's client
-	 *
-	 * @param loc the new location
-	 */
-	public void teleport(Transform transform);
 
 	/**
 	 * Immediately saves the players state to disk

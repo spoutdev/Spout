@@ -82,7 +82,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	private boolean observeChunksFailed = false;
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
 	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
-	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 10);
 	private volatile boolean remove = false;
 	//Other
 	private final Engine engine;
@@ -95,7 +94,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	private Class<? extends Component>[] initialComponents = null;
 
 	public SpoutEntity(Engine engine, Transform transform) {
-		this(engine, transform, 1, null, true, (byte[]) null, (Class<? extends Component>[]) null);
+		this(engine, transform, null, true, (byte[]) null, (Class<? extends Component>[]) null);
 	}
 
 	public SpoutEntity(Engine engine, Point point) {
@@ -103,29 +102,25 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	public SpoutEntity(Engine engine, Point point, Class<? extends Component>... components) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), 1, null, true, (byte[]) null, components);
+		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), null, true, (byte[]) null, components);
 	}
 
 	public SpoutEntity(Engine engine, Point point, boolean load) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), 1, null, load, (byte[]) null, (Class<? extends Component>[]) null);
+		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), null, load, (byte[]) null, (Class<? extends Component>[]) null);
 	}
 
 	public SpoutEntity(Engine engine, Point point, boolean load, Class<? extends Component>... components) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), 1, null, load, (byte[]) null, components);
+		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), null, load, (byte[]) null, components);
 	}
 
-	protected SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
-		this(engine, transform, viewDistance, uid, load, (byte[]) null, components);
+	protected SpoutEntity(Engine engine, Transform transform, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
+		this(engine, transform, uid, load, (byte[]) null, components);
 		this.getData().putAll(dataMap);
 	}
 
-	public SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
+	public SpoutEntity(Engine engine, Transform transform, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
 		if (transform == null) {
 			throw new IllegalArgumentException("Entities must always have a valid transform");
-		}
-
-		if (viewDistance <= 0) {
-			throw new IllegalArgumentException("View distance must be greater than 0");
 		}
 
 		id.set(NOTSPAWNEDID);
@@ -143,19 +138,10 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		}
 
 		physics.setTransform(transform, false);
-		physics.copySnapshot();
 
 		if (components != null && components.length > 0) {
 			initialComponents = components;
 		}
-
-		int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
-
-		if (viewDistance > maxViewDistance) {
-			viewDistance = maxViewDistance;
-		}
-
-		setViewDistance(viewDistance);
 
 		if (dataMap != null) {
 			try {
@@ -165,9 +151,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 			}
 		}
 
-		//Set all the initial snapshot values
-		//Ensures there are no null/wrong snapshot values for the first tick
-		snapshotManager.copyAllSnapshots();
 		setupInitialChunk(load == true ? LoadOption.LOAD_GEN : LoadOption.NO_LOAD);
 	}
 
@@ -340,10 +323,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		}
 	}
 
-	public Set<SpoutChunk> getObservingChunks() {
-		return observingChunks;
-	}
-
 	@Override
 	public Chunk getChunk() {
 		return physics.getPosition().getChunk(LoadOption.NO_LOAD);
@@ -359,59 +338,8 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	@Override
-	public void interact(EntityInteractEvent event) {
-		if (event == null) {
-			throw new IllegalStateException("Attempt made to interact entity with a null interaction event");
-		}
-		if (event.isCancelled()) {
-			return;
-		}
-		for (final Component component : values()) {
-			if (component instanceof EntityComponent) {
-				((EntityComponent) component).onInteract(event);
-			}
-		}
-	}
-
-	@Override
 	public World getWorld() {
 		return getRegion().getWorld();
-	}
-
-	@Override
-	public void setViewDistance(int distance) {
-		if (distance <= 0) {
-			throw new IllegalArgumentException("View distance must be greater than 0");
-		}
-		viewDistance.set(distance);
-	}
-
-	@Override
-	public int getViewDistance() {
-		return viewDistance.get();
-	}
-
-	public int getViewDistanceLive() {
-		return viewDistance.getLive();
-	}
-
-	@Override
-	public void setObserver(boolean obs) {
-		observer.set(obs ? OBSERVING : NOT_OBSERVING);
-	}
-
-	@Override
-	public void setObserver(Iterator<IntVector3> custom) {
-		if (custom == null) {
-			setObserver(false);
-		} else {
-			observer.set(custom);
-		}
-	}
-
-	@Override
-	public boolean isObserver() {
-		return observer.get() != NOT_OBSERVING;
 	}
 
 	@Override
@@ -428,6 +356,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
 	public void setupInitialChunk(LoadOption loadopt) {
+		physics.copySnapshot();
 		SpoutChunk chunk = (SpoutChunk) physics.getTransformLive().getPosition().getChunk(loadopt);
 		if (chunk == null) {
 			// It's possible we're in client mode and we have no chunk
