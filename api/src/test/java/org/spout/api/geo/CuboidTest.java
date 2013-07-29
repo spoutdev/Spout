@@ -32,7 +32,7 @@ import org.junit.Test;
 
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -45,7 +45,7 @@ public class CuboidTest {
 	@Before
 	public void setup() {
 		world = mock(World.class);
-		instance = new Cuboid(new Point(world, 0, 0, 0), Vector3.ONE.multiply(16.0));
+		instance = new Cuboid(new Point(world, 0, 0, 0), Vector3.ONE.mul(16.0));
 	}
 
 	@After

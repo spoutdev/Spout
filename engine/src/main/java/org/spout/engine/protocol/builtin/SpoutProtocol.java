@@ -43,6 +43,7 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.ServerSession;
+import org.spout.api.protocol.Session;
 import org.spout.api.util.SyncedMapEvent;
 import org.spout.api.util.SyncedMapRegistry;
 import org.spout.api.util.SyncedStringMap;
@@ -100,8 +101,6 @@ public class SpoutProtocol extends Protocol {
 		registerPacket(WorldChangeCodec.class, new WorldChangeMessageHandler());
 	}
 
-	// TODO: protocol - implement a BlockDatatable message
-
 	@Override
 	public MessageCodec<?> readHeader(ChannelBuffer buf) {
 		int id = buf.readUnsignedShort();
@@ -152,10 +151,11 @@ public class SpoutProtocol extends Protocol {
 				session.send(new SyncedMapMessage(event.getAssociatedObject().getId(), SyncedMapEvent.Action.ADD, event.getModifiedElements()));
 			}
 		});
-		session.send(new SyncedMapMessage(SyncedMapRegistry.REGISTRATION_MAP, SyncedMapEvent.Action.SET, SyncedMapRegistry.getRegistrationMap().getItems()));
+		session.send(true, new SyncedMapMessage(SyncedMapRegistry.REGISTRATION_MAP, SyncedMapEvent.Action.SET, SyncedMapRegistry.getRegistrationMap().getItems()));
 		for (SyncedStringMap map : SyncedMapRegistry.getAll()) {
-			session.send(new SyncedMapMessage(map.getId(), SyncedMapEvent.Action.SET, map.getItems()));
+			session.send(true, new SyncedMapMessage(map.getId(), SyncedMapEvent.Action.SET, map.getItems()));
 		}
+		session.setState(Session.State.GAME);
 	}
 
 	@Override

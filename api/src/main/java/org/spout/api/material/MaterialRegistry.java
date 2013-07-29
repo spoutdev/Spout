@@ -37,9 +37,9 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.material.block.BlockFullState;
-import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
 import org.spout.api.util.SyncedStringMap;
+import org.spout.math.GenericMath;
 
 /**
  * Handles all registered materials on the server statically.

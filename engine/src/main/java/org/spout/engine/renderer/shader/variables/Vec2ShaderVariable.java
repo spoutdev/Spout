@@ -28,8 +28,8 @@ package org.spout.engine.renderer.shader.variables;
 
 import org.lwjgl.opengl.GL20;
 
-import org.spout.api.math.Vector2;
 import org.spout.engine.SpoutRenderer;
+import org.spout.math.vector.Vector2;
 
 public class Vec2ShaderVariable extends ShaderVariable {
 	Vector2 value;

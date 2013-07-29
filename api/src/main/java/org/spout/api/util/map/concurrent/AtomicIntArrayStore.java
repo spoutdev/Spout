@@ -30,8 +30,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.math.GenericMath;
 import org.spout.api.util.concurrent.AtomicSequenceNumber;
+import org.spout.math.GenericMath;
 
 /**
  * Implements a store that stores {int, &lt;T&gt;} elementa.<br> <br> When an element is added, it is stored at an index decided by the store.<br> <br> The arrays used to store the elements are

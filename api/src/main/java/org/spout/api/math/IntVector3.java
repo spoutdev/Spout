@@ -32,6 +32,7 @@ import java.util.List;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.util.StringUtil;
+import org.spout.math.vector.Vector3;
 
 /**
  * A 3-dimensional vector represented by int-precision x,y coordinates
@@ -98,6 +99,10 @@ public class IntVector3 extends IntVector2 {
 	public void add(IntVector3 other) {
 		super.add(other);
 		z += other.z;
+	}
+
+	public Vector3 toVector3() {
+		return new Vector3((float) getX(), (float) getY(), (float) getZ());
 	}
 
 	@Override

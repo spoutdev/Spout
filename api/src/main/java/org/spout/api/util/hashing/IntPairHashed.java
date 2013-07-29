@@ -34,7 +34,7 @@ public class IntPairHashed {
 	 * @param key2 an <code>int</code> value
 	 * @return a long which is the concatenation of key1 and key2
 	 */
-	public static final long key(int key1, int key2) {
+	public static long key(int key1, int key2) {
 		return (long) key1 << 32 | key2 & 0xFFFFFFFFL;
 	}
 

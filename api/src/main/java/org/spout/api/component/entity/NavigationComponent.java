@@ -37,7 +37,7 @@ import org.spout.api.ai.pathfinder.VectorGoal;
 import org.spout.api.ai.pathfinder.VectorNode;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.concurrent.SpinLock;
 
 public class NavigationComponent extends EntityComponent {

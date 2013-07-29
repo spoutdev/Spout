@@ -54,8 +54,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.IntVector3;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
@@ -69,6 +68,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
 import org.spout.engine.util.thread.snapshotable.SnapshotableInt;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutChunk;
+import org.spout.math.imaginary.Quaternion;
 
 public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = Integer.MIN_VALUE;
@@ -102,8 +102,16 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
 	}
 
+	public SpoutEntity(Engine engine, Point point, Class<? extends Component>... components) {
+		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), 1, null, true, (byte[]) null, components);
+	}
+
 	public SpoutEntity(Engine engine, Point point, boolean load) {
 		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), 1, null, load, (byte[]) null, (Class<? extends Component>[]) null);
+	}
+
+	public SpoutEntity(Engine engine, Point point, boolean load, Class<? extends Component>... components) {
+		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), 1, null, load, (byte[]) null, components);
 	}
 
 	protected SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
@@ -273,7 +281,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 			//Add entity to Region B
 			entityManager.getLive().addEntity(this);
 			if (activated) {
-				physics.activate(entityManager.getLive().getRegion());
+				physics.activate(chunkLive.getRegion());
 			}
 		}
 
@@ -315,7 +323,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 				chunk.refreshObserver(this);
 				observing.add((SpoutChunk) chunk);
 			} else {
-				ungenerated.add(new Vector3(v));
+				ungenerated.add(v.toVector3());
 				observeChunksFailed = true;
 			}
 		}
@@ -408,7 +416,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	@Override
 	public String toString() {
-		return "SpoutEntity - ID: " + this.getId() + " Position: " + physics.getPosition();
+		return "SpoutEntity {id= " + this.getId() + ", " + physics + "}";
 	}
 
 	@Override

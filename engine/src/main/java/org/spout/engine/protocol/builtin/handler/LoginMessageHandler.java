@@ -40,7 +40,6 @@ public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 	@Override
 	public void handleServer(ServerSession session, LoginMessage message) {
 		session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName(), (SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE)));
-		session.setState(Session.State.GAME);
 		if (session.hasPlayer()) {
 			session.send(new LoginMessage("", session.getPlayer().getId()));
 		}

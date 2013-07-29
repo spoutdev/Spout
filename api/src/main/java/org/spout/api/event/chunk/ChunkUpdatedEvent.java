@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.spout.api.event.HandlerList;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 /**
  * Called when {@link Block} data in {@link Chunk} has been updated.

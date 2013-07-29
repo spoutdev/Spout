@@ -45,7 +45,7 @@ public class SignedTenBitTripleHashed {
 	 * @param z an <code>byte</code> value
 	 * @return The first 8 most significant bits of each byte packed into an <code>int</code>
 	 */
-	public static final int key(int x, int y, int z) {
+	public static int key(int x, int y, int z) {
 		return (x & 0x3FF) << 22 | (z & 0x3FF) << 11 | y & 0x3FF;
 	}
 
@@ -55,7 +55,7 @@ public class SignedTenBitTripleHashed {
 	 * @param key to get from
 	 * @return the first 8-bit integer value in the key
 	 */
-	public static final int key1(int key) {
+	public static int key1(int key) {
 		return key >> 22;
 	}
 
@@ -65,7 +65,7 @@ public class SignedTenBitTripleHashed {
 	 * @param key to get from
 	 * @return the second 8-bit integer value in the key
 	 */
-	public static final int key2(int key) {
+	public static int key2(int key) {
 		return (key << 22) >> 22;
 	}
 
@@ -75,7 +75,7 @@ public class SignedTenBitTripleHashed {
 	 * @param key to get from
 	 * @return the third 8-bit integer value in the key
 	 */
-	public static final int key3(int key) {
+	public static int key3(int key) {
 		return (key << 11) >> 22;
 	}
 
@@ -88,7 +88,7 @@ public class SignedTenBitTripleHashed {
 	 * @param z the z offset
 	 * @return the new key
 	 */
-	public static final int add(int key, int x, int y, int z) {
+	public static int add(int key, int x, int y, int z) {
 		int offset = key(x, y, z);
 		return (key + offset) & mask;
 	}
@@ -99,7 +99,7 @@ public class SignedTenBitTripleHashed {
 	 * @param key the key
 	 * @param shift the right shift
 	 */
-	public static final int positiveRightShift(int key, int shift) {
+	public static int positiveRightShift(int key, int shift) {
 		int single = 0x3FF >> shift;
 		int shiftMask = (single << 22) | (single << 11) | single;
 		return shiftMask & (key >> shift);

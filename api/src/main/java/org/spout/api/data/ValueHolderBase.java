@@ -32,8 +32,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.spout.api.math.GenericMath;
 import org.spout.cereal.config.serialization.Serialization;
+import org.spout.math.GenericMath;
 
 public class ValueHolderBase implements ValueHolder {
 	private final ValueHolder actualValue;

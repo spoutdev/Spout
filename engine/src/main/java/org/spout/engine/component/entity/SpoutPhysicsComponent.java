@@ -33,11 +33,11 @@ import org.spout.api.entity.Player;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
 import org.spout.api.math.ReactConverter;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.engine.world.SpoutRegion;
+import org.spout.math.imaginary.Quaternion;
 import org.spout.physics.body.MobileRigidBody;
 import org.spout.physics.body.RigidBody;
 import org.spout.physics.body.RigidBodyMaterial;
@@ -76,6 +76,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		this.isMobile = isMobile;
 		this.mass = mass;
 		this.shape = shape;
+		activated = true;
 		if (getOwner().isSpawned()) {
 			activate((SpoutRegion) getOwner().getRegion());
 		}
@@ -87,7 +88,6 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		body = region.addBody(live, mass, shape, isGhost, isMobile);
 		body.setMaterial(material);
 		body.setUserPointer(getOwner());
-		activated = true;
 	}
 
 	@Override
@@ -367,6 +367,11 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		return isGhost;
 	}
 
+	@Override
+	public String toString() {
+		return "snapshot= {" + snapshot + "}, live= {" + live + "}, render= " + render + "}, body= {" + body + "}";
+	}
+
 	/**
 	 * Called before the simulation is polled for an update. <p> This aligns the body's transform with Spout's if someone moves without physics. </p>
 	 */
@@ -409,7 +414,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		//Step 3 - Interpolate position, rotation, and scale
 		//Spout Interpolation (Position)
 		if (body == null) {
-			render.setPosition(render.getPosition().multiply(1 - step).add(position.multiply(dt)));
+			render.setPosition(render.getPosition().mul(1 - step).add(position.mul(dt)));
 		} else {
 			render.setPosition(new Point(ReactConverter.toSpoutVector3(body.getInterpolatedTransform().getPosition()), getWorld()));
 		}
@@ -417,9 +422,9 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		render.setRotation(new Quaternion(renderRot.getX() * (1 - step) + rotation.getX() * step,
 				renderRot.getY() * (1 - step) + rotation.getY() * step,
 				renderRot.getZ() * (1 - step) + rotation.getZ() * step,
-				renderRot.getW() * (1 - step) + rotation.getW() * step, false)
+				renderRot.getW() * (1 - step) + rotation.getW() * step)
 		);
-		render.setScale(render.getScale().multiply(1 - step).add(scale.multiply(step)));
+		render.setScale(render.getScale().mul(1 - step).add(scale.mul(step)));
 	}
 
 	public void copySnapshot() {

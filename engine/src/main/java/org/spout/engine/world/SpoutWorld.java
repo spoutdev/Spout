@@ -43,6 +43,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.spout.math.vector.Vector3;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentOwner;
@@ -72,8 +73,6 @@ import org.spout.api.lighting.LightingManager;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.math.GenericMath;
-import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
@@ -92,6 +91,7 @@ import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
+import org.spout.math.GenericMath;
 
 public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	protected SnapshotManager snapshotManager = new SnapshotManager();
@@ -480,28 +480,16 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	public Entity createEntity(Point point, Class<? extends Component>... classes) {
 		SpoutEntity entity;
 		if (Spout.getPlatform() == Platform.CLIENT) {
-			entity = new SpoutEntity(getEngine(), point, false);
+			entity = new SpoutEntity(getEngine(), point, false, classes);
 		} else {
-			entity = new SpoutEntity(getEngine(), point);
-		}
-		for (Class<? extends Component> clazz : classes) {
-			entity.add(clazz);
+			entity = new SpoutEntity(getEngine(), point, classes);
 		}
 		return entity;
 	}
 
 	@Override
 	public Entity createEntity(Point point, EntityPrefab prefab) {
-		SpoutEntity entity;
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			entity = new SpoutEntity(getEngine(), point, false);
-		} else {
-			entity = new SpoutEntity(getEngine(), point);
-		}
-		for (Class<? extends Component> clazz : prefab.getComponents()) {
-			entity.add(clazz);
-		}
-		return entity;
+		return createEntity(point, prefab.getComponents().toArray(new Class[prefab.getComponents().size()]));
 	}
 
 	/**

@@ -29,12 +29,10 @@ package org.spout.api.generator.biome;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.SyncedStringMap;
 
 public final class BiomeRegistry {

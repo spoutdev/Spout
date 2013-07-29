@@ -30,10 +30,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import org.spout.api.math.Vector2;
 import org.spout.api.model.mesh.CubeMeshFactory;
 import org.spout.api.model.mesh.OrientedMesh;
 import org.spout.api.resource.ResourceLoader;
+import org.spout.math.vector.Vector2;
 
 public class CubeMeshLoader extends ResourceLoader {
 	public CubeMeshLoader() {
@@ -55,14 +55,14 @@ public class CubeMeshLoader extends ResourceLoader {
 				} else if (s.startsWith("scale ") || s.startsWith("subtextures")) {
 					String[] sp = s.split(" ");
 					scale = new Vector2(1f / Float.parseFloat(sp[1]), 1f / Float.parseFloat(sp[2]));
-					sizeScaled = scale.multiply(size);
+					sizeScaled = scale.mul(size);
 				} else if (s.startsWith("size ")) {
 					String[] sp = s.split(" ");
 					size = new Vector2(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]));
-					sizeScaled = scale.multiply(size);
+					sizeScaled = scale.mul(size);
 				} else if (s.startsWith("rect ")) {
 					String[] sp = s.split(" ");
-					Vector2 base = scale.multiply(new Vector2(Integer.parseInt(sp[1]), Integer.parseInt(sp[2])));
+					Vector2 base = scale.mul(new Vector2(Integer.parseInt(sp[1]), Integer.parseInt(sp[2])));
 					textures.add(new Vector2[] {
 							base,
 							base.add(0f, sizeScaled.getY()),
@@ -70,7 +70,7 @@ public class CubeMeshLoader extends ResourceLoader {
 							base.add(sizeScaled.getX(), 0f)});
 				} else if (s.startsWith("vt ")) {
 					String[] sp = s.split(" ");
-					uvs.add(scale.multiply(new Vector2(Float.parseFloat(sp[1]), 1 - Float.parseFloat(sp[2]))));
+					uvs.add(scale.mul(new Vector2(Float.parseFloat(sp[1]), 1 - Float.parseFloat(sp[2]))));
 				} else if (s.startsWith("f ")) {
 					String[] sp = s.split(" ");
 					ArrayList<Vector2> ar = new ArrayList<>();

@@ -31,9 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.spout.api.math.Rectangle;
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.model.mesh.Vertex;
+import org.spout.math.vector.Vector2;
 
 /**
  * Represents anything that can be rendered on the client.

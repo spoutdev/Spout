@@ -31,7 +31,7 @@ import java.nio.FloatBuffer;
 import org.spout.api.audio.SoundListener;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 import static org.lwjgl.BufferUtils.createFloatBuffer;
 import static org.lwjgl.openal.AL10.AL_ORIENTATION;

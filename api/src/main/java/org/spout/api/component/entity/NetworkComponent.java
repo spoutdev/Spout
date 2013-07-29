@@ -27,6 +27,7 @@
 package org.spout.api.component.entity;
 
 import java.util.Set;
+import org.spout.api.Platform;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Player;
@@ -35,7 +36,6 @@ import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
 import org.spout.api.protocol.Message;
-import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.SyncedStringMap;
 
 public class NetworkComponent extends EntityComponent {
@@ -99,6 +99,10 @@ public class NetworkComponent extends EntityComponent {
 	 */
 	public void callProtocolEvent(ProtocolEvent event, boolean ignoreHolder) {
 		try {
+			// TODO: sequencing is wrong; client ticks components before player is placed in null chunk
+			if (getOwner().getChunk() == null && Spout.getPlatform() == Platform.CLIENT) {
+				return;
+			}
 			Set<? extends Player> players = getOwner().getChunk().getObservingPlayers();
 			Player[] thePlayers;
 			if (getOwner() instanceof Player && ignoreHolder && players.contains(getOwner())) {

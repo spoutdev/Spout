@@ -70,7 +70,6 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Vector2;
 import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
@@ -92,6 +91,7 @@ import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
 import org.spout.engine.world.SpoutWorld;
+import org.spout.math.vector.Vector2;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final AtomicReference<SpoutClientSession> session = new AtomicReference<>();
