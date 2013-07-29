@@ -223,28 +223,6 @@ public final class ComponentTest {
 		}
 
 		@Override
-		public void setViewDistance(int distance) {
-		}
-
-		@Override
-		public int getViewDistance() {
-			return 0;
-		}
-
-		@Override
-		public void setObserver(boolean obs) {
-		}
-
-		@Override
-		public void setObserver(Iterator<IntVector3> custom) {
-		}
-
-		@Override
-		public boolean isObserver() {
-			return false;
-		}
-
-		@Override
 		public Chunk getChunk() {
 			return null;
 		}
@@ -252,10 +230,6 @@ public final class ComponentTest {
 		@Override
 		public Region getRegion() {
 			return null;
-		}
-
-		@Override
-		public void interact(EntityInteractEvent<?> event) {
 		}
 
 		@Override

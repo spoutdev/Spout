@@ -53,6 +53,7 @@ import org.spout.api.protocol.event.ChunkFreeEvent;
 import org.spout.api.protocol.event.ChunkSendEvent;
 import org.spout.api.protocol.event.PositionSendEvent;
 import org.spout.api.protocol.event.UpdateBlockEvent;
+import org.spout.api.protocol.event.UpdateEntityEvent;
 import org.spout.api.protocol.event.WorldChangeProtocolEvent;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.SpoutPlayer;
@@ -216,7 +217,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer im
 			}
 
 			if (player.getPhysics().isTransformDirty() && sync) {
-				session.send(new UpdateEntityMessage(player.getId(), new Transform(player.getPhysics().getPosition(), player.getPhysics().getRotation(), Vector3.ONE), UpdateEntityMessage.UpdateAction.TRANSFORM, getRepositionManager()));
+				session.send(new UpdateEntityMessage(player.getId(), new Transform(player.getPhysics().getPosition(), player.getPhysics().getRotation(), Vector3.ONE), UpdateEntityEvent.UpdateAction.TRANSFORM, getRepositionManager()));
 				sync = false;
 			}
 
@@ -370,7 +371,7 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer im
 
 	@EventHandler
 	public void onPositionSend(PositionSendEvent event) {
-		event.getMessages().add(new UpdateEntityMessage(player.getId(), new Transform(event.getPoint(), event.getRotation(), Vector3.ONE), UpdateEntityMessage.UpdateAction.TRANSFORM, getRepositionManager()));
+		event.getMessages().add(new UpdateEntityMessage(player.getId(), new Transform(event.getPoint(), event.getRotation(), Vector3.ONE), UpdateEntityEvent.UpdateAction.TRANSFORM, getRepositionManager()));
 	}
 
 	@EventHandler
@@ -388,22 +389,27 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer im
 		event.getMessages().add(new ChunkDatatableMessage(((SpoutChunk) event.getChunk())));
 	}
 
+	@EventHandler
+	public void onUpdateEntity(UpdateEntityEvent event) {
+		event.getMessages().add(new UpdateEntityMessage(event.getEntityId(), event.getTransform(), event.getAction(), event.getRepositionManager()));
+	}
+
 	@Override
 	// TODO move to ServerNetworkSynchronizer?
 	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
 		super.syncEntity(e, liveTransform, spawn, destroy, update);
 		List<Message> messages = new ArrayList<>(3);
 		if (destroy) {
-			messages.add(new UpdateEntityMessage(e.getId(), null, UpdateEntityMessage.UpdateAction.REMOVE, null));
+			messages.add(new UpdateEntityMessage(e.getId(), null, UpdateEntityEvent.UpdateAction.REMOVE, null));
 		}
 		if (spawn) {
-			messages.add(new UpdateEntityMessage(e.getId(), e.getPhysics().getTransform(), UpdateEntityMessage.UpdateAction.ADD, getRepositionManager()));
+			messages.add(new UpdateEntityMessage(e.getId(), e.getPhysics().getTransform(), UpdateEntityEvent.UpdateAction.ADD, getRepositionManager()));
 		}
 		if (update) {
 			// TODO - might be worth adding force support
 			boolean force = false;
 			if (force || e.getPhysics().isTransformDirty()) {
-				messages.add(new UpdateEntityMessage(e.getId(), liveTransform, UpdateEntityMessage.UpdateAction.TRANSFORM, getRepositionManager()));
+				messages.add(new UpdateEntityMessage(e.getId(), liveTransform, UpdateEntityEvent.UpdateAction.TRANSFORM, getRepositionManager()));
 			}
 			if (!e.getData().getDeltaMap().isEmpty()) {
 				messages.add(new EntityDatatableMessage(e.getId(), e.getData().getDeltaMap()));
