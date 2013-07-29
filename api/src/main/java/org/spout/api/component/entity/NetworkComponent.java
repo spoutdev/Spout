@@ -33,15 +33,11 @@ import org.spout.api.Spout;
 import org.spout.api.entity.Player;
 import org.spout.api.event.ProtocolEvent;
 import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.protocol.EntityProtocol;
-import org.spout.api.protocol.EntityProtocolStore;
 import org.spout.api.protocol.Message;
-import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.SyncedStringMap;
 
-public class NetworkComponent extends EntityComponent {
+public abstract class NetworkComponent extends EntityComponent {
 	private static final SyncedStringMap protocolMap = SyncedStringMap.create(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
-	private final EntityProtocolStore protocolStore = new EntityProtocolStore();
 
 	public NetworkComponent() {
 	}
@@ -49,26 +45,6 @@ public class NetworkComponent extends EntityComponent {
 	@Override
 	public boolean isDetachable() {
 		return false;
-	}
-
-	/**
-	 * Returns the {@link EntityProtocol} for the given protocol id for this type of entity
-	 *
-	 * @param protocolId The protocol id (retrieved using {@link #getProtocolId(String)})
-	 * @return The entity protocol for the specified id.
-	 */
-	public EntityProtocol getEntityProtocol(int protocolId) {
-		return protocolStore.getEntityProtocol(protocolId);
-	}
-
-	/**
-	 * Registers {@code protocol} with this ControllerType's EntityProtocolStore
-	 *
-	 * @param protocolId The protocol id (retrieved using {@link #getProtocolId(String)})
-	 * @param protocol The protocol to set
-	 */
-	public void setEntityProtocol(int protocolId, EntityProtocol protocol) {
-		protocolStore.setEntityProtocol(protocolId, protocol);
 	}
 
 	/**
@@ -136,5 +112,14 @@ public class NetworkComponent extends EntityComponent {
 	 */
 	public void callProtocolEvent(ProtocolEvent event) {
 		callProtocolEvent(event, false);
+	}
+	
+	/**
+	 * Called just before the pre-snapshot stage.<br> This stage can make changes but they should be checked to make sure they are non-conflicting.
+	 */
+	public void finalizeTick() {
+	}
+
+	public void preSnapshot() {
 	}
 }

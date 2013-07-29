@@ -26,23 +26,11 @@
  */
 package org.spout.engine.protocol.builtin;
 
-import org.spout.api.entity.Entity;
 import org.spout.api.protocol.ClientNetworkSynchronizer;
-import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Session;
 
 public class SpoutClientNetworkSynchronizer extends ClientNetworkSynchronizer {
 	public SpoutClientNetworkSynchronizer(Session session) {
 		super(session);
-	}
-
-	// TODO what is this for?
-	public EntityProtocol getEntityProtocol(Entity entity) {
-		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
-		if (protocol == null) {
-			entity.getNetwork().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
-			protocol = SpoutEntityProtocol.INSTANCE;
-		}
-		return protocol;
 	}
 }

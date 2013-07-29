@@ -79,7 +79,6 @@ import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
  * The protocol used in SpoutClient
  */
 public class SpoutProtocol extends Protocol {
-	public static final int ENTITY_PROTOCOL_ID = NetworkComponent.getProtocolId(SpoutProtocol.class.getName());
 	public static final SpoutProtocol INSTANCE = new SpoutProtocol();
 	public static final DefaultedKey<Integer> PLAYER_ENTITY_ID = new DefaultedKeyImpl<>("playerEntityId", -1);
 	public static final int PROTOCOL_VERSION = 0;

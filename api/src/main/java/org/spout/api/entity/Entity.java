@@ -184,7 +184,8 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	public PhysicsComponent getPhysics();
 
 	/**
-	 * Gets a {@link NetworkComponent} which holds the entities protocol lookups.
+	 * Gets a {@link NetworkComponent} for the entity.
+	 * The {@link NetworkComponent} is special in that it has methods that get called in preSnapshot and finalizeTick
 	 *
 	 * @return The network component
 	 */

@@ -45,7 +45,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
-import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
@@ -60,6 +59,7 @@ import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDatatableMessage;
+import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 import org.spout.engine.world.SpoutChunk;
@@ -392,29 +392,26 @@ public class SpoutServerNetworkSynchronizer extends ServerNetworkSynchronizer im
 	// TODO move to ServerNetworkSynchronizer?
 	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
 		super.syncEntity(e, liveTransform, spawn, destroy, update);
-		EntityProtocol protocol = getEntityProtocol(e);
 		List<Message> messages = new ArrayList<>(3);
 		if (destroy) {
-			messages.addAll(protocol.getDestroyMessages(e));
+			messages.add(new UpdateEntityMessage(e.getId(), null, UpdateEntityMessage.UpdateAction.REMOVE, null));
 		}
 		if (spawn) {
-			messages.addAll(protocol.getSpawnMessages(e, getRepositionManager()));
+			messages.add(new UpdateEntityMessage(e.getId(), e.getPhysics().getTransform(), UpdateEntityMessage.UpdateAction.ADD, getRepositionManager()));
 		}
 		if (update) {
 			// TODO - might be worth adding force support
-			messages.addAll(protocol.getUpdateMessages(e, liveTransform, getRepositionManager(), true));
+			boolean force = false;
+			if (force || e.getPhysics().isTransformDirty()) {
+				messages.add(new UpdateEntityMessage(e.getId(), liveTransform, UpdateEntityMessage.UpdateAction.TRANSFORM, getRepositionManager()));
+			}
+			if (!e.getData().getDeltaMap().isEmpty()) {
+				messages.add(new EntityDatatableMessage(e.getId(), e.getData().getDeltaMap()));
+				e.getData().resetDelta();
+			}
 		}
 		for (Message message : messages) {
 			this.session.send(message);
 		}
-	}
-
-	private EntityProtocol getEntityProtocol(Entity entity) {
-		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
-		if (protocol == null) {
-			entity.getNetwork().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
-			protocol = SpoutEntityProtocol.INSTANCE;
-		}
-		return protocol;
 	}
 }
