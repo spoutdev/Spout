@@ -8,16 +8,19 @@ import org.spout.api.Server;
 import org.spout.api.entity.Player;
 import org.spout.api.event.ProtocolEvent;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
+import org.spout.api.util.SyncedStringMap;
 
 /**
  * The networking behind {@link org.spout.api.entity.Player}s. This component holds the {@link Session} which is the connection
  * the Player has to the server.
  */
 public abstract class PlayerNetworkComponent extends NetworkComponent {
+	private static final SyncedStringMap protocolMap = SyncedStringMap.create(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
 	private AtomicReference<Session> session = new AtomicReference<>(null);
 
 	@Override
@@ -104,5 +107,15 @@ public abstract class PlayerNetworkComponent extends NetworkComponent {
 				player.getNetwork().getSession().send(false, message);
 			}
 		}
+	}
+
+	/**
+	 * Registers the protocol name and gets the id assigned.
+	 *
+	 * @param protocolName The name of the protocol class to get an id for
+	 * @return The id for the specified protocol class
+	 */
+	public static int getProtocolId(String protocolName) {
+		return protocolMap.register(protocolName);
 	}
 }

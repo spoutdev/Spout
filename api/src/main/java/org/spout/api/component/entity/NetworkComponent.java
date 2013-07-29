@@ -26,28 +26,18 @@
  */
 package org.spout.api.component.entity;
 
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.Platform;
-
-import org.spout.api.Spout;
-import org.spout.api.entity.Player;
-import org.spout.api.event.ProtocolEvent;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.protocol.Message;
-import org.spout.api.protocol.Session;
 import org.spout.api.util.SyncedStringMap;
 
 /**
  * The networking behind {@link org.spout.api.entity.Entity}s.
  */
 public abstract class NetworkComponent extends EntityComponent {
-	private static final SyncedStringMap protocolMap = SyncedStringMap.create(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
 	//TODO: Move all observer code to NetworkComponent
 	private AtomicBoolean observer = new AtomicBoolean(false);
 	private AtomicInteger syncDistance = new AtomicInteger(0);
@@ -123,15 +113,5 @@ public abstract class NetworkComponent extends EntityComponent {
 	 */
 	public void preSnapshot(final Transform live) {
 
-	}
-
-	/**
-	 * Registers the protocol name and gets the id assigned.
-	 *
-	 * @param protocolName The name of the protocol class to get an id for
-	 * @return The id for the specified protocol class
-	 */
-	public static int getProtocolId(String protocolName) {
-		return protocolMap.register(protocolName);
 	}
 }
