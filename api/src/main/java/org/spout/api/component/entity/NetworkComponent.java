@@ -26,9 +26,15 @@
  */
 package org.spout.api.component.entity;
 
+import java.util.List;
+
+import org.spout.api.entity.Player;
+import org.spout.api.event.ProtocolEvent;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
+import org.spout.api.protocol.Message;
 
 /**
  * The networking behind {@link org.spout.api.entity.Entity}s.
@@ -72,6 +78,7 @@ public abstract class NetworkComponent extends EntityComponent {
 	 * Gets the sync distance of the owning {@link org.spout.api.entity.Entity}.
 	 * </p>
 	 * Sync distance is a value indicating the radius outwards from the entity where network updates (such as chunk creation) will be triggered.
+	 *
 	 * @return The current sync distance
 	 */
 	public int getSyncDistance() {
@@ -109,5 +116,57 @@ public abstract class NetworkComponent extends EntityComponent {
 	 */
 	public void preSnapshot(final Transform live) {
 
+	}
+
+	/**
+	 * Calls a {@link org.spout.api.event.ProtocolEvent} for all {@link org.spout.api.entity.Player}s in-which the owning {@link org.spout.api.entity.Entity} is within their sync distance
+	 * <p/>
+	 * If the owning Entity is a Player, it will receive the event as well.
+	 *
+	 * @param event to send
+	 */
+	public final void callProtocolEvent(final ProtocolEvent event) {
+		callProtocolEvent(event, false);
+	}
+
+	/**
+	 * Calls a {@link ProtocolEvent} for all {@link org.spout.api.entity.Player}s in-which the owning {@link org.spout.api.entity.Entity} is within their sync distance
+	 *
+	 * @param event to send
+	 * @param ignoreOwner True to ignore the owning Entity, false to also send it to the Entity (if the Entity is also a Player)
+	 */
+	public final void callProtocolEvent(final ProtocolEvent event, final boolean ignoreOwner) {
+		final List<Player> players = getOwner().getWorld().getPlayers();
+		final Point position = getOwner().getPhysics().getPosition();
+		final List<Message> messages = getEngine().getEventManager().callEvent(event).getMessages();
+
+		for (final Player player : players) {
+			if (ignoreOwner && getOwner() == player) {
+				continue;
+			}
+			final Point otherPosition = player.getPhysics().getPosition();
+			//TODO: Verify this math
+			if (position.subtract(otherPosition).fastLength() > player.getNetwork().getSyncDistance()) {
+				continue;
+			}
+			for (final Message message : messages) {
+				player.getNetwork().getSession().send(false, message);
+			}
+		}
+	}
+
+	/**
+	 * Calls a {@link ProtocolEvent} for all {@link Player}s provided.
+	 *
+	 * @param event to send
+	 * @param players to send to
+	 */
+	public final void callProtocolEvent(final ProtocolEvent event, final Player... players) {
+		final List<Message> messages = getEngine().getEventManager().callEvent(event).getMessages();
+		for (final Player player : players) {
+			for (final Message message : messages) {
+				player.getNetwork().getSession().send(false, message);
+			}
+		}
 	}
 }
