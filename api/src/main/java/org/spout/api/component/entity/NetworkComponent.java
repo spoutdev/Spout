@@ -53,7 +53,12 @@ public abstract class NetworkComponent extends EntityComponent {
 	private AtomicInteger syncDistance = new AtomicInteger(0);
 
 	@Override
-	public boolean isDetachable() {
+	public final boolean isDetachable() {
+		return false;
+	}
+
+	@Override
+	public final boolean canTick() {
 		return false;
 	}
 
