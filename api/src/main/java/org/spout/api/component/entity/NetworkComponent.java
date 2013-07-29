@@ -26,21 +26,17 @@
  */
 package org.spout.api.component.entity;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.util.SyncedStringMap;
+import org.spout.api.map.DefaultedKey;
+import org.spout.api.map.DefaultedKeyImpl;
 
 /**
  * The networking behind {@link org.spout.api.entity.Entity}s.
  */
 public abstract class NetworkComponent extends EntityComponent {
 	//TODO: Move all observer code to NetworkComponent
-	private AtomicBoolean observer = new AtomicBoolean(false);
-	private AtomicInteger syncDistance = new AtomicInteger(0);
+	public final DefaultedKey<Boolean> IS_OBSERVER = new DefaultedKeyImpl("IS_OBSERVER", false);
+	public final DefaultedKey<Integer> SYNC_DISTANCE = new DefaultedKeyImpl("SYNC_DISTANCE", 0);
 
 	@Override
 	public final boolean isDetachable() {
@@ -60,7 +56,7 @@ public abstract class NetworkComponent extends EntityComponent {
 	 * @return True if observer, false if not
 	 */
 	public boolean isObserver() {
-		return observer.get();
+		return getData().get(IS_OBSERVER);
 	}
 
 	/**
@@ -69,7 +65,7 @@ public abstract class NetworkComponent extends EntityComponent {
 	 * @param observer True if observer, false if not
 	 */
 	public void setObserver(final boolean observer) {
-		this.observer.set(observer);
+		getData().put(IS_OBSERVER, observer);
 	}
 
 	/**
@@ -79,7 +75,7 @@ public abstract class NetworkComponent extends EntityComponent {
 	 * @return The current sync distance
 	 */
 	public int getSyncDistance() {
-		return syncDistance.get();
+		return getData().get(SYNC_DISTANCE);
 	}
 
 	/**
@@ -89,7 +85,7 @@ public abstract class NetworkComponent extends EntityComponent {
 	 */
 	public void setSyncDistance(final int syncDistance) {
 		//TODO: Enforce server maximum (but that is set in Spout...)
-		this.syncDistance.set(syncDistance * Chunk.BLOCKS.SIZE);
+		getData().put(SYNC_DISTANCE, syncDistance);
 	}
 
 	/**
