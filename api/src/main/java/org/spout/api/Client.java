@@ -31,9 +31,9 @@ import org.spout.api.entity.Player;
 import org.spout.api.geo.World;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.input.InputManager;
-import org.spout.api.math.Vector2;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.render.RenderMode;
+import org.spout.math.vector.Vector2;
 
 /**
  * Represents the client-specific component of the Spout platform.

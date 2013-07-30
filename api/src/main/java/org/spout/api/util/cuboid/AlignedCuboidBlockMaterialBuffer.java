@@ -26,8 +26,8 @@
  */
 package org.spout.api.util.cuboid;
 
-import org.spout.api.math.GenericMath;
-import org.spout.api.math.Vector3;
+import org.spout.math.GenericMath;
+import org.spout.math.vector.Vector3;
 
 public class AlignedCuboidBlockMaterialBuffer extends CuboidBlockMaterialBuffer {
 	private final int xMask;

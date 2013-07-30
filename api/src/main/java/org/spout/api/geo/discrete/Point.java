@@ -37,7 +37,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.StringUtil;
 
 /**
@@ -69,80 +69,60 @@ public class Point extends Vector3 implements WorldSource {
 	}
 
 	@Override
-	public Point divide(int val) {
-		return new Point(super.divide(val), world);
+	public Point div(float val) {
+		return new Point(super.div(val), world);
 	}
 
 	@Override
-	public Point divide(float val) {
-		return new Point(super.divide(val), world);
+	public Point div(double val) {
+		return new Point(super.div(val), world);
 	}
 
 	@Override
-	public Point divide(double val) {
-		return new Point(super.divide(val), world);
+	public Point div(Vector3 other) {
+		return new Point(super.div(other), world);
 	}
 
 	@Override
-	public Point divide(Vector3 other) {
-		return new Point(super.divide(other), world);
+	public Point div(double x, double y, double z) {
+		return new Point(super.div(x, y, z), world);
 	}
 
 	@Override
-	public Point divide(double x, double y, double z) {
-		return new Point(super.divide(x, y, z), world);
+	public Point div(float x, float y, float z) {
+		return new Point(super.div(x, y, z), world);
 	}
 
 	@Override
-	public Point divide(float x, float y, float z) {
-		return new Point(super.divide(x, y, z), world);
+	public Point mul(float val) {
+		return new Point(super.mul(val), world);
 	}
 
 	@Override
-	public Point divide(int x, int y, int z) {
-		return new Point(super.divide(x, y, z), world);
+	public Point mul(double val) {
+		return new Point(super.mul(val), world);
 	}
 
 	@Override
-	public Point multiply(int val) {
-		return new Point(super.multiply(val), world);
+	public Point mul(Vector3 other) {
+		return new Point(super.mul(other), world);
 	}
 
 	@Override
-	public Point multiply(float val) {
-		return new Point(super.multiply(val), world);
+	public Point mul(double x, double y, double z) {
+		return new Point(super.mul(x, y, z), world);
 	}
 
 	@Override
-	public Point multiply(double val) {
-		return new Point(super.multiply(val), world);
-	}
-
-	@Override
-	public Point multiply(Vector3 other) {
-		return new Point(super.multiply(other), world);
-	}
-
-	@Override
-	public Point multiply(double x, double y, double z) {
-		return new Point(super.multiply(x, y, z), world);
-	}
-
-	@Override
-	public Point multiply(float x, float y, float z) {
-		return new Point(super.multiply(x, y, z), world);
-	}
-
-	@Override
-	public Point multiply(int x, int y, int z) {
-		return new Point(super.multiply(x, y, z), world);
+	public Point mul(float x, float y, float z) {
+		return new Point(super.mul(x, y, z), world);
 	}
 
 	public Point add(Point other) {
 		if (world != other.world) {
 			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
 		}
-		return new Point(Vector3.add(this, other), world);
+		return new Point(new Point(this.add(other)), world);
 	}
 
 	@Override
@@ -161,28 +141,18 @@ public class Point extends Vector3 implements WorldSource {
 	}
 
 	@Override
-	public Point add(int x, int y, int z) {
-		return new Point(super.add(x, y, z), world);
+	public Point sub(Vector3 other) {
+		return new Point(super.sub(other), world);
 	}
 
 	@Override
-	public Point subtract(Vector3 other) {
-		return new Point(super.subtract(other), world);
+	public Point sub(float x, float y, float z) {
+		return new Point(super.sub(x, y, z), world);
 	}
 
 	@Override
-	public Point subtract(float x, float y, float z) {
-		return new Point(super.subtract(x, y, z), world);
-	}
-
-	@Override
-	public Point subtract(double x, double y, double z) {
-		return new Point(super.subtract(x, y, z), world);
-	}
-
-	@Override
-	public Point subtract(int x, int y, int z) {
-		return new Point(super.subtract(x, y, z), world);
+	public Point sub(double x, double y, double z) {
+		return new Point(super.sub(x, y, z), world);
 	}
 
 	public int getBlockX() {
@@ -224,9 +194,9 @@ public class Point extends Vector3 implements WorldSource {
 		if (other == null || world == null || other.world == null || !world.equals(other.world)) {
 			return Double.MAX_VALUE;
 		}
-		double dx = x - other.x;
-		double dy = y - other.y;
-		double dz = z - other.z;
+		double dx = getX() - other.getX();
+		double dy = getY() - other.getY();
+		double dz = getZ() - other.getZ();
 		return dx * dx + dy * dy + dz * dz;
 	}
 
@@ -252,7 +222,7 @@ public class Point extends Vector3 implements WorldSource {
 		if (other == null || world == null || other.world == null || !world.equals(other.world)) {
 			return Double.MAX_VALUE;
 		}
-		return Math.abs(x - other.x) + Math.abs(y - other.y) + Math.abs(z - other.z);
+		return Math.abs(getX() - other.getX()) + Math.abs(getY() - other.getY()) + Math.abs(getZ() - other.getZ());
 	}
 
 	/**
@@ -266,7 +236,9 @@ public class Point extends Vector3 implements WorldSource {
 		if (other == null || world == null || other.world == null || !world.equals(other.world)) {
 			return Double.MAX_VALUE;
 		}
-		return Math.max(Math.abs(x - other.x), Math.max(Math.abs(y - other.y), Math.abs(z - other.z)));
+		return Math.max(Math.abs(getX() - other.getX()),
+						Math.max(Math.abs(getY() - other.getY()),
+						Math.abs(getZ() - other.getZ())));
 	}
 
 	/**
@@ -285,7 +257,7 @@ public class Point extends Vector3 implements WorldSource {
 	 * @return the world
 	 */
 	public Block getBlock() {
-		return world.getBlock(x, y, z);
+		return world.getBlock(getX(), getY(), getZ());
 	}
 
 	@Override
@@ -304,13 +276,13 @@ public class Point extends Vector3 implements WorldSource {
 		} else {
 			Point point = (Point) obj;
 			boolean worldEqual = point.world == world || (point.world != null && point.world.equals(world));
-			return worldEqual && point.x == x && point.y == y && point.z == z;
+			return worldEqual && point.getX() == getX() && point.getY() == getY() && point.getZ() == getZ();
 		}
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + StringUtil.toString(world, x, y, z);
+		return getClass().getSimpleName() + StringUtil.toString(world, getX(), getY(), getZ());
 	}
 
 	public String toBlockString() {
@@ -323,9 +295,9 @@ public class Point extends Vector3 implements WorldSource {
 
 	//Custom serialization logic because world can not be made serializable
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		out.writeFloat(this.x);
-		out.writeFloat(this.y);
-		out.writeFloat(this.z);
+		out.writeFloat(this.getX());
+		out.writeFloat(this.getY());
+		out.writeFloat(this.getZ());
 		out.writeUTF(world != null ? world.getName() : "null");
 	}
 

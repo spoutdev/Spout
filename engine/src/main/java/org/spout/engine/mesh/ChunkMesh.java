@@ -43,7 +43,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.OrientedMesh;
 import org.spout.api.model.mesh.OrientedMeshFace;

@@ -76,13 +76,10 @@ import org.spout.api.event.world.WorldUnloadEvent;
 import org.spout.api.generator.EmptyWorldGenerator;
 import org.spout.api.generator.FlatWorldGenerator;
 import org.spout.api.generator.WorldGenerator;
-import org.spout.api.generator.biome.BiomeRegistry;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.lighting.LightingRegistry;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
@@ -90,7 +87,6 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.resource.FileSystem;
-import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
 import org.spout.cereal.config.ConfigurationException;
@@ -111,6 +107,7 @@ import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutServerWorld;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
+import org.spout.math.imaginary.Quaternion;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	/**

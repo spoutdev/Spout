@@ -137,7 +137,7 @@ public abstract class EffectRangeImpl implements EffectRange {
 
 	@Override
 	public EffectRange translate(BlockFace face) {
-		return this.translate(new IntVector3(face));
+		return translate(new IntVector3(face));
 	}
 
 	@Override

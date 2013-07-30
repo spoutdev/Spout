@@ -43,7 +43,7 @@ import com.google.common.collect.TreeMultimap;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;

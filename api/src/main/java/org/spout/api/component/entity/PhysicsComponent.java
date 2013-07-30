@@ -29,10 +29,10 @@ package org.spout.api.component.entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
+import org.spout.math.imaginary.Quaternion;
 import org.spout.physics.collision.shape.CollisionShape;
 
 /**

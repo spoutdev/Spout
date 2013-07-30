@@ -27,7 +27,7 @@
 package org.spout.api.util.cuboid;
 
 import org.spout.api.lighting.Modifiable;
-import org.spout.api.math.GenericMath;
+import org.spout.math.GenericMath;
 
 public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
 	private final int xMask;

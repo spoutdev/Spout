@@ -29,7 +29,7 @@ package org.spout.api.util.map.concurrent;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import org.spout.api.math.GenericMath;
+import org.spout.math.GenericMath;
 
 /**
  * This class implements a variable width Atomic array.  It is backed by an AtomicInteger array.<br> <br> Entries widths can be a power of 2 from 1 to 32

@@ -62,7 +62,7 @@ public abstract class NibbleQuadHashed {
 	 * @param key4 a <code>byte</code> value
 	 * @return The first 4 most significant bits of each byte packed into a <code>short</code>
 	 */
-	public static final short key(int key1, int key2, int key3, int key4) {
+	public static short key(int key1, int key2, int key3, int key4) {
 		return (short) ((key1 & 0xF) << 12 | (key2 & 0xF) << 8 | (key3 & 0xF) << 4 | key4 & 0xF);
 	}
 

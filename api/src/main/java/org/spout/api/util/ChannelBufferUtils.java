@@ -46,9 +46,9 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.Tag;
@@ -361,7 +361,7 @@ public final class ChannelBufferUtils {
 		final float y = buffer.readFloat();
 		final float z = buffer.readFloat();
 		final float w = buffer.readFloat();
-		return new Quaternion(x, y, z, w, true);
+		return new Quaternion(x, y, z, w);
 	}
 
 	public static void writeQuaternion(ChannelBuffer buffer, Quaternion quaternion) {

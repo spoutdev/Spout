@@ -54,8 +54,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.IntVector3;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
@@ -69,6 +68,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
 import org.spout.engine.util.thread.snapshotable.SnapshotableInt;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutChunk;
+import org.spout.math.imaginary.Quaternion;
 
 public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = Integer.MIN_VALUE;
@@ -315,7 +315,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 				chunk.refreshObserver(this);
 				observing.add((SpoutChunk) chunk);
 			} else {
-				ungenerated.add(new Vector3(v));
+				ungenerated.add(v.toVector3());
 				observeChunksFailed = true;
 			}
 		}

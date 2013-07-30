@@ -32,7 +32,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.SpoutToStringStyle;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 

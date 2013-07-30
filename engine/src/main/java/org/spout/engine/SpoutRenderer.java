@@ -51,10 +51,7 @@ import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.gui.render.RenderPartPack;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Rectangle;
-import org.spout.api.math.Vector2;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.shader.Shader;
@@ -69,6 +66,8 @@ import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.EntityRenderer;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.util.MacOSXUtils;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.vector.Vector2;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
@@ -87,7 +86,7 @@ public class SpoutRenderer {
 	private EntityRenderer entityRenderer;
 	private WorldRenderer worldRenderer;
 	private boolean wireframe = false;
-	private Matrix ident = MatrixMath.createIdentity();
+	private Matrix3 ident = Matrix3.IDENTITY;
 	// Screen texture
 	private SpriteBatch screenBatcher;
 	private ClientRenderTexture t;

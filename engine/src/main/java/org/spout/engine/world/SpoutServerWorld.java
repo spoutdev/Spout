@@ -48,8 +48,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.list.concurrent.ConcurrentList;
@@ -61,6 +60,7 @@ import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
+import org.spout.math.imaginary.Quaternion;
 
 public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 	/**

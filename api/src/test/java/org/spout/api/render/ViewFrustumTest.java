@@ -31,9 +31,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.spout.api.geo.cuboid.Cuboid;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.MatrixMath;
-import org.spout.api.math.Vector3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector3;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -54,8 +53,8 @@ public class ViewFrustumTest {
 
 	@Test
 	public void testUpdate() {
-		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix4 projection = Matrix4.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix4 view = Matrix4.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
 		frustum.update(projection, view, new Vector3(0, 0, 0));
 
@@ -65,8 +64,8 @@ public class ViewFrustumTest {
 
 	@Test
 	public void testIntersects() {
-		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix4 projection = Matrix4.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix4 view = Matrix4.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
 		frustum.update(projection, view, new Vector3(0, 0, 0));
 
@@ -90,8 +89,8 @@ public class ViewFrustumTest {
 
 	@Test
 	public void testIntersectsFalse() {
-		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix4 projection = Matrix4.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix4 view = Matrix4.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
 		frustum.update(projection, view, new Vector3(0, 0, 0));
 
@@ -115,8 +114,8 @@ public class ViewFrustumTest {
 
 	@Test
 	public void testContains() {
-		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix4 projection = Matrix4.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix4 view = Matrix4.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
 		frustum.update(projection, view, new Vector3(0, 0, 0));
 

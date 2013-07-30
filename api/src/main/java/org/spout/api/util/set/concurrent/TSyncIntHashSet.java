@@ -39,7 +39,7 @@ import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
-import org.spout.api.math.GenericMath;
+import org.spout.math.GenericMath;
 
 /**
  * This is a synchronised version of the Trove IntHashSet.
