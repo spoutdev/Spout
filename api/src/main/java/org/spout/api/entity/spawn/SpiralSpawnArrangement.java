@@ -27,8 +27,9 @@
 package org.spout.api.entity.spawn;
 
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.MatrixMath;
-import org.spout.api.math.Vector3;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.vector.Vector3;
 
 public class SpiralSpawnArrangement extends GenericSpawnArrangement {
 	private final float scaleRadius;
@@ -48,7 +49,7 @@ public class SpiralSpawnArrangement extends GenericSpawnArrangement {
 	public Point[] generatePoints(Point center, int number) {
 
 		float angle = 0;
-		float distance = 1;
+		float distance;
 
 		Point[] points = new Point[number];
 
@@ -56,9 +57,8 @@ public class SpiralSpawnArrangement extends GenericSpawnArrangement {
 
 		for (int i = 1; i < number; i++) {
 			distance = (float) Math.sqrt(i);
-
-			Vector3 offset = Point.FORWARD.transform(MatrixMath.createRotatedY(angle));
-			offset = offset.multiply(distance).multiply(scaleRadius);
+			final Vector3 offset = Matrix3.createRotation(Quaternion.fromAngleDegAxis(angle, 0, 1, 0))
+					.transform(Vector3.FORWARD).mul(distance * scaleRadius);
 
 			points[i] = center.add(offset);
 

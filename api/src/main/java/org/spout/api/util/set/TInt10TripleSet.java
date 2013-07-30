@@ -29,7 +29,7 @@ package org.spout.api.util.set;
 import gnu.trove.iterator.hash.TObjectHashIterator;
 import gnu.trove.set.hash.TLinkedHashSet;
 
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.hashing.Int10TripleHashed;
 
 public class TInt10TripleSet {

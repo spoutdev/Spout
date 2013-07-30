@@ -33,8 +33,8 @@ import java.util.Scanner;
 import java.util.Set;
 
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
 import org.spout.api.model.mesh.OrientedMesh;
 import org.spout.api.model.mesh.OrientedMeshFace;
 import org.spout.api.model.mesh.Vertex;

@@ -34,7 +34,7 @@ import java.util.List;
 import net.royawesome.jlibnoise.module.modifier.Turbulence;
 import net.royawesome.jlibnoise.module.source.Voronoi;
 
-import org.spout.api.math.GenericMath;
+import org.spout.math.GenericMath;
 
 /**
  * A layer where each voronoi cell is a {@link LayeredBiomeSelectorElement}. This layer uses a voronoi source passed through a turbulence modifier. Useful for land with various unorganized biomes.

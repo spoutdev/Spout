@@ -27,7 +27,7 @@
 package org.spout.api.component.entity;
 
 import org.spout.api.map.DefaultedKey;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.render.Font;
 import org.spout.api.render.SpoutRenderMaterials;
 

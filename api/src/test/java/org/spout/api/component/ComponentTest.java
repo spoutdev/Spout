@@ -74,7 +74,7 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Rectangle;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;

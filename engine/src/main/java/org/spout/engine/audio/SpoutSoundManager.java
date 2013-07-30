@@ -42,7 +42,7 @@ import org.spout.api.audio.SoundListener;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 import static org.lwjgl.openal.AL10.alGenSources;
 import static org.lwjgl.openal.AL10.alIsBuffer;

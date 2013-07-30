@@ -29,7 +29,7 @@ package org.spout.api.geo;
 import java.util.Collection;
 
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.thread.annotation.LiveRead;
 
 public interface AreaRegionAccess extends AreaChunkAccess {

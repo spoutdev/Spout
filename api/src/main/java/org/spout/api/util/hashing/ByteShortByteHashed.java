@@ -35,7 +35,7 @@ public class ByteShortByteHashed {
 	 * @param key3 a <code>byte</code> value
 	 * @return a long which is the concatenation of key1, key2 and key3
 	 */
-	public static final int key(int key1, int key2, int key3) {
+	public static int key(int key1, int key2, int key3) {
 		return (key1 & 0xFF) << 24 | (key3 & 0xFF) << 16 | key2 & 0xFFFF;
 	}
 

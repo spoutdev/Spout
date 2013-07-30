@@ -46,7 +46,7 @@ import gnu.trove.procedure.TLongProcedure;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.set.TLongSet;
 
-import org.spout.api.math.GenericMath;
+import org.spout.math.GenericMath;
 
 /**
  * This is a synchronised version of the Trove LongObjectHashMap.

@@ -50,12 +50,12 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.Plugin;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.component.entity.MovementValidatorComponent;
+import org.spout.math.imaginary.Quaternion;
 
 public class CommonCommands {
 	private final SpoutEngine engine;

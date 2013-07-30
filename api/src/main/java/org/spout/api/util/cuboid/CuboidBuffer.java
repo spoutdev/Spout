@@ -26,7 +26,7 @@
  */
 package org.spout.api.util.cuboid;
 
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 /**
  * This class implements a Cuboid common methods for a one dimensional array Cuboid Buffer

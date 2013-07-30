@@ -30,6 +30,8 @@ import org.junit.Test;
 
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
 import static org.junit.Assert.assertTrue;
 
@@ -49,7 +51,7 @@ public class ReactConverterTest {
 
 	@Test
 	public void testQuaternion() {
-		final Quaternion spoutQuaternion = new Quaternion(5, 6, 7, 8, true);
+		final Quaternion spoutQuaternion = new Quaternion(5, 6, 7, 8);
 		final org.spout.physics.math.Quaternion reactQuaternion = ReactConverter.toReactQuaternion(spoutQuaternion);
 		assertTrue(reactQuaternion.getX() == 5);
 		assertTrue(reactQuaternion.getY() == 6);
@@ -64,7 +66,7 @@ public class ReactConverterTest {
 
 	@Test
 	public void testTransform() {
-		final Transform spoutTransform = new Transform(new Point(null, 5, 6, 7), new Quaternion(5, 6, 7, 8, true), new Vector3(1, 2, 3));
+		final Transform spoutTransform = new Transform(new Point(null, 5, 6, 7), new Quaternion(5, 6, 7, 8), new Vector3(1, 2, 3));
 		final org.spout.physics.math.Transform reactTransform = ReactConverter.toReactTransform(spoutTransform);
 		assertTrue(reactTransform.getPosition().getX() == 5);
 		assertTrue(reactTransform.getPosition().getY() == 6);

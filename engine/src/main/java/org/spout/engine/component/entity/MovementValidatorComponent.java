@@ -34,8 +34,8 @@ import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
-import org.spout.api.math.QuaternionMath;
-import org.spout.api.math.Vector3;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
 public class MovementValidatorComponent extends EntityComponent {
 	public static final String RECEIVED_TRANSFORM = "RECEIVED_TRANSFORM";
@@ -61,23 +61,23 @@ public class MovementValidatorComponent extends EntityComponent {
 		Transform playerTransform = player.getPhysics().getTransform();
 		final Vector3 motion;
 		if (inputState.getForward()) {
-			motion = playerTransform.forwardVector().multiply(speed * -dt);
+			motion = playerTransform.forwardVector().mul(speed * -dt);
 		} else if (inputState.getBackward()) {
-			motion = playerTransform.forwardVector().multiply(speed * dt);
+			motion = playerTransform.forwardVector().mul(speed * dt);
 		} else if (inputState.getLeft()) {
-			motion = playerTransform.rightVector().multiply(speed * -dt); //TODO getLeftVector
+			motion = playerTransform.rightVector().mul(speed * -dt); //TODO getLeftVector
 		} else if (inputState.getRight()) {
-			motion = playerTransform.rightVector().multiply(speed * dt);
+			motion = playerTransform.rightVector().mul(speed * dt);
 		} else if (inputState.getJump()) {
-			motion = playerTransform.upVector().multiply(speed * dt);
+			motion = playerTransform.upVector().mul(speed * dt);
 		} else if (inputState.getCrouch()) {
-			motion = playerTransform.upVector().multiply(speed * -dt);
+			motion = playerTransform.upVector().mul(speed * -dt);
 		} else {
-			playerTransform.setRotation(QuaternionMath.rotation(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
+			playerTransform.setRotation(Quaternion.fromAxesAnglesDeg(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
 			((SpoutPhysicsComponent) player.getPhysics()).setTransform(playerTransform, false);
 			return;
 		}
-		playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
+		playerTransform.translateAndSetRotation(motion, Quaternion.fromAxesAnglesDeg(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
 		Transform old = player.getSession().getDataMap().get(RECEIVED_TRANSFORM, (Transform) null);
 		if (player.getData().get(VALIDATE_MOVEMENT) && (old == null ||
 				Math.abs(old.getPosition().getX() - playerTransform.getPosition().getX()) > .2f ||

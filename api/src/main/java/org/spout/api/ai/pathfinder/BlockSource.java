@@ -27,7 +27,7 @@
 package org.spout.api.ai.pathfinder;
 
 import org.spout.api.material.Material;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 public interface BlockSource {
 	int getBlockTypeIdAt(int x, int y, int z);
