@@ -762,6 +762,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 		// Initialize the session
 		session.getProtocol().initializeServerSession(session);
+		if (player.getNetwork() == null) {
+			throw new IllegalStateException("initializeServerSession failed to set a player's NetworkComponent. Protocol: " + session.getProtocol());
+		}
 		session.getNetworkSynchronizer().forceSync();
 		return player;
 	}

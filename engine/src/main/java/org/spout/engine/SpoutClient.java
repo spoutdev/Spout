@@ -217,13 +217,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 			CommonHandler handler = channel.getPipeline().get(CommonHandler.class);
 			SpoutClientSession session = new SpoutClientSession(this, channel, protocol);
 			handler.setSession(session);
-			session.getProtocol().initializeClientSession(session);
 
 			// TODO: This is really unclean
 			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", new Transform().setPosition(new Point(getWorld(), 1, 200, 1)), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 			if (!p.connect(session, p.getPhysics().getTransform())) {
 				getLogger().log(Level.SEVERE, "Error in calling player connect");
 				return false;
+			}
+			session.getProtocol().initializeClientSession(session);
+			if (p.getNetwork() == null) {
+				throw new IllegalStateException("initializeServerSession failed to set a player's NetworkComponent. Protocol: " + session.getProtocol());
 			}
 			this.session.set(session);
 		} else {

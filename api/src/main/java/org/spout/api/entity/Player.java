@@ -34,7 +34,6 @@ import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.annotation.Threadsafe;
 

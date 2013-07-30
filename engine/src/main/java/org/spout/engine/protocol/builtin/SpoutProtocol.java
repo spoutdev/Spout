@@ -47,6 +47,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.util.SyncedMapEvent;
 import org.spout.api.util.SyncedMapRegistry;
 import org.spout.api.util.SyncedStringMap;
+import org.spout.engine.component.entity.SpoutPlayerNetworkComponent;
 import org.spout.engine.protocol.builtin.codec.BlockUpdateCodec;
 import org.spout.engine.protocol.builtin.codec.ChunkDataCodec;
 import org.spout.engine.protocol.builtin.codec.ChunkDatatableCodec;
@@ -143,6 +144,7 @@ public class SpoutProtocol extends Protocol {
 	@Override
 	public void initializeServerSession(final ServerSession session) {
 		session.setNetworkSynchronizer(new SpoutServerNetworkSynchronizer(session));
+		session.getPlayer().add(SpoutPlayerNetworkComponent.class);
 		//TODO Ensure this is right, very important
 		SyncedMapRegistry.getRegistrationMap().registerListener(new EventableListener<SyncedMapEvent>() {
 			@Override
@@ -160,5 +162,6 @@ public class SpoutProtocol extends Protocol {
 	@Override
 	public void initializeClientSession(final ClientSession session) {
 		session.setNetworkSynchronizer(new SpoutClientNetworkSynchronizer(session));
+		session.getPlayer().add(SpoutPlayerNetworkComponent.class);
 	}
 }

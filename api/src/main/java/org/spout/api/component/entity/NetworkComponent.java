@@ -67,7 +67,7 @@ public abstract class NetworkComponent extends EntityComponent {
 	//TODO: Move all observer code to NetworkComponent
 	public final DefaultedKey<Boolean> IS_OBSERVER = new DefaultedKeyImpl<>("IS_OBSERVER", false);
 	/** In chunks */
-	public final DefaultedKey<Integer> SYNC_DISTANCE = new DefaultedKeyImpl<>("SYNC_DISTANCE", 0);
+	public final DefaultedKey<Integer> SYNC_DISTANCE = new DefaultedKeyImpl<>("SYNC_DISTANCE", 10);
 	private final AtomicReference<RepositionManager> rm = new AtomicReference<>(NullRepositionManager.getInstance());
 
 	protected final TSyncIntHashSet synchronizedEntities = new TSyncIntHashSet();

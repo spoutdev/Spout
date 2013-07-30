@@ -30,18 +30,4 @@ package org.spout.api.protocol;
  * Represents a connection to the cleint.<br/> Controls the state, protocol and channels of a connection to the client.
  */
 public interface ServerSession extends Session {
-	/**
-	 * Sets the ServerNetworkSynchronizer associated with this player.<br> <br> This can only be called once per player login.
-	 *
-	 * @param synchronizer the synchronizer
-	 */
-	public void setNetworkSynchronizer(ServerNetworkSynchronizer synchronizer);
-
-	/**
-	 * Gets the ServerNetworkSynchronizer associated with this player.<br>
-	 *
-	 * @return the synchronizer
-	 */
-	@Override
-	public ServerNetworkSynchronizer getNetworkSynchronizer();
 }

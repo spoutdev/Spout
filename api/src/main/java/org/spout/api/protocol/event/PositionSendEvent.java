@@ -33,12 +33,18 @@ import org.spout.api.math.Quaternion;
 
 public class PositionSendEvent extends ProtocolEvent {
 	private static final HandlerList handlers = new HandlerList();
+	private final int playerId;
 	private final Point point;
 	private final Quaternion rotation;
 
-	public PositionSendEvent(Point point, Quaternion rotation) {
+	public PositionSendEvent(int playerId, Point point, Quaternion rotation) {
+		this.playerId = playerId;
 		this.point = point;
 		this.rotation = rotation;
+	}
+
+	public int getPlayerId() {
+		return playerId;
 	}
 
 	public Point getPoint() {
