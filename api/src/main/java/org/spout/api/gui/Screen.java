@@ -38,9 +38,9 @@ import org.spout.api.Spout;
 import org.spout.api.component.widget.ControlComponent;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
-import org.spout.api.math.Vector2;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.tickable.BasicTickable;
+import org.spout.math.vector.Vector2;
 
 public class Screen extends BasicTickable implements Container {
 	private final HashMap<Widget, Plugin> widgets = new LinkedHashMap<>();

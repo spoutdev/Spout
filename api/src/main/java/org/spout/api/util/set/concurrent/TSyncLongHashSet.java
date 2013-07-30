@@ -39,7 +39,7 @@ import gnu.trove.procedure.TLongProcedure;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 
-import org.spout.api.math.GenericMath;
+import org.spout.math.GenericMath;
 
 /**
  * This is a synchronised version of the Trove LongObjectHashSet.

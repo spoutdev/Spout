@@ -26,8 +26,8 @@
  */
 package org.spout.engine.renderer.vertexformat;
 
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
 
 public class PositionNormalTexture {
 	private Vector3 position;

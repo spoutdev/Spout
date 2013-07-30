@@ -43,7 +43,6 @@ import org.spout.api.lighting.LightingManager;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
-import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
 import org.spout.api.scheduler.SnapshotLock;
 import org.spout.api.util.Named;
@@ -52,6 +51,7 @@ import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
+import org.spout.math.GenericMath;
 
 public class RegionGenerator implements Named {
 	private final static ExecutorService pool =

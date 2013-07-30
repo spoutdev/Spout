@@ -27,7 +27,7 @@
 package org.spout.api.util.cuboid;
 
 import org.spout.api.material.Material;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 public class CuboidShortBuffer extends CuboidBuffer {
 	private final short[] buffer;

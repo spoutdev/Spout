@@ -129,6 +129,33 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	}
 
 	/**
+	 * Gets the pitch component of this quaternion in degrees
+	 *
+	 * @return The pitch component in degrees
+	 */
+	public float getPitch() {
+		return getAxesAngleDeg().getX();
+	}
+
+	/**
+	 * Gets the yaw component of this quaternion in degrees
+	 *
+	 * @return The yaw component in degrees
+	 */
+	public float getYaw() {
+		return getAxesAngleDeg().getY();
+	}
+
+	/**
+	 * Gets the roll component of this quaternion in degrees
+	 *
+	 * @return The roll component in degrees
+	 */
+	public float getRoll() {
+		return getAxesAngleDeg().getZ();
+	}
+
+	/**
 	 * Adds another quaternion to this one.
 	 *
 	 * @param q The quaternion to add

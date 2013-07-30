@@ -93,9 +93,8 @@ import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.block.BlockSnapshot;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.bytebit.ByteBitSet;
@@ -114,6 +113,7 @@ import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
+import org.spout.math.GenericMath;
 
 public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<>(null);

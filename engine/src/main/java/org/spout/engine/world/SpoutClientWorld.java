@@ -42,7 +42,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.engine.SpoutClient;
 

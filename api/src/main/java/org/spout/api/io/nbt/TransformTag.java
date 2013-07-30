@@ -29,8 +29,8 @@ package org.spout.api.io.nbt;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.Tag;
@@ -41,7 +41,7 @@ public class TransformTag extends CompoundTag {
 	}
 
 	public TransformTag(String name, float px, float py, float pz, float qx, float qy, float qz, float qw, float sx, float sy, float sz) {
-		this(name, new Vector3(px, py, pz), new Quaternion(qx, qy, qz, qw, false), new Vector3(sx, sy, sz));
+		this(name, new Vector3(px, py, pz), Quaternion.fromAngleDegAxis(qw, qx, qy, qz), new Vector3(sx, sy, sz));
 	}
 
 	public TransformTag(String name, Vector3 p, Quaternion q, Vector3 s) {

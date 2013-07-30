@@ -28,30 +28,36 @@ package org.spout.api.render.shader;
 
 import java.awt.Color;
 
-import org.spout.api.math.Matrix;
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector4;
+import org.spout.math.vector.Vector3;
 import org.spout.api.render.Texture;
+import org.spout.math.matrix.Matrix2;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector4;
 
 public interface Shader {
-	public abstract void setUniform(String name, int value);
+	public void setUniform(String name, int value);
 
-	public abstract void setUniform(String name, float value);
+	public void setUniform(String name, float value);
 
-	public abstract void setUniform(String name, Vector2 value);
+	public void setUniform(String name, Vector2 value);
 
-	public abstract void setUniform(String name, Vector3 value);
+	public void setUniform(String name, Vector3 value);
 
-	public abstract void setUniform(String name, Vector4 value);
+	public void setUniform(String name, Vector4 value);
 
-	public abstract void setUniform(String name, Matrix value);
+	public void setUniform(String name, Matrix2 value);
 
-	public abstract void setUniform(String name, Matrix[] value);
+	public void setUniform(String name, Matrix3 value);
 
-	public abstract void setUniform(String name, Color value);
+	public void setUniform(String name, Matrix4 value);
 
-	public abstract void setUniform(String name, Texture value);
+	public void setUniform(String name, Matrix4[] value);
 
-	public abstract void setUniform(String name, Vector3[] values);
+	public void setUniform(String name, Color value);
+
+	public void setUniform(String name, Texture value);
+
+	public void setUniform(String name, Vector3[] values);
 }

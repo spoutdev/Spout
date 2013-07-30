@@ -37,19 +37,14 @@ import org.lwjgl.BufferUtils;
 import org.spout.api.Spout;
 import org.spout.api.component.entity.AnimationComponent;
 import org.spout.api.event.entity.AnimationEndEvent;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.MatrixMath;
 import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.AnimationPlayed;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.engine.mesh.BaseMesh;
+import org.spout.math.matrix.Matrix4;
 
 public class SpoutAnimationComponent extends AnimationComponent {
-	/**
-	 * Identity matrix used on bones when no animation to play
-	 */
-	private final static Matrix identity = MatrixMath.createIdentity();
 	//Depend of the shader
 	public final static int ALLOWED_BONE_PER_VERTEX = 2;
 	public final static int ALLOWED_ANIMATION_PER_MESH = 2;
@@ -63,7 +58,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 	/**
 	 * Matrices array at the size of managed skeleton used to fill shader when no animation to play
 	 */
-	private Matrix[] defaultMatrices = null;
+	private Matrix4[] defaultMatrices = null;
 
 	/**
 	 * Ask to play a animation on a model of the entity
@@ -84,7 +79,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		AnimationPlayed ac = new AnimationPlayed(animation, loop);
 
 		//Allocate matrices
-		ac.setMatrices(new Matrix[ALLOWED_BONE_PER_MESH]);
+		ac.setMatrices(new Matrix4[ALLOWED_BONE_PER_MESH]);
 
 		List<AnimationPlayed> list = animations.get(model);
 
@@ -135,9 +130,9 @@ public class SpoutAnimationComponent extends AnimationComponent {
 				BaseMesh mesh = (BaseMesh) model.getMesh();
 
 				//Register matrices identity to fill when no animation
-				defaultMatrices = new Matrix[ALLOWED_BONE_PER_MESH];
+				defaultMatrices = new Matrix4[ALLOWED_BONE_PER_MESH];
 				for (int i = 0; i < defaultMatrices.length; i++) {
-					defaultMatrices[i] = identity;
+					defaultMatrices[i] = Matrix4.IDENTITY;
 				}
 
 				if (mesh.getContainer().getBuffers().containsKey(LAYOUT_ID)) {
@@ -248,7 +243,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 				// Send matrices to fill the shader
 				for (; boneCount < ALLOWED_BONE_PER_MESH; boneCount++) {
-					ac.getMatrices()[boneCount] = identity.transpose();
+					ac.getMatrices()[boneCount] = Matrix4.IDENTITY.transpose();
 				}
 
 				//Define bone_matrix? (start at 1 in shader)

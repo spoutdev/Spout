@@ -31,7 +31,7 @@ import java.util.Set;
 
 import org.spout.api.io.store.map.MemoryStoreMap;
 import org.spout.api.io.store.map.SimpleStoreMap;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 /**
  * A simple store wrapper that holds biomes and the selector.

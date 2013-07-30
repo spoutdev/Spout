@@ -26,13 +26,13 @@
  */
 package org.spout.api.model.animation;
 
-import org.spout.api.math.Matrix;
+import org.spout.math.matrix.Matrix4;
 
 public class AnimationPlayed {
 	private Animation animation;
 	private float speed = 1f;
 	private boolean loop = false;
-	private Matrix[] matrices = null;
+	private Matrix4[] matrices = null;
 	private int currentFrame = 0;
 	private float currentTime = 0;
 
@@ -65,11 +65,11 @@ public class AnimationPlayed {
 		this.loop = loop;
 	}
 
-	public Matrix[] getMatrices() {
+	public Matrix4[] getMatrices() {
 		return matrices;
 	}
 
-	public void setMatrices(Matrix[] matrices) {
+	public void setMatrices(Matrix4[] matrices) {
 		this.matrices = matrices;
 	}
 

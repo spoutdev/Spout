@@ -30,12 +30,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.engine.mesh.BaseMesh;
+import org.spout.math.vector.Vector2;
 
 public class MeshLoader extends ResourceLoader {
 	public MeshLoader() {

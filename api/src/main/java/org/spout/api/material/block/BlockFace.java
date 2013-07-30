@@ -31,9 +31,9 @@ import java.io.Serializable;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import org.spout.api.math.IntVector3;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.bytebit.ByteBitMask;
+import org.spout.math.imaginary.Quaternion;
 
 /**
  * Indicates the facing of a Block

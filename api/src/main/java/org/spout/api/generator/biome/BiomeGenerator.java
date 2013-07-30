@@ -37,7 +37,7 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
 /**

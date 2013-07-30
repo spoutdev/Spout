@@ -36,7 +36,6 @@ import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
 import org.spout.api.protocol.Message;
-import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.SyncedStringMap;
 
 public class NetworkComponent extends EntityComponent {

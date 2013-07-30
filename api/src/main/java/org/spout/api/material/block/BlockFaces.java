@@ -32,14 +32,14 @@ import java.util.Random;
 
 import gnu.trove.map.hash.TByteObjectHashMap;
 
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.bytebit.ByteBitMask;
 
 /**
  * Contains several BlockFace array constants and functions to operate on them
  */
 public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
-	private static TByteObjectHashMap<BlockFaces> offsetHash = new TByteObjectHashMap<>();
+	private static final TByteObjectHashMap<BlockFaces> offsetHash = new TByteObjectHashMap<>();
 
 	static {
 		for (BlockFace face1 : new BlockFace[] {BlockFace.THIS, BlockFace.TOP,
@@ -164,7 +164,7 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 	public BlockFaces(BlockFace... blockfaces) {
 		this.faces = blockfaces;
 		byte mask = 0;
-		Vector3 offsetc = new Vector3();
+		Vector3 offsetc = Vector3.ZERO;
 		for (BlockFace face : this.faces) {
 			offsetc = offsetc.add(face.getOffset());
 			mask |= face.getMask();

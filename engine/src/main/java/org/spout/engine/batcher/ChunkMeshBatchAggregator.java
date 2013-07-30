@@ -32,13 +32,12 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.MatrixMath;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.math.matrix.Matrix3;
 
 /**
  * Represents a group of chunk meshes to be rendered.
@@ -52,7 +51,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	public final static int COUNT = SIZE_X * SIZE_Y * SIZE_Z;
 	private int count = 0;
 	private BatchVertexRenderer renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-	public final static Matrix model = MatrixMath.createIdentity();
+	public final static Matrix3 model = Matrix3.IDENTITY;
 	private final RenderMaterial material;
 	private boolean dataSent = false;
 	private boolean ready = false;
@@ -106,7 +105,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public ChunkMeshBatchAggregator(World world, int x, int y, int z, RenderMaterial material) {
-		super(new Point(world, x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS), SIZE.multiply(Chunk.BLOCKS.SIZE));
+		super(new Point(world, x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS), SIZE.mul(Chunk.BLOCKS.SIZE));
 		this.material = material;
 	}
 
