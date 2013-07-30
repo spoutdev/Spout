@@ -28,7 +28,7 @@ package org.spout.api.util.cuboid;
 
 import org.junit.Test;
 
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;

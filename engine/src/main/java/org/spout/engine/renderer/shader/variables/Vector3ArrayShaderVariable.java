@@ -31,7 +31,7 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 public class Vector3ArrayShaderVariable extends ShaderVariable {
 	Vector3[] value;

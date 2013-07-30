@@ -41,9 +41,9 @@ import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.SpoutToStringStyle;
+import org.spout.math.imaginary.Quaternion;
 
 public class WorldChangeMessage extends DatatableMessage {
 	private final String worldName;

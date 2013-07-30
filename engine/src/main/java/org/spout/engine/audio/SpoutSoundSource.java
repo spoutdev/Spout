@@ -36,7 +36,7 @@ import org.spout.api.event.audio.SoundBindEvent;
 import org.spout.api.event.audio.SoundDisposeEvent;
 import org.spout.api.event.audio.SoundStateChangeEvent;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 import static org.lwjgl.BufferUtils.createFloatBuffer;
 import static org.lwjgl.openal.AL10.AL_BUFFER;

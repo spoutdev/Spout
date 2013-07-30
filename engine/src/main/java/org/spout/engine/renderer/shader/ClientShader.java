@@ -38,10 +38,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import org.spout.api.Spout;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector4;
+import org.spout.math.vector.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Texture;
 import org.spout.engine.SpoutClient;
@@ -60,11 +57,17 @@ import org.spout.engine.renderer.shader.variables.Vec2ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec3ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec4ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vector3ArrayShaderVariable;
+import org.spout.math.matrix.Matrix2;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector4;
 
 /**
  * Represents a Shader Object in OpenGL
  */
 public class ClientShader implements SpoutShader {
+
 	public class ShaderCompilationTask implements Runnable {
 		private final ClientShader shader;
 		private final String vsource, fsource;
@@ -273,7 +276,7 @@ public class ClientShader implements SpoutShader {
 	}
 
 	@Override
-	public void setUniform(String name, Matrix[] value) {
+	public void setUniform(String name, Matrix4[] value) {
 		variables.put(name, new Mat4ArrayShaderVariable(program, name, value));
 		if (assigned == this) {
 			dirtyVariables.add(name);
@@ -305,14 +308,24 @@ public class ClientShader implements SpoutShader {
 	}
 
 	@Override
-	public void setUniform(String name, Matrix value) {
-		if (value.getDimension() == 2) {
-			variables.put(name, new Mat2ShaderVariable(program, name, value));
-		} else if (value.getDimension() == 3) {
-			variables.put(name, new Mat3ShaderVariable(program, name, value));
-		} else if (value.getDimension() == 4) {
-			variables.put(name, new Mat4ShaderVariable(program, name, value));
+	public void setUniform(String name, Matrix2 value) {
+		variables.put(name, new Mat2ShaderVariable(program, name, value));
+		if (assigned == this) {
+			dirtyVariables.add(name);
 		}
+	}
+
+	@Override
+	public void setUniform(String name, Matrix3 value) {
+		variables.put(name, new Mat3ShaderVariable(program, name, value));
+		if (assigned == this) {
+			dirtyVariables.add(name);
+		}
+	}
+
+	@Override
+	public void setUniform(String name, Matrix4 value) {
+		variables.put(name, new Mat4ShaderVariable(program, name, value));
 		if (assigned == this) {
 			dirtyVariables.add(name);
 		}

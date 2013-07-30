@@ -31,12 +31,12 @@ import java.util.Random;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.math.GenericMath;
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.engine.filesystem.resource.ClientTexture;
+import org.spout.math.GenericMath;
+import org.spout.math.vector.Vector2;
 
 //Crysis method of SSAO
 //Following the excellent John-chapman tutorial here: http://www.john-chapman.net/content.php?id=8
@@ -64,7 +64,7 @@ public class SSAOPostProcessEffect implements RenderEffect {
 			float scale = (float) i / (float) kernelSize;
 			scale = GenericMath.lerp(0.1f, 1.0f, scale * scale);
 
-			kernel[i] = kernel[i].multiply(scale);
+			kernel[i] = kernel[i].mul(scale);
 		}
 
 		//Generate the noise texture.

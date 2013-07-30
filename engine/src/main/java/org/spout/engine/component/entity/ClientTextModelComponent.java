@@ -33,17 +33,17 @@ import java.util.List;
 import org.spout.api.component.entity.TextModelComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.render.RenderPart;
-import org.spout.api.math.Matrix;
 import org.spout.api.math.Rectangle;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.Camera;
 import org.spout.api.render.Font;
 import org.spout.engine.mesh.BaseMesh;
+import org.spout.math.matrix.Matrix3;
 
 public class ClientTextModelComponent extends TextModelComponent {
 	private BaseMesh mesh;
-	private static Matrix id3 = new Matrix(3);// TODO: ClientTextModelComponent shouldn't use gui shader
+	private static Matrix3 id3 = new Matrix3();// TODO: ClientTextModelComponent shouldn't use gui shader
 
 	public void updateMesh() {
 		ArrayList<MeshFace> faces = new ArrayList<>();
@@ -82,7 +82,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 			}
 		}
 
-		translation = translation.subtract(xCursor / 2.f, 0, 0);
+		translation = translation.sub(xCursor / 2.f, 0, 0);
 
 		mesh = new BaseMesh(faces, false, true, true, false);
 		mesh.batch();

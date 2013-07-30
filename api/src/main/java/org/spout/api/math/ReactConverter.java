@@ -29,11 +29,13 @@ package org.spout.api.math;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
 public class ReactConverter {
 	//Spout -> React
 	public static org.spout.physics.math.Vector3 toReactVector3(final Vector3 spoutVector3) {
-		return new org.spout.physics.math.Vector3(spoutVector3.x, spoutVector3.y, spoutVector3.z);
+		return new org.spout.physics.math.Vector3(spoutVector3.getX(), spoutVector3.getY(), spoutVector3.getZ());
 	}
 
 	public static org.spout.physics.math.Vector3 toReactVector3(final float x, final float y, final float z) {
@@ -41,7 +43,7 @@ public class ReactConverter {
 	}
 
 	public static org.spout.physics.math.Quaternion toReactQuaternion(final Quaternion spoutQuaternion) {
-		return new org.spout.physics.math.Quaternion(spoutQuaternion.x, spoutQuaternion.y, spoutQuaternion.z, spoutQuaternion.w);
+		return new org.spout.physics.math.Quaternion(spoutQuaternion.getX(), spoutQuaternion.getY(), spoutQuaternion.getZ(), spoutQuaternion.getW());
 	}
 
 	public static org.spout.physics.math.Quaternion toReactQuaternion(final float w, final float x, final float y, final float z) {
@@ -58,7 +60,7 @@ public class ReactConverter {
 	}
 
 	public static Quaternion toSpoutQuaternion(final org.spout.physics.math.Quaternion reactQuaternion) {
-		return new Quaternion(reactQuaternion.getX(), reactQuaternion.getY(), reactQuaternion.getZ(), reactQuaternion.getW(), true);
+		return new Quaternion(reactQuaternion.getX(), reactQuaternion.getY(), reactQuaternion.getZ(), reactQuaternion.getW());
 	}
 
 	public static Transform toSpoutTransform(final org.spout.physics.math.Transform reactTransform, final World world, final Vector3 scale) {

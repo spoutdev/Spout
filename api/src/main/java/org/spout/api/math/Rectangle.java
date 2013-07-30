@@ -27,6 +27,7 @@
 package org.spout.api.math;
 
 import java.io.Serializable;
+import org.spout.math.vector.Vector2;
 
 public class Rectangle implements Serializable {
 	private static final long serialVersionUID = 2080093328836030546L;
@@ -68,11 +69,11 @@ public class Rectangle implements Serializable {
 	}
 
 	public Rectangle multiply(Vector2 that) {
-		return new Rectangle(position.multiply(that), extents.multiply(that));
+		return new Rectangle(position.mul(that), extents.mul(that));
 	}
 
 	public Rectangle divide(Vector2 by) {
-		return new Rectangle(position.divide(by), extents.divide(by));
+		return new Rectangle(position.div(by), extents.div(by));
 	}
 
 	/**

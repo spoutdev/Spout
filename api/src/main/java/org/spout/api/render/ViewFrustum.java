@@ -27,8 +27,8 @@
 package org.spout.api.render;
 
 import org.spout.api.geo.cuboid.Cuboid;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.Vector3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector3;
 
 public class ViewFrustum {
 	// This is the renderer subsize in bloc scale ( because it is in aggregator scale when it's pass through intersects )
@@ -36,12 +36,12 @@ public class ViewFrustum {
 	Vector3 position = null;
 	float[][] frustum = new float[6][4];
 
-	public void update(Matrix projection, Matrix view, Vector3 paramPosition) {
+	public void update(Matrix4 projection, Matrix4 view, Vector3 paramPosition) {
 
 		position = paramPosition;
 
 		// http://www.crownandcutlass.com/features/technicaldetails/frustum.html
-		float[] clip = view.multiply(projection).getData();
+		float[] clip = projection.mul(projection).toArray();
 
 		/* Extract the numbers for the RIGHT plane */
 		frustum[0][0] = clip[3] - clip[0];
@@ -123,35 +123,35 @@ public class ViewFrustum {
 
 		for (int i = 0; i < 6; i++) {
 
-			if (distance(i, vertices[0].multiply(rendererSize).subtract(position)) > 0) {
+			if (distance(i, vertices[0].mul(rendererSize).sub(position)) > 0) {
 				continue;
 			}
 
-			if (distance(i, vertices[1].multiply(rendererSize).subtract(position)) > 0) {
+			if (distance(i, vertices[1].mul(rendererSize).sub(position)) > 0) {
 				continue;
 			}
 
-			if (distance(i, vertices[2].multiply(rendererSize).subtract(position)) > 0) {
+			if (distance(i, vertices[2].mul(rendererSize).sub(position)) > 0) {
 				continue;
 			}
 
-			if (distance(i, vertices[3].multiply(rendererSize).subtract(position)) > 0) {
+			if (distance(i, vertices[3].mul(rendererSize).sub(position)) > 0) {
 				continue;
 			}
 
-			if (distance(i, vertices[4].multiply(rendererSize).subtract(position)) > 0) {
+			if (distance(i, vertices[4].mul(rendererSize).sub(position)) > 0) {
 				continue;
 			}
 
-			if (distance(i, vertices[5].multiply(rendererSize).subtract(position)) > 0) {
+			if (distance(i, vertices[5].mul(rendererSize).sub(position)) > 0) {
 				continue;
 			}
 
-			if (distance(i, vertices[6].multiply(rendererSize).subtract(position)) > 0) {
+			if (distance(i, vertices[6].mul(rendererSize).sub(position)) > 0) {
 				continue;
 			}
 
-			if (distance(i, vertices[7].multiply(rendererSize).subtract(position)) > 0) {
+			if (distance(i, vertices[7].mul(rendererSize).sub(position)) > 0) {
 				continue;
 			}
 

@@ -29,7 +29,7 @@ package org.spout.api.protocol.event;
 import org.spout.api.event.HandlerList;
 import org.spout.api.event.ProtocolEvent;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.Quaternion;
+import org.spout.math.imaginary.Quaternion;
 
 public class PositionSendEvent extends ProtocolEvent {
 	private static final HandlerList handlers = new HandlerList();
