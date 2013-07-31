@@ -3,9 +3,12 @@ package org.spout.api.guix;
 import java.util.Collections;
 import java.util.List;
 
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.geo.discrete.Transform2D;
+import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
 import org.spout.api.tickable.Tickable;
@@ -17,14 +20,15 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	protected Screen screen;
 	private Rectangle bounds = Rectangle.ZERO;
 	private Transform2D transform = new Transform2D();
-	private int zIndex = 0, tabIndex = 0;
+	private int zIndex = 0;
 
 	// internal helper fields
 	private int clicks = 0;
 	private float gracePeriod = 0.5f, clickTimer = gracePeriod;
 
 
-	private boolean grabbed = false;
+	private boolean grabbed, draggable;
+	private int dragButton = Mouse.BUTTON_LEFT;
 
 	/**
 	 * Returns the {@link Sprite}s that belong to this Widget. This collection
@@ -201,6 +205,62 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	}
 
 	/**
+	 * Returns true if this widget can be click-dragged from it's current
+	 * location and 'dropped' in another location.
+	 *
+	 * @see #onDrag(org.spout.api.math.IntVector2, org.spout.api.math.IntVector2)
+	 * @see #onDrop(org.spout.api.math.IntVector2)
+	 * @return true if draggable
+	 */
+	public final boolean isDraggable() {
+		return draggable;
+	}
+
+	/**
+	 * Sets if this widget can be click-draffed from it's current location and
+	 * 'dropped' in another location.
+	 *
+	 * @see #onDrag(org.spout.api.math.IntVector2, org.spout.api.math.IntVector2)
+	 * @see #onDrop(org.spout.api.math.IntVector2)
+	 * @param draggable true if can be dragged and dropped
+	 */
+	public final void setDraggable(boolean draggable) {
+		this.draggable = draggable;
+	}
+
+	/**
+	 * Returns true if the client is in the process of dragging the widget from
+	 * one location to another.
+	 *
+	 * @return true if grabbed
+	 */
+	public final boolean isGrabbed() {
+		return grabbed;
+	}
+
+	/**
+	 * Returns the mouse button that drags this widget from one place to another.
+	 *
+	 * @see #onDrag(org.spout.api.math.IntVector2, org.spout.api.math.IntVector2)
+	 * @see #onDrop(org.spout.api.math.IntVector2)
+	 * @return the button that drags this widget
+	 */
+	public final int getDragButton() {
+		return dragButton;
+	}
+
+	/**
+	 * Sets the mouse button that drags this widget from one place to another.
+	 *
+	 * @see #onDrag(org.spout.api.math.IntVector2, org.spout.api.math.IntVector2)
+	 * @see #onDrop(org.spout.api.math.IntVector2)
+	 * @param dragButton the button that drags this widget
+	 */
+	public final void setDragButton(int dragButton) {
+		this.dragButton = dragButton;
+	}
+
+	/**
 	 * Called when the mouse is moved. This method is called when the mouse is
 	 * moved. This also specifies if the mouse if hovering over this widget's
 	 * hit box. This method is marked final for internal handling and always
@@ -214,7 +274,21 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	 */
 	public final void mouseMove(IntVector2 from, IntVector2 to, boolean hovered) {
 		// handle drags
-		// TODO: Need something like isMouseDown independent of events
+		if (!draggable) grabbed = false;
+		if (grabbed) transform.setPosition(to.getX(), to.getY());
+		if (hovered) {
+			boolean buttonDown = ((Client) Spout.getEngine()).getInputManager().isButtonDown(dragButton);
+			if (!grabbed && buttonDown) {
+				// start dragging
+				grabbed = true;
+				onDrag(from, to);
+			} else if (grabbed && !buttonDown) {
+				// stop dragging
+				grabbed = false;
+				onDrop(to);
+			}
+		}
+
 		onMouseMove(from, to, hovered);
 	}
 
@@ -230,6 +304,7 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	 */
 	public void onMouseMove(IntVector2 from, IntVector2 to, boolean hovered) {
 	}
+
 
 	/**
 	 * Called when this widget is "dragged" from it's position to another.
