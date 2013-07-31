@@ -32,6 +32,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ServerSession;
+import org.spout.api.protocol.Session;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 import org.spout.engine.protocol.builtin.message.ReadyMessage;
@@ -48,6 +49,7 @@ public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 	@Override
 	public void handleClient(ClientSession session, LoginMessage message) {
 		System.out.println("Player ID Received: " + message.getExtraInt());
+		session.setState(Session.State.GAME);
 		session.getEngine().getEventManager().callEvent(new ClientPlayerConnectedEvent(session, message.getExtraInt()));
 		session.send(true, ReadyMessage.INSTANCE);
 	}
