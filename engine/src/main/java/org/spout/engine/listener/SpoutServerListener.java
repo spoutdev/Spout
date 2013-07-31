@@ -65,20 +65,16 @@ public class SpoutServerListener implements Listener {
 		//Create the player
 		final SpoutPlayer player = (SpoutPlayer) server.addPlayer(event.getPlayerName(), (SpoutServerSession<?>) event.getSession(), event.getViewDistance());
 
-		if (player != null) {
-			//Call PlayerJoinEvent
-			PlayerLoginEvent loginEvent = server.getEventManager().callEvent(new PlayerLoginEvent(player));
-			if (!loginEvent.isAllowed()) {
-				if (loginEvent.getMessage() != null) {
-					player.kick(loginEvent.getMessage());
-				} else {
-					player.kick();
-				}
-			} else {
-				server.getEventManager().callEvent(new PlayerJoinEvent(player, player.getDisplayName() + " has joined the game"));
-			}
+		//Call PlayerJoinEvent
+		PlayerLoginEvent loginEvent = server.getEventManager().callEvent(new PlayerLoginEvent(player));
+		if (loginEvent.isAllowed()) {
+			server.getEventManager().callEvent(new PlayerJoinEvent(player, player.getDisplayName() + " has joined the game"));
 		} else {
-			event.getSession().disconnect("Player is already online");
+			if (loginEvent.getMessage() != null) {
+				player.kick(loginEvent.getMessage());
+			} else {
+				player.kick();
+			}
 		}
 	}
 

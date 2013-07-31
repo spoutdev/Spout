@@ -62,6 +62,8 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 
 	/**
 	 * Binds a codec by adding entries for it to the tables.
+	 * TODO: if a dynamic opcode is registered then a static opcode tries to register, reassign dynamic.
+	 * TODO: if a static opcode is registered then a static opcode tries to register, throw exception
 	 *
 	 * @param clazz The codec's class.
 	 * @param <T> The type of message.

@@ -26,29 +26,15 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
-import org.spout.api.event.player.ClientPlayerConnectedEvent;
-import org.spout.api.event.player.PlayerConnectEvent;
-import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ServerSession;
-import org.spout.engine.SpoutConfiguration;
-import org.spout.engine.protocol.builtin.message.LoginMessage;
+import org.spout.api.protocol.Session;
+
 import org.spout.engine.protocol.builtin.message.ReadyMessage;
 
-public class LoginMessageHandler extends MessageHandler<LoginMessage> {
+public class ReadyMessageHandler extends MessageHandler<ReadyMessage> {
 	@Override
-	public void handleServer(ServerSession session, LoginMessage message) {
-		PlayerConnectEvent e = session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName(), (SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE)));
-		if (!e.isCancelled() && session.hasPlayer()) {
-			session.send(true, new LoginMessage("", session.getPlayer().getId()));
-		}
-	}
-
-	@Override
-	public void handleClient(ClientSession session, LoginMessage message) {
-		System.out.println("Player ID Received: " + message.getExtraInt());
-		session.getEngine().getEventManager().callEvent(new ClientPlayerConnectedEvent(session, message.getExtraInt()));
-		session.send(true, ReadyMessage.INSTANCE);
+	public void handleServer(ServerSession session, ReadyMessage message) {
+		session.setState(Session.State.GAME);
 	}
 }

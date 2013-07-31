@@ -24,31 +24,26 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.protocol.builtin.handler;
+package org.spout.engine.protocol.builtin.codec;
 
-import org.spout.api.event.player.ClientPlayerConnectedEvent;
-import org.spout.api.event.player.PlayerConnectEvent;
-import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.protocol.ClientSession;
-import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.ServerSession;
-import org.spout.engine.SpoutConfiguration;
-import org.spout.engine.protocol.builtin.message.LoginMessage;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+
+import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.message.ReadyMessage;
 
-public class LoginMessageHandler extends MessageHandler<LoginMessage> {
-	@Override
-	public void handleServer(ServerSession session, LoginMessage message) {
-		PlayerConnectEvent e = session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName(), (SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE)));
-		if (!e.isCancelled() && session.hasPlayer()) {
-			session.send(true, new LoginMessage("", session.getPlayer().getId()));
-		}
+public class ReadyCodec extends MessageCodec<ReadyMessage> {
+	public ReadyCodec() {
+		super(ReadyMessage.class, 0x02);
 	}
 
 	@Override
-	public void handleClient(ClientSession session, LoginMessage message) {
-		System.out.println("Player ID Received: " + message.getExtraInt());
-		session.getEngine().getEventManager().callEvent(new ClientPlayerConnectedEvent(session, message.getExtraInt()));
-		session.send(true, ReadyMessage.INSTANCE);
+	public ChannelBuffer encode(ReadyMessage message) {
+		return ChannelBuffers.buffer(0);
+	}
+
+	@Override
+	public ReadyMessage decode(ChannelBuffer buffer) {
+		return ReadyMessage.INSTANCE;
 	}
 }

@@ -676,8 +676,7 @@ public class ReplayableChannelBuffer implements ChannelBuffer {
 
 	@Override
 	public ChannelBuffer duplicate() {
-		unsupported();
-		return null;
+		return buffer.duplicate();
 	}
 
 	@Override
