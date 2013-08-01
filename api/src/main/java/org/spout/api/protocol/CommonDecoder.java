@@ -79,7 +79,7 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 		if (codec == null) {
 			return buf;
 		}
-
+		Spout.debug("Decoded: " + Integer.toHexString(codec.getOpcode()));
 		previousOpcodes[(opcodeCounter++) & previousMask] = codec.getOpcode();
 		return codec.decode(onClient, buf);
 	}
