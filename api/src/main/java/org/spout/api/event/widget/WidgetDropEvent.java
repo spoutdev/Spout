@@ -24,9 +24,45 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.guix.widget;
+package org.spout.api.event.widget;
 
+import org.spout.api.event.Cancellable;
+import org.spout.api.event.HandlerList;
 import org.spout.api.guix.Widget;
+import org.spout.api.math.IntVector2;
 
-public class ProgressBar extends Widget {
+/**
+ * Called when a {@link Widget} is dropped after being dragged.
+ */
+public class WidgetDropEvent extends WidgetEvent implements Cancellable {
+	private static final HandlerList handlers = new HandlerList();
+	private IntVector2 at;
+
+	public WidgetDropEvent(Widget widget, IntVector2 at) {
+		super(widget);
+		this.at = at;
+	}
+
+	/**
+	 * Returns the position the {@link Widget} was dropped at.
+	 *
+	 * @return position widget was dropped at
+	 */
+	public IntVector2 getAt() {
+		return at;
+	}
+
+	@Override
+	public void setCancelled(boolean cancelled) {
+		super.setCancelled(cancelled);
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

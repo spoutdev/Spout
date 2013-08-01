@@ -24,9 +24,28 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.guix.widget;
+package org.spout.api.event.widget;
 
+import org.spout.api.event.HandlerList;
 import org.spout.api.guix.Widget;
 
-public class ProgressBar extends Widget {
+/**
+ * Called when a {@link Widget} loses focus on it's
+ * {@link org.spout.api.guix.Screen}.
+ */
+public class WidgetBlurEvent extends WidgetEvent {
+	private static final HandlerList handlers = new HandlerList();
+
+	public WidgetBlurEvent(Widget widget) {
+		super(widget);
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

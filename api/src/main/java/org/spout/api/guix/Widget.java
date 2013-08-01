@@ -1,3 +1,29 @@
+/*
+ * This file is part of Spout.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
+ *
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
 package org.spout.api.guix;
 
 import java.util.Collections;
@@ -7,6 +33,12 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
+import org.spout.api.event.widget.WidgetBlurEvent;
+import org.spout.api.event.widget.WidgetClickEvent;
+import org.spout.api.event.widget.WidgetDragEvent;
+import org.spout.api.event.widget.WidgetDropEvent;
+import org.spout.api.event.widget.WidgetFocusEvent;
+import org.spout.api.event.widget.WidgetKeyEvent;
 import org.spout.api.geo.discrete.Transform2D;
 import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
@@ -25,7 +57,6 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	// internal helper fields
 	private int clicks = 0;
 	private float gracePeriod = 0.5f, clickTimer = gracePeriod;
-
 
 	private boolean grabbed, draggable;
 	private int dragButton = Mouse.BUTTON_LEFT;
@@ -102,6 +133,8 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	 * call to {@link org.spout.api.guix.Widget#onFocus()}.
 	 */
 	public final void focus() {
+		// not cancellable; no added data
+		Spout.getEventManager().callEvent(new WidgetFocusEvent(this));
 		onFocus();
 	}
 
@@ -121,6 +154,8 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	 * @see org.spout.api.guix.Widget#onFocus()
 	 */
 	public final void blur() {
+		// not cancellable; no added data
+		Spout.getEventManager().callEvent(new WidgetBlurEvent(this));
 		onBlur();
 	}
 
@@ -166,12 +201,14 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	 * triple, etc click handling. This method reports the event that occurred
 	 * and the amount of clicks within the 'grace period' designated in this
 	 * widget. This method always calls
-	 * {@link Widget#onClick(org.spout.api.event.player.input.PlayerClickEvent, int)}
+	 * {@link #onClick(org.spout.api.event.widget.WidgetClickEvent)}
 	 *
 	 * @param event of click
 	 */
 	public final void click(PlayerClickEvent event) {
-		onClick(event, clicks++);
+		WidgetClickEvent cevent = Spout.getEventManager().callEvent(new WidgetClickEvent(this, event, clicks++));
+		if (cevent.isCancelled()) return;
+		onClick(cevent);
 	}
 
 	/**
@@ -180,19 +217,21 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	 *
 	 * @param event of click
 	 */
-	public void onClick(PlayerClickEvent event, int clicksWithinTimer) {
+	public void onClick(WidgetClickEvent event) {
 	}
 
 	/**
 	 * Notifies the widget of being keyed. A widget is 'keyed' when the widget
 	 * is focused and a key is pressed or released by the client. This method
 	 * marked final for internal key handling and always calls
-	 * {@link Widget#onKey(org.spout.api.event.player.input.PlayerKeyEvent)}
+	 * {@link #onKey(org.spout.api.event.widget.WidgetKeyEvent)}
 	 *
 	 * @param event of key press/release
 	 */
 	public final void key(PlayerKeyEvent event) {
-		onKey(event);
+		WidgetKeyEvent kevent = Spout.getEventManager().callEvent(new WidgetKeyEvent(this, event));
+		if (kevent.isCancelled()) return;
+		onKey(kevent);
 	}
 
 	/**
@@ -201,7 +240,7 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 	 *
 	 * @param event of key
 	 */
-	public void onKey(PlayerKeyEvent event) {
+	public void onKey(WidgetKeyEvent event) {
 	}
 
 	/**
@@ -276,16 +315,22 @@ public abstract class Widget implements Comparable<Widget>, Tickable {
 		// handle drags
 		if (!draggable) grabbed = false;
 		if (grabbed) transform.setPosition(to.getX(), to.getY());
-		if (hovered) {
+		if (hovered && draggable) {
 			boolean buttonDown = ((Client) Spout.getEngine()).getInputManager().isButtonDown(dragButton);
 			if (!grabbed && buttonDown) {
 				// start dragging
-				grabbed = true;
-				onDrag(from, to);
+				WidgetDragEvent event = Spout.getEventManager().callEvent(new WidgetDragEvent(this, from, to));
+				if (!event.isCancelled()) {
+					grabbed = true;
+					onDrag(from, to);
+				}
 			} else if (grabbed && !buttonDown) {
 				// stop dragging
-				grabbed = false;
-				onDrop(to);
+				WidgetDropEvent event = Spout.getEventManager().callEvent(new WidgetDropEvent(this, to));
+				if (!event.isCancelled()) {
+					grabbed = false;
+					onDrop(to);
+				}
 			}
 		}
 

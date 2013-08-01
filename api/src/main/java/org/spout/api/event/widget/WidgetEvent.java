@@ -24,9 +24,27 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.guix.widget;
+package org.spout.api.event.widget;
 
+import org.spout.api.event.Event;
 import org.spout.api.guix.Widget;
 
-public class ProgressBar extends Widget {
+/**
+ * An event that happens to a {@link Widget}.
+ */
+public abstract class WidgetEvent extends Event {
+	private final Widget widget;
+
+	public WidgetEvent(Widget widget) {
+		this.widget = widget;
+	}
+
+	/**
+	 * The {@link Widget} associated with the event.
+	 *
+	 * @return widget of event
+	 */
+	public Widget getWidget() {
+		return widget;
+	}
 }

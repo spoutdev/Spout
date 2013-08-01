@@ -24,9 +24,47 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.guix.widget;
+package org.spout.api.event.widget;
 
+import org.spout.api.event.Cancellable;
+import org.spout.api.event.HandlerList;
+import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.guix.Widget;
 
-public class ProgressBar extends Widget {
+/**
+ * Called when a key is pressed when a {@link Widget} has focus. Only the
+ * focused widget on the input screen will receive key input.
+ */
+public class WidgetKeyEvent extends WidgetEvent implements Cancellable {
+	private static final HandlerList handlers = new HandlerList();
+	private final PlayerKeyEvent event;
+
+	public WidgetKeyEvent(Widget widget, PlayerKeyEvent event) {
+		super(widget);
+		this.event = event;
+	}
+
+	/**
+	 * Returns the already-called {@link PlayerKeyEvent} that caused this
+	 * event.
+	 *
+	 * @return key event
+	 */
+	public PlayerKeyEvent getKeyEvent() {
+		return event;
+	}
+
+	@Override
+	public void setCancelled(boolean cancelled) {
+		super.setCancelled(cancelled);
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }
