@@ -27,6 +27,7 @@
 package org.spout.engine.protocol.builtin;
 
 import java.net.InetSocketAddress;
+import org.apache.commons.lang3.ArrayUtils;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -42,7 +43,7 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.ServerSession;
-import org.spout.api.protocol.Session;
+import org.spout.api.protocol.replayable.ReplayableError;
 import org.spout.api.util.SyncedMapEvent;
 import org.spout.api.util.SyncedMapRegistry;
 import org.spout.api.util.SyncedStringMap;
@@ -56,6 +57,7 @@ import org.spout.engine.protocol.builtin.codec.CommandCodec;
 import org.spout.engine.protocol.builtin.codec.CuboidBlockUpdateCodec;
 import org.spout.engine.protocol.builtin.codec.EntityDatatableCodec;
 import org.spout.engine.protocol.builtin.codec.LoginCodec;
+import org.spout.engine.protocol.builtin.codec.ReadyCodec;
 import org.spout.engine.protocol.builtin.codec.SyncedMapCodec;
 import org.spout.engine.protocol.builtin.codec.UpdateEntityCodec;
 import org.spout.engine.protocol.builtin.codec.WorldChangeCodec;
@@ -68,6 +70,7 @@ import org.spout.engine.protocol.builtin.handler.CommandMessageHandler;
 import org.spout.engine.protocol.builtin.handler.CuboidBlockUpdateMessageHandler;
 import org.spout.engine.protocol.builtin.handler.EntityDatatableMessageHandler;
 import org.spout.engine.protocol.builtin.handler.LoginMessageHandler;
+import org.spout.engine.protocol.builtin.handler.ReadyMessageHandler;
 import org.spout.engine.protocol.builtin.handler.SyncedMapMessageHandler;
 import org.spout.engine.protocol.builtin.handler.UpdateEntityMessageHandler;
 import org.spout.engine.protocol.builtin.handler.WorldChangeMessageHandler;
@@ -86,6 +89,9 @@ public class SpoutProtocol extends Protocol {
 
 	public SpoutProtocol() {
 		super("Spout", DEFAULT_PORT, 256);
+		registerPacket(SyncedMapCodec.class, new SyncedMapMessageHandler());
+		registerPacket(LoginCodec.class, new LoginMessageHandler());
+		registerPacket(ReadyCodec.class, new ReadyMessageHandler());
 		registerPacket(BlockUpdateCodec.class, new BlockUpdateMessageHandler());
 		registerPacket(ChunkDataCodec.class, new ChunkDataMessageHandler());
 		registerPacket(ChunkDatatableCodec.class, new ChunkDatatableMessageHandler());
@@ -94,8 +100,6 @@ public class SpoutProtocol extends Protocol {
 		registerPacket(CommandCodec.class, new CommandMessageHandler());
 		registerPacket(CuboidBlockUpdateCodec.class, new CuboidBlockUpdateMessageHandler());
 		registerPacket(EntityDatatableCodec.class, new EntityDatatableMessageHandler());
-		registerPacket(LoginCodec.class, new LoginMessageHandler());
-		registerPacket(SyncedMapCodec.class, new SyncedMapMessageHandler());
 		registerPacket(UpdateEntityCodec.class, new UpdateEntityMessageHandler());
 		registerPacket(WorldChangeCodec.class, new WorldChangeMessageHandler());
 	}
@@ -106,8 +110,11 @@ public class SpoutProtocol extends Protocol {
 		int length = buf.readInt();
 		MessageCodec<?> codec = getCodecLookupService().find(id);
 		if (codec == null) {
+			Spout.getLogger().warning("Could not find codec with id " + id);
 			buf.skipBytes(length);
 			return null;
+		} else if (buf.readableBytes() < length) {
+			throw new ReplayableError("There was not enough information received for a packet with codec id of " + id + ". This may just be a frame issue.");
 		} else {
 			return codec;
 		}
@@ -147,14 +154,13 @@ public class SpoutProtocol extends Protocol {
 		SyncedMapRegistry.getRegistrationMap().registerListener(new EventableListener<SyncedMapEvent>() {
 			@Override
 			public void onEvent(SyncedMapEvent event) {
-				session.send(new SyncedMapMessage(event.getAssociatedObject().getId(), SyncedMapEvent.Action.ADD, event.getModifiedElements()));
+				session.send(true, new SyncedMapMessage(event.getAssociatedObject().getId(), SyncedMapEvent.Action.ADD, event.getModifiedElements()));
 			}
 		});
 		session.send(true, new SyncedMapMessage(SyncedMapRegistry.REGISTRATION_MAP, SyncedMapEvent.Action.SET, SyncedMapRegistry.getRegistrationMap().getItems()));
 		for (SyncedStringMap map : SyncedMapRegistry.getAll()) {
 			session.send(true, new SyncedMapMessage(map.getId(), SyncedMapEvent.Action.SET, map.getItems()));
 		}
-		session.setState(Session.State.GAME);
 	}
 
 	@Override

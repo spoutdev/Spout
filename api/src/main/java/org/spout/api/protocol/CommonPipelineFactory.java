@@ -69,6 +69,7 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 
 	@Override
 	public ChannelPipeline getPipeline() throws Exception {
+		// Up for encoding/sending/downstream; Down for decoding/receiving/upstream
 		CommonEncoder encoder = new CommonEncoder(onClient);
 		CommonDecoder decoder = new CommonDecoder(onClient);
 		CommonHandler handler = new CommonHandler(engine, encoder, decoder);

@@ -39,8 +39,8 @@ import org.spout.api.util.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 public class WorldChangeCodec extends MessageCodec<WorldChangeMessage> {
-	public WorldChangeCodec() {
-		super(WorldChangeMessage.class, 0x02);
+	public WorldChangeCodec(int opcode) {
+		super(WorldChangeMessage.class, opcode);
 	}
 
 	@Override
