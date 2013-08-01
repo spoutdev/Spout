@@ -489,7 +489,7 @@ public class TestCommands {
 		args.assertCompletelyParsed();
 		switch (engine.getPlatform()) {
 			case CLIENT:
-				Session session = ((SpoutClient) engine).getSession();
+				Session session = ((SpoutClient) engine).getPlayer().getNetwork().getSession();
 				if (session.isConnected()) {
 					source.sendMessage("Network is open and connected");
 				} else {

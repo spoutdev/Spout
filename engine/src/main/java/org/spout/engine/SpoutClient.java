@@ -94,7 +94,7 @@ import org.spout.engine.world.SpoutClientWorld;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
-	private final AtomicReference<SpoutClientSession> session = new AtomicReference<>();
+	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<>();
 	private final AtomicReference<SpoutClientWorld> world = new AtomicReference<>();
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 	private final ClientFileSystem filesystem = new ClientFileSystem();
@@ -181,7 +181,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		filesystem.postStartup();
 		
 		// Send handshake message first
-		SpoutClientSession get = session.get();
+		SpoutClientSession get = (SpoutClientSession) player.get().getNetwork().getSession();
 		get.send(true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().getRemoteAddress()));
 	}
 
@@ -228,7 +228,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			if (p.getNetwork() == null) {
 				throw new IllegalStateException("initializeServerSession failed to set a player's NetworkComponent. Protocol: " + session.getProtocol());
 			}
-			this.session.set(session);
+			player.get().getNetwork().setSession(session);
 		} else {
 			getLogger().log(Level.SEVERE, "Could not connect to " + binding, connect.getCause());
 			return false;
@@ -244,7 +244,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private class SessionTask implements Runnable {
 		@Override
 		public void run() {
-			session.get().pulse();
+			((SpoutClientSession) player.get().getNetwork().getSession()).pulse();
 		}
 	}
 
@@ -255,16 +255,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public SpoutClientPlayer getPlayer() {
-		return session.get().getPlayer();
+		return player.get();
 	}
 
 	@Override
 	public CommandSource getCommandSource() {
-		if (session.get() != null) {
-			return getPlayer();
-		} else {
-			return super.getCommandSource();
-		}
+		// TODO: let's separate this?
+		return player.get();
 	}
 
 	@Override
@@ -294,7 +291,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public PortBinding getAddress() {
-		return session.get().getActiveAddress();
+		return ((SpoutClientSession) player.get().getNetwork().getSession()).getActiveAddress();
 	}
 
 	@Override
@@ -303,7 +300,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			return false;
 		}
 
-		session.get().dispose();
+		player.get().getNetwork().getSession().dispose();
 
 		// De-init OpenAL
 		soundManager.destroy();
@@ -479,10 +476,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public void startTickRun(int stage, long delta) {
 		// TODO: Should this be removed?
-	}
-
-	public Session getSession() {
-		return session.get();
 	}
 
 	@Override
