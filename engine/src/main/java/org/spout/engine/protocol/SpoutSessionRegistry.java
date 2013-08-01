@@ -72,7 +72,7 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 	@Override
 	public void remove(Session session) {
 		if (session instanceof SpoutSession) {
-			sessions.remove(session);
+			sessions.remove((SpoutSession<?>) session);
 		} else if (session != null) {
 			throw new IllegalArgumentException("This session registry can only handle SpoutSessions");
 		}

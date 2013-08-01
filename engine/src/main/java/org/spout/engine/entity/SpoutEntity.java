@@ -39,14 +39,12 @@ import java.util.logging.Level;
 import org.spout.api.Engine;
 import org.spout.api.component.BaseComponentOwner;
 import org.spout.api.component.Component;
-import org.spout.api.component.entity.EntityComponent;
 import org.spout.api.component.entity.ModelComponent;
 import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.component.entity.PhysicsComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
-import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -60,13 +58,11 @@ import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.engine.SpoutClient;
-import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.component.entity.SpoutModelComponent;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
-import org.spout.engine.util.thread.snapshotable.SnapshotableInt;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutChunk;
 
@@ -89,8 +85,8 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	private final UUID uid;
 	protected boolean justSpawned = true;
 	//For faster access
-	private final NetworkComponent network;
 	private final SpoutPhysicsComponent physics;
+	private NetworkComponent network;
 	private Class<? extends Component>[] initialComponents = null;
 
 	public SpoutEntity(Engine engine, Transform transform) {
@@ -169,18 +165,26 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().add((SpoutModelComponent) component);
 			}
 			return component;
+		} else if (NetworkComponent.class.isAssignableFrom(type)) {
+			//Detach old NetworkComponent
+			super.detach(NetworkComponent.class);
+			//Attach new one
+			this.network = super.add(NetworkComponent.class, attach);
+			return (T) network;
 		}
 		return super.add(type, attach);
 	}
 
 	@Override
 	public <T extends Component> T detach(Class<? extends Component> type) {
-		if (type.equals(ModelComponent.class)) {
+		if (ModelComponent.class.equals(type)) {
 			T component = super.detach(type);
 			if (getEngine() instanceof SpoutClient) {
 				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().remove((SpoutModelComponent) component);
 			}
 			return component;
+		} else if (NetworkComponent.class.isAssignableFrom(type)) {
+			return (T) network;
 		}
 		return super.detach(type);
 	}
@@ -285,7 +289,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	protected void updateObserver() {
 		List<Vector3> ungenerated = new ArrayList<>();
-		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
+		final int syncDistance = network.getSyncDistance();
 		World w = getWorld();
 		Transform t = physics.getTransform();
 		Point p = t.getPosition();
@@ -293,10 +297,10 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		int cy = p.getChunkY();
 		int cz = p.getChunkZ();
 
-		HashSet<SpoutChunk> observing = new HashSet<>((viewDistance * viewDistance * viewDistance * 3) / 2);
+		HashSet<SpoutChunk> observing = new HashSet<>((syncDistance * syncDistance * syncDistance * 3) / 2);
 		Iterator<IntVector3> itr = observer.getLive();
 		if (itr == OBSERVING) {
-			itr = new OutwardIterator(cx, cy, cz, viewDistance);
+			itr = new OutwardIterator(cx, cy, cz, syncDistance);
 		}
 		observeChunksFailed = false;
 		while (itr.hasNext()) {
@@ -403,13 +407,13 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	@Override
-	public NetworkComponent getNetwork() {
-		return network;
+	public PhysicsComponent getPhysics() {
+		return physics;
 	}
 
 	@Override
-	public PhysicsComponent getPhysics() {
-		return physics;
+	public NetworkComponent getNetwork() {
+		return network;
 	}
 
 	@Override

@@ -246,7 +246,7 @@ public class CommonCommands {
 		args.assertCompletelyParsed();
 
 		point.getWorld().getChunkFromBlock(point);
-		player.teleport(point);
+		player.getPhysics().setPosition(point);
 
 		/*if (target != null) { // TODO: players in popPoint
 			player.sendMessage("You teleported to " + target.getName() + ".");

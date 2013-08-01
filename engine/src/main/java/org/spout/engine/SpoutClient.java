@@ -219,7 +219,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			handler.setSession(session);
 
 			// TODO: This is really unclean
-			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", new Transform().setPosition(new Point(getWorld(), 1, 200, 1)), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
+			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", new Transform().setPosition(new Point(getWorld(), 1, 200, 1)));
 			if (!p.connect(session, p.getPhysics().getTransform())) {
 				getLogger().log(Level.SEVERE, "Error in calling player connect");
 				return false;

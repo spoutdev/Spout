@@ -26,6 +26,7 @@
  */
 package org.spout.api.component.entity;
 
+import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Client;
@@ -43,7 +44,7 @@ import org.spout.api.util.SyncedStringMap;
  */
 public abstract class PlayerNetworkComponent extends NetworkComponent {
 	private static final SyncedStringMap protocolMap = SyncedStringMap.create(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
-	private AtomicReference<Session> session = new AtomicReference<>(null);
+	private final AtomicReference<Session> session = new AtomicReference<>(null);
 
 	@Override
 	public void onAttached() {
@@ -79,6 +80,15 @@ public abstract class PlayerNetworkComponent extends NetworkComponent {
 		if (!this.session.compareAndSet(null, session)) {
 			throw new IllegalStateException("Once set, the session may not be re-set until a new connection is made");
 		}
+	}
+
+	/**
+	 * Gets the {@link InetAddress} of the session
+	 * 
+	 * @return The adress of the session
+	 */
+	public final InetAddress getAddress() {
+		return getSession().getAddress().getAddress();
 	}
 
 	/**

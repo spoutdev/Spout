@@ -74,7 +74,7 @@ public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessa
 
 	@Override
 	public void handleServer(ServerSession session, UpdateEntityMessage message) {
-		RepositionManager rmInverse = session.getNetworkSynchronizer().getRepositionManager().getInverse();
+		RepositionManager rmInverse = session.getPlayer().getNetwork().getRepositionManager().getInverse();
 
 		if (message.getAction() == TRANSFORM) {
 			if (message.getEntityId() == session.getPlayer().getId()) {

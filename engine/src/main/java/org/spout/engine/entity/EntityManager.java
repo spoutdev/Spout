@@ -34,9 +34,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
@@ -237,9 +237,9 @@ public class EntityManager {
 				continue;
 			}
 			//Grab the NetworkSynchronizer of the player
-			ServerNetworkSynchronizer network = (ServerNetworkSynchronizer) player.getNetworkSynchronizer();
-			//Grab player's view distance
-			int view = player.getViewDistance();
+			PlayerNetworkComponent network = player.getNetwork();
+			//Grab player's sync distance
+			int syncDistance = network.getSyncDistance();
 			/*
 			 * Just because a player can see a chunk doesn't mean the entity is within sync-range, do the math and sync based on the result.
 			 *
@@ -249,7 +249,7 @@ public class EntityManager {
 			spawn = sync = destroy = false;
 			//Entity is out of range of the player's view distance, destroy
 			final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) ent.getPhysics();
-			if (forceDestroy || ent.isRemoved() || physics.getTransformLive().getPosition().distanceSquared(player.getPhysics().getPosition()) > view * view || player.isInvisible(ent)) {
+			if (forceDestroy || ent.isRemoved() || physics.getTransformLive().getPosition().distanceSquared(player.getPhysics().getPosition()) > syncDistance * syncDistance || player.isInvisible(ent)) {
 				destroy = true;
 			} else if (network.hasSpawned(ent)) {
 				sync = true;

@@ -26,7 +26,6 @@
  */
 package org.spout.api.entity;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 import org.spout.api.Engine;
@@ -34,16 +33,13 @@ import org.spout.api.component.ComponentOwner;
 import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.component.entity.PhysicsComponent;
 import org.spout.api.datatable.ManagedMap;
-import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.IntVector3;
 import org.spout.api.tickable.Tickable;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
-import org.spout.api.util.thread.annotation.LiveWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 
 /**
@@ -60,14 +56,14 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	/**
 	 * Gets the entity's persistent unique id. <p> Can be used to look up the entity and persists between starts.
 	 *
-	 * @return persistent uuid
+	 * @return persistent {@link UUID}
 	 */
 	public UUID getUID();
 
 	/**
-	 * Gets the engine that spawned and is managing this entity
+	 * Gets the {@link Engine} that spawned and is managing this entity
 	 *
-	 * @return engine
+	 * @return {@link Engine}
 	 */
 	public Engine getEngine();
 
@@ -112,7 +108,7 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	/**
 	 * Gets the {@link Chunk} this entity resides in, or null if removed.
 	 *
-	 * @return chunk the entity is in, or null if removed.
+	 * @return {@link Chunk} the entity is in, or null if removed.
 	 */
 	@SnapshotRead
 	public Chunk getChunk();
@@ -120,16 +116,18 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	/**
 	 * Gets the region the entity is associated and managed with, or null if removed.
 	 *
-	 * @return region the entity is in.
+	 * @return {@link Region} the entity is in.
 	 */
 	@SnapshotRead
 	public Region getRegion();
 
 	/**
-	 * Gets the {@link org.spout.api.component.entity.PhysicsComponent} which is the representation of this Entity within space. <p> It provides the {@link Transform} which is Position, Rotation, Scale
-	 * as well as physics to manipulate the entity in respect to the environment. </p>
+	 * Gets the {@link org.spout.api.component.entity.PhysicsComponent} which is the representation
+	 * of this Entity within space.
+	 * <p> It provides the {@link Transform} which is Position, Rotation, Scale as well as physics
+	 * to manipulate the entity in respect to the environment. </p>
 	 *
-	 * @return The scene component.
+	 * @return The physics component.
 	 */
 	public PhysicsComponent getPhysics();
 
@@ -151,7 +149,7 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	/**
 	 * Gets the {@link ManagedMap} which an Entity always has.
 	 *
-	 * @return ManagedMap
+	 * @return {@link ManagedMap}
 	 */
 	@Override
 	public ManagedMap getData();

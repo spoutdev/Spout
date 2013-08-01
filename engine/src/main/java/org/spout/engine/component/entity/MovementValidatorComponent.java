@@ -78,7 +78,7 @@ public class MovementValidatorComponent extends EntityComponent {
 			return;
 		}
 		playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(inputState.pitch(), inputState.yaw(), playerTransform.getRotation().getRoll()));
-		Transform old = player.getSession().getDataMap().get(RECEIVED_TRANSFORM, (Transform) null);
+		Transform old = player.getNetwork().getSession().getDataMap().get(RECEIVED_TRANSFORM, (Transform) null);
 		if (player.getData().get(VALIDATE_MOVEMENT) && (old == null ||
 				Math.abs(old.getPosition().getX() - playerTransform.getPosition().getX()) > .2f ||
 				Math.abs(old.getPosition().getY() - playerTransform.getPosition().getY()) > .2f ||

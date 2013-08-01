@@ -52,6 +52,7 @@ import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
+import org.spout.api.protocol.event.UpdateEntityEvent.UpdateAction;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
@@ -235,7 +236,7 @@ public class SpoutInputManager implements InputManager {
 
 	private void onMouseClicked(Player player, int button, boolean pressed, int x, int y) {
 		//TODO Just testing - also, check int -> byte
-		player.getSession().send(new ClickRequestMessage((byte) x, (byte) y, ClickRequestMessage.Action.LEFT));
+		player.getNetwork().getSession().send(new ClickRequestMessage((byte) x, (byte) y, ClickRequestMessage.Action.LEFT));
 
 		PlayerClickEvent event = Spout.getEventManager().callEvent(new PlayerClickEvent(player, button, pressed, new IntVector2(x, y)));
 		if (event.isCancelled()) {
@@ -354,7 +355,7 @@ public class SpoutInputManager implements InputManager {
 		}
 		Player player = ((Client) Spout.getEngine()).getPlayer();
 		// TODO: move this to NetworkSynchronizer?
-		player.getSession().send(new UpdateEntityMessage(player.getId(), physics.getTransformLive(), UpdateEntityMessage.UpdateAction.TRANSFORM, player.getSession().getNetworkSynchronizer().getRepositionManager()));
+		player.getNetwork().getSession().send(new UpdateEntityMessage(player.getId(), physics.getTransformLive(), UpdateAction.TRANSFORM, player.getNetwork().getRepositionManager()));
 	}
 
 	@Override

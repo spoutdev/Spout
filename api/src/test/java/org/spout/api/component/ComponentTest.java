@@ -28,7 +28,6 @@ package org.spout.api.component;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,7 +48,6 @@ import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.event.Cause;
-import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.generator.WorldGenerator;
@@ -72,7 +70,6 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.IntVector2;
-import org.spout.api.math.IntVector3;
 import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TaskManager;

@@ -76,11 +76,9 @@ import org.spout.api.event.world.WorldUnloadEvent;
 import org.spout.api.generator.EmptyWorldGenerator;
 import org.spout.api.generator.FlatWorldGenerator;
 import org.spout.api.generator.WorldGenerator;
-import org.spout.api.generator.biome.BiomeRegistry;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.permissions.PermissionsSubject;
@@ -90,7 +88,6 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.resource.FileSystem;
-import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
 import org.spout.cereal.config.ConfigurationException;
@@ -729,12 +726,12 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	// Players should use weak map?
-	public Player addPlayer(String playerName, SpoutServerSession<?> session, int viewDistance) {
+	public Player addPlayer(String playerName, SpoutServerSession<?> session, int syncDistance) {
 		SpoutPlayer player = PlayerFiles.loadPlayerData(playerName);
 		boolean created = false;
 		if (player == null) {
 			getLogger().info("First login for " + playerName + ", creating new player data");
-			player = new SpoutPlayer(this, playerName, getDefaultWorld().getSpawnPoint(), viewDistance);
+			player = new SpoutPlayer(this, playerName, getDefaultWorld().getSpawnPoint());
 			created = true;
 		}
 		SpoutPlayer oldPlayer = players.put(playerName, player);
@@ -743,7 +740,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			reclamation.addPlayer();
 		}
 
-		if (oldPlayer != null && oldPlayer.getSession() != null) {
+		if (oldPlayer != null && oldPlayer.getNetwork().getSession() != null) {
 			oldPlayer.kick("Login occured from another client");
 		}
 
@@ -765,7 +762,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 		if (player.getNetwork() == null) {
 			throw new IllegalStateException("initializeServerSession failed to set a player's NetworkComponent. Protocol: " + session.getProtocol());
 		}
-		session.getNetworkSynchronizer().forceSync();
+		//Set the player's sync distance
+		player.getNetwork().setSyncDistance(syncDistance);
+		player.getNetwork().forceSync();
 		return player;
 	}
 

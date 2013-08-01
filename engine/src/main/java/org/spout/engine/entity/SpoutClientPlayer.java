@@ -37,8 +37,8 @@ import org.spout.engine.gui.SpoutScreenStack;
  * A subclass of SpoutPlayer with modifications for the client
  */
 public class SpoutClientPlayer extends SpoutPlayer {
-	public SpoutClientPlayer(Engine engine, String name, Transform transform, int viewDistance) {
-		super(engine, name, transform, viewDistance, null, false, (byte[]) null, (Class<? extends Component>[]) null);
+	public SpoutClientPlayer(Engine engine, String name, Transform transform) {
+		super(engine, name, transform, null, false, (byte[]) null, (Class<? extends Component>[]) null);
 
 		add(CameraComponent.class);
 	}

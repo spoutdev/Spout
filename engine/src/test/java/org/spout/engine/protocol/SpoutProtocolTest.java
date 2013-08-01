@@ -41,6 +41,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.event.UpdateEntityEvent.UpdateAction;
 import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.api.util.SyncedMapEvent;
 import org.spout.engine.faker.EngineFaker;
@@ -90,7 +91,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 			new LoginMessage("Spouty", 0),
 			new SyncedMapMessage(0, SyncedMapEvent.Action.ADD, new ArrayList<Pair<Integer, String>>()),
 			new WorldChangeMessage("world", EngineFaker.TEST_UUID, TEST_TRANSFORM, TEST_SERIALIZED_DATA, DeltaMap.DeltaType.SET),
-			new UpdateEntityMessage(0, TEST_TRANSFORM, UpdateEntityMessage.UpdateAction.TRANSFORM, new NullRepositionManager()),
+			new UpdateEntityMessage(0, TEST_TRANSFORM, UpdateAction.TRANSFORM, new NullRepositionManager()),
 			new ChunkDatatableMessage("Blank", 0, 0, 0, biomeData1, DeltaMap.DeltaType.SET)
 	};
 

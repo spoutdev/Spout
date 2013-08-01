@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.jboss.netty.channel.Channel;
 
 import org.spout.api.geo.World;
-import org.spout.api.protocol.ClientNetworkSynchronizer;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
@@ -59,7 +58,7 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 	@Override
 	public void dispose() {
 		activeWorld.set(null);
-		SpoutPlayer player = this.player.get();
+		SpoutPlayer player = getPlayer();
 		if (player != null) {
 			player.disconnect(false);
 		}
@@ -91,7 +90,7 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 	}
 
 	public PortBinding getActiveAddress() {
-		return new PortBindingImpl(getProtocol(), channel.getRemoteAddress());
+		return new PortBindingImpl(getProtocol(), getChannel().getRemoteAddress());
 	}
 
 	@Override
@@ -106,15 +105,5 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 			throw new IllegalArgumentException("Player in SpoutClientSession MUST be a SpoutClientPlayer");
 		}
 		super.setPlayer(player);
-	}
-
-	@Override
-	public void setNetworkSynchronizer(ClientNetworkSynchronizer synchronizer) {
-		super.setNetworkSynchronizer(synchronizer);
-	}
-
-	@Override
-	public ClientNetworkSynchronizer getNetworkSynchronizer() {
-		return (ClientNetworkSynchronizer) super.getNetworkSynchronizer();
 	}
 }
