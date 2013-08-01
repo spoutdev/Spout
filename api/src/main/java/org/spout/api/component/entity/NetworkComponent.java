@@ -120,7 +120,7 @@ public abstract class NetworkComponent extends EntityComponent {
 	}
 
 	/**
-	 * Gets the sync distance of the owning {@link org.spout.api.entity.Entity}.
+	 * Gets the sync distance in {@link Chunk}s of the owning {@link org.spout.api.entity.Entity}.
 	 * </p>
 	 * Sync distance is a value indicating the radius outwards from the entity where network updates (such as chunk creation) will be triggered.
 	 *
@@ -131,7 +131,7 @@ public abstract class NetworkComponent extends EntityComponent {
 	}
 
 	/**
-	 * Sets the sync distance of the owning {@link org.spout.api.entity.Entity}.
+	 * Sets the sync distance in {@link Chunk}s of the owning {@link org.spout.api.entity.Entity}.
 	 *
 	 * @param syncDistance The new sync distance
 	 */
@@ -337,6 +337,10 @@ public abstract class NetworkComponent extends EntityComponent {
 		}
 	}
 
+	protected boolean canSendChunk(Chunk c) {
+		return true;
+	}
+
 	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Point p) {
 		Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.LOAD_ONLY);
 		if (c == null) {
@@ -346,20 +350,24 @@ public abstract class NetworkComponent extends EntityComponent {
 		if (unsendable.contains(p)) {
 			return i;
 		}
-		callProtocolEvent(new ChunkSendEvent(c), getOwner());
-		activeChunks.add(c.getBase());
-		i.remove();
-		Point base = c.getBase();
-		boolean removed = priorityChunkSendQueue.remove(base);
-		removed |= chunkSendQueue.remove(base);
-		if (removed) {
-			if (initializedChunks.contains(base)) {
-				activeChunks.add(base);
+		if (canSendChunk(c)) {
+			callProtocolEvent(new ChunkSendEvent(c), getOwner());
+			activeChunks.add(c.getBase());
+			i.remove();
+			Point base = c.getBase();
+			boolean removed = priorityChunkSendQueue.remove(base);
+			removed |= chunkSendQueue.remove(base);
+			if (removed) {
+				if (initializedChunks.contains(base)) {
+					activeChunks.add(base);
+				}
+				chunksSent++;
+				i = queue.iterator();
 			}
 			chunksSent++;
-			i = queue.iterator();
+		} else {
+			unsendable.add(p);
 		}
-		chunksSent++;
 		return i;
 	}
 
@@ -409,7 +417,7 @@ public abstract class NetworkComponent extends EntityComponent {
 	/**
 	 * Gets the viewable volume centered on the given chunk coordinates and the given view distance
 	 */
-	public static Iterator<IntVector3> getViewableVolume(int cx, int cy, int cz, int viewDistance) {
+	public Iterator<IntVector3> getViewableVolume(int cx, int cy, int cz, int viewDistance) {
 		return new OutwardIterator(cx, cy, cz, viewDistance);
 	}
 
@@ -418,7 +426,7 @@ public abstract class NetworkComponent extends EntityComponent {
 	 *
 	 * @return true if in the view volume
 	 */
-	public static boolean isInViewVolume(Point playerChunkBase, Point testChunkBase, int viewDistance) {
+	public boolean isInViewVolume(Point playerChunkBase, Point testChunkBase, int viewDistance) {
 		return testChunkBase.getManhattanDistance(playerChunkBase) <= (viewDistance << Chunk.BLOCKS.BITS);
 	}
 
