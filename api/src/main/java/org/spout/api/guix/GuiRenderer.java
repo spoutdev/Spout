@@ -26,6 +26,16 @@
  */
 package org.spout.api.guix;
 
+/**
+ * An interface to be implemented by the engine for rendering the entire
+ * {@link ScreenStack}.
+ */
 public interface GuiRenderer {
+	/**
+	 * Called every tick, this method is responsible for rendering each screen
+	 * on the specified {@link ScreenStack}.
+	 *
+	 * @param stack to render
+	 */
 	public void render(ScreenStack stack);
 }

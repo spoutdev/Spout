@@ -47,7 +47,7 @@ public class ScreenStack extends BasicTickable {
 	@ClientOnly
 	public ScreenStack(GuiRenderer renderer) {
 		if (!(Spout.getEngine() instanceof Client))
-			throw new IllegalStateException("ScreenStack can only be instantiated int client mode.");
+			throw new IllegalStateException("ScreenStack can only be instantiated in client mode.");
 		this.renderer = renderer;
 		updateInput();
 	}
