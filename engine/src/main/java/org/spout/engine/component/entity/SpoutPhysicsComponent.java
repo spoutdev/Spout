@@ -36,7 +36,6 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.ReactConverter;
 import org.spout.api.math.Vector3;
-import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.physics.body.MobileRigidBody;
 import org.spout.physics.body.RigidBody;
@@ -434,7 +433,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	private void sync() {
 		if (getOwner() instanceof Player && Spout.getPlatform() == Platform.SERVER) {
-			((ServerNetworkSynchronizer) ((Player) getOwner()).getNetworkSynchronizer()).forceSync();
+			((Player) getOwner()).getNetwork().forceSync();
 		}
 	}
 }

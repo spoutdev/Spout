@@ -55,6 +55,7 @@ import org.spout.api.command.annotated.Platform;
 import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.component.entity.AnimationComponent;
 import org.spout.api.component.entity.InteractComponent;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.component.widget.RenderPartComponent;
 import org.spout.api.component.widget.SliderComponent;
 import org.spout.api.component.widget.SpinnerComponent;
@@ -83,7 +84,6 @@ import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.plugin.Plugin;
-import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.event.ChunkSendEvent;
 import org.spout.engine.SpoutClient;
@@ -465,7 +465,7 @@ public class TestCommands {
 			int count = 0;
 			outer:
 			for (Player player : ((Server) engine).getOnlinePlayers()) {
-				ServerNetworkSynchronizer network = (ServerNetworkSynchronizer) player.getNetworkSynchronizer();
+				PlayerNetworkComponent network = player.getNetwork();
 				Set<Chunk> chunks = network.getActiveChunks();
 				for (Chunk c : chunks) {
 					count++;
@@ -499,7 +499,7 @@ public class TestCommands {
 				break;
 			case SERVER:
 				for (Player player : ((Server) engine).getOnlinePlayers()) {
-					player.getSession().send(new CommandMessage(Spout.getCommandManager().getCommand("say"), "Network Works"));
+					player.getNetwork().getSession().send(new CommandMessage(Spout.getCommandManager().getCommand("say"), "Network Works"));
 				}
 				break;
 		}
@@ -510,7 +510,7 @@ public class TestCommands {
 	@Filter (PlayerFilter.class)
 	public void respawn(Player player, CommandArguments args) throws CommandException {
 		args.assertCompletelyParsed();
-		((ServerNetworkSynchronizer) player.getNetworkSynchronizer()).forceRespawn();
+		player.getNetwork().forceRespawn();
 	}
 
 	/**

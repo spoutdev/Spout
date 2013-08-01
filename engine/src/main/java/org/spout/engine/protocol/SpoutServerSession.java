@@ -36,7 +36,6 @@ import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.ServerSession;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
@@ -65,7 +64,7 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> i
 
 	@Override
 	public boolean disconnect(boolean kick, String reason) {
-		return disconnect(kick, false, reason);
+		return disconnect(kick, !kick, reason);
 	}
 
 	@Override
@@ -90,9 +89,9 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> i
 			kickMessage = protocol.getKickMessage(reason);
 		}
 		if (kickMessage != null) {
-			channel.write(kickMessage).addListener(ChannelFutureListener.CLOSE);
+			getChannel().write(kickMessage).addListener(ChannelFutureListener.CLOSE);
 		} else {
-			channel.close();
+			getChannel().close();
 		}
 		return true;
 	}
@@ -104,8 +103,8 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> i
 	}
 
 	public void dispose(PlayerLeaveEvent leaveEvent, boolean stop) {
-		SpoutPlayer player;
-		if ((player = this.player.getAndSet(null)) != null) {
+		SpoutPlayer player = getPlayer();
+		if (player != null) {
 			if (!leaveEvent.hasBeenCalled()) {
 				getEngine().getEventManager().callEvent(leaveEvent);
 			}
@@ -121,15 +120,5 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> i
 				Spout.getLogger().log(Level.WARNING, "Did not disconnect " + player.getName() + " cleanly", e);
 			}
 		}
-	}
-
-	@Override
-	public void setNetworkSynchronizer(ServerNetworkSynchronizer synchronizer) {
-		super.setNetworkSynchronizer(synchronizer);
-	}
-
-	@Override
-	public ServerNetworkSynchronizer getNetworkSynchronizer() {
-		return (ServerNetworkSynchronizer) super.getNetworkSynchronizer();
 	}
 }

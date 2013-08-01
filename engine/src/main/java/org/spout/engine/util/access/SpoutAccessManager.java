@@ -154,7 +154,7 @@ public class SpoutAccessManager implements AccessManager {
 				}
 			} else {
 				for (Player player : server.getOnlinePlayers()) {
-					if (player.getAddress().getHostAddress().equals(s)) {
+					if (player.getNetwork().getAddress().getHostAddress().equals(s)) {
 						player.kick(reason);
 					}
 				}

@@ -32,21 +32,17 @@ import java.util.List;
 import org.spout.api.command.CommandSource;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.state.PlayerInputState;
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface Player extends CommandSource, Entity {
-	@Override
-	public PlayerNetworkComponent getNetwork();
-
 	/**
 	 * Gets the player's name.
 	 *
 	 * @return the player's name
 	 */
 	@Threadsafe
+	@Override
 	public String getName();
 
 	/**
@@ -119,14 +115,38 @@ public interface Player extends CommandSource, Entity {
 	public boolean save();
 
 	/**
+	 * Gets the {@link PlayerNetworkComponent} of the player
+	 *
+	 * @return The {@link PlayerNetworkComponent}
+	 */
+	@Override
+	public PlayerNetworkComponent getNetwork();
+
+	/**
 	 * If an entity is set as invisible, it will not be sent to the client.
 	 */
 	public void setVisible(Entity entity, boolean visible);
 
+	/**
+	 * Retrieves a list of all invisible {@link Entity}'s to the player
+	 *
+	 * @return {@link List<{@link Entity}>} of invisible {@link Entity}'s
+	 */
 	public List<Entity> getInvisibleEntities();
 
+	/**
+	 * Returns true if the {@link Entity} provided is invisible this this {@link Player}
+	 *
+	 * @param entity Entity to check if invisible to the {@link Player}
+	 * @return true if the {@link Entity} is invisible
+	 */
 	public boolean isInvisible(Entity entity);
 
+	/**
+	 * Processes the input of this player
+	 *
+	 * @param state The {@link Player}'s input state
+	 */
 	public void processInput(PlayerInputState state);
 
 	/**

@@ -68,7 +68,7 @@ public class SpoutProxy extends SpoutServer {
 
 	@Override
 	public Player addPlayer(String playerName, SpoutServerSession<?> session, int viewDistance) {
-		SpoutPlayer player = new SpoutPlayer(this, playerName, null, -1);
+		SpoutPlayer player = new SpoutPlayer(this, playerName, null);
 		players.putIfAbsent(playerName, player);
 		session.setPlayer(player);
 		return player;

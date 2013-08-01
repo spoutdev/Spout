@@ -41,10 +41,10 @@ public class NetworkSendThread {
 	private final static long minimumLatency = SpoutConfiguration.SEND_LATENCY.getLong();
 	private final static long spikeLatency = SpoutConfiguration.SEND_SPIKE_LATENCY.getLong();
 	private final static float spikeChance = SpoutConfiguration.SEND_SPIKE_CHANCE.getFloat() / 10.0F;
-	private final int poolIndex;
-	private final AtomicReference<ChannelQueueThread[]> channelQueues = new AtomicReference<>();
 	private final AtomicReference<ChannelQueueThread[]> interruptedQueues = new AtomicReference<>();
-
+	private final AtomicReference<ChannelQueueThread[]> channelQueues = new AtomicReference<>();
+	private final int poolIndex;
+	
 	public NetworkSendThread(int poolIndex) {
 		this.poolIndex = poolIndex;
 		channelQueues.set(new ChannelQueueThread[0]);

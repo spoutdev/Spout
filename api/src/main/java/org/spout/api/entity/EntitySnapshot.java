@@ -89,9 +89,9 @@ public interface EntitySnapshot {
 	/**
 	 * Get the view distance of the entity at the time of this snapshot
 	 *
-	 * @return view distance
+	 * @return sync distance
 	 */
-	public int getViewDistance();
+	public int getSyncDistance();
 
 	/**
 	 * Gets the observer state of the entity at the time of this snapshot
