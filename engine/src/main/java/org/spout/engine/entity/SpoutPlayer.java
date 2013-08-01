@@ -290,8 +290,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		//If we are stopping, it's not really a kick (it's a friendly disconnect)
 		//If we aren't stopping, it really is a kick
 
-		//TODO: Fix session needs all the disconnect functions since Network component is now in API
-		session.disconnect(!stop, stop, reason);
+		((SpoutSession) getNetwork().getSession()).disconnect(!stop, stop, reason);
 	}
 
 	@Override
@@ -345,12 +344,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 		if (isRemoved()) {
 			if (getEngine().getPlatform() == Platform.SERVER) {
-				((ServerNetworkSynchronizer) getNetworkSynchronizer()).onRemoved();
 				((SpoutServer) getEngine()).removePlayer(this);
 			}
 			// TODO stop client?
 		} else if (this.isOnline()) {
-			this.getNetworkSynchronizer().finalizeTick();
+			this.getNetwork().finalizeRun(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
 		}
 	}
 
@@ -358,7 +356,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	public void preSnapshotRun() {
 		super.preSnapshotRun();
 		if (this.isOnline()) {
-			this.getNetworkSynchronizer().preSnapshot();
+			this.getNetwork().preSnapshot(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
 		}
 	}
 
@@ -390,6 +388,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public PlayerNetworkComponent getNetwork() {
-		return get(PlayerNetworkComponent.class);
+		return (PlayerNetworkComponent) network;
 	}
 }

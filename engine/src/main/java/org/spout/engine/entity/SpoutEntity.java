@@ -86,7 +86,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	protected boolean justSpawned = true;
 	//For faster access
 	private final SpoutPhysicsComponent physics;
-	private NetworkComponent network;
+	protected NetworkComponent network;
 	private Class<? extends Component>[] initialComponents = null;
 
 	public SpoutEntity(Engine engine, Transform transform) {
