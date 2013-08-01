@@ -407,7 +407,7 @@ public abstract class NetworkComponent extends EntityComponent {
 	}
 
 	/**
-	 * Gets the viewable volume centred on the given chunk coordinates and the given view distance
+	 * Gets the viewable volume centered on the given chunk coordinates and the given view distance
 	 */
 	public static Iterator<IntVector3> getViewableVolume(int cx, int cy, int cz, int viewDistance) {
 		return new OutwardIterator(cx, cy, cz, viewDistance);

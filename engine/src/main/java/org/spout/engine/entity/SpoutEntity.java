@@ -125,7 +125,9 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		observer.set(NOT_OBSERVING);
 		physics = (SpoutPhysicsComponent) add(PhysicsComponent.class);
 
-		network = add(NetworkComponent.class);
+		if (!(this instanceof SpoutPlayer)) {
+			network = add(NetworkComponent.class);
+		}
 
 		if (uid != null) {
 			this.uid = uid;
@@ -169,7 +171,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 			//Detach old NetworkComponent
 			super.detach(NetworkComponent.class);
 			//Attach new one
-			this.network = super.add(NetworkComponent.class, attach);
+			this.network = (NetworkComponent) super.add(type, attach);
 			return (T) network;
 		}
 		return super.add(type, attach);

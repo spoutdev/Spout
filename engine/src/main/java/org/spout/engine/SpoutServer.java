@@ -765,6 +765,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		//Set the player's sync distance
 		player.getNetwork().setSyncDistance(syncDistance);
 		player.getNetwork().forceSync();
+		player.getNetwork().setSession(session);
 		return player;
 	}
 

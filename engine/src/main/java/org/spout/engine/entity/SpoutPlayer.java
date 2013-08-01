@@ -82,10 +82,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 	private List<Entity> hiddenEntities = new ConcurrentList<>();
 
-	public SpoutPlayer(Engine engine, String name) {
-		this(engine, name, null);
-	}
-
 	public SpoutPlayer(Engine engine, String name, Transform transform) {
 		this(engine, name, transform, null, true, (byte[]) null, (Class<? extends Component>[]) null);
 	}

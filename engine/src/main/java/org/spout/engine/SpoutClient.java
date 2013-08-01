@@ -226,9 +226,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 			session.getProtocol().initializeClientSession(session);
 			if (p.getNetwork() == null) {
-				throw new IllegalStateException("initializeServerSession failed to set a player's NetworkComponent. Protocol: " + session.getProtocol());
+				throw new IllegalStateException("initializeClientSession failed to set a player's NetworkComponent. Protocol: " + session.getProtocol());
 			}
-			player.get().getNetwork().setSession(session);
+			p.getNetwork().setSession(session);
+			player.set(p);
 		} else {
 			getLogger().log(Level.SEVERE, "Could not connect to " + binding, connect.getCause());
 			return false;

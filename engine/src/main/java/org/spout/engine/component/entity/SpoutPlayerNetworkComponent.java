@@ -52,7 +52,7 @@ import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 import org.spout.engine.world.SpoutChunk;
 
-public abstract class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implements Listener {
+public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implements Listener {
 
 	@Override
 	public void onAttached() {
