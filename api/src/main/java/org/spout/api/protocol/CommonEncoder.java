@@ -68,7 +68,7 @@ public class CommonEncoder extends PostprocessEncoder {
 			if (codec == null) {
 				throw new IOException("Unknown message type: " + clazz + ".");
 			}
-
+			Spout.debug("Encoded: " + Integer.toHexString(codec.getOpcode()));
 			ChannelBuffer messageBuf = codec.encode(onClient, message);
 			ChannelBuffer headerBuf = protocol.writeHeader(codec, messageBuf);
 			return ChannelBuffers.wrappedBuffer(headerBuf, messageBuf);
