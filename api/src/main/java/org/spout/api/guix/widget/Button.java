@@ -26,7 +26,40 @@
  */
 package org.spout.api.guix.widget;
 
+import org.spout.api.Spout;
+import org.spout.api.event.player.input.PlayerClickEvent;
+import org.spout.api.event.widget.WidgetClickEvent;
+import org.spout.api.event.widget.button.ButtonPressEvent;
+import org.spout.api.event.widget.button.ButtonReleaseEvent;
 import org.spout.api.guix.Widget;
 
+/**
+ * Represents any {@link Widget} that can be pressed and released.
+ */
 public class Button extends Widget {
+	private boolean pressed;
+
+	@Override
+	public final void onClick(WidgetClickEvent event) {
+		PlayerClickEvent cevent = event.getClickEvent();
+		if (cevent.isPressed()) {
+			ButtonPressEvent pevent = Spout.getEventManager().callEvent(new ButtonPressEvent(this));
+			if (!pevent.isCancelled()) {
+				pressed = true;
+				onPress();
+			}
+		} else if (pressed) {
+			ButtonReleaseEvent revent = Spout.getEventManager().callEvent(new ButtonReleaseEvent(this));
+			if (!revent.isCancelled()) {
+				pressed = false;
+				onRelease();
+			}
+		}
+	}
+
+	public void onPress() {
+	}
+
+	public void onRelease() {
+	}
 }

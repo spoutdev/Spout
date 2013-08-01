@@ -35,6 +35,7 @@ import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.SpoutRenderMaterials;
 
 /**
  * Contains render data for {@link Widget}s to be used by the
@@ -44,7 +45,7 @@ import org.spout.api.render.RenderMaterial;
  * @see org.spout.api.guix.Widget#getSprites()
  */
 public class Sprite implements Comparable<Sprite> {
-	private RenderMaterial material;
+	private RenderMaterial material = SpoutRenderMaterials.GUI_COLOR;
 	private Rectangle source = Rectangle.ZERO;
 	private Rectangle sprite = Rectangle.ZERO;
 	private int zIndex = 0;
