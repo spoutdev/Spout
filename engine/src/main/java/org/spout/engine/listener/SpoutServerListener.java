@@ -84,18 +84,18 @@ public class SpoutServerListener implements Listener {
 
 	@EventHandler (order = Order.EARLIEST)
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		Player p = event.getPlayer();
+		Player player = event.getPlayer();
 		PlayerBanKickEvent banEvent = null;
 		PlayerWhitelistKickEvent whitelistEvent = null;
-		InetAddress address = p.getAddress();
+		InetAddress address = player.getNetwork().getAddress();
 		if (address == null) {
 			event.disallow("Invalid IP Address!");
-		} else if (server.getAccessManager().isBanned(BanType.PLAYER, p.getName())) {
-			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.PLAYER, server.getAccessManager().getBanMessage(BanType.PLAYER)));
+		} else if (server.getAccessManager().isBanned(BanType.PLAYER, player.getName())) {
+			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(player, BanType.PLAYER, server.getAccessManager().getBanMessage(BanType.PLAYER)));
 		} else if (server.getAccessManager().isBanned(BanType.IP, address.getHostAddress())) {
-			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.IP, server.getAccessManager().getBanMessage(BanType.IP)));
-		} else if (server.getAccessManager().isWhitelistEnabled() && !server.getAccessManager().isWhitelisted(p.getName())) {
-			whitelistEvent = server.getEventManager().callEvent(new PlayerWhitelistKickEvent(p, server.getAccessManager().getWhitelistMessage()));
+			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(player, BanType.IP, server.getAccessManager().getBanMessage(BanType.IP)));
+		} else if (server.getAccessManager().isWhitelistEnabled() && !server.getAccessManager().isWhitelisted(player.getName())) {
+			whitelistEvent = server.getEventManager().callEvent(new PlayerWhitelistKickEvent(player, server.getAccessManager().getWhitelistMessage()));
 		}
 
 		if (banEvent != null && !banEvent.isCancelled()) {

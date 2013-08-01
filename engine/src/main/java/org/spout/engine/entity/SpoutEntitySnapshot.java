@@ -35,6 +35,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import org.spout.api.component.Component;
+import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
@@ -50,7 +51,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 	private final String worldName;
 	private final UUID worldId;
 	private final SerializableMap dataMap;
-	private final int viewDistance;
+	private final int syncDistance;
 	private final boolean observer;
 	private final boolean savable;
 	private final List<Class<? extends Component>> components;
@@ -67,8 +68,9 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 		this.location = e.getPhysics().getTransform();
 		this.worldName = e.getWorld().getName();
 		this.worldId = e.getWorld().getUID();
-		this.viewDistance = e.getViewDistance();
-		this.observer = e.isObserver();
+		final NetworkComponent network = e.get(NetworkComponent.class);
+		this.syncDistance = network.getSyncDistance();
+		this.observer = network.isObserver();
 		this.savable = e.isSavable();
 		if (e.getData().size() > 0) {
 			this.dataMap = e.getData().deepCopy();
@@ -90,7 +92,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 		this.location = t;
 		this.worldName = null;
 		this.worldId = worldId;
-		this.viewDistance = view;
+		this.syncDistance = view;
 		this.observer = observer;
 		this.savable = true;
 		this.dataMap = new ManagedHashMap();
@@ -140,8 +142,8 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 	}
 
 	@Override
-	public int getViewDistance() {
-		return viewDistance;
+	public int getSyncDistance() {
+		return syncDistance;
 	}
 
 	@Override
@@ -161,7 +163,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 
 	@SuppressWarnings ("unchecked")
 	public SpoutEntity toEntity(SpoutEngine engine) {
-		return new SpoutEntity(engine, location, viewDistance, uniqueId, false, dataMap, components.toArray(new Class[components.size()]));
+		return new SpoutEntity(engine, location, uniqueId, false, dataMap, components.toArray(new Class[components.size()]));
 	}
 
 	@Override

@@ -1158,7 +1158,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 							}
 							observed.add(p);
 							byte[] empty = new byte[chunks.length * subArray1.length * subArray2.length];
-							p.getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
+							p.getNetwork().getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
 						}
 						subArray2[dz].setCuboid(x, y, z, buffer, cause);
 					}
@@ -1188,7 +1188,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 							}
 							observed.add(p);
 							byte[] empty = new byte[chunks.length * subArray1.length * subArray2.length];
-							p.getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
+							p.getNetwork().getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
 						}
 						subArray2[dz].setCuboid(x, y, z, buffer, cause);
 					}

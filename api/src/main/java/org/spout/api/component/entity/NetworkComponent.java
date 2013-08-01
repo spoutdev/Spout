@@ -43,7 +43,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedKey;
@@ -94,11 +93,6 @@ public abstract class NetworkComponent extends EntityComponent {
 	private boolean sync = false;
 	protected int tickCounter = 0;
 	protected final static int CHUNKS_PER_TICK = 20;
-
-	@Override
-	public final boolean isDetachable() {
-		return false;
-	}
 
 	@Override
 	public final boolean canTick() {

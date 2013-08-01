@@ -36,17 +36,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
 
-import org.spout.api.Server;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
-import org.spout.api.protocol.ClientNullNetworkSynchronizer;
-import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.ServerNullNetworkSynchronizer;
-import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
@@ -57,46 +51,33 @@ import org.spout.engine.entity.SpoutPlayer;
  */
 public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	/**
-	 * The number of ticks which are elapsed before a client is disconnected due to a timeout.
-	 */
-	@SuppressWarnings ("unused")
-	private static final int TIMEOUT_TICKS = 20 * 60;
-	/**
-	 * The server this session belongs to.
+	 * The engine this session belongs to.
 	 */
 	private final T engine;
 	/**
 	 * The Random for this session
 	 */
-	protected final Random random = new Random();
+	private final Random random = new Random();
 	/**
 	 * The channel associated with this session.
 	 */
-	protected final Channel channel;
+	private final Channel channel;
+	/**
+	 * Network send thread
+	 */
+	private final AtomicReference<NetworkSendThread> networkSendThread = new AtomicReference<>();
 	/**
 	 * A queue of incoming and unprocessed messages
 	 */
 	private final Queue<Message> messageQueue = new ArrayDeque<>();
 	/**
-	 * A queue of incoming and unprocessed messages from a client
-	 */
-	//private final Queue<Message> fromDownMessageQueue = new ArrayDeque<Message>();
-	/**
-	 * A queue of incoming and unprocessed messages from a server
-	 */
-	//private final Queue<Message> fromUpMessageQueue = new ArrayDeque<Message>();
-	/**
 	 * A queue of outgoing messages that will be sent after the client finishes identification
 	 */
-	protected final Queue<Message> sendQueue = new ConcurrentLinkedQueue<>();
-	/**
-	 * The current state.
-	 */
-	private State state = State.EXCHANGE_HANDSHAKE;
+	private final Queue<Message> sendQueue = new ConcurrentLinkedQueue<>();
 	/**
 	 * The player associated with this session (if there is one).
 	 */
-	protected final AtomicReference<SpoutPlayer> player = new AtomicReference<>();
+	private final AtomicReference<SpoutPlayer> player = new AtomicReference<>();
 	/**
 	 * The random long used for client-server handshake
 	 */
@@ -106,21 +87,13 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	private final AtomicReference<Protocol> protocol;
 	/**
+	 * The current state.
+	 */
+	private State state = State.EXCHANGE_HANDSHAKE;
+	/**
 	 * Stores if this is Connected TODO: Probably add to SpoutAPI
 	 */
 	protected boolean isConnected = false;
-	/**
-	 * A network synchronizer that doesn't do anything, used until a real synchronizer is set.
-	 */
-	private final NetworkSynchronizer nullSynchronizer;
-	/**
-	 * The NetworkSynchronizer being used for this session
-	 */
-	private final AtomicReference<NetworkSynchronizer> synchronizer;
-	/**
-	 *
-	 */
-	private final AtomicReference<NetworkSendThread> networkSendThread = new AtomicReference<>();
 	/**
 	 * Default uncaught exception handler
 	 */
@@ -136,15 +109,9 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	public SpoutSession(T engine, Channel channel, Protocol bootstrapProtocol) {
 		this.engine = engine;
 		this.channel = channel;
-		protocol = new AtomicReference<>(bootstrapProtocol);
-		isConnected = true;
+		this.protocol = new AtomicReference<>(bootstrapProtocol);
+		this.isConnected = true;
 		this.exceptionHandler = new AtomicReference<UncaughtExceptionHandler>(new DefaultUncaughtExceptionHandler(this));
-		if (engine instanceof Server) {
-			nullSynchronizer = new ServerNullNetworkSynchronizer((ServerSession) this);
-		} else {
-			nullSynchronizer = new ClientNullNetworkSynchronizer((ClientSession) this);
-		}
-		synchronizer = new AtomicReference<>(nullSynchronizer);
 	}
 
 	/**
@@ -201,7 +168,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	private final static float spikeChance = SpoutConfiguration.RECV_SPIKE_CHANCE.getFloat() / 20.0F;
 	private final boolean fakeLatency = spikeChance > 0F;
 	private long spikeEnd = 0;
-	private final Random r = new Random();
 
 	public void pulse() {
 
@@ -218,8 +184,8 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			if (currentTime < spikeEnd) {
 				return;
 			}
-			if (r.nextFloat() < spikeChance) {
-				long spike = (long) (spikeLatency * r.nextFloat());
+			if (random.nextFloat() < spikeChance) {
+				long spike = (long) (spikeLatency * random.nextFloat());
 				spikeEnd = currentTime + spike;
 			}
 		}
@@ -349,17 +315,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		return channel.isOpen();
 	}
 
-	protected void setNetworkSynchronizer(NetworkSynchronizer synchronizer) {
-		if (synchronizer == null && player == null) {
-			this.synchronizer.set(nullSynchronizer);
-		} else if (!this.synchronizer.compareAndSet(nullSynchronizer, synchronizer)) {
-			throw new IllegalArgumentException("Network synchronizer may only be set once for a given player login");
-		} else if (synchronizer != null) {
-			synchronizer.setProtocol(protocol.get());
-			this.synchronizer.set(synchronizer);
-		}
-	}
-
 	@Override
 	public boolean isPrimary(Channel c) {
 		return c == this.channel;
@@ -373,11 +328,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	@Override
 	public void closeAuxChannel() {
 		throw new UnsupportedOperationException("closeAuxChannel() is only supported for proxies");
-	}
-
-	@Override
-	public NetworkSynchronizer getNetworkSynchronizer() {
-		return synchronizer.get();
 	}
 
 	@Override

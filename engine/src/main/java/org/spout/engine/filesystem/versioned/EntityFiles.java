@@ -258,7 +258,7 @@ public class EntityFiles {
 		map.put(new TransformTag("position", e.getTransform()));
 		map.put(new UUIDTag("uuid", e.getUID()));
 
-		map.put(new IntTag("view", e.getViewDistance()));
+		map.put(new IntTag("view", e.getSyncDistance()));
 		map.put(new ByteTag("observer", e.isObserver()));
 
 		//Serialize data
