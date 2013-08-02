@@ -237,35 +237,7 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 			}
 			checkObserverUpdateQueue();
 		}
-	}
 
-	/**
-	 * Resets all chunk stores for the client.  This method is only called during the pre-snapshot part of the tick.
-	 */
-	@ServerOnly
-	protected void resetChunks() {
-		priorityChunkSendQueue.clear();
-		chunkSendQueue.clear();
-		chunkFreeQueue.clear();
-		chunkInitQueue.clear();
-		activeChunks.clear();
-		initializedChunks.clear();
-		lastChunkCheck = Point.invalid;
-		synchronizedEntities.clear();
-	}
-
-	/**
-	 * Called just before a snapshot is taken of the owner.
-	 *
-	 * TODO: Add sequence checks to the PhysicsComponent to prevent updates to live?
-	 *
-	 * @param live A copy of the owner's live transform state
-	 */
-	@ServerOnly
-	public void preSnapshot(final Transform live) {
-		if (Spout.getPlatform() != Platform.SERVER) {
-			return;
-		}
 		if (worldChanged) {
 			Point ep = getOwner().getPhysics().getPosition();
 			resetChunks();
@@ -302,7 +274,7 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 				//TODO: Merge these events?
 				callProtocolEvent(new EntitySyncEvent(getOwner(), live, false, true, false));
 				//TODO: Live needs to be sent here but kills the client. Fix kitskub
-				callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), live, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
+				callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), getOwner().getPhysics().getTransform(), EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
 				sync = false;
 			}
 			boolean tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
@@ -313,6 +285,21 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 				tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 			}
 		}
+	}
+
+	/**
+	 * Resets all chunk stores for the client.  This method is only called during the pre-snapshot part of the tick.
+	 */
+	@ServerOnly
+	protected void resetChunks() {
+		priorityChunkSendQueue.clear();
+		chunkSendQueue.clear();
+		chunkFreeQueue.clear();
+		chunkInitQueue.clear();
+		activeChunks.clear();
+		initializedChunks.clear();
+		lastChunkCheck = Point.invalid;
+		synchronizedEntities.clear();
 	}
 
 	protected boolean canSendChunk(Chunk c) {

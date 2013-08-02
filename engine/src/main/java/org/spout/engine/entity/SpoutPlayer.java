@@ -349,14 +349,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	@Override
-	public void preSnapshotRun() {
-		super.preSnapshotRun();
-		if (this.isOnline()) {
-			this.getNetwork().preSnapshot(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
-		}
-	}
-
-	@Override
 	public void setVisible(Entity entity, boolean visible) {
 		if (visible) {
 			hiddenEntities.remove(entity);
