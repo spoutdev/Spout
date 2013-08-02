@@ -40,6 +40,8 @@ import org.spout.api.ServerOnly;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
+import org.spout.api.event.EventHandler;
+import org.spout.api.event.Listener;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -53,7 +55,8 @@ import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.event.ChunkFreeEvent;
 import org.spout.api.protocol.event.ChunkSendEvent;
-import org.spout.api.protocol.event.UpdateEntityEvent;
+import org.spout.api.protocol.event.EntitySyncEvent;
+import org.spout.api.protocol.event.EntityUpdateEvent;
 import org.spout.api.protocol.event.WorldChangeProtocolEvent;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.SyncedStringMap;
@@ -63,7 +66,7 @@ import org.spout.api.util.set.concurrent.TSyncIntHashSet;
  * The networking behind {@link org.spout.api.entity.Player}s. This component holds the {@link Session} which is the connection
  * the Player has to the server.
  */
-public abstract class PlayerNetworkComponent extends NetworkComponent {
+public abstract class PlayerNetworkComponent extends NetworkComponent implements Listener {
 	private static final SyncedStringMap protocolMap = SyncedStringMap.create(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
 	protected static final int CHUNKS_PER_TICK = 20;
 	private final AtomicReference<Session> session = new AtomicReference<>(null);
@@ -151,19 +154,17 @@ public abstract class PlayerNetworkComponent extends NetworkComponent {
 	/**
 	 * Instructs the client to update the entities state and position<br><br>
 	 *
-	 * TODO change this to a protocol event maybe?
-	 *
-	 * @param e the entity
-	 * @param liveTransform the live transform (latest) for the entity
-	 * @param spawn is True when the entity just spawned
-	 * @param destroy is True when the entity just got destroyed
-	 * @param update is True when the entity is being updated
+	 * @param event {@link EntitySyncEvent}
 	 */
 	@ServerOnly
-	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
-		if (spawn) {
+	@EventHandler
+	public void syncEntity(EntitySyncEvent event) {
+		final Entity e = event.getEntity();
+		final boolean add = event.shouldAdd();
+		final boolean remove = event.shouldRemove();
+		if (add) {
 			synchronizedEntities.add(e.getId());
-		} else if (destroy) {
+		} else if (remove) {
 			synchronizedEntities.remove(e.getId());
 		}
 	}
@@ -296,8 +297,12 @@ public abstract class PlayerNetworkComponent extends NetworkComponent {
 			if (!priorityChunkSendQueue.isEmpty()) {
 				return;
 			}
+			//TODO: finalizeRun has a live copy, why is this here?
 			if (getOwner().getPhysics().isTransformDirty() && sync) {
-				callProtocolEvent(new UpdateEntityEvent(getOwner().getId(), new Transform(getOwner().getPhysics().getPosition(), getOwner().getPhysics().getRotation(), Vector3.ONE), UpdateEntityEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
+				//TODO: Merge these events?
+				callProtocolEvent(new EntitySyncEvent(getOwner(), live, false, true, false));
+				//TODO: Live needs to be sent here but kills the client. Fix kitskub
+				callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), live, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
 				sync = false;
 			}
 			boolean tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;

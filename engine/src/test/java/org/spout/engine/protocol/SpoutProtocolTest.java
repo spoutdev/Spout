@@ -41,7 +41,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
-import org.spout.api.protocol.event.UpdateEntityEvent.UpdateAction;
+import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.api.util.SyncedMapEvent;
 import org.spout.engine.faker.EngineFaker;

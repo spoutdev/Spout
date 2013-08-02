@@ -73,9 +73,9 @@ import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.ReactConverter;
 import org.spout.api.math.Vector3;
+import org.spout.api.protocol.event.BlockUpdateEvent;
 import org.spout.api.protocol.event.ChunkDatatableSendEvent;
 import org.spout.api.protocol.event.ChunkSendEvent;
-import org.spout.api.protocol.event.UpdateBlockEvent;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
@@ -800,7 +800,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 					}
 
 					try {
-						network.callProtocolEvent(new UpdateBlockEvent(chunk, block.getFloorX(), block.getFloorY(), block.getFloorZ()));
+						network.callProtocolEvent(new BlockUpdateEvent(chunk, block.getFloorX(), block.getFloorY(), block.getFloorZ()));
 					} catch (Exception e) {
 						Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
 					}

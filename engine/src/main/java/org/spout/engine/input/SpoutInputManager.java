@@ -52,7 +52,7 @@ import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
-import org.spout.api.protocol.event.UpdateEntityEvent.UpdateAction;
+import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;

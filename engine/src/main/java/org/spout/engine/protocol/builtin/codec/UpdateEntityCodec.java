@@ -31,7 +31,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.protocol.event.UpdateEntityEvent.UpdateAction;
+import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.api.util.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;

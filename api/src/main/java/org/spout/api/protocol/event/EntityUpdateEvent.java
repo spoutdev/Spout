@@ -31,14 +31,14 @@ import org.spout.api.event.ProtocolEvent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.reposition.RepositionManager;
 
-public class UpdateEntityEvent extends ProtocolEvent {
+public class EntityUpdateEvent extends ProtocolEvent {
 	private static final HandlerList handlers = new HandlerList();
 	private final int entityId;
 	private final Transform transform;
 	private final UpdateAction action;
 	private final RepositionManager rm;
 
-	public UpdateEntityEvent(int entityId, Transform transform, UpdateAction action, RepositionManager rm) {
+	public EntityUpdateEvent(int entityId, Transform transform, UpdateAction action, RepositionManager rm) {
 		this.entityId = entityId;
 		this.transform = transform;
 		this.action = action;

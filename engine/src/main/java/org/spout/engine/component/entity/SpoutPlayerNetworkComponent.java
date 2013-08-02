@@ -28,6 +28,8 @@ package org.spout.engine.component.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.spout.api.ServerOnly;
 import org.spout.api.Spout;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Entity;
@@ -37,12 +39,13 @@ import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.event.BlockUpdateEvent;
 import org.spout.api.protocol.event.ChunkDatatableSendEvent;
 import org.spout.api.protocol.event.ChunkFreeEvent;
 import org.spout.api.protocol.event.ChunkSendEvent;
+import org.spout.api.protocol.event.EntitySyncEvent;
+import org.spout.api.protocol.event.EntityUpdateEvent;
 import org.spout.api.protocol.event.PositionSendEvent;
-import org.spout.api.protocol.event.UpdateBlockEvent;
-import org.spout.api.protocol.event.UpdateEntityEvent;
 import org.spout.api.protocol.event.WorldChangeProtocolEvent;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
@@ -53,7 +56,6 @@ import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 import org.spout.engine.world.SpoutChunk;
 
 public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implements Listener {
-
 	@Override
 	public void onAttached() {
 		super.onAttached();
@@ -72,7 +74,7 @@ public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implemen
 
 	@EventHandler
 	public void onPositionSend(PositionSendEvent event) {
-		event.getMessages().add(new UpdateEntityMessage(event.getPlayerId(), new Transform(event.getPoint(), event.getRotation(), Vector3.ONE), UpdateEntityEvent.UpdateAction.TRANSFORM, getRepositionManager()));
+		event.getMessages().add(new UpdateEntityMessage(event.getPlayerId(), new Transform(event.getPoint(), event.getRotation(), Vector3.ONE), EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()));
 	}
 
 	@EventHandler
@@ -81,7 +83,7 @@ public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implemen
 	}
 	
 	@EventHandler
-	public void onBlockUpdate(UpdateBlockEvent event) {
+	public void onBlockUpdate(BlockUpdateEvent event) {
 		event.getMessages().add(new BlockUpdateMessage(event.getChunk().getBlock(event.getX(), event.getY(), event.getZ())));
 	}
 
@@ -91,26 +93,27 @@ public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implemen
 	}
 
 	@EventHandler
-	public void onUpdateEntity(UpdateEntityEvent event) {
+	public void onUpdateEntity(EntityUpdateEvent event) {
 		event.getMessages().add(new UpdateEntityMessage(event.getEntityId(), event.getTransform(), event.getAction(), event.getRepositionManager()));
 	}
 
+	@ServerOnly
 	@Override
-	// TODO move to ServerNetworkSynchronizer?
-	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
-		super.syncEntity(e, liveTransform, spawn, destroy, update);
-		List<Message> messages = new ArrayList<>(3);
-		if (destroy) {
-			messages.add(new UpdateEntityMessage(e.getId(), null, UpdateEntityEvent.UpdateAction.REMOVE, null));
+	public void syncEntity(EntitySyncEvent event) {
+		super.syncEntity(event);
+		final Entity e = event.getEntity();
+		final Transform transform = event.getTransform();
+		final boolean remove = event.shouldRemove();
+		final boolean add = event.shouldAdd();
+		List<Message> messages = new ArrayList<>();
+		if (remove) {
+			messages.add(new UpdateEntityMessage(e.getId(), null, EntityUpdateEvent.UpdateAction.REMOVE, null));
+		} else if (add) {
+			messages.add(new UpdateEntityMessage(e.getId(), transform, EntityUpdateEvent.UpdateAction.ADD, getRepositionManager()));
 		}
-		if (spawn) {
-			messages.add(new UpdateEntityMessage(e.getId(), e.getPhysics().getTransform(), UpdateEntityEvent.UpdateAction.ADD, getRepositionManager()));
-		}
-		if (update) {
-			// TODO - might be worth adding force support
-			boolean force = false;
-			if (force || e.getPhysics().isTransformDirty()) {
-				messages.add(new UpdateEntityMessage(e.getId(), liveTransform, UpdateEntityEvent.UpdateAction.TRANSFORM, getRepositionManager()));
+		else {
+			if (e.getPhysics().isTransformDirty()) {
+				messages.add(new UpdateEntityMessage(e.getId(), transform, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()));
 			}
 			if (!e.getData().getDeltaMap().isEmpty()) {
 				messages.add(new EntityDatatableMessage(e.getId(), e.getData().getDeltaMap()));

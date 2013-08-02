@@ -37,6 +37,7 @@ import org.spout.api.Spout;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
+import org.spout.api.protocol.event.EntitySyncEvent;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
@@ -204,18 +205,14 @@ public class EntityManager {
 			throw new UnsupportedOperationException("Must be in server mode to sync entities");
 		}
 		for (Entity ent : getAll()) {
-			//Do not sync entities with null chunks
-			if (ent.getChunk() == null) {
-				continue;
-			}
 			if (ent.getId() == SpoutEntity.NOTSPAWNEDID) {
-				Spout.getLogger().info("Attempt to sync entity with the not spawned id");
-				continue;
+				throw new IllegalStateException("Attempt to sync entity with not spawned id.");
 			}
 			//Players observing the chunk this entity is in
 			Set<? extends Entity> observers = ent.getChunk().getObservers();
 			syncEntity(ent, observers, false);
 
+			//TODO: Why do we need this...?
 			Set<? extends Entity> expiredObservers = ((SpoutChunk) ent.getChunk()).getExpiredObservers();
 			syncEntity(ent, expiredObservers, true);
 		}
@@ -223,19 +220,11 @@ public class EntityManager {
 
 	private void syncEntity(Entity ent, Set<? extends Entity> observers, boolean forceDestroy) {
 		for (Entity observer : observers) {
-			//Don't sync ourselves to ourselves :p
-			if (ent == observer) {
-				continue;
-			}
 			//Non-players have no synchronizer, ignore
 			if (!(observer instanceof Player)) {
 				continue;
 			}
 			Player player = (Player) observer;
-			//If the player is somehow still observing the chunk and offline, ignore
-			if (!player.isOnline()) {
-				continue;
-			}
 			//Grab the NetworkSynchronizer of the player
 			PlayerNetworkComponent network = player.getNetwork();
 			//Grab player's sync distance
@@ -245,18 +234,18 @@ public class EntityManager {
 			 *
 			 * Following variables hold sync status
 			 */
-			boolean spawn, sync, destroy;
-			spawn = sync = destroy = false;
+			boolean add, sync, remove;
+			add = sync = remove = false;
 			//Entity is out of range of the player's view distance, destroy
 			final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) ent.getPhysics();
 			if (forceDestroy || ent.isRemoved() || physics.getTransformLive().getPosition().distanceSquared(player.getPhysics().getPosition()) > syncDistance * syncDistance || player.isInvisible(ent)) {
-				destroy = true;
+				remove = true;
 			} else if (network.hasSpawned(ent)) {
 				sync = true;
 			} else {
-				spawn = true;
+				add = true;
 			}
-			network.syncEntity(ent, physics.getTransformLive(), spawn, destroy, sync);
+			ent.getEngine().getEventManager().callEvent(new EntitySyncEvent(ent, ((SpoutPhysicsComponent) ent.getPhysics()).getTransformLive(), add, sync, remove));
 		}
 	}
 }

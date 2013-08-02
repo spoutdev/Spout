@@ -35,8 +35,8 @@ import org.spout.engine.component.entity.MovementValidatorComponent;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.world.SpoutWorld;
 
-import static org.spout.api.protocol.event.UpdateEntityEvent.UpdateAction.ADD;
-import static org.spout.api.protocol.event.UpdateEntityEvent.UpdateAction.TRANSFORM;
+import static org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction.ADD;
+import static org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction.TRANSFORM;
 
 public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessage> {
 	@Override

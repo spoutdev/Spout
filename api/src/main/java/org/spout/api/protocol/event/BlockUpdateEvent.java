@@ -30,12 +30,12 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.event.ProtocolEvent;
 import org.spout.api.geo.cuboid.Chunk;
 
-public class UpdateBlockEvent extends ProtocolEvent {
+public class BlockUpdateEvent extends ProtocolEvent {
 	private static final HandlerList handlers = new HandlerList();
 	private final Chunk chunk;
 	private final int x, y, z;
 
-	public UpdateBlockEvent(Chunk chunk, int x, int y, int z) {
+	public BlockUpdateEvent(Chunk chunk, int x, int y, int z) {
 		this.chunk = chunk;
 		this.x = x;
 		this.y = y;
