@@ -26,9 +26,10 @@
  */
 package org.spout.api.map;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 
-public class DefaultedKeyArray<T> extends DefaultedKeyImpl<T[]> {
+public class DefaultedKeyArray<T extends Serializable> extends DefaultedKeyImpl<T[]> {
 	private final int length;
 	private final Class<T> clazz;
 

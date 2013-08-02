@@ -26,7 +26,9 @@
  */
 package org.spout.api.map;
 
-public class DefaultedKeyFactory<T> implements DefaultedKey<T> {
+import java.io.Serializable;
+
+public class DefaultedKeyFactory<T extends Serializable> implements DefaultedKey<T> {
 	private final Class<T> defaultValue;
 	private final String key;
 
