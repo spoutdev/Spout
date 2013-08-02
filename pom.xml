@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- Project information -->
-	<name>Spout Parent</name>
+	<name>Spout</name>
 	<groupId>org.spout</groupId>
 	<artifactId>spout-parent</artifactId>
 	<version>1</version>
