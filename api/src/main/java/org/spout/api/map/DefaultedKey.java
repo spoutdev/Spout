@@ -26,7 +26,9 @@
  */
 package org.spout.api.map;
 
-public interface DefaultedKey<T> {
+import java.io.Serializable;
+
+public interface DefaultedKey<T extends Serializable> {
 	public T getDefaultValue();
 
 	public String getKeyString();

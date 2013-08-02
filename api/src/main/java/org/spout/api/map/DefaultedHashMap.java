@@ -26,13 +26,14 @@
  */
 package org.spout.api.map;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * An implementation of {@link DefaultedMap} using a HashMap
  */
-public class DefaultedHashMap<V> extends HashMap<String, V> implements DefaultedMap<V> {
+public class DefaultedHashMap<V extends Serializable> extends HashMap<String, V> implements DefaultedMap<V> {
 	private static final long serialVersionUID = 1L;
 
 	public DefaultedHashMap(int initialCapacity, float loadFactor) {
