@@ -27,11 +27,6 @@
 package org.spout.engine.entity;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -51,10 +46,8 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.engine.SpoutClient;
@@ -68,20 +61,14 @@ import org.spout.engine.world.SpoutChunk;
 
 public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = Integer.MIN_VALUE;
-	private static final Iterator<IntVector3> INITIAL_TICK = new ArrayList<IntVector3>().iterator();
-	private static final Iterator<IntVector3> OBSERVING = new ArrayList<IntVector3>().iterator();
-	private static final Iterator<IntVector3> NOT_OBSERVING = new ArrayList<IntVector3>().iterator();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	//Snapshotable fields
 	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<>(snapshotManager, null);
-	private final SnapshotableReference<Iterator<IntVector3>> observer = new SnapshotableReference<>(snapshotManager, INITIAL_TICK);
-	private boolean observeChunksFailed = false;
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
 	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
 	private volatile boolean remove = false;
 	//Other
 	private final Engine engine;
-	private final Set<SpoutChunk> observingChunks = new HashSet<>();
 	private final UUID uid;
 	protected boolean justSpawned = true;
 	//For faster access
@@ -111,7 +98,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	protected SpoutEntity(Engine engine, Transform transform, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
 		this(engine, transform, uid, load, (byte[]) null, components);
-		this.getData().putAll(dataMap);
 	}
 
 	public SpoutEntity(Engine engine, Transform transform, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
@@ -122,7 +108,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		id.set(NOTSPAWNEDID);
 		this.engine = engine;
 
-		observer.set(NOT_OBSERVING);
 		physics = (SpoutPhysicsComponent) add(PhysicsComponent.class);
 
 		if (!(this instanceof SpoutPlayer)) {
@@ -232,7 +217,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		if (isRemoved()) {
 			//Get rid of physics
 			physics.deactivate();
-			removeObserver();
 			//Call onRemoved for Components and remove them
 			for (Component component : values()) {
 				detach(component.getClass());
@@ -268,60 +252,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 			if (activated) {
 				physics.activate(chunkLive.getRegion());
 			}
-		}
-
-		//Entity changed chunks as observer OR observer status changed so update
-		if ((chunk != chunkLive && (observer.getLive() == OBSERVING)) || observer.isDirty() || observer.get() == INITIAL_TICK || observeChunksFailed) {
-			updateObserver();
-		}
-	}
-
-	protected void removeObserver() {
-		for (SpoutChunk chunk : observingChunks) {
-			if (chunk.isLoaded()) {
-				chunk.removeObserver(this);
-			}
-		}
-		observingChunks.clear();
-	}
-
-	protected void updateObserver() {
-		List<Vector3> ungenerated = new ArrayList<>();
-		final int syncDistance = network.getSyncDistance();
-		World w = getWorld();
-		Transform t = physics.getTransform();
-		Point p = t.getPosition();
-		int cx = p.getChunkX();
-		int cy = p.getChunkY();
-		int cz = p.getChunkZ();
-
-		HashSet<SpoutChunk> observing = new HashSet<>((syncDistance * syncDistance * syncDistance * 3) / 2);
-		Iterator<IntVector3> itr = observer.getLive();
-		if (itr == OBSERVING) {
-			itr = new OutwardIterator(cx, cy, cz, syncDistance);
-		}
-		observeChunksFailed = false;
-		while (itr.hasNext()) {
-			IntVector3 v = itr.next();
-			Chunk chunk = w.getChunk(v.getX(), v.getY(), v.getZ(), LoadOption.LOAD_ONLY);
-			if (chunk != null) {
-				chunk.refreshObserver(this);
-				observing.add((SpoutChunk) chunk);
-			} else {
-				ungenerated.add(new Vector3(v));
-				observeChunksFailed = true;
-			}
-		}
-		observingChunks.removeAll(observing);
-		for (SpoutChunk chunk : observingChunks) {
-			if (chunk.isLoaded()) {
-				chunk.removeObserver(this);
-			}
-		}
-		observingChunks.clear();
-		observingChunks.addAll(observing);
-		if (!ungenerated.isEmpty()) {
-			w.queueChunksForGeneration(ungenerated);
 		}
 	}
 
@@ -380,6 +310,9 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		snapshotManager.copyAllSnapshots();
 
 		justSpawned = false;
+
+		// TODO: this is called on connect(), before session is initialized
+		if (network != null) network.copySnapshot();
 	}
 
 	@Override

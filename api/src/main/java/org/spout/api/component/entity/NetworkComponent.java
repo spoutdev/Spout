@@ -26,29 +26,93 @@
  */
 package org.spout.api.component.entity;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.List;
+import java.util.Set;
+import org.spout.api.ServerOnly;
 
 import org.spout.api.entity.Player;
 import org.spout.api.event.ProtocolEvent;
 import org.spout.api.entity.Entity;
+import org.spout.api.geo.LoadOption;
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
+import org.spout.api.math.IntVector3;
+import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.api.protocol.reposition.RepositionManager;
+import org.spout.api.util.OutwardIterator;
 
 /**
  * The networking behind {@link org.spout.api.entity.Entity}s.
  */
 public class NetworkComponent extends EntityComponent {
+	private static final WrappedSerizableIterator INITIAL_TICK = new WrappedSerizableIterator(null);
 	//TODO: Move all observer code to NetworkComponent
 	public final DefaultedKey<Boolean> IS_OBSERVER = new DefaultedKeyImpl<>("IS_OBSERVER", false);
+	/**
+	 * null means use SYNC_DISTANCE and is generated each update; not observing is {@code new OutwardIterator(0, 0, 0)}; custom Iterators can be used for others
+	 * We want default to be null so that when it is default observer, it returns null
+	 */
+	public final DefaultedKey<WrappedSerizableIterator> OBSERVER_ITERATOR = new DefaultedKeyImpl<>("OBSERVER_ITERATOR", null);
 	/** In chunks */
 	public final DefaultedKey<Integer> SYNC_DISTANCE = new DefaultedKeyImpl<>("SYNC_DISTANCE", 10);
 	private final AtomicReference<RepositionManager> rm = new AtomicReference<>(NullRepositionManager.getInstance());
+
+	private final Set<Chunk> observingChunks = new HashSet<>();
+	private AtomicReference<WrappedSerizableIterator> liveObserverIterator = new AtomicReference<>(new WrappedSerizableIterator(new OutwardIterator(0, 0, 0, 0)));
+	private boolean observeChunksFailed = false;
+
+
+	public static class WrappedSerizableIterator implements Serializable, Iterator<IntVector3> {
+		private static final long serialVersionUID = 1L;
+		private final Iterator<IntVector3> object;
+
+		public <T extends Iterator<IntVector3> & Serializable> WrappedSerizableIterator(T object) {
+			this.object = object;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return object.hasNext();
+		}
+
+		@Override
+		public IntVector3 next() {
+			return object.next();
+		}
+
+		@Override
+		public void remove() {
+			object.remove();
+		}
+		
+		private void writeObject(ObjectOutputStream stream) throws IOException {
+			stream.defaultWriteObject();
+		}
+		
+		private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+			stream.defaultReadObject();
+		}
+		
+	}
+
+	@Override
+	public void onAttached() {
+		getData().put(OBSERVER_ITERATOR, INITIAL_TICK);
+	}
 
 	@Override
 	public final boolean canTick() {
@@ -68,11 +132,26 @@ public class NetworkComponent extends EntityComponent {
 
 	/**
 	 * Sets the observer status for the owning {@link org.spout.api.entity.Entity}.
+	 * If there was a custom observer iterator being used, passing {@code true} will cause it to reset to the default observer iterator.
 	 *
 	 * @param observer True if observer, false if not
 	 */
 	public void setObserver(final boolean observer) {
 		getData().put(IS_OBSERVER, observer);
+		if (observer) {
+			liveObserverIterator.set(null);
+		} else {
+			liveObserverIterator.set(new WrappedSerizableIterator(new OutwardIterator(0, 0, 0, 0)));
+		}
+	}
+
+	public <T extends Iterator<IntVector3> & Serializable> void setObserver(T custom) {
+		if (custom == null) {
+			setObserver(false);
+		} else {
+			getData().put(IS_OBSERVER, true);
+			liveObserverIterator.set(new WrappedSerizableIterator(custom));
+		}
 	}
 
 	/**
@@ -179,5 +258,85 @@ public class NetworkComponent extends EntityComponent {
 				((Player) entity).getNetwork().getSession().send(false, message);
 			}
 		}
+	}
+
+	private boolean first = true;
+
+	/**
+	 * Called when the owner is set to be synchronized to other NetworkComponents.
+	 *
+	 * TODO: Common logic between Spout and a plugin needing to implement this component?
+	 * TODO: Add sequence checks to the PhysicsComponent to prevent updates to live?
+	 *
+	 * @param live A copy of the owner's live transform state
+	 */
+	public void finalizeRun(final Transform live) {
+		//Entity changed chunks as observer OR observer status changed so update
+		WrappedSerizableIterator old = getData().get(OBSERVER_ITERATOR);
+		if (getOwner().getPhysics().getPosition().getChunk(LoadOption.NO_LOAD) != live.getPosition().getChunk(LoadOption.NO_LOAD) && isObserver()
+			|| liveObserverIterator.get() != old
+			|| old == INITIAL_TICK
+			|| observeChunksFailed) {
+			updateObserver();
+		}
+	}
+
+	@Override
+	public void onDetached() {
+		for (Chunk chunk : observingChunks) {
+			// TODO: it shouldn't matter if the chunk is loaded?
+			if (chunk.isLoaded()) {
+				chunk.removeObserver(getOwner());
+			}
+		}
+		observingChunks.clear();
+	}
+
+	protected void updateObserver() {
+		first = false;
+		List<Vector3> ungenerated = new ArrayList<>();
+		final int syncDistance = getSyncDistance();
+		World w = getOwner().getWorld();
+		Transform t = getOwner().getPhysics().getTransform();
+		Point p = t.getPosition();
+		int cx = p.getChunkX();
+		int cy = p.getChunkY();
+		int cz = p.getChunkZ();
+
+		HashSet<Chunk> observing = new HashSet<>((syncDistance * syncDistance * syncDistance * 3) / 2);
+		Iterator<IntVector3> itr = liveObserverIterator.get();
+		if (itr == null) {
+			itr = new OutwardIterator(cx, cy, cz, syncDistance);
+		}
+		observeChunksFailed = false;
+		while (itr.hasNext()) {
+			IntVector3 v = itr.next();
+			Chunk chunk = w.getChunk(v.getX(), v.getY(), v.getZ(), LoadOption.LOAD_ONLY);
+			if (chunk != null) {
+				chunk.refreshObserver(getOwner());
+				observing.add(chunk);
+			} else {
+				ungenerated.add(new Vector3(v));
+				observeChunksFailed = true;
+			}
+		}
+		observingChunks.removeAll(observing);
+		// For every chunk that we were observing but not anymore
+		for (Chunk chunk : observingChunks) {
+			// TODO: it shouldn't matter if the chunk is loaded?
+			if (chunk.isLoaded()) {
+				chunk.removeObserver(getOwner());
+			}
+		}
+		observingChunks.clear();
+		observingChunks.addAll(observing);
+		if (!ungenerated.isEmpty()) {
+			w.queueChunksForGeneration(ungenerated);
+		}
+	}
+
+	public void copySnapshot() {
+		if (first) return;
+		getData().put(OBSERVER_ITERATOR, liveObserverIterator.get());
 	}
 }

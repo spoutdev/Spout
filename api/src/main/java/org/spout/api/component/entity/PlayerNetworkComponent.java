@@ -101,6 +101,7 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 		if (!(getOwner() instanceof Player)) {
 			throw new IllegalStateException("The PlayerNetworkComponent may only be given to Players");
 		}
+		super.onAttached();
 		setObserver(true);
 	}
 
@@ -201,8 +202,10 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 	 * @param live A copy of the owner's live transform state
 	 */
 	@ServerOnly
+	@Override
 	public void finalizeRun(final Transform live) {
-		if (Spout.getPlatform() != Platform.SERVER) {
+		super.finalizeRun(live);
+		if (Spout.getPlatform() != Platform.SERVER || session.get().getState() != Session.State.GAME) {
 			return;
 		}
 		tickCounter++;
@@ -274,7 +277,8 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 				//TODO: Merge these events?
 				callProtocolEvent(new EntitySyncEvent(getOwner(), live, false, true, false));
 				//TODO: Live needs to be sent here but kills the client. Fix kitskub
-				callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), getOwner().getPhysics().getTransform(), EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
+				callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), new Transform(getOwner().getPhysics().getPosition(), getOwner().getPhysics().getRotation(), Vector3.ONE), EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
+				//callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), live, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
 				sync = false;
 			}
 			boolean tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;

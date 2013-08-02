@@ -36,6 +36,7 @@ import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.component.Component;
+import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.geo.LoadOption;
@@ -219,13 +220,14 @@ public class EntityFiles {
 		List<Class<? extends Component>> types = new ArrayList<>(components.getValue().size());
 		for (StringTag component : components.getValue()) {
 			try {
+				Class<? extends Component> clazz;
 				try {
-					Class<? extends Component> clazz = (Class<? extends Component>) PluginClassLoader.findPluginClass(component.getValue());
-					types.add(clazz);
+					clazz = (Class<? extends Component>) PluginClassLoader.findPluginClass(component.getValue());
 				} catch (ClassNotFoundException e) {
-					Class<? extends Component> clazz = (Class<? extends Component>) Class.forName(component.getValue());
-					types.add(clazz);
+					clazz = (Class<? extends Component>) Class.forName(component.getValue());
 				}
+				if (NetworkComponent.class.isAssignableFrom(clazz)) continue;
+				types.add(clazz);
 			} catch (ClassNotFoundException e) {
 				if (Spout.debugMode()) {
 					Spout.getLogger().log(Level.WARNING, "Unable to find component class " + component.getValue());
