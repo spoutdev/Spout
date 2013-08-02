@@ -224,10 +224,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		return id.get() != NOTSPAWNEDID;
 	}
 
-	public void preSnapshotRun() {
-		//Stubbed out in case it is needed for Entities, meanwhile SpoutPlayer overrides this.
-	}
-
 	public void finalizeRun() {
 		SpoutChunk chunkLive = (SpoutChunk) getChunkLive();
 		SpoutChunk chunk = (SpoutChunk) getChunk();

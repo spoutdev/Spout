@@ -336,7 +336,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (getEngine().getPlatform() != Platform.CLIENT && !this.isOnlineLive()) {
 			remove();
 		}
-		super.finalizeRun();
 
 		if (isRemoved()) {
 			if (getEngine().getPlatform() == Platform.SERVER) {
@@ -344,6 +343,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			}
 			// TODO stop client?
 		} else if (this.isOnline()) {
+			super.finalizeRun();
 			this.getNetwork().finalizeRun(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
 		}
 	}
