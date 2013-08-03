@@ -48,6 +48,7 @@ import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.event.Cause;
+import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.generator.WorldGenerator;
@@ -242,6 +243,10 @@ public final class ComponentTest {
 		@Override
 		public EntitySnapshot snapshot() {
 			return null;
+		}
+
+		@Override
+		public void interact(EntityInteractEvent<?> event) {
 		}
 
 		@Override

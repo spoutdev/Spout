@@ -354,6 +354,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		return new SpoutEntitySnapshot(this);
 	}
 
+	@Override
 	@Deprecated
 	public void interact(final EntityInteractEvent<?> event) {
 		for (final Component component : values()) {

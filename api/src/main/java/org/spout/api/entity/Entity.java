@@ -33,6 +33,7 @@ import org.spout.api.component.ComponentOwner;
 import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.component.entity.PhysicsComponent;
 import org.spout.api.datatable.ManagedMap;
+import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -153,4 +154,7 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	 */
 	@Override
 	public ManagedMap getData();
+
+	@Deprecated
+	public void interact(EntityInteractEvent<?> event);
 }
