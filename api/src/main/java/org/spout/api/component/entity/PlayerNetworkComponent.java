@@ -275,7 +275,7 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 			//TODO: finalizeRun has a live copy, why is this here?
 			if (getOwner().getPhysics().isTransformDirty() && sync) {
 				//TODO: Merge these events?
-				callProtocolEvent(new EntitySyncEvent(getOwner(), live, false, true, false));
+				callProtocolEvent(new EntitySyncEvent(getOwner(), live, false, true, false), getOwner());
 				//TODO: Live needs to be sent here but kills the client. Fix kitskub
 				callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), new Transform(getOwner().getPhysics().getPosition(), getOwner().getPhysics().getRotation(), Vector3.ONE), EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
 				//callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), live, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
