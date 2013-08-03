@@ -39,6 +39,7 @@ import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.Session;
 import org.spout.api.protocol.event.BlockUpdateEvent;
 import org.spout.api.protocol.event.ChunkDatatableSendEvent;
 import org.spout.api.protocol.event.ChunkFreeEvent;
@@ -80,6 +81,8 @@ public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implemen
 	@EventHandler
 	public void onWorldChange(WorldChangeProtocolEvent event) {
 		event.getMessages().add(new WorldChangeMessage(event.getWorld(), getOwner().getPhysics().getTransform(), event.getWorld().getData()));
+		event.setForced(true);
+		getSession().setState(Session.State.WAITING);
 	}
 	
 	@EventHandler

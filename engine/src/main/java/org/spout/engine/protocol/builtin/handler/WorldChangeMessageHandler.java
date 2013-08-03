@@ -29,6 +29,7 @@ package org.spout.engine.protocol.builtin.handler;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.engine.SpoutClient;
+import org.spout.engine.protocol.builtin.message.ReadyMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 public class WorldChangeMessageHandler extends MessageHandler<WorldChangeMessage> {
@@ -36,6 +37,7 @@ public class WorldChangeMessageHandler extends MessageHandler<WorldChangeMessage
 	public void handleClient(ClientSession session, WorldChangeMessage message) {
 		((SpoutClient) session.getEngine()).worldChanged(message.getWorldName(), message.getWorldUUID(), message.getCompressedData());
 		session.getPlayer().getPhysics().setTransform(message.getPlayerTransform());
+		session.send(new ReadyMessage());
 	}
 }
 

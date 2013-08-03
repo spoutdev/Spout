@@ -170,15 +170,6 @@ public class EntityManager {
 	}
 
 	/**
-	 * Prepares the manager for a snapshot in the PRESNAPSHOT tickstage
-	 */
-	public void preSnapshotRun() {
-		for (SpoutEntity e : entities.get().values()) {
-			e.preSnapshotRun();
-		}
-	}
-
-	/**
 	 * Snapshots the manager and all the entities managed in the SNAPSHOT tickstage.
 	 */
 	public void copyAllSnapshots() {

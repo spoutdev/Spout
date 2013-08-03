@@ -40,7 +40,7 @@ import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.buffer.ChannelBufferIndexFinder;
 
 public class ReplayableChannelBuffer implements ChannelBuffer {
-	private final static Error ERROR_INSTANCE = new ReplayableError("");
+	private final static ReplayableException ERROR_INSTANCE = new ReplayableException("");
 	private ChannelBuffer buffer;
 
 	public ChannelBuffer setBuffer(ChannelBuffer buffer) {
@@ -431,7 +431,7 @@ public class ReplayableChannelBuffer implements ChannelBuffer {
 		int readable = buffer.readableBytes();
 		try {
 			return buffer.readBytes(length);
-		} catch (ReplayableError e) {
+		} catch (ReplayableException e) {
 			System.out.println("Error: readable = " + readable + " length = " + length);
 			throw e;
 		}
@@ -476,7 +476,7 @@ public class ReplayableChannelBuffer implements ChannelBuffer {
 		checkAvail(dst.length);
 		try {
 			buffer.readBytes(dst);
-		} catch (ReplayableError e) {
+		} catch (ReplayableException e) {
 			throw e;
 		}
 	}

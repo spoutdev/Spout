@@ -187,6 +187,10 @@ public interface Session {
 		 */
 		EXCHANGE_ENCRYPTION,
 		/**
+		 * This state is when a critical message has been sent that must be waited for.
+		 */
+		WAITING,
+		/**
 		 * In the game state the session has an associated player.
 		 */
 		GAME

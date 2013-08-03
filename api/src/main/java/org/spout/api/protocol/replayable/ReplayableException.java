@@ -26,10 +26,10 @@
  */
 package org.spout.api.protocol.replayable;
 
-public class ReplayableError extends Error {
+public class ReplayableException extends RuntimeException {
 	private static final long serialVersionUID = 13424275234247532L;
 
-	public ReplayableError(String message) {
+	public ReplayableException(String message) {
 		super(message);
 	}
 }

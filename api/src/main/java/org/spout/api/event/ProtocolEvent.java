@@ -33,6 +33,7 @@ import org.spout.api.util.list.concurrent.ConcurrentList;
 
 public abstract class ProtocolEvent extends Event {
 	private List<Message> messages = new ConcurrentList<>();
+	private boolean forced = false;
 
 	public ProtocolEvent() {
 	}
@@ -44,5 +45,13 @@ public abstract class ProtocolEvent extends Event {
 	 */
 	public List<Message> getMessages() {
 		return messages;
+	}
+
+	public boolean isForced() {
+		return forced;
+	}
+
+	public void setForced(boolean forced) {
+		this.forced = forced;
 	}
 }

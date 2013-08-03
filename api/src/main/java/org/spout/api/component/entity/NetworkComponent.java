@@ -222,7 +222,7 @@ public class NetworkComponent extends EntityComponent {
 				continue;
 			}
 			for (final Message message : messages) {
-				player.getNetwork().getSession().send(false, message);
+				player.getNetwork().getSession().send(event.isForced(), message);
 			}
 		}
 	}
@@ -237,7 +237,7 @@ public class NetworkComponent extends EntityComponent {
 		final List<Message> messages = getEngine().getEventManager().callEvent(event).getMessages();
 		for (final Player player : players) {
 			for (final Message message : messages) {
-				player.getNetwork().getSession().send(false, message);
+				player.getNetwork().getSession().send(event.isForced(), message);
 			}
 		}
 	}
@@ -255,7 +255,7 @@ public class NetworkComponent extends EntityComponent {
 		for (final Entity entity : entities) {
 			if (!(entity instanceof Player)) continue;
 			for (final Message message : messages) {
-				((Player) entity).getNetwork().getSession().send(false, message);
+				((Player) entity).getNetwork().getSession().send(event.isForced(), message);
 			}
 		}
 	}

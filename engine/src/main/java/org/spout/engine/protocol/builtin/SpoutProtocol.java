@@ -43,7 +43,7 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.ServerSession;
-import org.spout.api.protocol.replayable.ReplayableError;
+import org.spout.api.protocol.replayable.ReplayableException;
 import org.spout.api.util.SyncedMapEvent;
 import org.spout.api.util.SyncedMapRegistry;
 import org.spout.api.util.SyncedStringMap;
@@ -107,6 +107,7 @@ public class SpoutProtocol extends Protocol {
 	@Override
 	public MessageCodec<?> readHeader(ChannelBuffer buf) {
 		int id = buf.readUnsignedShort();
+		//if (Spout.debugMode()) System.out.println("Reading codec header: " + id);
 		int length = buf.readInt();
 		MessageCodec<?> codec = getCodecLookupService().find(id);
 		if (codec == null) {
@@ -114,7 +115,7 @@ public class SpoutProtocol extends Protocol {
 			buf.skipBytes(length);
 			return null;
 		} else if (buf.readableBytes() < length) {
-			throw new ReplayableError("There was not enough information received for a packet with codec id of " + id + ". This may just be a frame issue.");
+			throw new ReplayableException("There was not enough information received for a packet with codec id of " + id + ". This may just be a frame issue.");
 		} else {
 			return codec;
 		}
@@ -124,6 +125,7 @@ public class SpoutProtocol extends Protocol {
 	public ChannelBuffer writeHeader(MessageCodec<?> codec, ChannelBuffer data) {
 		ChannelBuffer buf = ChannelBuffers.buffer(6);
 		buf.writeShort(codec.getOpcode());
+		//if (Spout.debugMode()) System.out.println("Writing codec header: " + codec.getOpcode());
 		buf.writeInt(data.writerIndex());
 		return buf;
 	}

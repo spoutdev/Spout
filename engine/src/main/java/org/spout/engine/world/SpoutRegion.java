@@ -837,8 +837,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public void preSnapshotRun() {
-		entityManager.preSnapshotRun();
-
 		SpoutChunk spoutChunk;
 
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
