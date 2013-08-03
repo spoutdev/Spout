@@ -34,12 +34,14 @@ import java.util.logging.Level;
 import org.spout.api.Engine;
 import org.spout.api.component.BaseComponentOwner;
 import org.spout.api.component.Component;
+import org.spout.api.component.entity.EntityComponent;
 import org.spout.api.component.entity.ModelComponent;
 import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.component.entity.PhysicsComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
+import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -350,5 +352,14 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	@Override
 	public EntitySnapshot snapshot() {
 		return new SpoutEntitySnapshot(this);
+	}
+
+	@Deprecated
+	public void interact(final EntityInteractEvent<?> event) {
+		for (final Component component : values()) {
+			if (component instanceof EntityComponent) {
+				((EntityComponent) component).onInteract(event);
+			}
+		}
 	}
 }
