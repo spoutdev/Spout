@@ -63,7 +63,7 @@ import org.spout.nbt.Tag;
 import org.spout.nbt.util.NBTMapper;
 
 public class EntityFiles {
-	public static final byte ENTITY_VERSION = 3;
+	public static final byte ENTITY_VERSION = 4;
 
 	@SuppressWarnings ("rawtypes")
 	protected static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
@@ -155,6 +155,12 @@ public class EntityFiles {
 					return null;
 				}
 			}
+			if (version <= 3) {
+				map = convertV3V4(tag, map);
+				if (map == null) {
+					return null;
+				}
+			}
 		}
 
 		UUID worldUUID = null;
@@ -187,12 +193,6 @@ public class EntityFiles {
 		UUID uid = UUIDTag.getValue(map.get("uuid"));
 
 		if (uid == null) {
-			return null;
-		}
-
-		int view = SafeCast.toInt(NBTMapper.toTagValue(map.get("view")), 0);
-		Boolean observer = ByteTag.getBooleanValue(map.get("observer"));
-		if (observer == null) {
 			return null;
 		}
 
@@ -236,9 +236,9 @@ public class EntityFiles {
 		}
 
 		if (!player) {
-			return new SpoutEntitySnapshot(uid, t, worldUUID, view, observer, dataMap, types);
+			return new SpoutEntitySnapshot(uid, t, worldUUID, dataMap, types);
 		} else {
-			return new SpoutPlayerSnapshot(uid, t, worldUUID, view, observer, dataMap, types, name);
+			return new SpoutPlayerSnapshot(uid, t, worldUUID, dataMap, types, name);
 		}
 	}
 
@@ -259,9 +259,6 @@ public class EntityFiles {
 		//Write entity
 		map.put(new TransformTag("position", e.getTransform()));
 		map.put(new UUIDTag("uuid", e.getUID()));
-
-		map.put(new IntTag("view", e.getSyncDistance()));
-		map.put(new ByteTag("observer", e.isObserver()));
 
 		//Serialize data
 		if (!e.getDataMap().isEmpty()) {
@@ -340,6 +337,17 @@ public class EntityFiles {
 
 		map.put(new UUIDTag("world_uuid", world.getUID()));
 
+		return map;
+	}
+
+	/**
+	 * Version 3 to version 4 conversion
+	 *
+	 * Remove observer code
+	 */
+	private static CompoundMap convertV3V4(CompoundTag tag, CompoundMap map) {
+		map.remove("view");
+		map.remove("observer");
 		return map;
 	}
 }

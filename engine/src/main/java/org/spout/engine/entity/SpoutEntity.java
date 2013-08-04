@@ -215,7 +215,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		SpoutChunk chunkLive = (SpoutChunk) getChunkLive();
 		SpoutChunk chunk = (SpoutChunk) getChunk();
 
-		//Entity was removed so automatically remove observer/components
+		//Entity was removed so automatically remove components
 		if (isRemoved()) {
 			//Get rid of physics
 			physics.deactivate();

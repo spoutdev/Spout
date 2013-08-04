@@ -51,8 +51,6 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 	private final String worldName;
 	private final UUID worldId;
 	private final SerializableMap dataMap;
-	private final int syncDistance;
-	private final boolean observer;
 	private final boolean savable;
 	private final List<Class<? extends Component>> components;
 	private final long time = System.currentTimeMillis();
@@ -68,9 +66,6 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 		this.location = e.getPhysics().getTransform();
 		this.worldName = e.getWorld().getName();
 		this.worldId = e.getWorld().getUID();
-		final NetworkComponent network = e.get(NetworkComponent.class);
-		this.syncDistance = network.getSyncDistance();
-		this.observer = network.isObserver();
 		this.savable = e.isSavable();
 		if (e.getData().size() > 0) {
 			this.dataMap = e.getData().deepCopy();
@@ -85,15 +80,13 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 		}
 	}
 
-	public SpoutEntitySnapshot(UUID id, Transform t, UUID worldId, int view, boolean observer, byte[] dataMap, List<Class<? extends Component>> types) {
+	public SpoutEntitySnapshot(UUID id, Transform t, UUID worldId, byte[] dataMap, List<Class<? extends Component>> types) {
 		this.entity = new WeakReference<>(null);
 		this.entityId = -1;
 		this.uniqueId = id;
 		this.location = t;
 		this.worldName = null;
 		this.worldId = worldId;
-		this.syncDistance = view;
-		this.observer = observer;
 		this.savable = true;
 		this.dataMap = new ManagedHashMap();
 		if (dataMap != null) {
@@ -139,16 +132,6 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 	@Override
 	public final SerializableMap getDataMap() {
 		return dataMap;
-	}
-
-	@Override
-	public int getSyncDistance() {
-		return syncDistance;
-	}
-
-	@Override
-	public boolean isObserver() {
-		return observer;
 	}
 
 	@Override
