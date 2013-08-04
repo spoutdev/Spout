@@ -50,7 +50,9 @@ public class ConcurrentLongPriorityQueueTest {
 
 		LongWithPriority[] sorted = new LongWithPriority[LENGTH];
 
-		for (int i = 0; i < LENGTH; i++) {
+		int i;
+		
+		for (i = 0; i < LENGTH; i++) {
 			sorted[i] = new LongWithPriority(i / COPIES);
 		}
 
@@ -58,11 +60,9 @@ public class ConcurrentLongPriorityQueueTest {
 
 		ConcurrentLongPriorityQueue<LongWithPriority> lpq = new ConcurrentLongPriorityQueue<>(BINSIZE);
 
-		for (int i = 0; i < LENGTH; i++) {
+		for (i = 0; i < LENGTH; i++) {
 			lpq.add(shuffled[i]);
 		}
-
-		int i = 0;
 
 		max = Long.MIN_VALUE;
 
@@ -74,9 +74,9 @@ public class ConcurrentLongPriorityQueueTest {
 
 		for (i = 0; i < LENGTH; i++) {
 			if (output[i] != null) {
-				System.out.println(sorted[i].getPriority() + ":" + output[i].getPriority());
+				System.out.print("[" + sorted[i].getPriority() + ":" + output[i].getPriority() + "] ");
 			} else {
-				System.out.println(sorted[i].getPriority() + ":" + output[i]);
+				System.out.print("[" + sorted[i].getPriority() + ":" + output[i] + "] ");
 			}
 		}
 	}
