@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.List;
 import java.util.Set;
+import org.spout.api.ServerOnly;
 
 import org.spout.api.entity.Player;
 import org.spout.api.event.ProtocolEvent;
@@ -289,6 +290,16 @@ public class NetworkComponent extends EntityComponent {
 			|| observeChunksFailed) {
 			updateObserver();
 		}
+	}
+
+	/**
+	 * Called just before a snapshot is taken of the owner.
+	 *
+	 * TODO: Add sequence checks to the PhysicsComponent to prevent updates to live?
+	 *
+	 * @param live A copy of the owner's live transform state
+	 */
+	public void preSnapshotRun(final Transform live) {
 	}
 
 	@Override

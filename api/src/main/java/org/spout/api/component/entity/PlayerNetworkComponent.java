@@ -244,6 +244,20 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 			}
 			checkObserverUpdateQueue();
 		}
+	}
+
+	/**
+	 * Called just before a snapshot is taken of the owner.
+	 *
+	 * TODO: Add sequence checks to the PhysicsComponent to prevent updates to live?
+	 *
+	 * @param live A copy of the owner's live transform state
+	 */
+	@ServerOnly
+	public void preSnapshot(final Transform live) {
+		if (Spout.getPlatform() != Platform.SERVER || session.get().getState() != Session.State.GAME) {
+			return;
+		}
 
 		if (worldChanged) {
 			Point ep = getOwner().getPhysics().getPosition();

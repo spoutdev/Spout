@@ -109,15 +109,19 @@ public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implemen
 		final boolean remove = event.shouldRemove();
 		final boolean add = event.shouldAdd();
 		List<Message> messages = new ArrayList<>();
-		if (remove) {
-			messages.add(new UpdateEntityMessage(e.getId(), null, EntityUpdateEvent.UpdateAction.REMOVE, null));
-		} else if (add) {
-			messages.add(new UpdateEntityMessage(e.getId(), transform, EntityUpdateEvent.UpdateAction.ADD, getRepositionManager()));
-		}
-		else {
-			if (e.getPhysics().isTransformDirty()) {
-				messages.add(new UpdateEntityMessage(e.getId(), transform, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()));
+		if (!e.equals(getOwner())) {
+			if (remove) {
+				messages.add(new UpdateEntityMessage(e.getId(), null, EntityUpdateEvent.UpdateAction.REMOVE, null));
+			} else if (add) {
+				messages.add(new UpdateEntityMessage(e.getId(), transform, EntityUpdateEvent.UpdateAction.ADD, getRepositionManager()));
 			}
+			else {
+				if (e.getPhysics().isTransformDirty()) {
+					messages.add(new UpdateEntityMessage(e.getId(), transform, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()));
+				}
+			}
+		}
+		if (!remove && !add) {
 			if (!e.getData().getDeltaMap().isEmpty()) {
 				messages.add(new EntityDatatableMessage(e.getId(), e.getData().getDeltaMap()));
 				e.getData().resetDelta();

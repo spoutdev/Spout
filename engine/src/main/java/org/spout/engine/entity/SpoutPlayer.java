@@ -341,9 +341,16 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 				((SpoutServer) getEngine()).removePlayer(this);
 			}
 			// TODO stop client?
-		} else if (this.isOnline()) {
-			super.finalizeRun();
-			this.getNetwork().finalizeRun(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
+			return;
+		}
+		super.finalizeRun();
+	}
+
+	@Override
+	public void preSnapshotRun() {
+		super.preSnapshotRun();
+		if (this.isOnline()) {
+			this.getNetwork().preSnapshot(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
 		}
 	}
 

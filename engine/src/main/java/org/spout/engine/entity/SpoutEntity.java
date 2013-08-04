@@ -255,6 +255,12 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 				physics.activate(chunkLive.getRegion());
 			}
 		}
+
+		this.getNetwork().finalizeRun(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
+	}
+
+	public void preSnapshotRun() {
+		this.getNetwork().preSnapshotRun(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
 	}
 
 	@Override

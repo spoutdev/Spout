@@ -815,8 +815,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public void preSnapshotRun() {
-		SpoutChunk spoutChunk;
+		entityManager.preSnapshotRun();
+		if (Spout.getPlatform() == Platform.SERVER) {
+			entityManager.syncEntities();
+		}
 
+		// TODO: should this block be moved somewhere else
+		SpoutChunk spoutChunk;
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 			if (spoutChunk.isDirty()) {
 				if (Spout.getPlatform() == Platform.SERVER) {
@@ -852,9 +857,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 					}
 				}
 			}
-		}
-		if (Spout.getPlatform() == Platform.SERVER) {
-			entityManager.syncEntities();
 		}
 	}
 

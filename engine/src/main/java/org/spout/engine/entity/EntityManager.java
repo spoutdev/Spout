@@ -170,6 +170,15 @@ public class EntityManager {
 	}
 
 	/**
+	 * Finalizes the manager at the FINALIZERUN tick stage
+	 */
+	public void preSnapshotRun() {
+		for (SpoutEntity e : entities.get().values()) {
+			e.preSnapshotRun();
+		}
+	}
+
+	/**
 	 * Snapshots the manager and all the entities managed in the SNAPSHOT tickstage.
 	 */
 	public void copyAllSnapshots() {
@@ -195,21 +204,21 @@ public class EntityManager {
 		if (!(Spout.getPlatform() == Platform.SERVER)) {
 			throw new UnsupportedOperationException("Must be in server mode to sync entities");
 		}
-		for (Entity ent : getAll()) {
-			if (ent.getId() == SpoutEntity.NOTSPAWNEDID) {
+		for (Entity observed : getAll()) {
+			if (observed.getId() == SpoutEntity.NOTSPAWNEDID) {
 				throw new IllegalStateException("Attempt to sync entity with not spawned id.");
 			}
 			//Players observing the chunk this entity is in
-			Set<? extends Entity> observers = ent.getChunk().getObservers();
-			syncEntity(ent, observers, false);
+			Set<? extends Entity> observers = observed.getChunk().getObservers();
+			syncEntity(observed, observers, false);
 
 			//TODO: Why do we need this...?
-			Set<? extends Entity> expiredObservers = ((SpoutChunk) ent.getChunk()).getExpiredObservers();
-			syncEntity(ent, expiredObservers, true);
+			Set<? extends Entity> expiredObservers = ((SpoutChunk) observed.getChunk()).getExpiredObservers();
+			syncEntity(observed, expiredObservers, true);
 		}
 	}
 
-	private void syncEntity(Entity ent, Set<? extends Entity> observers, boolean forceDestroy) {
+	private void syncEntity(Entity observed, Set<? extends Entity> observers, boolean forceDestroy) {
 		for (Entity observer : observers) {
 			//Non-players have no synchronizer, ignore
 			if (!(observer instanceof Player)) {
@@ -228,15 +237,15 @@ public class EntityManager {
 			boolean add, sync, remove;
 			add = sync = remove = false;
 			//Entity is out of range of the player's view distance, destroy
-			final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) ent.getPhysics();
-			if (forceDestroy || ent.isRemoved() || physics.getTransformLive().getPosition().distanceSquared(player.getPhysics().getPosition()) > syncDistance * syncDistance || player.isInvisible(ent)) {
+			final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) observed.getPhysics();
+			if (forceDestroy || observed.isRemoved() || physics.getTransformLive().getPosition().distanceSquared(player.getPhysics().getPosition()) > syncDistance * syncDistance || player.isInvisible(observed)) {
 				remove = true;
-			} else if (network.hasSpawned(ent)) {
+			} else if (network.hasSpawned(observed)) {
 				sync = true;
 			} else {
 				add = true;
 			}
-			ent.getEngine().getEventManager().callEvent(new EntitySyncEvent(ent, ((SpoutPhysicsComponent) ent.getPhysics()).getTransformLive(), add, sync, remove));
+			observed.getEngine().getEventManager().callEvent(new EntitySyncEvent(observed, ((SpoutPhysicsComponent) observed.getPhysics()).getTransformLive(), add, sync, remove));
 		}
 	}
 }

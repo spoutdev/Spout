@@ -126,6 +126,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	private final Set<SpoutEntity> unmodifiableObservers = Collections.unmodifiableSet(observers);
 	private final Set<SpoutPlayer> observingPlayers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutPlayer, Boolean>());
 	private final Set<SpoutPlayer> unmodifiableObservingPlayers = Collections.unmodifiableSet(observingPlayers);
+	/**
+	 * An entity may still exist but no longer be an observer. As such, we need to remove all entities that it was observing.
+	 * The following three variables deal with this.
+	 */
 	private final ConcurrentLinkedQueue<SpoutEntity> expiredObserversQueue = new ConcurrentLinkedQueue<>();
 	private final LinkedHashSet<SpoutEntity> expiredObservers = new LinkedHashSet<>();
 	private final Set<SpoutEntity> unmodifiableExpiredObservers = Collections.unmodifiableSet(expiredObservers);
