@@ -49,7 +49,6 @@ public class OutwardIteratorTest {
 		while (itr.hasNext()) {
 			IntVector3 next = itr.next();
 			int dist = getDistance(center, next);
-			System.out.println(next);
 			assertTrue("Distance readback is incorrect", dist == itr.getDistance());
 			assertTrue("Iterator moved inwards", dist >= prev);
 			add(next);
