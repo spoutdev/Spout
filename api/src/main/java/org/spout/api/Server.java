@@ -43,7 +43,7 @@ import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 
 /**
- * Represents the server-specific implementation of Minecraft.
+ * Represents the server-specific implementation.
  */
 public interface Server extends Engine {
 	/**
