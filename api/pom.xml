@@ -21,12 +21,6 @@
 	<dependencies>
 		<!-- Include in final JAR -->
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>14.0.1</version>
@@ -58,12 +52,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.directory.studio</groupId>
 			<artifactId>org.apache.commons.collections</artifactId>
 			<version>3.2.1</version>
@@ -91,12 +79,6 @@
 			<groupId>org.spout</groupId>
 			<artifactId>simplenbt</artifactId>
 			<version>1.0.5-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>1.12</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
