@@ -46,7 +46,7 @@ public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
 		ChannelBuffer buffer = null;
 		switch (message.getAction()) {
 			case REMOVE:
-				buffer = ChannelBuffers.buffer(4);
+				buffer = ChannelBuffers.buffer(5);
 				buffer.writeByte(message.getAction().ordinal());
 				buffer.writeInt(message.getEntityId());
 				break;

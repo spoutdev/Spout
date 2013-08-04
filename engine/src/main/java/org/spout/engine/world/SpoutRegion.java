@@ -789,28 +789,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		entityManager.finalizeRun();
 	}
 
-	private void syncChunkToPlayer(SpoutChunk chunk, Player player) {
-		if (player.isOnline()) {
-			PlayerNetworkComponent network = player.getNetwork();
-			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
-				for (int i = 0; true; i++) {
-					Vector3 block = chunk.getDirtyBlock(i);
-					if (block == null) {
-						break;
-					}
-
-					try {
-						network.callProtocolEvent(new BlockUpdateEvent(chunk, block.getFloorX(), block.getFloorY(), block.getFloorZ()));
-					} catch (Exception e) {
-						Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
-					}
-				}
-			} else {
-				network.callProtocolEvent(new ChunkSendEvent(chunk));
-			}
-		}
-	}
-
 	private void processChunkUpdatedEvent(SpoutChunk chunk) {
 		/* If no listeners, quit */
 		if (ChunkUpdatedEvent.getHandlerList().getRegisteredListeners().length == 0) {
@@ -842,10 +820,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 			if (spoutChunk.isDirty()) {
 				if (Spout.getPlatform() == Platform.SERVER) {
-					for (Player entity : spoutChunk.getObservingPlayers()) {
-						syncChunkToPlayer(spoutChunk, entity);
-					}
-
 					processChunkUpdatedEvent(spoutChunk);
 
 					spoutChunk.resetDirtyArrays();

@@ -344,6 +344,7 @@ public class SpoutInputManager implements InputManager {
 		return ((Client) engine).getScreenStack().getInputScreen();
 	}
 
+	private Transform old;
 	public void execute(float dt) {
 		// TODO: protocol - hacky fix
 		if (((Client) Spout.getEngine()).getWorld().getName().equalsIgnoreCase("NullWorld")) {
@@ -355,7 +356,10 @@ public class SpoutInputManager implements InputManager {
 		}
 		Player player = ((Client) Spout.getEngine()).getPlayer();
 		// TODO: move this to NetworkSynchronizer?
-		if (physics.isTransformDirty()) player.getNetwork().getSession().send(new UpdateEntityMessage(player.getId(), physics.getTransformLive(), UpdateAction.TRANSFORM, player.getNetwork().getRepositionManager()));
+		if (!physics.equals(old)) {
+			player.getNetwork().getSession().send(new UpdateEntityMessage(player.getId(), physics.getTransformLive(), UpdateAction.TRANSFORM, player.getNetwork().getRepositionManager()));
+		}
+		old = physics.getTransformLive().copy();
 	}
 
 	@Override

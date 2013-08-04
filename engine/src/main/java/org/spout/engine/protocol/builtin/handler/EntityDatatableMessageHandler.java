@@ -50,7 +50,6 @@ public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatabl
 		// TODO: why doesn't this work!?
 		//Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
 		try {
-			System.out.println("Received datatable message for " + entity.toString());
 			switch (message.getType()) {
 				case REPLACE:
 					entity.getData().deserialize(message.getCompressedData(), true);

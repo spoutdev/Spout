@@ -61,6 +61,7 @@ import org.spout.api.Spout;
 import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.block.BlockComponent;
+import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cause;
@@ -96,6 +97,8 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
+import org.spout.api.protocol.event.BlockUpdateEvent;
+import org.spout.api.protocol.event.ChunkSendEvent;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.bytebit.ByteBitSet;
@@ -2254,5 +2257,25 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {
 		BlockMaterial material = MaterialRegistry.get(blockState);
 		set.add(material.getModel().getRenderMaterial());
+	}
+
+	@Override
+	public void sync(NetworkComponent network) {
+		if (!isDirtyOverflow() && !isLightDirty()) {
+			for (int i = 0; true; i++) {
+				Vector3 block = getDirtyBlock(i);
+				if (block == null) {
+					break;
+				}
+
+				try {
+					network.callProtocolEvent(new BlockUpdateEvent(this, block.getFloorX(), block.getFloorY(), block.getFloorZ()));
+				} catch (Exception e) {
+					Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update");
+				}
+			}
+		} else {
+			network.callProtocolEvent(new ChunkSendEvent(this));
+		}
 	}
 }

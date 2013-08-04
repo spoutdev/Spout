@@ -27,11 +27,14 @@
 package org.spout.api.component.entity;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 
 import org.spout.api.Client;
 import org.spout.api.Platform;
@@ -51,8 +54,10 @@ import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.ClientSession;
+import org.spout.api.protocol.Message;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
+import org.spout.api.protocol.event.BlockUpdateEvent;
 import org.spout.api.protocol.event.ChunkFreeEvent;
 import org.spout.api.protocol.event.ChunkSendEvent;
 import org.spout.api.protocol.event.EntitySyncEvent;
@@ -86,7 +91,6 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 	 */
 	private final Set<Point> activeChunks = new LinkedHashSet<>();
 	private volatile boolean worldChanged = true;
-	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<>();
 	/**
 	 * Includes chunks that need to be observed. When observation is successfully attained or no longer wanted, point is removed
 	 */
@@ -247,47 +251,83 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 			callProtocolEvent(new WorldChangeProtocolEvent(ep.getWorld()), getOwner());
 			worldChanged = false;
 		} else {
+			// Free chunks first
+			freeChunks();
+
+			// Then initialize new ones
+			initChunks();
+
+			List<Point> prevActive = new ArrayList<>(activeChunks);
+
+			// Now send new chunks
+			chunksSent = 0;
 			unsendable.clear();
-			for (Point p : chunkFreeQueue) {
-				if (initializedChunks.remove(p)) {
-					callProtocolEvent(new ChunkFreeEvent(p), getOwner());
-					activeChunks.remove(p);
-				}
+
+			// Send priority chunks first
+			sendPriorityChunks();
+
+			// If we didn't send all the priority chunks, don't send position or regular chunks yet
+			if (priorityChunkSendQueue.isEmpty()) {
+				// Send position
+				sendPositionUpdates(live);
+
+				// Then regular chunks
+				sendRegularChunks();
 			}
-			chunkFreeQueue.clear();
-			int modifiedChunksPerTick = (!priorityChunkSendQueue.isEmpty() ? 4 : 1) * CHUNKS_PER_TICK;
-			chunksSent = Math.max(0, chunksSent - modifiedChunksPerTick);
-			for (Point p : chunkInitQueue) {
-				if (initializedChunks.add(p)) {
-					// TODO: protocol - init chunks?
-				}
+			
+			// Check all active old chunks for updates
+			for (Point p : prevActive) {
+				Chunk chunk = p.getChunk(LoadOption.LOAD_ONLY);
+				if (chunk == null) continue;
+				chunk.sync(this);
 			}
-			chunkInitQueue.clear();
-			Iterator<Point> i;
-			i = priorityChunkSendQueue.iterator();
-			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
-				Point p = i.next();
-				i = attemptSendChunk(i, priorityChunkSendQueue, p);
+		}
+	}
+
+	private void freeChunks() {
+		for (Point p : chunkFreeQueue) {
+			if (initializedChunks.remove(p)) {
+				callProtocolEvent(new ChunkFreeEvent(p), getOwner());
+				activeChunks.remove(p);
 			}
-			if (!priorityChunkSendQueue.isEmpty()) {
-				return;
+		}
+		chunkFreeQueue.clear();
+	}
+
+	private void initChunks() {
+		for (Point p : chunkInitQueue) {
+			if (initializedChunks.add(p)) {
+				// TODO: protocol - init chunks?
 			}
-			//TODO: finalizeRun has a live copy, why is this here?
-			if (getOwner().getPhysics().isTransformDirty() && sync) {
-				//TODO: Merge these events?
-				callProtocolEvent(new EntitySyncEvent(getOwner(), live, false, true, false), getOwner());
-				//TODO: Live needs to be sent here but kills the client. Fix kitskub
-				callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), new Transform(getOwner().getPhysics().getPosition(), getOwner().getPhysics().getRotation(), Vector3.ONE), EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
-				//callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), live, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
-				sync = false;
-			}
-			boolean tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
-			i = chunkSendQueue.iterator();
-			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
-				Point p = i.next();
-				i = attemptSendChunk(i, chunkSendQueue, p);
-				tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
-			}
+		}
+		chunkInitQueue.clear();
+	}
+
+	private void sendPriorityChunks() {
+		Iterator<Point> i = priorityChunkSendQueue.iterator();
+		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
+			Point p = i.next();
+			if (attemptSendChunk(p)) i.remove();
+		}	
+	}
+
+	private void sendPositionUpdates(Transform live) {
+		//TODO: finalizeRun has a live copy, why is this here?
+		if (getOwner().getPhysics().isTransformDirty() && sync) {
+			//TODO: Merge these events?
+			callProtocolEvent(new EntitySyncEvent(getOwner(), live, false, true, false), getOwner());
+			//TODO: Live needs to be sent here but kills the client. Fix kitskub
+			callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), new Transform(getOwner().getPhysics().getPosition(), getOwner().getPhysics().getRotation(), Vector3.ONE), EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
+			//callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), live, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
+			sync = false;
+		}
+	}
+
+	private void sendRegularChunks() {
+		Iterator<Point> i = chunkSendQueue.iterator();
+		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && Spout.getScheduler().getRemainingTickTime() > 0) {
+			Point p = i.next();
+			if (attemptSendChunk(p)) i.remove();
 		}
 	}
 
@@ -310,34 +350,27 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 		return true;
 	}
 
-	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Point p) {
+	private boolean attemptSendChunk(Point p) {
 		Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.LOAD_ONLY);
 		if (c == null) {
 			unsendable.add(p);
-			return i;
+			return false;
 		}
 		if (unsendable.contains(p)) {
-			return i;
+			return false;
 		}
-		if (canSendChunk(c)) {
-			callProtocolEvent(new ChunkSendEvent(c), getOwner());
-			activeChunks.add(c.getBase());
-			i.remove();
-			Point base = c.getBase();
-			boolean removed = priorityChunkSendQueue.remove(base);
-			removed |= chunkSendQueue.remove(base);
-			if (removed) {
-				if (initializedChunks.contains(base)) {
-					activeChunks.add(base);
-				}
-				chunksSent++;
-				i = queue.iterator();
-			}
-			chunksSent++;
-		} else {
+		if (!canSendChunk(c)) {
 			unsendable.add(p);
+			return false;
 		}
-		return i;
+
+		callProtocolEvent(new ChunkSendEvent(c), getOwner());
+		Point base = c.getBase();
+		if (initializedChunks.contains(base)) {
+			activeChunks.add(base);
+		}
+		chunksSent++;
+		return true;
 	}
 
 	private void checkObserverUpdateQueue() {
@@ -347,7 +380,7 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 			if (!chunkInitQueue.contains(p) && !this.initializedChunks.contains(p)) {
 				i.remove();
 			} else {
-				Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.NO_LOAD);
+				Chunk c = p.getChunk(LoadOption.NO_LOAD);
 				if (c != null) {
 					observe(c);
 					i.remove();
@@ -366,7 +399,6 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 	}
 
 	private void observe(Chunk c) {
-		observed.add(c);
 		c.refreshObserver(getOwner());
 	}
 
@@ -379,7 +411,6 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 	}
 
 	private void removeObserver(Chunk c) {
-		observed.remove(c);
 		c.removeObserver(getOwner());
 	}
 
@@ -399,6 +430,10 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 		return testChunkBase.getManhattanDistance(playerChunkBase) <= (viewDistance << Chunk.BLOCKS.BITS);
 	}
 
+	/**
+	 * Checks for chunk updates that might have from movement.
+	 *
+	 */
 	private void checkChunkUpdates(Point currentPosition) {
 		// Recalculating these
 		priorityChunkSendQueue.clear();
@@ -418,6 +453,7 @@ public abstract class PlayerNetworkComponent extends NetworkComponent implements
 				chunkFreeQueue.add(p);
 			}
 		}
+		// TODO: could we use getSyncIterator?
 		Iterator<IntVector3> itr = getViewableVolume(cx, cy, cz, getSyncDistance());
 		while (itr.hasNext()) {
 			IntVector3 v = itr.next();

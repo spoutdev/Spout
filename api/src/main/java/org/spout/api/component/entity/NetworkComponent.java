@@ -36,7 +36,6 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.List;
 import java.util.Set;
-import org.spout.api.ServerOnly;
 
 import org.spout.api.entity.Player;
 import org.spout.api.event.ProtocolEvent;
@@ -152,6 +151,17 @@ public class NetworkComponent extends EntityComponent {
 			getData().put(IS_OBSERVER, true);
 			liveObserverIterator.set(new WrappedSerizableIterator(custom));
 		}
+	}
+
+	public Iterator<IntVector3> getSyncIterator() {
+		WrappedSerizableIterator get = getData().get(OBSERVER_ITERATOR);
+		if (get != null) return get.object;
+		Transform t = getOwner().getPhysics().getTransform();
+		Point p = t.getPosition();
+		int cx = p.getChunkX();
+		int cy = p.getChunkY();
+		int cz = p.getChunkZ();
+		return new OutwardIterator(cx, cy, cz, getSyncDistance());
 	}
 
 	/**
