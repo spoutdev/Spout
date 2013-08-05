@@ -35,6 +35,7 @@ import org.spout.api.ai.pathfinder.Path;
 import org.spout.api.ai.pathfinder.SpoutBlockSource;
 import org.spout.api.ai.pathfinder.VectorGoal;
 import org.spout.api.ai.pathfinder.VectorNode;
+import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Vector3;
@@ -80,10 +81,11 @@ public class NavigationComponent extends EntityComponent {
 				plan = null;
 				return;
 			}
-			Transform transform = getOwner().getPhysics().getTransform();
-			Point root = transform.getPosition();
+			final Entity owner = getOwner();
+			final Transform transform = owner.getPhysics().getTransform();
+			final Point root = transform.getPosition();
 			if (root.distanceSquared(vector) <= 12) {
-				plan.update(getOwner());
+				plan.update(owner);
 				if (plan.isComplete()) {
 					return;
 				}
@@ -94,7 +96,7 @@ public class NavigationComponent extends EntityComponent {
 			float dZ = (vector.getZ() - root.getZ()) / 20;
 			transform.translate(dX, dY, dZ);
 			//TODO Rotation
-			getOwner().getPhysics().setTransform(transform);
+			owner.getPhysics().setTransform(transform);
 		} finally {
 			lock.unlock();
 		}

@@ -43,12 +43,10 @@ public abstract class PostprocessEncoder extends OneToOneEncoder implements Proc
 
 	@Override
 	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent evt) throws Exception {
-
 		if (locked.get()) {
 			throw new IllegalStateException("Encode attempted when channel was locked");
 		}
-
-		ChannelProcessor processor = this.processor.get();
+		final ChannelProcessor processor = this.processor.get();
 		if (processor == null) {
 			super.handleDownstream(ctx, evt);
 			if (evt instanceof MessageEvent) {

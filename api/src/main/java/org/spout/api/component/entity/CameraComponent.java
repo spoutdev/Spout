@@ -34,9 +34,9 @@ import org.spout.api.render.Camera;
 import org.spout.api.render.ViewFrustum;
 
 public class CameraComponent extends EntityComponent implements Camera {
+	private ViewFrustum frustum;
 	private Matrix projection;
 	private Matrix view;
-	private ViewFrustum frustum = new ViewFrustum();
 	private float fieldOfView = 75f;
 
 	public CameraComponent() {
@@ -44,19 +44,20 @@ public class CameraComponent extends EntityComponent implements Camera {
 	}
 
 	public CameraComponent(Matrix createPerspective, Matrix createLookAt) {
-		projection = createPerspective;
-		view = createLookAt;
+		this.frustum = new ViewFrustum();
+		this.projection = createPerspective;
+		this.view = createLookAt;
 	}
 
-	public void setScale(float scale) { //1/2
-		projection = MatrixMath.createPerspective(fieldOfView * scale, 4.0f / 3.0f, .001f * scale, 1000f * scale);
+	public void setScale(float scale) {
+		this.projection = MatrixMath.createPerspective(fieldOfView * scale, 4.0f / 3.0f, .001f * scale, 1000f * scale);
 		updateView();
 	}
 
 	@Override
 	public void onAttached() {
-		// TODO Get FOV
-		projection = MatrixMath.createPerspective(fieldOfView, 4.0f / 3.0f, .001f, 1000f);
+		// TODO: Get FOV
+		this.projection = MatrixMath.createPerspective(fieldOfView, 4.0f / 3.0f, .001f, 1000f);
 		updateView();
 	}
 

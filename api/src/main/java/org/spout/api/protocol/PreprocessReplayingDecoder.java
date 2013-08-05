@@ -41,10 +41,10 @@ import org.spout.api.protocol.replayable.ReplayableChannelBuffer;
 import org.spout.api.protocol.replayable.ReplayableException;
 
 public abstract class PreprocessReplayingDecoder extends FrameDecoder implements ProcessorHandler {
-	private final int capacity;
-	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<>();
-	private final AtomicBoolean locked = new AtomicBoolean(false);
+	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<>(null);
 	private final ReplayableChannelBuffer replayableBuffer = new ReplayableChannelBuffer();
+	private final AtomicBoolean locked = new AtomicBoolean(false);
+	private final int capacity;
 	private ChannelBuffer processedBuffer = null;
 	private List<Object> frames = new LinkedList<>();
 
@@ -75,7 +75,6 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder implements
 		Object newFrame = null;
 
 		ChannelProcessor processor = this.processor.get();
-
 		ChannelBuffer liveBuffer;
 		do {
 			if (processor == null) {

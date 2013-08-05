@@ -30,10 +30,10 @@ package org.spout.api.protocol;
  * Represents a processor that acts as a pass-through, backed by a byte array
  */
 public class ByteBufferChannelProcessor extends CommonChannelProcessor {
-	protected byte[] internalBuffer;
-	protected int writePointer;
-	protected int readPointer;
-	protected boolean full;
+	private byte[] internalBuffer;
+	private int writePointer;
+	private int readPointer;
+	private boolean full;
 
 	public ByteBufferChannelProcessor(int capacity) {
 		super(capacity);
@@ -74,12 +74,10 @@ public class ByteBufferChannelProcessor extends CommonChannelProcessor {
 
 	@Override
 	protected int read(byte[] buf) {
-		int toCopy = Math.min(stored(), buf.length);
-
+		final int toCopy = Math.min(stored(), buf.length);
+		final int toTransfer = Math.min(toCopy, internalBuffer.length - readPointer);
 		int length = toCopy;
-
-		int toTransfer = Math.min(length, internalBuffer.length - readPointer);
-
+		
 		System.arraycopy(internalBuffer, readPointer, buf, 0, toTransfer);
 		readPointer = (readPointer + toTransfer) % internalBuffer.length;
 
