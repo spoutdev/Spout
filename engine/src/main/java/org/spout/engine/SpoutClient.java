@@ -67,7 +67,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Vector2;
@@ -75,7 +74,6 @@ import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.Session;
 import org.spout.api.render.RenderMode;
 import org.spout.api.resource.FileSystem;
 import org.spout.engine.audio.AudioConfiguration;
@@ -131,7 +129,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
 		bootstrap.setFactory(factory);
 
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
+		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory();
 		bootstrap.setPipelineFactory(pipelineFactory);
 		super.init(args);
 

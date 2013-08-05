@@ -46,7 +46,7 @@ import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.SyncedStringMap;
 
 public abstract class Protocol {
-	private static final ConcurrentHashMap<String, Protocol> map = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<String, Protocol> PROTOCOL_MAP = new ConcurrentHashMap<>();
 	private final SyncedStringMap dynamicPacketLookup;
 	private final CodecLookupService codecLookup;
 	private final HandlerLookupService handlerLookup;
@@ -57,6 +57,7 @@ public abstract class Protocol {
 		this.name = name;
 		this.dynamicPacketLookup = SyncedStringMap.create(null, new MemoryStore<Integer>(), maxPackets, maxPackets, this.name + "ProtocolDynamicPackets");
 		this.codecLookup = new CodecLookupService(getClass().getClassLoader(), dynamicPacketLookup, maxPackets);
+		this.dynamicPacketLookup.registerListener(codecLookup);
 		this.handlerLookup = new HandlerLookupService();
 		this.defaultPort = defaultPort;
 	}
@@ -198,7 +199,7 @@ public abstract class Protocol {
 	 * @param protocol the Protocol
 	 */
 	public static void registerProtocol(String id, Protocol protocol) {
-		map.put(id, protocol);
+		PROTOCOL_MAP.put(id, protocol);
 	}
 
 	/**
@@ -207,7 +208,7 @@ public abstract class Protocol {
 	 * @param protocol the Protocol
 	 */
 	public static void registerProtocol(Protocol protocol) {
-		map.put(protocol.getName(), protocol);
+		PROTOCOL_MAP.put(protocol.getName(), protocol);
 	}
 
 	/**
@@ -217,7 +218,7 @@ public abstract class Protocol {
 	 * @return the Protocol
 	 */
 	public static Protocol getProtocol(String id) {
-		return map.get(id);
+		return PROTOCOL_MAP.get(id);
 	}
 
 	/**
@@ -226,6 +227,6 @@ public abstract class Protocol {
 	 * @return All registered protocols
 	 */
 	public static Collection<Protocol> getProtocols() {
-		return Collections.unmodifiableCollection(map.values());
+		return Collections.unmodifiableCollection(PROTOCOL_MAP.values());
 	}
 }

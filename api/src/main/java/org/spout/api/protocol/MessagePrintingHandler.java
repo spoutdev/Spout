@@ -40,7 +40,7 @@ public class MessagePrintingHandler extends SimpleChannelHandler {
 	@Override
 	public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
 		if (e instanceof MessageEvent) {
-			Object msg = ((MessageEvent) e).getMessage();
+			final Object msg = ((MessageEvent) e).getMessage();
 			Spout.getEngine().getLogger().info("Receiving: " + msg);
 		}
 		super.handleUpstream(ctx, e);
@@ -49,7 +49,7 @@ public class MessagePrintingHandler extends SimpleChannelHandler {
 	@Override
 	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
 		if (e instanceof MessageEvent) {
-			Object msg = ((MessageEvent) e).getMessage();
+			final Object msg = ((MessageEvent) e).getMessage();
 			Spout.getEngine().getLogger().info("Sending: " + msg);
 		}
 		super.handleDownstream(ctx, e);

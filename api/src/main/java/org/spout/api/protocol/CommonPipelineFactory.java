@@ -30,7 +30,7 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 
-import org.spout.api.Engine;
+import org.spout.api.Spout;
 import org.spout.api.protocol.dynamicid.DynamicMessageDecoder;
 import org.spout.api.protocol.dynamicid.DynamicMessageEncoder;
 
@@ -38,10 +38,6 @@ import org.spout.api.protocol.dynamicid.DynamicMessageEncoder;
  * A common {@link ChannelPipelineFactory}
  */
 public final class CommonPipelineFactory implements ChannelPipelineFactory {
-	/**
-	 * The server.
-	 */
-	private final Engine engine;
 	/**
 	 * Indicates if the channel is an upstream channel
 	 */
@@ -52,8 +48,8 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 	 *
 	 * @param engine The engine
 	 */
-	public CommonPipelineFactory(Engine engine) {
-		switch (engine.getPlatform()) {
+	public CommonPipelineFactory() {
+		switch (Spout.getPlatform()) {
 			case CLIENT:
 				this.onClient = true;
 				break;
@@ -64,7 +60,6 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 			default:
 				throw new IllegalStateException("Unknown platform!");
 		}
-		this.engine = engine;
 	}
 
 	@Override
@@ -72,7 +67,7 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 		// Up for encoding/sending/downstream; Down for decoding/receiving/upstream
 		CommonEncoder encoder = new CommonEncoder(onClient);
 		CommonDecoder decoder = new CommonDecoder(onClient);
-		CommonHandler handler = new CommonHandler(engine, encoder, decoder);
+		CommonHandler handler = new CommonHandler(encoder, decoder);
 		DynamicMessageDecoder dynamicDecoder = new DynamicMessageDecoder();
 		DynamicMessageEncoder dynamicEncoder = new DynamicMessageEncoder();
 		return Channels.pipeline(decoder, encoder, dynamicDecoder, dynamicEncoder, handler);
