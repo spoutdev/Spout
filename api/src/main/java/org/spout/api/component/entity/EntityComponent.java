@@ -64,10 +64,11 @@ public abstract class EntityComponent extends Component {
 	}
 
 	public final Engine getEngine() {
-		if (getOwner() == null) {
+		final Entity owner = getOwner();
+		if (owner == null) {
 			throw new IllegalStateException("Can not access the engine w/o an owner");
 		}
-		return getOwner().getEngine();
+		return owner.getEngine();
 	}
 
 	/**

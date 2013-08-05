@@ -51,7 +51,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 		Font font = getFont();
 		Color color = Color.black;
 
-		float ratio = 30f / size;
+		float ratio = 30f / getSize();
 
 		float w = font.getWidth();
 		float h = font.getHeight();
@@ -73,7 +73,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 				part.setSprite(new Rectangle(xCursor, yCursor, (float) r.width / ratio, h / ratio));
 				part.setSource(new Rectangle(r.x / w, 0f, r.width / w, 1f));
 
-				xCursor += (float) font.getAdvance(c) / ratio;
+				xCursor += font.getAdvance(c) / ratio;
 
 				List<Vertex> v = part.getVertices();
 
@@ -82,20 +82,20 @@ public class ClientTextModelComponent extends TextModelComponent {
 			}
 		}
 
-		translation = translation.subtract(xCursor / 2.f, 0, 0);
+		setTranslation(getTranslation().subtract(xCursor / 2.f, 0, 0));
 
 		mesh = new BaseMesh(faces, false, true, true, false);
 		mesh.batch();
 	}
 
 	public void render(Camera camera) {
-		if (dirty) {
-			dirty = false;
+		if (isDirty()) {
+			setDirty(false);
 			updateMesh();
 		}
 
 		Transform mt = getOwner().getPhysics().getTransform();
-		mt.setPosition(mt.getPosition().add(translation));
+		mt.setPosition(mt.getPosition().add(getTranslation()));
 
 		//TODO: Implements lookCamera, basicaly its the inverse of the camera's rotation
 

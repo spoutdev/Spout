@@ -214,7 +214,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		bootstrap.setOption("tcpNoDelay", true);
 		bootstrap.setOption("keepAlive", true);
 
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
+		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory();
 		bootstrap.setPipelineFactory(pipelineFactory);
 
 		accessManager.load();

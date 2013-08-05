@@ -42,8 +42,8 @@ public class BaseComponentOwner implements ComponentOwner {
 	/**
 	 * Map of class name, component
 	 */
-	protected final BiMap<Class<? extends Component>, Component> components = HashBiMap.create();
-	protected final ManagedHashMap data;
+	private final BiMap<Class<? extends Component>, Component> components = HashBiMap.create();
+	private final ManagedHashMap data;
 
 	public BaseComponentOwner() {
 		data = new ManagedHashMap();
