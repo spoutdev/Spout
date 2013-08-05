@@ -71,7 +71,7 @@ import org.spout.api.util.set.concurrent.TSyncIntHashSet;
  * The networking behind {@link org.spout.api.entity.Player}s. This component holds the {@link Session} which is the connection
  * the Player has to the server.
  */
-public abstract class PlayerNetworkComponent extends NetworkComponent implements Listener {
+public class PlayerNetworkComponent extends NetworkComponent implements Listener {
 	private static final SyncedStringMap protocolMap = SyncedStringMap.create(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
 	protected static final int CHUNKS_PER_TICK = 20;
 	private final AtomicReference<Session> session = new AtomicReference<>(null);

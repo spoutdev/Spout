@@ -41,6 +41,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.exception.UnknownPacketException;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.SyncedStringMap;
@@ -175,6 +176,20 @@ public abstract class Protocol {
 	 * @return the message, or null if there is no message
 	 */
 	public abstract Message getIntroductionMessage(String playerName, InetSocketAddress addr);
+
+	/**
+	 * Gets the {@code PlayerNetworkComponent} to give to connectining players for the protocols on server.
+	 *
+	 * @param session The session to set data for
+	 */
+	public abstract Class<? extends PlayerNetworkComponent> getServerNetworkComponent(ServerSession session);
+
+	/**
+	 * Gets the {@code PlayerNetworkComponent} to give to connectining players for the protocols on client.
+	 *
+	 * @param session The session to set data for
+	 */
+	public abstract Class<? extends PlayerNetworkComponent> getClientNetworkComponent(ClientSession session);
 
 	/**
 	 * Set up the initial data for the given session. This method is called in between {@link org.spout.api.event.player.PlayerLoginEvent} and {@link org.spout.api.event.player.PlayerJoinEvent}. Game

@@ -478,13 +478,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	@Override
 	public Entity createEntity(Point point, Class<? extends Component>... classes) {
-		SpoutEntity entity;
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			entity = new SpoutEntity(getEngine(), point, false, classes);
-		} else {
-			entity = new SpoutEntity(getEngine(), point, classes);
-		}
-		return entity;
+		return new SpoutEntity(getEngine(), point, classes);
 	}
 
 	@Override

@@ -66,6 +66,7 @@ import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Listener;
@@ -93,6 +94,7 @@ import org.spout.api.util.access.AccessManager;
 import org.spout.cereal.config.ConfigurationException;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.entity.SpoutPlayerSnapshot;
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.filesystem.versioned.WorldFiles;
@@ -727,13 +729,21 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutServerSession<?> session, int syncDistance) {
-		SpoutPlayer player = PlayerFiles.loadPlayerData(playerName);
-		boolean created = false;
-		if (player == null) {
+		Class<? extends PlayerNetworkComponent> network = session.getProtocol().getServerNetworkComponent(session);
+		SpoutPlayerSnapshot snapshot = PlayerFiles.loadPlayerData(playerName);
+		SpoutPlayer player;
+		if (snapshot == null) {
 			getLogger().info("First login for " + playerName + ", creating new player data");
-			player = new SpoutPlayer(this, playerName, getDefaultWorld().getSpawnPoint());
-			created = true;
+			player = new SpoutPlayer(this, network, playerName, getDefaultWorld().getSpawnPoint());
+		} else {
+			player = new SpoutPlayer(this, network, snapshot);
 		}
+		session.setPlayer(player);
+		player.getNetwork().setSession(session);
+		//Set the player's sync distance
+		player.getNetwork().setSyncDistance(syncDistance);
+		player.getNetwork().forceSync();
+
 		SpoutPlayer oldPlayer = players.put(playerName, player);
 
 		if (reclamation != null) {
@@ -744,28 +754,15 @@ public class SpoutServer extends SpoutEngine implements Server {
 			oldPlayer.kick("Login occured from another client");
 		}
 
-		final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) player.getPhysics();
-
-		// Test for valid old position
-		created |= physics.getTransformLive().getPosition().getWorld() == null;
-
-		// Connect the player and set their transform to the default world's spawn.
-		player.connect(session, created ? ((SpoutServerWorld) getDefaultWorld()).getSpawnPoint() : physics.getTransformLive());
-
 		// Spawn the player in the world
+		final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) player.getPhysics();
 		World world = physics.getTransformLive().getPosition().getWorld();
 		world.spawnEntity(player);
 		((SpoutServerWorld) world).addPlayer(player);
 
 		// Initialize the session
 		session.getProtocol().initializeServerSession(session);
-		if (player.getNetwork() == null) {
-			throw new IllegalStateException("initializeServerSession failed to set a player's NetworkComponent. Protocol: " + session.getProtocol());
-		}
-		//Set the player's sync distance
-		player.getNetwork().setSyncDistance(syncDistance);
-		player.getNetwork().forceSync();
-		player.getNetwork().setSession(session);
+
 		return player;
 	}
 

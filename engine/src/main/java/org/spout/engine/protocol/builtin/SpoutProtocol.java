@@ -35,6 +35,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.event.object.EventableListener;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
@@ -150,8 +151,17 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	@Override
+	public Class<? extends PlayerNetworkComponent> getServerNetworkComponent(ServerSession session) {
+		return SpoutPlayerNetworkComponent.class;
+	}
+
+	@Override
+	public Class<? extends PlayerNetworkComponent> getClientNetworkComponent(ClientSession session) {
+		return SpoutPlayerNetworkComponent.class;
+	}
+
+	@Override
 	public void initializeServerSession(final ServerSession session) {
-		session.getPlayer().add(SpoutPlayerNetworkComponent.class);
 		//TODO Ensure this is right, very important
 		SyncedMapRegistry.getRegistrationMap().registerListener(new EventableListener<SyncedMapEvent>() {
 			@Override
@@ -167,6 +177,5 @@ public class SpoutProtocol extends Protocol {
 
 	@Override
 	public void initializeClientSession(final ClientSession session) {
-		session.getPlayer().add(SpoutPlayerNetworkComponent.class);
 	}
 }

@@ -67,10 +67,4 @@ public class SpoutPlayerSnapshot extends SpoutEntitySnapshot implements PlayerSn
 	public String getName() {
 		return name;
 	}
-
-	@SuppressWarnings ("unchecked")
-	@Override
-	public SpoutPlayer toEntity(SpoutEngine engine) {
-		return new SpoutPlayer(engine, getName(), getTransform(), getUID(), false, getDataMap(), getComponents().toArray(new Class[0]));
-	}
 }

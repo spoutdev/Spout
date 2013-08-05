@@ -66,10 +66,10 @@ public class EntityFiles {
 	public static final byte ENTITY_VERSION = 4;
 
 	@SuppressWarnings ("rawtypes")
-	protected static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
+	protected static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntitySnapshot> loadedEntities) {
 		if (r != null && map != null) {
 			for (Tag tag : map) {
-				SpoutEntity e = loadEntity(r, (CompoundTag) tag);
+				SpoutEntitySnapshot e = loadEntity(r, (CompoundTag) tag);
 				if (e != null) {
 					loadedEntities.add(e);
 				}
@@ -93,18 +93,18 @@ public class EntityFiles {
 		return tagMap;
 	}
 
-	private static SpoutEntity loadEntity(SpoutRegion r, CompoundTag tag) {
+	private static SpoutEntitySnapshot loadEntity(SpoutRegion r, CompoundTag tag) {
 		return loadEntity(r.getWorld(), tag);
 	}
 
-	protected static SpoutEntity loadEntity(World w, CompoundTag tag) {
+	protected static SpoutEntitySnapshot loadEntity(World w, CompoundTag tag) {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Entities cannot be loaded on the client");
 		}
 		try {
 			SpoutEntitySnapshot snapshot = loadEntityImpl(w, tag, null);
 			if (snapshot != null) {
-				return snapshot.toEntity((SpoutEngine) Spout.getEngine());
+				return snapshot;
 			}
 		} catch (Exception e) {
 			Spout.getLogger().log(Level.SEVERE, "Unable to load entity", e);
@@ -112,10 +112,10 @@ public class EntityFiles {
 		return null;
 	}
 
-	protected static SpoutEntity loadPlayerEntity(CompoundTag tag, String name) {
+	protected static SpoutPlayerSnapshot loadPlayerEntity(CompoundTag tag, String name) {
 		SpoutEntitySnapshot snapshot = loadEntityImpl(null, tag, name);
-		if (snapshot != null) {
-			return snapshot.toEntity((SpoutEngine) Spout.getEngine());
+		if (snapshot != null && snapshot instanceof SpoutPlayerSnapshot) {
+			return (SpoutPlayerSnapshot) snapshot;
 		}
 		return null;
 	}

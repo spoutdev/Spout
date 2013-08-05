@@ -61,6 +61,7 @@ import org.spout.api.Platform;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
@@ -210,28 +211,22 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		Channel channel = connect.getChannel();
-		if (connect.isSuccess()) {
-			getLogger().log(Level.INFO, "Connected to " + address + ":" + port + " with protocol " + protocol.getName());
-			CommonHandler handler = channel.getPipeline().get(CommonHandler.class);
-			SpoutClientSession session = new SpoutClientSession(this, channel, protocol);
-			handler.setSession(session);
-
-			// TODO: This is really unclean
-			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", new Transform().setPosition(new Point(getWorld(), 1, 200, 1)));
-			if (!p.connect(session, p.getPhysics().getTransform())) {
-				getLogger().log(Level.SEVERE, "Error in calling player connect");
-				return false;
-			}
-			session.getProtocol().initializeClientSession(session);
-			if (p.getNetwork() == null) {
-				throw new IllegalStateException("initializeClientSession failed to set a player's NetworkComponent. Protocol: " + session.getProtocol());
-			}
-			p.getNetwork().setSession(session);
-			player.set(p);
-		} else {
+		if (!connect.isSuccess()) {
 			getLogger().log(Level.SEVERE, "Could not connect to " + binding, connect.getCause());
 			return false;
 		}
+
+		getLogger().log(Level.INFO, "Connected to " + address + ":" + port + " with protocol " + protocol.getName());
+		CommonHandler handler = channel.getPipeline().get(CommonHandler.class);
+		SpoutClientSession session = new SpoutClientSession(this, channel, protocol);
+		handler.setSession(session);
+
+		Class<? extends PlayerNetworkComponent> network = session.getProtocol().getClientNetworkComponent(session);
+		final SpoutClientPlayer p = new SpoutClientPlayer(this, network, "Spouty", new Transform().setPosition(new Point(getWorld(), 1, 200, 1)));
+		session.setPlayer(p);
+		p.getNetwork().setSession(session);
+		session.getProtocol().initializeClientSession(session);
+		player.set(p);
 		return true;
 	}
 

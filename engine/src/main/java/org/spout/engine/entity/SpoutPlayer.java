@@ -74,7 +74,7 @@ import org.spout.engine.world.SpoutServerWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicReference<String> displayName = new AtomicReference<>();
-	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
+	private final AtomicBoolean onlineLive = new AtomicBoolean(true);
 	private final String name;
 	private boolean online;
 	private final int hashcode;
@@ -82,22 +82,33 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 	private List<Entity> hiddenEntities = new ConcurrentList<>();
 
-	public SpoutPlayer(Engine engine, String name, Transform transform) {
-		this(engine, name, transform, null, true, (byte[]) null, (Class<? extends Component>[]) null);
+	public SpoutPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, SpoutPlayerSnapshot snapshot) {
+		super(engine, snapshot);
+		this.network = add(network);
+		this.name = snapshot.getName();
+		this.displayName.set(name);
+		this.hashcode = name.hashCode();
+		this.online = true;
+		if (Spout.getPlatform() == Platform.SERVER) {
+			add(MovementValidatorComponent.class);
+		}
+		copySnapshot();
 	}
 
-	protected SpoutPlayer(Engine engine, String name, Transform transform, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
-		this(engine, name, transform, uid, load, (byte[]) null, components);
+	public SpoutPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, String name, Transform transform) {
+		this(engine, network, name, transform, null, (byte[]) null, (Class<? extends Component>[]) null);
 	}
 
-	public SpoutPlayer(Engine engine, String name, Transform transform, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
-		super(engine, transform, uid, load, dataMap, components);
+	public SpoutPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, String name, Transform transform, UUID uid, byte[] dataMap, Class<? extends Component>... components) {
+		super(engine, transform, uid, dataMap, components);
+		this.network = add(network);
 		this.name = name;
 		this.displayName.set(name);
 		this.hashcode = name.hashCode();
 		if (Spout.getPlatform() == Platform.SERVER) {
 			add(MovementValidatorComponent.class);
 		}
+		copySnapshot();
 	}
 
 	@Override
@@ -136,25 +147,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			PlayerFiles.savePlayerData(this, async);
 		}
 		onlineLive.set(false);
-		return true;
-	}
-
-	@DelayedWrite
-	public boolean connect(SpoutSession<?> session, Transform newTransform) {
-		if (!onlineLive.compareAndSet(false, true)) {
-			// player was already online
-			return false;
-		}
-		//Disallow null transforms or transforms with null worlds
-		if (newTransform == null || newTransform.getPosition().getWorld() == null) {
-			return false;
-		}
-		((SpoutPhysicsComponent) getPhysics()).setTransform(newTransform, false);
-		if (getEngine().getPlatform() == Platform.SERVER) {
-			setupInitialChunk(LoadOption.LOAD_GEN);
-		}
-		session.setPlayer(this);
-		copySnapshot();
 		return true;
 	}
 

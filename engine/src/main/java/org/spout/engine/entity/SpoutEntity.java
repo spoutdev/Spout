@@ -50,6 +50,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.engine.SpoutClient;
@@ -60,6 +61,7 @@ import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutChunk;
+import org.spout.engine.world.SpoutRegion;
 
 public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = Integer.MIN_VALUE;
@@ -79,30 +81,26 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	private Class<? extends Component>[] initialComponents = null;
 
 	public SpoutEntity(Engine engine, Transform transform) {
-		this(engine, transform, null, true, (byte[]) null, (Class<? extends Component>[]) null);
+		this(engine, transform, null, (byte[]) null, (Class<? extends Component>[]) null);
 	}
 
 	public SpoutEntity(Engine engine, Point point) {
 		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
 	}
 
+	public SpoutEntity(Engine engine, SpoutEntitySnapshot snapshot) {
+		this(engine, snapshot.getTransform(), snapshot.getUID(), snapshot.getDataMap().serialize(), snapshot.getComponents().toArray(new Class[0]));
+	}
+
 	public SpoutEntity(Engine engine, Point point, Class<? extends Component>... components) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), null, true, (byte[]) null, components);
+		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), null, (byte[]) null, components);
 	}
 
-	public SpoutEntity(Engine engine, Point point, boolean load) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), null, load, (byte[]) null, (Class<? extends Component>[]) null);
+	protected SpoutEntity(Engine engine, Transform transform, UUID uid, SerializableMap dataMap, Class<? extends Component>... components) {
+		this(engine, transform, uid, dataMap.serialize(), components);
 	}
 
-	public SpoutEntity(Engine engine, Point point, boolean load, Class<? extends Component>... components) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), null, load, (byte[]) null, components);
-	}
-
-	protected SpoutEntity(Engine engine, Transform transform, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
-		this(engine, transform, uid, load, (byte[]) null, components);
-	}
-
-	public SpoutEntity(Engine engine, Transform transform, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
+	public SpoutEntity(Engine engine, Transform transform, UUID uid, byte[] dataMap, Class<? extends Component>... components) {
 		if (transform == null) {
 			throw new IllegalArgumentException("Entities must always have a valid transform");
 		}
@@ -136,7 +134,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 			}
 		}
 
-		setupInitialChunk(load == true ? LoadOption.LOAD_GEN : LoadOption.NO_LOAD);
+		setupInitialChunk();
 	}
 
 	@Override
@@ -274,12 +272,19 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	@Override
 	public Region getRegion() {
-		return entityManager.get().getRegion();
+		// TODO: we should have an entityManager
+		//return entityManager.get().getRegion();
+		// TODO: are we going to make this a thing...or?
+		if (TickStage.testStage(~TickStage.SNAPSHOT)) {
+			return physics.getPosition().getRegion(LoadOption.LOAD_GEN);
+		} else {
+			return physics.getPosition().getRegion(LoadOption.NO_LOAD);
+		}
 	}
 
 	@Override
 	public World getWorld() {
-		return getRegion().getWorld();
+		return physics.getPosition().getWorld();
 	}
 
 	@Override
@@ -295,14 +300,11 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	/**
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
-	public void setupInitialChunk(LoadOption loadopt) {
+	public void setupInitialChunk() {
 		physics.copySnapshot();
-		SpoutChunk chunk = (SpoutChunk) physics.getTransformLive().getPosition().getChunk(loadopt);
-		if (chunk == null) {
-			// It's possible we're in client mode and we have no chunk
-			return;
-		}
-		entityManager.set(chunk.getRegion().getEntityManager());
+		SpoutRegion region = (SpoutRegion) physics.getTransformLive().getPosition().getRegion(LoadOption.LOAD_GEN);
+
+		entityManager.set(region.getEntityManager());
 
 		snapshotManager.copyAllSnapshots();
 
@@ -319,8 +321,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 		justSpawned = false;
 
-		// TODO: this is called on connect(), before session is initialized
-		if (network != null) network.copySnapshot();
+		network.copySnapshot();
 	}
 
 	@Override

@@ -30,6 +30,7 @@ import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.component.Component;
 import org.spout.api.component.entity.CameraComponent;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.engine.gui.SpoutScreenStack;
 
@@ -37,8 +38,8 @@ import org.spout.engine.gui.SpoutScreenStack;
  * A subclass of SpoutPlayer with modifications for the client
  */
 public class SpoutClientPlayer extends SpoutPlayer {
-	public SpoutClientPlayer(Engine engine, String name, Transform transform) {
-		super(engine, name, transform, null, false, (byte[]) null, (Class<? extends Component>[]) null);
+	public SpoutClientPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, String name, Transform transform) {
+		super(engine, network, name, transform, null, (byte[]) null, (Class<? extends Component>[]) null);
 
 		add(CameraComponent.class);
 	}

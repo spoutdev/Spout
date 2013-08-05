@@ -144,11 +144,6 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 		return components;
 	}
 
-	@SuppressWarnings ("unchecked")
-	public SpoutEntity toEntity(SpoutEngine engine) {
-		return new SpoutEntity(engine, location, uniqueId, false, dataMap, components.toArray(new Class[components.size()]));
-	}
-
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

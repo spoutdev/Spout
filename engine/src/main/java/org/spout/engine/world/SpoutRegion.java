@@ -95,6 +95,7 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.entity.SpoutEntitySnapshot;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.versioned.ChunkFiles;
@@ -349,8 +350,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 				}
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
-					for (SpoutEntity entity : dataForRegion.loadedEntities) {
-						entity.setupInitialChunk(LoadOption.NO_LOAD);
+					for (SpoutEntitySnapshot snapshot : dataForRegion.loadedEntities) {
+						SpoutEntity entity = new SpoutEntity(Spout.getEngine(), snapshot);
 						entityManager.addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
