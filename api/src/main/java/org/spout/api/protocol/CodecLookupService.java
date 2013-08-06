@@ -199,8 +199,11 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 						throw new IllegalStateException("Server sent a packet id which is greater than the client has allowed.");
 					}
 					MessageCodec<?> codec = opcodeTable[id];
-					if ((codec != null && codec.getClass().getName().equals(className))) {
-						throw new IllegalArgumentException("Trying to add a codec which already exists: " + className);
+					if (codec != null) {
+						if (codec.getClass().getName().equals(className)) {
+							continue;
+						}
+						throw new IllegalArgumentException("Trying to register a codec where one already exists: " + className);
 					}
  					try {
 						final Class<? extends MessageCodec> clazz = Class.forName(className, true, loader).asSubclass(MessageCodec.class);
