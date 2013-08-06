@@ -40,11 +40,11 @@ public class CameraComponent extends EntityComponent implements Camera {
 	private float fieldOfView = 75f;
 
 	public CameraComponent() {
-
+		this.frustum = new ViewFrustum();
 	}
 
 	public CameraComponent(Matrix createPerspective, Matrix createLookAt) {
-		this.frustum = new ViewFrustum();
+		this();
 		this.projection = createPerspective;
 		this.view = createLookAt;
 	}
