@@ -253,12 +253,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public CommandSource getCommandSource() {
-		// TODO: let's separate this?
-		return player.get();
-	}
-
-	@Override
 	public Platform getPlatform() {
 		return Platform.CLIENT;
 	}

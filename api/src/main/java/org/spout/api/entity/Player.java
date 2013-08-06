@@ -156,4 +156,13 @@ public interface Player extends CommandSource, Entity {
 	 */
 	@Override
 	public PlayerSnapshot snapshot();
+
+	/**
+	 * Sends a command to be processed on the opposite Platform.
+	 * This is basically a shortcut method to prevent the need to register a command locally with a {@link Command.NetworkSendType} of {@code SEND}.
+	 *
+	 * @param command to send
+	 * @param args to send
+	 */
+	public void sendCommand(String command, String... args);
 }

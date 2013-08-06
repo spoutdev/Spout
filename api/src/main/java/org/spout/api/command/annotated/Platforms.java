@@ -30,17 +30,18 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.spout.api.Platform;
 
 /**
  * Designates a command method as only to be registered on the specified platforms.
  */
 @Target (ElementType.METHOD)
 @Retention (RetentionPolicy.RUNTIME)
-public @interface Platform {
+public @interface Platforms {
 	/**
 	 * Returns the platforms to register the plugin.
 	 *
 	 * @return platforms
 	 */
-	public org.spout.api.Platform[] value();
+	public Platform[] value();
 }

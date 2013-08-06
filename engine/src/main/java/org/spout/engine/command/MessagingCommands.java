@@ -26,12 +26,13 @@
  */
 package org.spout.engine.command;
 
+import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.CommandDescription;
 import org.spout.api.command.annotated.Permissible;
-import org.spout.api.command.annotated.Platform;
+import org.spout.api.command.annotated.Platforms;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
@@ -63,7 +64,7 @@ public class MessagingCommands {
 
 	@CommandDescription (aliases = {"emote", "me", "action"}, usage = "<action>", desc = "Emote in the third person")
 	@Permissible ("spout.command.emote")
-	@Platform ({org.spout.api.Platform.SERVER, org.spout.api.Platform.PROXY})
+	@Platforms ({Platform.SERVER, Platform.PROXY})
 	public void emote(CommandSource source, CommandArguments args) throws ArgumentParseException {
 		((Server) engine).broadcastMessage("* " + source.getName() + " " + args.popRemainingStrings("action"));
 	}

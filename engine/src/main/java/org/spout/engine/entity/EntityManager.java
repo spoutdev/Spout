@@ -208,6 +208,9 @@ public class EntityManager {
 			if (observed.getId() == SpoutEntity.NOTSPAWNEDID) {
 				throw new IllegalStateException("Attempt to sync entity with not spawned id.");
 			}
+			if (observed.getChunk() == null) {
+				continue;
+			}
 			//Players observing the chunk this entity is in
 			Set<? extends Entity> observers = observed.getChunk().getObservers();
 			syncEntity(observed, observers, false);

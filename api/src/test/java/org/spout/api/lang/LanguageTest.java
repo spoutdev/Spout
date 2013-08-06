@@ -138,10 +138,6 @@ public class LanguageTest {
 		}
 
 		@Override
-		public void sendCommand(String command, String... args) {
-		}
-
-		@Override
 		public void processCommand(String command, String... args) {
 		}
 

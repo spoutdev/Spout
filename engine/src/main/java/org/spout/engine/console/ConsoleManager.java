@@ -119,11 +119,7 @@ public final class ConsoleManager {
 
 		@Override
 		public void run() {
-			if (Spout.getPlatform() == Platform.CLIENT) {
-				((Client) engine).getPlayer().sendCommand(command, arguments);
-			} else {
-				engine.getCommandSource().processCommand(command, arguments);
-			}
+			engine.getCommandSource().processCommand(command, arguments);
 		}
 
 		@Override

@@ -40,6 +40,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.spout.api.Client;
+import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
@@ -51,7 +52,7 @@ import org.spout.api.command.annotated.CommandDescription;
 import org.spout.api.command.annotated.Filter;
 import org.spout.api.command.annotated.Flag;
 import org.spout.api.command.annotated.Permissible;
-import org.spout.api.command.annotated.Platform;
+import org.spout.api.command.annotated.Platforms;
 import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.component.entity.AnimationComponent;
 import org.spout.api.component.entity.InteractComponent;
@@ -176,7 +177,7 @@ public class TestCommands {
 
 	@CommandDescription (aliases = "widget", usage = "<button|checkbox|radio|combo|list|label|slider|spinner|textfield|rect>",
 			desc = "Renders a widget on your screen.")
-	@Platform (org.spout.api.Platform.CLIENT)
+	@Platforms (Platform.CLIENT)
 	public void widget(CommandSource source, CommandArguments args) throws CommandException {
 		Client client = (Client) engine;
 		Screen screen = new Screen();
@@ -210,7 +211,7 @@ public class TestCommands {
 	}
 
 	@CommandDescription (aliases = "break", desc = "Debug command to break a block")
-	@Platform (org.spout.api.Platform.CLIENT)
+	@Platforms (Platform.CLIENT)
 	@Filter (PlayerFilter.class)
 	public void debugBreak(Player player, CommandArguments args) throws CommandException {
 		Block block = player.get(InteractComponent.class).getTargetBlock();
@@ -506,7 +507,7 @@ public class TestCommands {
 	}
 
 	@CommandDescription (aliases = "respawn", usage = "", desc = "Forces the client to respawn")
-	@Platform (org.spout.api.Platform.SERVER)
+	@Platforms (Platform.SERVER)
 	@Filter (PlayerFilter.class)
 	public void respawn(Player player, CommandArguments args) throws CommandException {
 		args.assertCompletelyParsed();

@@ -183,7 +183,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		Object exe;
 		switch (getPlatform()) {
 			case CLIENT:
-				exe = new ClientCommands(this);
+				exe = new ClientCommands((SpoutClient) this);
 				break;
 			case SERVER:
 				exe = new ServerCommands(this);

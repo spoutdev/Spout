@@ -30,12 +30,18 @@ package org.spout.api.exception;
  * Thrown to wrap any exceptions caught during execution of a command
  */
 public class WrappedCommandException extends CommandException {
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 9124773905653368232L;
 
 	public WrappedCommandException(Throwable cause) {
 		super(cause);
+	}
+
+	@Override
+	public String getMessage() {
+		StringBuilder b = new StringBuilder(super.getMessage() + "\n");
+		for (StackTraceElement s : getStackTrace()) {
+			b.append(s.toString()).append("\n");
+		}
+		return b.toString();
 	}
 }

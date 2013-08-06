@@ -32,16 +32,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.spout.api.Platform;
 
 import org.spout.api.Server;
 import org.spout.api.Spout;
+import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandBatch;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.CommandDescription;
 import org.spout.api.command.annotated.Filter;
 import org.spout.api.command.annotated.Permissible;
-import org.spout.api.command.annotated.Platform;
+import org.spout.api.command.annotated.Platforms;
 import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.ArgumentParseException;
@@ -173,7 +175,7 @@ public class CommonCommands {
 
 	@CommandDescription (aliases = {"setspawn", "ss"}, desc = "Sets the spawnpoint for a world")
 	@Permissible ("spout.command.setspawn")
-	@Platform (org.spout.api.Platform.SERVER)
+	@Platforms (Platform.SERVER)
 	public void setspawn(CommandSource source, CommandArguments args) throws CommandException {
 		Point point = args.popPoint("spawnpoint", source);
 		args.assertCompletelyParsed();
@@ -187,7 +189,7 @@ public class CommonCommands {
 
 	@CommandDescription (aliases = {"whatisspawn", "wis"}, desc = "Tells you the spawnpoint of a world")
 	@Permissible ("spout.command.tellspawn")
-	@Platform (org.spout.api.Platform.SERVER)
+	@Platforms (Platform.SERVER)
 	public void tellspawn(CommandSource source, CommandArguments args) throws CommandException {
 		Point point = args.popWorld("world", source).getSpawnPoint().getPosition();
 		args.assertCompletelyParsed();
