@@ -31,6 +31,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.MessageCodec;
+import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.api.util.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
@@ -45,7 +46,7 @@ public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
 		ChannelBuffer buffer = null;
 		switch (message.getAction()) {
 			case REMOVE:
-				buffer = ChannelBuffers.buffer(4);
+				buffer = ChannelBuffers.buffer(5);
 				buffer.writeByte(message.getAction().ordinal());
 				buffer.writeInt(message.getEntityId());
 				break;
@@ -67,11 +68,11 @@ public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
 	@Override
 	public UpdateEntityMessage decode(ChannelBuffer buffer) {
 		final byte actionByte = buffer.readByte();
-		if (actionByte < 0 || actionByte >= UpdateEntityMessage.UpdateAction.values().length) {
+		if (actionByte < 0 || actionByte >= UpdateAction.values().length) {
 			throw new IllegalArgumentException("Unknown response ID " + actionByte);
 		}
 
-		final UpdateEntityMessage.UpdateAction action = UpdateEntityMessage.UpdateAction.values()[actionByte];
+		final UpdateAction action = UpdateAction.values()[actionByte];
 		final int entityId;
 		final Transform transform;
 		switch (action) {

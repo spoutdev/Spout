@@ -44,12 +44,12 @@ public class SpoutPlayerSnapshot extends SpoutEntitySnapshot implements PlayerSn
 	}
 
 	public SpoutPlayerSnapshot(PlayerSnapshot snapshot) {
-		this(snapshot.getUID(), snapshot.getTransform(), snapshot.getWorldUID(), snapshot.getViewDistance(), snapshot.isObserver(), null, snapshot.getComponents(), snapshot.getName());
+		this(snapshot.getUID(), snapshot.getTransform(), snapshot.getWorldUID(), null, snapshot.getComponents(), snapshot.getName());
 		this.getDataMap().putAll(snapshot.getDataMap());
 	}
 
-	public SpoutPlayerSnapshot(UUID id, Transform t, UUID worldId, int view, boolean observer, byte[] dataMap, List<Class<? extends Component>> types, String name) {
-		super(id, t, worldId, view, observer, dataMap, types);
+	public SpoutPlayerSnapshot(UUID id, Transform t, UUID worldId, byte[] dataMap, List<Class<? extends Component>> types, String name) {
+		super(id, t, worldId, dataMap, types);
 		this.name = name;
 	}
 
@@ -66,11 +66,5 @@ public class SpoutPlayerSnapshot extends SpoutEntitySnapshot implements PlayerSn
 	@Override
 	public String getName() {
 		return name;
-	}
-
-	@SuppressWarnings ("unchecked")
-	@Override
-	public SpoutPlayer toEntity(SpoutEngine engine) {
-		return new SpoutPlayer(engine, name, getTransform(), getViewDistance(), getUID(), false, getDataMap(), getComponents().toArray(new Class[0]));
 	}
 }

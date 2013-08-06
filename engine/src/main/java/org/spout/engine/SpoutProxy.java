@@ -39,6 +39,7 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import org.spout.api.Platform;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Protocol;
@@ -68,7 +69,7 @@ public class SpoutProxy extends SpoutServer {
 
 	@Override
 	public Player addPlayer(String playerName, SpoutServerSession<?> session, int viewDistance) {
-		SpoutPlayer player = new SpoutPlayer(this, playerName, null, -1);
+		SpoutPlayer player = new SpoutPlayer(this, PlayerNetworkComponent.class, playerName, null);
 		players.putIfAbsent(playerName, player);
 		session.setPlayer(player);
 		return player;
@@ -93,7 +94,7 @@ public class SpoutProxy extends SpoutServer {
 		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
 		clientBootstrap.setFactory(factory);
 
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
+		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory();
 		clientBootstrap.setPipelineFactory(pipelineFactory);
 
 		clientBootstrap.setOption("tcpNoDelay", true);

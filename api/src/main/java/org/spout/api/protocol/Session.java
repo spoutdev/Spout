@@ -173,13 +173,6 @@ public interface Session {
 	 */
 	public boolean isPrimary(Channel c);
 
-	/**
-	 * Gets the ServerNetworkSynchronizer associated with this player.<br>
-	 *
-	 * @return the synchronizer
-	 */
-	public <T extends NetworkSynchronizer> T getNetworkSynchronizer();
-
 	public enum State {
 		/**
 		 * In the exchange handshake state, the server is waiting for the client to send its initial handshake packet.
@@ -193,6 +186,10 @@ public interface Session {
 		 * In the exchange encryption state, the server is waiting for the client to send its encryption response packet.
 		 */
 		EXCHANGE_ENCRYPTION,
+		/**
+		 * This state is when a critical message has been sent that must be waited for.
+		 */
+		WAITING,
 		/**
 		 * In the game state the session has an associated player.
 		 */

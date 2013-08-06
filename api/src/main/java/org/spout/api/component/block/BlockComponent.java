@@ -54,10 +54,11 @@ public abstract class BlockComponent extends Component {
 	 * @return position
 	 */
 	public Point getPoint() {
-		if (getOwner() == null) {
+		final BlockComponentOwner owner = getOwner();
+		if (owner == null) {
 			throw new IllegalStateException("This component has no owner and therefore no point");
 		}
-		return new Point(getOwner().getWorld(), getOwner().getX(), getOwner().getY(), getOwner().getZ());
+		return new Point(owner.getWorld(), owner.getX(), owner.getY(), owner.getZ());
 	}
 
 	/**
@@ -69,10 +70,11 @@ public abstract class BlockComponent extends Component {
 	 * @return the block associated with the BlockComponentOwner
 	 */
 	public Block getBlock() {
-		if (getOwner() == null) {
+		final BlockComponentOwner owner = getOwner();
+		if (owner == null) {
 			throw new IllegalStateException("This component has no owner and therefore no block");
 		}
-		return getOwner().getBlock();
+		return owner.getBlock();
 	}
 
 	/**

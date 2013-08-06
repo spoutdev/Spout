@@ -45,6 +45,7 @@ import java.util.logging.Level;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -72,10 +73,9 @@ import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.ReactConverter;
 import org.spout.api.math.Vector3;
-import org.spout.api.protocol.ServerNetworkSynchronizer;
+import org.spout.api.protocol.event.BlockUpdateEvent;
 import org.spout.api.protocol.event.ChunkDatatableSendEvent;
 import org.spout.api.protocol.event.ChunkSendEvent;
-import org.spout.api.protocol.event.UpdateBlockEvent;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
@@ -95,6 +95,7 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.entity.SpoutEntitySnapshot;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.versioned.ChunkFiles;
@@ -349,8 +350,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 				}
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
-					for (SpoutEntity entity : dataForRegion.loadedEntities) {
-						entity.setupInitialChunk(LoadOption.NO_LOAD);
+					for (SpoutEntitySnapshot snapshot : dataForRegion.loadedEntities) {
+						SpoutEntity entity = new SpoutEntity(Spout.getEngine(), snapshot);
 						entityManager.addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
@@ -754,7 +755,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@Override
 	public void finalizeRun() {
 		if (Spout.getPlatform() == Platform.SERVER) {
-			long worldAge = getWorld().getAge();
+			//long worldAge = getWorld().getAge();
 			for (int reap = 0; reap < SpoutConfiguration.REAP_CHUNKS_PER_TICK.getInt(); reap++) {
 				if (++reapX >= CHUNKS.SIZE) {
 					reapX = 0;
@@ -789,28 +790,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		entityManager.finalizeRun();
 	}
 
-	private void syncChunkToPlayer(SpoutChunk chunk, Player player) {
-		if (player.isOnline()) {
-			ServerNetworkSynchronizer synchronizer = (ServerNetworkSynchronizer) player.getNetworkSynchronizer();
-			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
-				for (int i = 0; true; i++) {
-					Vector3 block = chunk.getDirtyBlock(i);
-					if (block == null) {
-						break;
-					}
-
-					try {
-						synchronizer.callProtocolEvent(new UpdateBlockEvent(chunk, block.getFloorX(), block.getFloorY(), block.getFloorZ()));
-					} catch (Exception e) {
-						Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update to " + player.getName());
-					}
-				}
-			} else {
-				synchronizer.callProtocolEvent(new ChunkSendEvent(chunk));
-			}
-		}
-	}
-
 	private void processChunkUpdatedEvent(SpoutChunk chunk) {
 		/* If no listeners, quit */
 		if (ChunkUpdatedEvent.getHandlerList().getRegisteredListeners().length == 0) {
@@ -838,16 +817,15 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@Override
 	public void preSnapshotRun() {
 		entityManager.preSnapshotRun();
+		if (Spout.getPlatform() == Platform.SERVER) {
+			entityManager.syncEntities();
+		}
 
+		// TODO: should this block be moved somewhere else
 		SpoutChunk spoutChunk;
-
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 			if (spoutChunk.isDirty()) {
 				if (Spout.getPlatform() == Platform.SERVER) {
-					for (Player entity : spoutChunk.getObservingPlayers()) {
-						syncChunkToPlayer(spoutChunk, entity);
-					}
-
 					processChunkUpdatedEvent(spoutChunk);
 
 					spoutChunk.resetDirtyArrays();
@@ -872,7 +850,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 						if (Spout.getPlatform() == Platform.SERVER) {
 							if (!chunk.getDataMap().getDeltaMap().isEmpty()) {
 								for (Player entity : chunk.getObservingPlayers()) {
-									entity.getSession().getNetworkSynchronizer().callProtocolEvent(new ChunkDatatableSendEvent(chunk));
+									entity.getNetwork().callProtocolEvent(new ChunkDatatableSendEvent(chunk));
 								}
 								chunk.getDataMap().resetDelta();
 							}
@@ -880,9 +858,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 					}
 				}
 			}
-		}
-		if (Spout.getPlatform() == Platform.SERVER) {
-			entityManager.syncEntities();
 		}
 	}
 

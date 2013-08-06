@@ -35,13 +35,13 @@ import org.spout.engine.component.entity.MovementValidatorComponent;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.world.SpoutWorld;
 
-import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.ADD;
-import static org.spout.engine.protocol.builtin.message.UpdateEntityMessage.UpdateAction.TRANSFORM;
+import static org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction.ADD;
+import static org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction.TRANSFORM;
 
 public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessage> {
 	@Override
 	public void handleClient(ClientSession session, UpdateEntityMessage message) {
-		RepositionManager rmInverse = session.getNetworkSynchronizer().getRepositionManager().getInverse();
+		RepositionManager rmInverse = session.getPlayer().getNetwork().getRepositionManager().getInverse();
 
 		// Add is a special case because the player is already spawned
 		if (message.getAction() == ADD) {
@@ -74,7 +74,7 @@ public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessa
 
 	@Override
 	public void handleServer(ServerSession session, UpdateEntityMessage message) {
-		RepositionManager rmInverse = session.getNetworkSynchronizer().getRepositionManager().getInverse();
+		RepositionManager rmInverse = session.getPlayer().getNetwork().getRepositionManager().getInverse();
 
 		if (message.getAction() == TRANSFORM) {
 			if (message.getEntityId() == session.getPlayer().getId()) {

@@ -24,23 +24,12 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.protocol;
+package org.spout.api.protocol.replayable;
 
-import java.util.Collections;
-import java.util.Set;
+public class ReplayableException extends RuntimeException {
+	private static final long serialVersionUID = 13424275234247532L;
 
-import org.spout.api.geo.cuboid.Chunk;
-
-/**
- * An implementation of ServerNetworkSynchronizer that doesn't do anything used for when a ServerNetworkSynchronizer has not been set
- */
-public class ServerNullNetworkSynchronizer extends ServerNetworkSynchronizer {
-	public ServerNullNetworkSynchronizer(Session session) {
-		super(session, 0);
-	}
-
-	@Override
-	public Set<Chunk> getActiveChunks() {
-		return Collections.EMPTY_SET;
+	public ReplayableException(String message) {
+		super(message);
 	}
 }

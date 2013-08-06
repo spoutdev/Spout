@@ -28,34 +28,60 @@ package org.spout.api.protocol.event;
 
 import org.spout.api.event.HandlerList;
 import org.spout.api.event.ProtocolEvent;
-import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.protocol.reposition.RepositionManager;
 
-public class UpdateBlockEvent extends ProtocolEvent {
+public class EntityUpdateEvent extends ProtocolEvent {
 	private static final HandlerList handlers = new HandlerList();
-	private final Chunk chunk;
-	private final int x, y, z;
+	private final int entityId;
+	private final Transform transform;
+	private final UpdateAction action;
+	private final RepositionManager rm;
 
-	public UpdateBlockEvent(Chunk chunk, int x, int y, int z) {
-		this.chunk = chunk;
-		this.x = x;
-		this.y = y;
-		this.z = z;
+	public EntityUpdateEvent(int entityId, Transform transform, UpdateAction action, RepositionManager rm) {
+		this.entityId = entityId;
+		this.transform = transform;
+		this.action = action;
+		this.rm = rm;
 	}
 
-	public Chunk getChunk() {
-		return chunk;
+	public int getEntityId() {
+		return entityId;
 	}
 
-	public int getX() {
-		return x;
+	public Transform getTransform() {
+		return transform;
 	}
 
-	public int getY() {
-		return y;
+	public UpdateAction getAction() {
+		return action;
 	}
 
-	public int getZ() {
-		return z;
+	public RepositionManager getRepositionManager() {
+		return rm;
+	}
+
+	public enum UpdateAction {
+		// TODO; protocol - use UpdatAction.POSITION?
+		/**
+		 * Signals for the client to spawn a new entity. (S -> C)
+		 */
+		ADD,
+		/**
+		 * Signals for the engine to update the entity's transform. S -> C for all entities. C -> S for players (to verify client movement)
+		 */
+		TRANSFORM,
+		/**
+		 * Signals for the engine to update the entity's position. S -> C for all entities. C -> S for players (to verify client movement)
+		 *
+		 * CURRENTLY UNIMPLEMENTED - deprecated until implemented
+		 */
+		@Deprecated
+		POSITION,
+		/**
+		 * Signals the client to remove the entity. (S -> C)
+		 */
+		REMOVE;
 	}
 
 	@Override

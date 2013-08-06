@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Future;
+import org.spout.api.component.entity.NetworkComponent;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -397,4 +398,6 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public static Point pointToBase(Point p) {
 		return new Point(p.getWorld(), (int) p.getX() & POINT_BASE_MASK, (int) p.getY() & POINT_BASE_MASK, (int) p.getZ() & POINT_BASE_MASK);
 	}
+
+	public abstract void sync(NetworkComponent network);
 }

@@ -32,8 +32,8 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 public abstract class MessageCodec<T extends Message> {
 	private final Class<T> clazz;
-	private int opcode;
 	private boolean dynamic;
+	private int opcode;
 
 	public MessageCodec(Class<T> clazz, int opcode) {
 		this.clazz = clazz;

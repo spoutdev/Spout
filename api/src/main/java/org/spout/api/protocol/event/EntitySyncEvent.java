@@ -24,43 +24,55 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.protocol;
-
-import java.util.List;
+package org.spout.api.protocol.event;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.event.HandlerList;
+import org.spout.api.event.ProtocolEvent;
+import org.spout.api.event.entity.EntityEvent;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.protocol.reposition.RepositionManager;
 
-/**
- * A class that generates messages associated with entities
- */
-public interface EntityProtocol {
-	/**
-	 * Gets the messages to spawn the entity. The entity should spawn at the location at the last snapshot
-	 *
-	 * @param entity the entity
-	 * @param em the reposition manager
-	 * @return messages to send
-	 */
-	public List<Message> getSpawnMessages(Entity entity, RepositionManager rm);
+public class EntitySyncEvent extends ProtocolEvent implements EntityEvent {
+	private static final HandlerList handlers = new HandlerList();
+	private final Entity entity;
+	private final Transform transform;
+	private final boolean add, sync, remove;
 
-	/**
-	 * Gets the messages to destroy the entity.
-	 *
-	 * @param entity the entity
-	 * @return messages to send
-	 */
-	public List<Message> getDestroyMessages(Entity entity);
+	public EntitySyncEvent(final Entity entity, final Transform transform, final boolean add, final boolean sync, final boolean remove) {
+		this.entity = entity;
+		this.transform = transform;
+		this.add = add;
+		this.sync = sync;
+		this.remove = remove;
+	}
 
-	/**
-	 * Gets the messages to update the entity. This should move the entity from its snapshot position to its live position.
-	 *
-	 * @param entity the entity
-	 * @param liveTransform the latest transform for the entity
-	 * @param em the reposition manager
-	 * @param force true to send an absolute update even if no update is required
-	 * @return messages to send
-	 */
-	public List<Message> getUpdateMessages(Entity entity, Transform liveTransform, RepositionManager rm, boolean force);
+	@Override
+	public Entity getEntity() {
+		return entity;
+	}
+
+	public Transform getTransform() {
+		return transform.copy();
+	}
+
+	public boolean shouldAdd() {
+		return add;
+	}
+
+	public boolean shouldSync() {
+		return sync;
+	}
+
+	public boolean shouldRemove() {
+		return remove;
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

@@ -26,7 +26,6 @@
  */
 package org.spout.engine.entity;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -40,6 +39,7 @@ import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.component.Component;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
@@ -55,13 +55,10 @@ import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Locale;
 import org.spout.api.protocol.Message;
-import org.spout.api.protocol.NetworkSynchronizer;
-import org.spout.api.protocol.ServerNetworkSynchronizer;
+import org.spout.api.protocol.Session;
 import org.spout.api.util.access.BanType;
 import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.thread.annotation.DelayedWrite;
@@ -76,39 +73,42 @@ import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutServerWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
-	private final AtomicReference<SpoutSession<?>> sessionLive = new AtomicReference<>();
-	private SpoutSession<?> session;
-	private final String name;
 	private final AtomicReference<String> displayName = new AtomicReference<>();
-	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
+	private final AtomicBoolean onlineLive = new AtomicBoolean(true);
+	private final String name;
 	private boolean online;
 	private final int hashcode;
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 	private List<Entity> hiddenEntities = new ConcurrentList<>();
 
-	public SpoutPlayer(Engine engine, String name) {
-		this(engine, name, null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
-	}
-
-	public SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance) {
-		this(engine, name, transform, viewDistance, null, true, (byte[]) null, (Class<? extends Component>[]) null);
-	}
-
-	protected SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
-		this(engine, name, transform, viewDistance, uid, load, (byte[]) null, components);
-		this.getData().putAll(dataMap);
-	}
-
-	public SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
-		super(engine, transform, viewDistance, uid, load, dataMap, components);
-		this.name = name;
-		displayName.set(name);
-		hashcode = name.hashCode();
-		this.setObserver(true);
+	public SpoutPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, SpoutPlayerSnapshot snapshot) {
+		super(engine, snapshot);
+		this.network = add(network);
+		this.name = snapshot.getName();
+		this.displayName.set(name);
+		this.hashcode = name.hashCode();
+		this.online = true;
 		if (Spout.getPlatform() == Platform.SERVER) {
 			add(MovementValidatorComponent.class);
 		}
+		copySnapshot();
+	}
+
+	public SpoutPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, String name, Transform transform) {
+		this(engine, network, name, transform, null, (byte[]) null, (Class<? extends Component>[]) null);
+	}
+
+	public SpoutPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, String name, Transform transform, UUID uid, byte[] dataMap, Class<? extends Component>... components) {
+		super(engine, transform, uid, dataMap, components);
+		this.network = add(network);
+		this.name = name;
+		this.displayName.set(name);
+		this.hashcode = name.hashCode();
+		if (Spout.getPlatform() == Platform.SERVER) {
+			add(MovementValidatorComponent.class);
+		}
+		copySnapshot();
 	}
 
 	@Override
@@ -131,27 +131,12 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	@SnapshotRead
-	public SpoutSession<?> getSession() {
-		return session;
-	}
-
-	@Override
-	@SnapshotRead
 	public boolean isOnline() {
 		return online;
 	}
 
 	public boolean isOnlineLive() {
 		return onlineLive.get();
-	}
-
-	@Override
-	@SnapshotRead
-	public InetAddress getAddress() {
-		if (session != null && session.getAddress() != null) {
-			return session.getAddress().getAddress();
-		}
-		return null;
 	}
 
 	@DelayedWrite
@@ -165,26 +150,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		return true;
 	}
 
-	@DelayedWrite
-	public boolean connect(SpoutSession<?> session, Transform newTransform) {
-		if (!onlineLive.compareAndSet(false, true)) {
-			// player was already online
-			return false;
-		}
-		//Disallow null transforms or transforms with null worlds
-		if (newTransform == null || newTransform.getPosition().getWorld() == null) {
-			return false;
-		}
-		((SpoutPhysicsComponent) getPhysics()).setTransform(newTransform, false);
-		if (getEngine().getPlatform() == Platform.SERVER) {
-			setupInitialChunk(LoadOption.LOAD_GEN);
-		}
-		sessionLive.set(session);
-		session.setPlayer(this);
-		copySnapshot();
-		return true;
-	}
-
 	@Override
 	public void sendMessage(String message) {
 		sendCommand("say", message.split(" "));
@@ -192,8 +157,9 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void sendCommand(String command, String... args) {
-		Command cmd = Spout.getCommandManager().getCommand(command, false);
-		Message msg = session.getProtocol().getCommandMessage(cmd, new CommandArguments(cmd.getName(), args));
+		final Command cmd = Spout.getCommandManager().getCommand(command, false);
+		final Session session = getNetwork().getSession();
+		final Message msg = session.getProtocol().getCommandMessage(cmd, new CommandArguments(cmd.getName(), args));
 		if (msg == null) {
 			return;
 		}
@@ -233,7 +199,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public void copySnapshot() {
 		super.copySnapshot();
-		session = sessionLive.get();
 		online = onlineLive.get();
 	}
 
@@ -311,7 +276,8 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		}
 		//If we are stopping, it's not really a kick (it's a friendly disconnect)
 		//If we aren't stopping, it really is a kick
-		session.disconnect(!stop, stop, reason);
+
+		((SpoutSession) getNetwork().getSession()).disconnect(!stop, stop, reason);
 	}
 
 	@Override
@@ -330,12 +296,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			throw new IllegalStateException("Banning is only available in server mode.");
 		}
 		((Server) getEngine()).getAccessManager().ban(BanType.PLAYER, name, kick, reason);
-	}
-
-	@Override
-	public NetworkSynchronizer getNetworkSynchronizer() {
-		SpoutSession<?> session = this.session;
-		return session == null ? null : session.getNetworkSynchronizer();
 	}
 
 	@Override
@@ -363,39 +323,26 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	@Override
-	public void teleport(Point loc) {
-		getPhysics().setPosition(loc);
-	}
-
-	@Override
-	public void teleport(Transform transform) {
-		getPhysics().setTransform(transform);
-	}
-
-	@Override
 	public void finalizeRun() {
 		if (getEngine().getPlatform() != Platform.CLIENT && !this.isOnlineLive()) {
 			remove();
 		}
-		super.finalizeRun();
 
 		if (isRemoved()) {
 			if (getEngine().getPlatform() == Platform.SERVER) {
-				((ServerNetworkSynchronizer) getNetworkSynchronizer()).onRemoved();
 				((SpoutServer) getEngine()).removePlayer(this);
 			}
 			// TODO stop client?
-			sessionLive.set(null);
-		} else if (this.isOnline()) {
-			this.getNetworkSynchronizer().finalizeTick();
+			return;
 		}
+		super.finalizeRun();
 	}
 
 	@Override
 	public void preSnapshotRun() {
 		super.preSnapshotRun();
 		if (this.isOnline()) {
-			this.getNetworkSynchronizer().preSnapshot();
+			this.getNetwork().preSnapshot(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
 		}
 	}
 
@@ -423,5 +370,10 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public PlayerSnapshot snapshot() {
 		return new SpoutPlayerSnapshot(this);
+	}
+
+	@Override
+	public PlayerNetworkComponent getNetwork() {
+		return (PlayerNetworkComponent) network;
 	}
 }

@@ -36,6 +36,7 @@ import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.component.Component;
+import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.geo.LoadOption;
@@ -62,13 +63,13 @@ import org.spout.nbt.Tag;
 import org.spout.nbt.util.NBTMapper;
 
 public class EntityFiles {
-	public static final byte ENTITY_VERSION = 3;
+	public static final byte ENTITY_VERSION = 4;
 
 	@SuppressWarnings ("rawtypes")
-	protected static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
+	protected static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntitySnapshot> loadedEntities) {
 		if (r != null && map != null) {
 			for (Tag tag : map) {
-				SpoutEntity e = loadEntity(r, (CompoundTag) tag);
+				SpoutEntitySnapshot e = loadEntity(r, (CompoundTag) tag);
 				if (e != null) {
 					loadedEntities.add(e);
 				}
@@ -92,18 +93,18 @@ public class EntityFiles {
 		return tagMap;
 	}
 
-	private static SpoutEntity loadEntity(SpoutRegion r, CompoundTag tag) {
+	private static SpoutEntitySnapshot loadEntity(SpoutRegion r, CompoundTag tag) {
 		return loadEntity(r.getWorld(), tag);
 	}
 
-	protected static SpoutEntity loadEntity(World w, CompoundTag tag) {
+	protected static SpoutEntitySnapshot loadEntity(World w, CompoundTag tag) {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Entities cannot be loaded on the client");
 		}
 		try {
 			SpoutEntitySnapshot snapshot = loadEntityImpl(w, tag, null);
 			if (snapshot != null) {
-				return snapshot.toEntity((SpoutEngine) Spout.getEngine());
+				return snapshot;
 			}
 		} catch (Exception e) {
 			Spout.getLogger().log(Level.SEVERE, "Unable to load entity", e);
@@ -111,10 +112,10 @@ public class EntityFiles {
 		return null;
 	}
 
-	protected static SpoutEntity loadPlayerEntity(CompoundTag tag, String name) {
+	protected static SpoutPlayerSnapshot loadPlayerEntity(CompoundTag tag, String name) {
 		SpoutEntitySnapshot snapshot = loadEntityImpl(null, tag, name);
-		if (snapshot != null) {
-			return snapshot.toEntity((SpoutEngine) Spout.getEngine());
+		if (snapshot != null && snapshot instanceof SpoutPlayerSnapshot) {
+			return (SpoutPlayerSnapshot) snapshot;
 		}
 		return null;
 	}
@@ -154,6 +155,12 @@ public class EntityFiles {
 					return null;
 				}
 			}
+			if (version <= 3) {
+				map = convertV3V4(tag, map);
+				if (map == null) {
+					return null;
+				}
+			}
 		}
 
 		UUID worldUUID = null;
@@ -189,12 +196,6 @@ public class EntityFiles {
 			return null;
 		}
 
-		int view = SafeCast.toInt(NBTMapper.toTagValue(map.get("view")), 0);
-		Boolean observer = ByteTag.getBooleanValue(map.get("observer"));
-		if (observer == null) {
-			return null;
-		}
-
 		//Setup data
 		Boolean controllerDataExists = ByteTag.getBooleanValue(map.get("controller_data_exists"));
 		if (controllerDataExists == null) {
@@ -219,13 +220,14 @@ public class EntityFiles {
 		List<Class<? extends Component>> types = new ArrayList<>(components.getValue().size());
 		for (StringTag component : components.getValue()) {
 			try {
+				Class<? extends Component> clazz;
 				try {
-					Class<? extends Component> clazz = (Class<? extends Component>) PluginClassLoader.findPluginClass(component.getValue());
-					types.add(clazz);
+					clazz = (Class<? extends Component>) PluginClassLoader.findPluginClass(component.getValue());
 				} catch (ClassNotFoundException e) {
-					Class<? extends Component> clazz = (Class<? extends Component>) Class.forName(component.getValue());
-					types.add(clazz);
+					clazz = (Class<? extends Component>) Class.forName(component.getValue());
 				}
+				if (NetworkComponent.class.isAssignableFrom(clazz)) continue;
+				types.add(clazz);
 			} catch (ClassNotFoundException e) {
 				if (Spout.debugMode()) {
 					Spout.getLogger().log(Level.WARNING, "Unable to find component class " + component.getValue());
@@ -234,9 +236,9 @@ public class EntityFiles {
 		}
 
 		if (!player) {
-			return new SpoutEntitySnapshot(uid, t, worldUUID, view, observer, dataMap, types);
+			return new SpoutEntitySnapshot(uid, t, worldUUID, dataMap, types);
 		} else {
-			return new SpoutPlayerSnapshot(uid, t, worldUUID, view, observer, dataMap, types, name);
+			return new SpoutPlayerSnapshot(uid, t, worldUUID, dataMap, types, name);
 		}
 	}
 
@@ -257,9 +259,6 @@ public class EntityFiles {
 		//Write entity
 		map.put(new TransformTag("position", e.getTransform()));
 		map.put(new UUIDTag("uuid", e.getUID()));
-
-		map.put(new IntTag("view", e.getViewDistance()));
-		map.put(new ByteTag("observer", e.isObserver()));
 
 		//Serialize data
 		if (!e.getDataMap().isEmpty()) {
@@ -338,6 +337,17 @@ public class EntityFiles {
 
 		map.put(new UUIDTag("world_uuid", world.getUID()));
 
+		return map;
+	}
+
+	/**
+	 * Version 3 to version 4 conversion
+	 *
+	 * Remove observer code
+	 */
+	private static CompoundMap convertV3V4(CompoundTag tag, CompoundMap map) {
+		map.remove("view");
+		map.remove("observer");
 		return map;
 	}
 }

@@ -35,6 +35,7 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.spout.api.Client;
 
 import org.spout.api.Engine;
 import org.spout.api.Platform;
@@ -52,7 +53,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	/**
 	 * The associated session
 	 */
-	private AtomicReference<Session> session = new AtomicReference<>(null);
+	private final AtomicReference<Session> session = new AtomicReference<>(null);
 	/**
 	 * Indicates if it is an upstream channel pipeline
 	 */
@@ -66,11 +67,12 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	 * @param engine The engine.
 	 * @param upstream If the connections are going to the server
 	 */
-	public CommonHandler(Engine engine, CommonEncoder encoder, CommonDecoder decoder) {
-		this.engine = engine;
+	public CommonHandler(CommonEncoder encoder, CommonDecoder decoder) {
 		if (Spout.getPlatform() == Platform.CLIENT) {
+			this.engine = (Client) Spout.getEngine();
 			this.onClient = true;
 		} else {
+			this.engine = (Server) Spout.getEngine();
 			this.onClient = false;
 		}
 		this.encoder = encoder;
@@ -79,10 +81,8 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 
 	@Override
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
-		Channel c = e.getChannel();
-
+		final Channel c = e.getChannel();
 		// ctx.getPipeline().addBefore("2", "messagePrinter", new MessagePrintingHandler());
-
 		if (onClient) {
 			// Client
 			engine.getLogger().info("Upstream channel connected: " + c + ".");

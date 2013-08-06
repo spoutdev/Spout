@@ -40,7 +40,7 @@ import org.spout.engine.protocol.builtin.message.ReadyMessage;
 public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 	@Override
 	public void handleServer(ServerSession session, LoginMessage message) {
-		PlayerConnectEvent e = session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName(), (SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE)));
+		PlayerConnectEvent e = session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName(), (SpoutConfiguration.VIEW_DISTANCE.getInt())));
 		if (!e.isCancelled() && session.hasPlayer()) {
 			session.send(true, new LoginMessage("", session.getPlayer().getId()));
 		}
@@ -48,7 +48,6 @@ public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 
 	@Override
 	public void handleClient(ClientSession session, LoginMessage message) {
-		System.out.println("Player ID Received: " + message.getExtraInt());
 		session.setState(Session.State.GAME);
 		session.getEngine().getEventManager().callEvent(new ClientPlayerConnectedEvent(session, message.getExtraInt()));
 		session.send(true, ReadyMessage.INSTANCE);

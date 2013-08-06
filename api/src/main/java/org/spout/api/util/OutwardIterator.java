@@ -36,6 +36,7 @@ import org.spout.api.math.IntVector3;
  * the iterator passes through all integer coordinates.
  */
 public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> {
+	private static final long serialVersionUID = 1L;
 	private final IntVector3 center;
 	private final IntVector3 step;
 	private int distance;

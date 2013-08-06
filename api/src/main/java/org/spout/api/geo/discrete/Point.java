@@ -37,6 +37,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
 
@@ -211,6 +212,10 @@ public class Point extends Vector3 implements WorldSource {
 
 	public Chunk getChunk(LoadOption loadopt) {
 		return world.getChunk(getChunkX(), getChunkY(), getChunkZ(), loadopt);
+	}
+
+	public Region getRegion(LoadOption loadopt) {
+		return world.getRegionFromChunk(getChunkX(), getChunkY(), getChunkZ(), loadopt);
 	}
 
 	/**

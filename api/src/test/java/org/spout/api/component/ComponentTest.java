@@ -28,7 +28,6 @@ package org.spout.api.component;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,7 +71,6 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.IntVector2;
-import org.spout.api.math.IntVector3;
 import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TaskManager;
@@ -223,28 +221,6 @@ public final class ComponentTest {
 		}
 
 		@Override
-		public void setViewDistance(int distance) {
-		}
-
-		@Override
-		public int getViewDistance() {
-			return 0;
-		}
-
-		@Override
-		public void setObserver(boolean obs) {
-		}
-
-		@Override
-		public void setObserver(Iterator<IntVector3> custom) {
-		}
-
-		@Override
-		public boolean isObserver() {
-			return false;
-		}
-
-		@Override
 		public Chunk getChunk() {
 			return null;
 		}
@@ -252,10 +228,6 @@ public final class ComponentTest {
 		@Override
 		public Region getRegion() {
 			return null;
-		}
-
-		@Override
-		public void interact(EntityInteractEvent<?> event) {
 		}
 
 		@Override
@@ -271,6 +243,10 @@ public final class ComponentTest {
 		@Override
 		public EntitySnapshot snapshot() {
 			return null;
+		}
+
+		@Override
+		public void interact(EntityInteractEvent<?> event) {
 		}
 
 		@Override

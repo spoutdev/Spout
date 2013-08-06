@@ -104,7 +104,7 @@ public class ManagedHashMap extends SerializableHashMap implements ManagedMap {
 			toString.append(e.getValue());
 			toString.append("), ");
 		}
-		toString.delete(toString.length() - 3, toString.length());
+		toString.delete(toString.length() - 2, toString.length());
 		toString.append("}");
 		return toString.toString();
 	}

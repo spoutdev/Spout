@@ -35,7 +35,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
-import org.spout.api.component.entity.NetworkComponent;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.event.object.EventableListener;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
@@ -44,10 +44,11 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.ServerSession;
-import org.spout.api.protocol.replayable.ReplayableError;
+import org.spout.api.protocol.replayable.ReplayableException;
 import org.spout.api.util.SyncedMapEvent;
 import org.spout.api.util.SyncedMapRegistry;
 import org.spout.api.util.SyncedStringMap;
+import org.spout.engine.component.entity.SpoutPlayerNetworkComponent;
 import org.spout.engine.protocol.builtin.codec.BlockUpdateCodec;
 import org.spout.engine.protocol.builtin.codec.ChunkDataCodec;
 import org.spout.engine.protocol.builtin.codec.ChunkDatatableCodec;
@@ -82,7 +83,6 @@ import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
  * The protocol used in SpoutClient
  */
 public class SpoutProtocol extends Protocol {
-	public static final int ENTITY_PROTOCOL_ID = NetworkComponent.getProtocolId(SpoutProtocol.class.getName());
 	public static final SpoutProtocol INSTANCE = new SpoutProtocol();
 	public static final DefaultedKey<Integer> PLAYER_ENTITY_ID = new DefaultedKeyImpl<>("playerEntityId", -1);
 	public static final int PROTOCOL_VERSION = 0;
@@ -108,6 +108,7 @@ public class SpoutProtocol extends Protocol {
 	@Override
 	public MessageCodec<?> readHeader(ChannelBuffer buf) {
 		int id = buf.readUnsignedShort();
+		//if (Spout.debugMode()) System.out.println("Reading codec header: " + id);
 		int length = buf.readInt();
 		MessageCodec<?> codec = getCodecLookupService().find(id);
 		if (codec == null) {
@@ -115,7 +116,7 @@ public class SpoutProtocol extends Protocol {
 			buf.skipBytes(length);
 			return null;
 		} else if (buf.readableBytes() < length) {
-			throw new ReplayableError("There was not enough information received for a packet with codec id of " + id + ". This may just be a frame issue.");
+			throw new ReplayableException("There was not enough information received for a packet with codec id of " + id + ". This may just be a frame issue.");
 		} else {
 			return codec;
 		}
@@ -125,6 +126,7 @@ public class SpoutProtocol extends Protocol {
 	public ChannelBuffer writeHeader(MessageCodec<?> codec, ChannelBuffer data) {
 		ChannelBuffer buf = ChannelBuffers.buffer(6);
 		buf.writeShort(codec.getOpcode());
+		//if (Spout.debugMode()) System.out.println("Writing codec header: " + codec.getOpcode());
 		buf.writeInt(data.writerIndex());
 		return buf;
 	}
@@ -149,8 +151,17 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	@Override
+	public Class<? extends PlayerNetworkComponent> getServerNetworkComponent(ServerSession session) {
+		return SpoutPlayerNetworkComponent.class;
+	}
+
+	@Override
+	public Class<? extends PlayerNetworkComponent> getClientNetworkComponent(ClientSession session) {
+		return SpoutPlayerNetworkComponent.class;
+	}
+
+	@Override
 	public void initializeServerSession(final ServerSession session) {
-		session.setNetworkSynchronizer(new SpoutServerNetworkSynchronizer(session));
 		//TODO Ensure this is right, very important
 		SyncedMapRegistry.getRegistrationMap().registerListener(new EventableListener<SyncedMapEvent>() {
 			@Override
@@ -166,6 +177,5 @@ public class SpoutProtocol extends Protocol {
 
 	@Override
 	public void initializeClientSession(final ClientSession session) {
-		session.setNetworkSynchronizer(new SpoutClientNetworkSynchronizer(session));
 	}
 }
