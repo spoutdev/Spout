@@ -44,6 +44,13 @@ public final class SpoutCollisionListener extends GhostCollisionListener {
 	public boolean onCollide(CollisionBody body1, CollisionBody body2, ContactInfo contactInfo) {
 		final Object user1 = body1.getUserPointer();
 		final Object user2 = body2.getUserPointer();
+
+		//Step 1 - Only do callbacks if entities' involved haven't been removed
+		if ((user1 instanceof Entity && ((Entity) user1).isRemoved()) || (user2 instanceof Entity && ((Entity) user2).isRemoved())) {
+			return super.onCollide(body1, body2, contactInfo);
+		}
+
+		//Step 2 - Events
 		final SpoutContactInfo info = new SpoutContactInfo(contactInfo);
 
 		EntityCollideEvent event = null;
@@ -65,6 +72,7 @@ public final class SpoutCollisionListener extends GhostCollisionListener {
 			return true;
 		}
 
+		//Step 3 - Callbacks
 		if (user1 instanceof Entity) {
 			for (Component component : ((Entity) user1).values()) {
 				if (component instanceof EntityComponent) {
@@ -80,6 +88,9 @@ public final class SpoutCollisionListener extends GhostCollisionListener {
 				}
 			}
 		}
+
+		//Step 4 - Groups (TODO: Implement and make step 2 this)
+
 		//TODO Support collision groups
 		return super.onCollide(body1, body2, contactInfo);
 	}

@@ -48,7 +48,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 	 * @param isGhost Is this entity a detector "ghost" object
 	 * @param isMobile Is this entity mobile (will it ever move)
 	 * @return This component, for chaining
-	 * @throws IllegalArgumentException If mass is < 1f or shape is null
+	 * @throws IllegalArgumentException If mass is < 0f or shape is null
 	 */
 	public abstract PhysicsComponent activate(final float mass, final CollisionShape shape, final boolean isGhost, final boolean isMobile);
 
@@ -316,7 +316,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 	 *
 	 * @param mass The new mass
 	 * @return This component, for chaining
-	 * @throws IllegalArgumentException If mass provided is < 1f
+	 * @throws IllegalArgumentException If mass provided is < 0f
 	 */
 	public abstract PhysicsComponent setMass(final float mass);
 

@@ -80,7 +80,6 @@ import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.input.SpoutInputConfiguration;
-import org.spout.engine.listener.SpoutListener;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
@@ -203,8 +202,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			AnnotatedCommandExecutorFactory.create(new AnnotatedCommandExecutorTest.RootExecutor());
 			AnnotatedCommandExecutorFactory.create(new AnnotatedCommandExecutorTest.ChildExecutor(), cmdManager.getCommand("root"));
 		}
-
-		getEventManager().registerEvents(new SpoutListener(), this);
 
 		// Start loading plugins
 		setupBindings(config);

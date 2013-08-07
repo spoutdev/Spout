@@ -76,9 +76,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		this.mass = mass;
 		this.shape = shape;
 		activated = true;
-		if (getOwner().isSpawned()) {
-			activate((SpoutRegion) getOwner().getRegion());
-		}
+		activate((SpoutRegion) getOwner().getRegion());
 
 		return this;
 	}
@@ -275,8 +273,8 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		if (!(body instanceof MobileRigidBody)) {
 			throw new IllegalStateException("Only mobile entities can change mass");
 		}
-		if (mass < 1f) {
-			throw new IllegalArgumentException("Cannot set a mass less than 1f");
+		if (mass < 0f) {
+			throw new IllegalArgumentException("Cannot set a mass less than 0f");
 		}
 		this.mass = mass;
 		((MobileRigidBody) body).setMass(mass);
@@ -386,10 +384,6 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	 * Called after the simulation was polled for an update. <p> This updates Spout's live with the transform of the body. The render transform is updated with interpolation from the body </p>
 	 */
 	public void onPostPhysicsTick(float dt) {
-		if (body != null) {
-			setPosition(new Point(ReactConverter.toSpoutVector3(body.getTransform().getPosition()), getWorld()));
-			//TODO: Set rotation from physics tick on live?
-		}
 		interpolateAndSetRender(dt);
 		sync();
 	}
@@ -399,36 +393,39 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	 */
 	public void interpolateAndSetRender(float dt) {
 		//Only interpolate if same world
+		if (render.isEmpty()) {
+			render.set(snapshot);
+		}
 		if (render.getPosition().getWorld() != getOwner().getWorld()) {
 			return;
 		}
 
-		//Step 2 - Calculate step, grab live values
-		final float step = dt * (100f / 20f);
-
-		final Point position = live.getPosition();
-		final Quaternion rotation = live.getRotation();
-		final Vector3 scale = live.getScale();
-
-		//Step 3 - Interpolate position, rotation, and scale
-		//Spout Interpolation (Position)
+		//TODO: Untangle Camera position/rotation from render transform
+		//Spout Interpolation
 		if (body == null) {
+			final float step = dt * (60f / 20f);
+
+			final Point position = live.getPosition();
+			final Quaternion rotation = live.getRotation();
+			final Vector3 scale = live.getScale();
+
 			render.setPosition(render.getPosition().multiply(1 - step).add(position.multiply(dt)));
+
+			final Quaternion renderRot = render.getRotation();
+			render.setRotation(new Quaternion(renderRot.getX() * (1 - step) + rotation.getX() * step,
+					renderRot.getY() * (1 - step) + rotation.getY() * step,
+					renderRot.getZ() * (1 - step) + rotation.getZ() * step,
+					renderRot.getW() * (1 - step) + rotation.getW() * step, false)
+			);
+
+			render.setScale(render.getScale().multiply(1 - step).add(scale.multiply(step)));
 		} else {
-			render.setPosition(new Point(ReactConverter.toSpoutVector3(body.getInterpolatedTransform().getPosition()), getWorld()));
+			render.set(ReactConverter.toSpoutTransform(body.getTransform(), live.getPosition().getWorld(), live.getScale()));
 		}
-		final Quaternion renderRot = render.getRotation();
-		render.setRotation(new Quaternion(renderRot.getX() * (1 - step) + rotation.getX() * step,
-				renderRot.getY() * (1 - step) + rotation.getY() * step,
-				renderRot.getZ() * (1 - step) + rotation.getZ() * step,
-				renderRot.getW() * (1 - step) + rotation.getW() * step, false)
-		);
-		render.setScale(render.getScale().multiply(1 - step).add(scale.multiply(step)));
 	}
 
 	public void copySnapshot() {
 		snapshot.set(live);
-		render.set(snapshot);
 	}
 
 	private void sync() {
