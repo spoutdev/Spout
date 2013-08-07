@@ -43,7 +43,6 @@ public class ChunkDatatableMessageHandler extends MessageHandler<ChunkDatatableM
 		}
 		SpoutChunk c = (SpoutChunk) message.getChunk();
 		try {
-			System.out.println("Received chunk datatable message for " + c.toString());
 			switch (message.getType()) {
 				case REPLACE:
 					c.getDataMap().deserialize(message.getCompressedData(), true);

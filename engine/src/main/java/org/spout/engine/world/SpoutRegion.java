@@ -711,7 +711,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 		for (final Entity entity : getAll()) {
 			((SpoutPhysicsComponent) entity.getPhysics()).onPrePhysicsTick();
 		}
-		simulation.update();
+		if (SpoutConfiguration.PHYSICS.getBoolean()) {
+			simulation.update();
+		}
 		for (final Entity entity : getAll()) {
 			((SpoutPhysicsComponent) entity.getPhysics()).onPostPhysicsTick(dt);
 		}

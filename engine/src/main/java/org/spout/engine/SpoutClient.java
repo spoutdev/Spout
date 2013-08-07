@@ -85,7 +85,6 @@ import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.input.SpoutInputManager;
-import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
@@ -158,8 +157,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		super.start();
-
-		getEventManager().registerEvents(new SpoutClientListener(this), this);
 
 		// Register commands
 		AnnotatedCommandExecutorFactory.create(new InputCommands(this));
