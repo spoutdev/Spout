@@ -36,8 +36,8 @@ import java.util.zip.Inflater;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.spout.api.Spout;
 
+import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.util.ChannelBufferUtils;
@@ -92,7 +92,6 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				uncompressedData[index++] = (byte) (s >> 8);
 				System.arraycopy(e.getValue(), 0, uncompressedData, index, e.getValue().length);
 				index += e.getValue().length;
-				
 			}
 			if (hasBiomes) {
 				System.arraycopy(message.getBiomeData(), 0, uncompressedData, index, message.getBiomeData().length);
@@ -173,13 +172,12 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				System.arraycopy(uncompressedData, index, data, 0, data.length);
 				index += data.length;
 				light.put(lightId, data);
-				
 			}
 			if (hasBiomes) {
 				System.arraycopy(uncompressedData, index, biomeData, 0, biomeData.length);
 				index += biomeData.length;
 			}
-			
+
 			if (index != uncompressedData.length) {
 				String message = "Incorrect parse size - actual:" + index + " expected: " + uncompressedData.length;
 				Spout.getLogger().severe(message);

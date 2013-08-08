@@ -34,7 +34,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 
 import org.spout.api.Client;
 import org.spout.api.Platform;
@@ -54,10 +53,8 @@ import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.ClientSession;
-import org.spout.api.protocol.Message;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.event.BlockUpdateEvent;
 import org.spout.api.protocol.event.ChunkFreeEvent;
 import org.spout.api.protocol.event.ChunkSendEvent;
 import org.spout.api.protocol.event.EntitySyncEvent;
@@ -68,8 +65,7 @@ import org.spout.api.util.SyncedStringMap;
 import org.spout.api.util.set.concurrent.TSyncIntHashSet;
 
 /**
- * The networking behind {@link org.spout.api.entity.Player}s. This component holds the {@link Session} which is the connection
- * the Player has to the server.
+ * The networking behind {@link org.spout.api.entity.Player}s. This component holds the {@link Session} which is the connection the Player has to the server.
  */
 public class PlayerNetworkComponent extends NetworkComponent implements Listener {
 	private static final SyncedStringMap protocolMap = SyncedStringMap.create(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
@@ -139,7 +135,7 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 
 	/**
 	 * Gets the {@link InetAddress} of the session
-	 * 
+	 *
 	 * @return The adress of the session
 	 */
 	public final InetAddress getAddress() {
@@ -200,8 +196,7 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	/**
 	 * Called when the owner is set to be synchronized to other NetworkComponents.
 	 *
-	 * TODO: Common logic between Spout and a plugin needing to implement this component?
-	 * TODO: Add sequence checks to the PhysicsComponent to prevent updates to live?
+	 * TODO: Common logic between Spout and a plugin needing to implement this component? TODO: Add sequence checks to the PhysicsComponent to prevent updates to live?
 	 *
 	 * @param live A copy of the owner's live transform state
 	 */
@@ -288,11 +283,13 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 				// Then regular chunks
 				sendRegularChunks();
 			}
-			
+
 			// Check all active old chunks for updates
 			for (Point p : prevActive) {
 				Chunk chunk = p.getChunk(LoadOption.LOAD_ONLY);
-				if (chunk == null) continue;
+				if (chunk == null) {
+					continue;
+				}
 				chunk.sync(this);
 			}
 		}
@@ -321,8 +318,10 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 		Iterator<Point> i = priorityChunkSendQueue.iterator();
 		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
 			Point p = i.next();
-			if (attemptSendChunk(p)) i.remove();
-		}	
+			if (attemptSendChunk(p)) {
+				i.remove();
+			}
+		}
 	}
 
 	private void sendPositionUpdates(Transform live) {
@@ -341,7 +340,9 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 		Iterator<Point> i = chunkSendQueue.iterator();
 		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && Spout.getScheduler().getRemainingTickTime() > 0) {
 			Point p = i.next();
-			if (attemptSendChunk(p)) i.remove();
+			if (attemptSendChunk(p)) {
+				i.remove();
+			}
 		}
 	}
 
@@ -446,7 +447,6 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 
 	/**
 	 * Checks for chunk updates that might have from movement.
-	 *
 	 */
 	private void checkChunkUpdates(Point currentPosition) {
 		// Recalculating these

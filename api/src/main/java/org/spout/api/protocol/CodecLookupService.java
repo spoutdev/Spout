@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.tuple.Pair;
+
 import org.spout.api.Spout;
 import org.spout.api.event.object.EventableListener;
 import org.spout.api.util.SyncedMapEvent;
@@ -66,8 +67,7 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 	private final ClassLoader loader;
 
 	/**
-	 * The {@link CodecLookupService} stores the codecs available in the protocol.
-	 * Codecs can be found using either the class of the message they represent or their message's opcode.
+	 * The {@link CodecLookupService} stores the codecs available in the protocol. Codecs can be found using either the class of the message they represent or their message's opcode.
 	 *
 	 * @param loader The class loader for the codecs
 	 * @param dynamicPacketMap - The dynamic opcode map
@@ -82,9 +82,8 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 	}
 
 	/**
-	 * Binds a codec by adding entries for it to the tables.
-	 * TODO: if a dynamic opcode is registered then a static opcode tries to register, reassign dynamic.
-	 * TODO: if a static opcode is registered then a static opcode tries to register, throw exception
+	 * Binds a codec by adding entries for it to the tables. TODO: if a dynamic opcode is registered then a static opcode tries to register, reassign dynamic. TODO: if a static opcode is registered then
+	 * a static opcode tries to register, throw exception
 	 *
 	 * @param clazz The codec's class.
 	 * @param <T> The type of message.
@@ -92,7 +91,7 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 	 * @throws InstantiationException if the codec could not be instantiated.
 	 * @throws IllegalAccessException if the codec could not be instantiated due to an access violation.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	protected <T extends Message, C extends MessageCodec<T>> C bind(Class<C> clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		boolean dynamicId = false;
 		Constructor<C> constructor;
@@ -132,8 +131,7 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 	}
 
 	/**
-	 * Registers the provided codec with the lookup service, allowing it
-	 * to be looked up later on in the future.
+	 * Registers the provided codec with the lookup service, allowing it to be looked up later on in the future.
 	 *
 	 * @param <T> The type of message the codec represents
 	 * @param <C> The type of codec
@@ -164,14 +162,13 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 	 * @param <T> The type of message.
 	 * @return The codec, or {@code null} if it could not be found.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public <T extends Message> MessageCodec<T> find(Class<T> clazz) {
 		return (MessageCodec<T>) classTable.get(clazz);
 	}
 
 	/**
-	 * Returns A collection of all the codecs which have been registered
-	 * so far.
+	 * Returns A collection of all the codecs which have been registered so far.
 	 *
 	 * @return Collection of codecs
 	 */
@@ -184,13 +181,13 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 	 *
 	 * @param event The event which was fired
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings ("rawtypes")
 	@Override
 	public void onEvent(SyncedMapEvent event) {
 		switch (event.getAction()) {
 			// TODO: Only reassign opcodes for mis-id'd packets that are already created (w/o calling Class.forName)
 			case SET:
-			// Keep packet registrations around until they're overwritten, so do nothing here anyway
+				// Keep packet registrations around until they're overwritten, so do nothing here anyway
 			case ADD:
 				for (Pair<Integer, String> item : event.getModifiedElements()) {
 					final int id = item.getLeft();
@@ -205,13 +202,13 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 						}
 						throw new IllegalArgumentException("Trying to register a codec where one already exists: " + className);
 					}
- 					try {
+					try {
 						final Class<? extends MessageCodec> clazz = Class.forName(className, true, loader).asSubclass(MessageCodec.class);
 						final Constructor<? extends MessageCodec> constr = clazz.getConstructor(int.class);
 						codec = constr.newInstance(id);
 						register(codec);
 					} catch (ClassCastException | ClassNotFoundException | NoSuchMethodException // Squash everything unless debug mode, since the server is *supposed* to send correct data
-						| IllegalAccessException | InstantiationException | InvocationTargetException e) { // We may want to print errors for missing packets -- could indicate missing plugins
+							| IllegalAccessException | InstantiationException | InvocationTargetException e) { // We may want to print errors for missing packets -- could indicate missing plugins
 						if (Spout.debugMode()) {
 							e.printStackTrace();
 						}

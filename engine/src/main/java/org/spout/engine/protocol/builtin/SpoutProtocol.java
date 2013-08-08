@@ -27,7 +27,6 @@
 package org.spout.engine.protocol.builtin;
 
 import java.net.InetSocketAddress;
-import org.apache.commons.lang3.ArrayUtils;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;

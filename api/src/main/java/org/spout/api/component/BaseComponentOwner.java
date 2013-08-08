@@ -109,7 +109,7 @@ public class BaseComponentOwner implements ComponentOwner {
 
 			try {
 				component = (T) type.newInstance();
-			} catch (	InstantiationException | IllegalAccessException e) {
+			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 

@@ -33,8 +33,8 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.event.entity.AbstractEntityEvent;
 
 /**
- * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can be damaged by the given {@link Reason}. Protection plugins should utilize this event to prevent
- * entities from being allowed to take damage from specific causes.
+ * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can be damaged by the given {@link Reason}. Protection plugins should
+ * utilize this event to prevent entities from being allowed to take damage from specific causes.
  */
 public class EntityCanBeHarmedEvent extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

@@ -77,7 +77,7 @@ public class ByteBufferChannelProcessor extends CommonChannelProcessor {
 		final int toCopy = Math.min(stored(), buf.length);
 		final int toTransfer = Math.min(toCopy, internalBuffer.length - readPointer);
 		int length = toCopy;
-		
+
 		System.arraycopy(internalBuffer, readPointer, buf, 0, toTransfer);
 		readPointer = (readPointer + toTransfer) % internalBuffer.length;
 

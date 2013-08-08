@@ -44,7 +44,7 @@ public class NetworkSendThread {
 	private final AtomicReference<ChannelQueueThread[]> interruptedQueues = new AtomicReference<>();
 	private final AtomicReference<ChannelQueueThread[]> channelQueues = new AtomicReference<>();
 	private final int poolIndex;
-	
+
 	public NetworkSendThread(int poolIndex) {
 		this.poolIndex = poolIndex;
 		channelQueues.set(new ChannelQueueThread[0]);

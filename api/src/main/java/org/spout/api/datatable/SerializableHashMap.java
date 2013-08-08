@@ -489,7 +489,6 @@ public class SerializableHashMap implements SerializableMap {
 	}
 
 	public static class PluginClassResolverObjectInputStream extends ObjectInputStream {
-
 		public PluginClassResolverObjectInputStream(InputStream in) throws IOException {
 			super(in);
 		}
@@ -502,7 +501,6 @@ public class SerializableHashMap implements SerializableMap {
 				return PluginClassLoader.findPluginClass(desc.getName());
 			}
 		}
-
 	}
 
 	@Override

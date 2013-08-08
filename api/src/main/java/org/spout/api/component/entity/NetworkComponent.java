@@ -33,14 +33,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.List;
 import java.util.Set;
-import org.spout.api.ServerOnly;
+import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.ProtocolEvent;
-import org.spout.api.entity.Entity;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -63,18 +62,18 @@ public class NetworkComponent extends EntityComponent {
 	//TODO: Move all observer code to NetworkComponent
 	public final DefaultedKey<Boolean> IS_OBSERVER = new DefaultedKeyImpl<>("IS_OBSERVER", false);
 	/**
-	 * null means use SYNC_DISTANCE and is generated each update; not observing is {@code new OutwardIterator(0, 0, 0)}; custom Iterators can be used for others
-	 * We want default to be null so that when it is default observer, it returns null
+	 * null means use SYNC_DISTANCE and is generated each update; not observing is {@code new OutwardIterator(0, 0, 0)}; custom Iterators can be used for others We want default to be null so that when it
+	 * is default observer, it returns null
 	 */
 	public final DefaultedKey<WrappedSerizableIterator> OBSERVER_ITERATOR = new DefaultedKeyImpl<>("OBSERVER_ITERATOR", null);
-	/** In chunks */
+	/**
+	 * In chunks
+	 */
 	public final DefaultedKey<Integer> SYNC_DISTANCE = new DefaultedKeyImpl<>("SYNC_DISTANCE", 10);
 	private final AtomicReference<RepositionManager> rm = new AtomicReference<>(NullRepositionManager.getInstance());
-
 	private final Set<Chunk> observingChunks = new HashSet<>();
 	private AtomicReference<WrappedSerizableIterator> liveObserverIterator = new AtomicReference<>(new WrappedSerizableIterator(new OutwardIterator(0, 0, 0, 0)));
 	private boolean observeChunksFailed = false;
-
 
 	public static class WrappedSerizableIterator implements Serializable, Iterator<IntVector3> {
 		private static final long serialVersionUID = 1L;
@@ -98,15 +97,14 @@ public class NetworkComponent extends EntityComponent {
 		public void remove() {
 			object.remove();
 		}
-		
+
 		private void writeObject(ObjectOutputStream stream) throws IOException {
 			stream.defaultWriteObject();
 		}
-		
+
 		private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
 			stream.defaultReadObject();
 		}
-		
 	}
 
 	@Override
@@ -120,9 +118,7 @@ public class NetworkComponent extends EntityComponent {
 	}
 
 	/**
-	 * Returns if the owning {@link org.spout.api.entity.Entity} is an observer.
-	 * <p/>
-	 * Observer means the Entity can trigger network updates (such as chunk creation) within its sync distance.
+	 * Returns if the owning {@link org.spout.api.entity.Entity} is an observer. <p/> Observer means the Entity can trigger network updates (such as chunk creation) within its sync distance.
 	 *
 	 * @return True if observer, false if not
 	 */
@@ -131,8 +127,8 @@ public class NetworkComponent extends EntityComponent {
 	}
 
 	/**
-	 * Sets the observer status for the owning {@link org.spout.api.entity.Entity}.
-	 * If there was a custom observer iterator being used, passing {@code true} will cause it to reset to the default observer iterator.
+	 * Sets the observer status for the owning {@link org.spout.api.entity.Entity}. If there was a custom observer iterator being used, passing {@code true} will cause it to reset to the default observer
+	 * iterator.
 	 *
 	 * @param observer True if observer, false if not
 	 */
@@ -156,7 +152,9 @@ public class NetworkComponent extends EntityComponent {
 
 	public Iterator<IntVector3> getSyncIterator() {
 		WrappedSerizableIterator get = getData().get(OBSERVER_ITERATOR);
-		if (get != null) return get.object;
+		if (get != null) {
+			return get.object;
+		}
 		Transform t = getOwner().getPhysics().getTransform();
 		Point p = t.getPosition();
 		int cx = p.getChunkX();
@@ -166,9 +164,8 @@ public class NetworkComponent extends EntityComponent {
 	}
 
 	/**
-	 * Gets the sync distance in {@link Chunk}s of the owning {@link org.spout.api.entity.Entity}.
-	 * </p>
-	 * Sync distance is a value indicating the radius outwards from the entity where network updates (such as chunk creation) will be triggered.
+	 * Gets the sync distance in {@link Chunk}s of the owning {@link org.spout.api.entity.Entity}. </p> Sync distance is a value indicating the radius outwards from the entity where network updates (such
+	 * as chunk creation) will be triggered.
 	 *
 	 * @return The current sync distance
 	 */
@@ -202,9 +199,8 @@ public class NetworkComponent extends EntityComponent {
 	}
 
 	/**
-	 * Calls a {@link org.spout.api.event.ProtocolEvent} for all {@link org.spout.api.entity.Player}s in-which the owning {@link org.spout.api.entity.Entity} is within their sync distance
-	 * <p/>
-	 * If the owning Entity is a Player, it will receive the event as well.
+	 * Calls a {@link org.spout.api.event.ProtocolEvent} for all {@link org.spout.api.entity.Player}s in-which the owning {@link org.spout.api.entity.Entity} is within their sync distance <p/> If the
+	 * owning Entity is a Player, it will receive the event as well.
 	 *
 	 * @param event to send
 	 */
@@ -254,9 +250,8 @@ public class NetworkComponent extends EntityComponent {
 	}
 
 	/**
-	 * Calls a {@link ProtocolEvent} for all the given {@link Enitity}s.
-	 * For every {@link Entity} that is a {@link Player}, any messages from the event will be sent to that Player's session.
-	 * Any non-player entities can use the event for custom handling.
+	 * Calls a {@link ProtocolEvent} for all the given {@link Enitity}s. For every {@link Entity} that is a {@link Player}, any messages from the event will be sent to that Player's session. Any
+	 * non-player entities can use the event for custom handling.
 	 *
 	 * @param event to send
 	 * @param entities to send to
@@ -264,7 +259,9 @@ public class NetworkComponent extends EntityComponent {
 	public final void callProtocolEvent(final ProtocolEvent event, final Entity... entities) {
 		final List<Message> messages = getEngine().getEventManager().callEvent(event).getMessages();
 		for (final Entity entity : entities) {
-			if (!(entity instanceof Player)) continue;
+			if (!(entity instanceof Player)) {
+				continue;
+			}
 			for (final Message message : messages) {
 				((Player) entity).getNetwork().getSession().send(event.isForced(), message);
 			}
@@ -276,8 +273,7 @@ public class NetworkComponent extends EntityComponent {
 	/**
 	 * Called when the owner is set to be synchronized to other NetworkComponents.
 	 *
-	 * TODO: Common logic between Spout and a plugin needing to implement this component?
-	 * TODO: Add sequence checks to the PhysicsComponent to prevent updates to live?
+	 * TODO: Common logic between Spout and a plugin needing to implement this component? TODO: Add sequence checks to the PhysicsComponent to prevent updates to live?
 	 *
 	 * @param live A copy of the owner's live transform state
 	 */
@@ -285,9 +281,9 @@ public class NetworkComponent extends EntityComponent {
 		//Entity changed chunks as observer OR observer status changed so update
 		WrappedSerizableIterator old = getData().get(OBSERVER_ITERATOR);
 		if (getOwner().getPhysics().getPosition().getChunk(LoadOption.NO_LOAD) != live.getPosition().getChunk(LoadOption.NO_LOAD) && isObserver()
-			|| liveObserverIterator.get() != old
-			|| old == INITIAL_TICK
-			|| observeChunksFailed) {
+				|| liveObserverIterator.get() != old
+				|| old == INITIAL_TICK
+				|| observeChunksFailed) {
 			updateObserver();
 		}
 	}
@@ -357,7 +353,9 @@ public class NetworkComponent extends EntityComponent {
 	}
 
 	public void copySnapshot() {
-		if (first) return;
+		if (first) {
+			return;
+		}
 		getData().put(OBSERVER_ITERATOR, liveObserverIterator.get());
 	}
 }

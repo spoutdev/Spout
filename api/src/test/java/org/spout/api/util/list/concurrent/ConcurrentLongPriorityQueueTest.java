@@ -51,7 +51,7 @@ public class ConcurrentLongPriorityQueueTest {
 		LongWithPriority[] sorted = new LongWithPriority[LENGTH];
 
 		int i;
-		
+
 		for (i = 0; i < LENGTH; i++) {
 			sorted[i] = new LongWithPriority(i / COPIES);
 		}

@@ -345,6 +345,7 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	private Transform old;
+
 	public void execute(float dt) {
 		// TODO: protocol - hacky fix
 		if (((Client) Spout.getEngine()).getWorld().getName().equalsIgnoreCase("NullWorld")) {

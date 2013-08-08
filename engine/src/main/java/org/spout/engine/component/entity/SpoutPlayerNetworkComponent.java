@@ -84,7 +84,7 @@ public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implemen
 		event.setForced(true);
 		getSession().setState(Session.State.WAITING);
 	}
-	
+
 	@EventHandler
 	public void onBlockUpdate(BlockUpdateEvent event) {
 		event.getMessages().add(new BlockUpdateMessage(event.getChunk().getBlock(event.getX(), event.getY(), event.getZ())));
@@ -114,8 +114,7 @@ public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implemen
 				messages.add(new UpdateEntityMessage(e.getId(), null, EntityUpdateEvent.UpdateAction.REMOVE, null));
 			} else if (add) {
 				messages.add(new UpdateEntityMessage(e.getId(), transform, EntityUpdateEvent.UpdateAction.ADD, getRepositionManager()));
-			}
-			else {
+			} else {
 				if (e.getPhysics().isTransformDirty()) {
 					messages.add(new UpdateEntityMessage(e.getId(), transform, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()));
 				}

@@ -30,6 +30,7 @@ import java.awt.Canvas;
 import java.util.HashMap;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;

@@ -33,6 +33,7 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
+
 import org.spout.physics.collision.shape.CollisionShape;
 
 /**
@@ -239,12 +240,8 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract PhysicsComponent impulse(Vector3 impulse);
 
 	/**
-	 * Force is, as it sounds, an instant force to the Entity. A few rules apply.
-	 * <p/>
-	 * - The entity must be mobile (mass > 0)
-	 * - Entities of higher masses need greater forces to move
-	 * <p/>
-	 * Can't get movement to occur? Lower the mass or increase the force.
+	 * Force is, as it sounds, an instant force to the Entity. A few rules apply. <p/> - The entity must be mobile (mass > 0) - Entities of higher masses need greater forces to move <p/> Can't get
+	 * movement to occur? Lower the mass or increase the force.
 	 *
 	 * @param force The Vector3 force to apply.
 	 * @param ignoreGravity True to force without gravity, false to have gravity affect the force
@@ -253,12 +250,8 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract PhysicsComponent force(Vector3 force, boolean ignoreGravity);
 
 	/**
-	 * Force is, as it sounds, an instant force to the Entity. A few rules apply.
-	 * <p/>
-	 * - The entity must be mobile (mass > 0)
-	 * - Entities of higher masses need greater forces to move
-	 * <p/>
-	 * Can't get movement to occur? Lower the mass or increase the force. Lastly, this method forces with gravity (it doesn't ignore it).
+	 * Force is, as it sounds, an instant force to the Entity. A few rules apply. <p/> - The entity must be mobile (mass > 0) - Entities of higher masses need greater forces to move <p/> Can't get
+	 * movement to occur? Lower the mass or increase the force. Lastly, this method forces with gravity (it doesn't ignore it).
 	 *
 	 * @param force The Vector3 force to apply.
 	 * @return This component, so you can chain.
@@ -398,8 +391,9 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract boolean isMobile();
 
 	/**
-	 * Returns whether the {@link org.spout.api.entity.Entity} is activated with ghost status. <p> By default all entities are not ghosts and this simply means that the body will alert all other
-	 * bodies of collisions but this body will neither inccur a collision nor stop the other bodies from passing through.
+	 * Returns whether the {@link org.spout.api.entity.Entity} is activated with ghost status. <p> By default all entities are not ghosts and this simply means that the body will alert all other bodies
+	 * of collisions but this body will neither inccur a collision nor stop the other bodies from passing through.
+	 *
 	 * @return True if ghost, false if not
 	 */
 	public abstract boolean isGhost();

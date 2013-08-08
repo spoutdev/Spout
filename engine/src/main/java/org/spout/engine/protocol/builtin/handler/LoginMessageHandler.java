@@ -32,7 +32,6 @@ import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
-
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.protocol.builtin.message.LoginMessage;

@@ -26,13 +26,11 @@
  */
 package org.spout.api.entity;
 
-import java.net.InetAddress;
 import java.util.List;
 
 import org.spout.api.command.CommandSource;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.state.PlayerInputState;
-import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface Player extends CommandSource, Entity {
@@ -158,8 +156,8 @@ public interface Player extends CommandSource, Entity {
 	public PlayerSnapshot snapshot();
 
 	/**
-	 * Sends a command to be processed on the opposite Platform.
-	 * This is basically a shortcut method to prevent the need to register a command locally with a {@link Command.NetworkSendType} of {@code SEND}.
+	 * Sends a command to be processed on the opposite Platform. This is basically a shortcut method to prevent the need to register a command locally with a {@link Command.NetworkSendType} of {@code
+	 * SEND}.
 	 *
 	 * @param command to send
 	 * @param args to send

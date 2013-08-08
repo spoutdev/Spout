@@ -36,6 +36,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -53,7 +54,6 @@ import gnu.trove.map.TShortObjectMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.procedure.TShortObjectProcedure;
-import java.util.Map;
 
 import org.spout.api.Engine;
 import org.spout.api.Platform;
@@ -127,8 +127,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	private final Set<SpoutPlayer> observingPlayers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutPlayer, Boolean>());
 	private final Set<SpoutPlayer> unmodifiableObservingPlayers = Collections.unmodifiableSet(observingPlayers);
 	/**
-	 * An entity may still exist but no longer be an observer. As such, we need to remove all entities that it was observing.
-	 * The following three variables deal with this.
+	 * An entity may still exist but no longer be an observer. As such, we need to remove all entities that it was observing. The following three variables deal with this.
 	 */
 	private final ConcurrentLinkedQueue<SpoutEntity> expiredObserversQueue = new ConcurrentLinkedQueue<>();
 	private final LinkedHashSet<SpoutEntity> expiredObservers = new LinkedHashSet<>();

@@ -33,7 +33,6 @@ import org.spout.api.component.Component;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.engine.SpoutEngine;
 
 public class SpoutPlayerSnapshot extends SpoutEntitySnapshot implements PlayerSnapshot {
 	private final String name;

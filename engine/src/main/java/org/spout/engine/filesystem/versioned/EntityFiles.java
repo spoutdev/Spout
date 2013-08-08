@@ -47,8 +47,6 @@ import org.spout.api.io.nbt.TransformTag;
 import org.spout.api.io.nbt.UUIDTag;
 import org.spout.api.plugin.PluginClassLoader;
 import org.spout.api.util.sanitation.SafeCast;
-import org.spout.engine.SpoutEngine;
-import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutEntitySnapshot;
 import org.spout.engine.entity.SpoutPlayerSnapshot;
 import org.spout.engine.world.SpoutRegion;
@@ -56,7 +54,6 @@ import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
-import org.spout.nbt.IntTag;
 import org.spout.nbt.ListTag;
 import org.spout.nbt.StringTag;
 import org.spout.nbt.Tag;
@@ -226,7 +223,9 @@ public class EntityFiles {
 				} catch (ClassNotFoundException e) {
 					clazz = (Class<? extends Component>) Class.forName(component.getValue());
 				}
-				if (NetworkComponent.class.isAssignableFrom(clazz)) continue;
+				if (NetworkComponent.class.isAssignableFrom(clazz)) {
+					continue;
+				}
 				types.add(clazz);
 			} catch (ClassNotFoundException e) {
 				if (Spout.debugMode()) {

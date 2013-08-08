@@ -564,7 +564,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 				break;
 		}
 	}
-	
+
 	@Override
 	public Collection<World> matchWorld(String name) {
 		return StringUtil.matchName(getWorlds(), name);

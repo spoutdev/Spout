@@ -32,11 +32,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.spout.api.Platform;
 
+import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
-import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandBatch;
 import org.spout.api.command.CommandSource;

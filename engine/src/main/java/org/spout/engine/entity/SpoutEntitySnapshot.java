@@ -35,13 +35,11 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import org.spout.api.component.Component;
-import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.engine.SpoutEngine;
 
 public class SpoutEntitySnapshot implements EntitySnapshot {
 	private final WeakReference<Entity> entity;

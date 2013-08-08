@@ -42,7 +42,6 @@ import org.spout.api.Spout;
 import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.event.storage.PlayerSaveEvent;
-import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.SpoutPlayerSnapshot;
 import org.spout.nbt.CompoundTag;

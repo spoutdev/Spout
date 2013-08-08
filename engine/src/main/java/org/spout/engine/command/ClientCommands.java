@@ -31,7 +31,6 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.CommandDescription;
 import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
-import org.spout.api.exception.WrappedCommandException;
 import org.spout.api.input.Binding;
 import org.spout.api.input.Keyboard;
 import org.spout.engine.SpoutClient;

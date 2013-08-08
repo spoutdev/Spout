@@ -123,18 +123,15 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	public Region getRegion();
 
 	/**
-	 * Gets the {@link org.spout.api.component.entity.PhysicsComponent} which is the representation
-	 * of this Entity within space.
-	 * <p> It provides the {@link Transform} which is Position, Rotation, Scale as well as physics
-	 * to manipulate the entity in respect to the environment. </p>
+	 * Gets the {@link org.spout.api.component.entity.PhysicsComponent} which is the representation of this Entity within space. <p> It provides the {@link Transform} which is Position, Rotation, Scale
+	 * as well as physics to manipulate the entity in respect to the environment. </p>
 	 *
 	 * @return The physics component.
 	 */
 	public PhysicsComponent getPhysics();
 
 	/**
-	 * Gets a {@link NetworkComponent} for the entity.
-	 * The {@link NetworkComponent} is special in that it has methods that get called in preSnapshot and finalizeTick
+	 * Gets a {@link NetworkComponent} for the entity. The {@link NetworkComponent} is special in that it has methods that get called in preSnapshot and finalizeTick
 	 *
 	 * @return The network component
 	 */

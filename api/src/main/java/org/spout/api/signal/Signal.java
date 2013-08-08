@@ -69,7 +69,7 @@ public class Signal {
 				}
 				try {
 					method.invoke(call, arguments);
-				} catch (		IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+				} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
 					e.printStackTrace();
 				} catch (Exception e) {
 					System.out.println("---------------");

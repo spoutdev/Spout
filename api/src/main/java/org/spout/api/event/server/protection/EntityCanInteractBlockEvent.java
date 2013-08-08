@@ -34,8 +34,8 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 
 /**
- * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can use the given block. Protection plugins should utilize this event to let other plugins know about
- * where an entity can or can't use specific blocks.
+ * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can use the given block. Protection plugins should utilize this event
+ * to let other plugins know about where an entity can or can't use specific blocks.
  */
 public class EntityCanInteractBlockEvent extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

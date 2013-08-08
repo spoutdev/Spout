@@ -57,11 +57,11 @@ public class TextModelComponent extends EntityComponent {
 		getData().put(KEY_FONT, font);
 		dirty = true;
 	}
-	
+
 	public boolean isDirty() {
 		return dirty;
 	}
-	
+
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
 	}

@@ -36,10 +36,7 @@ import java.util.logging.Logger;
 
 import jline.console.completer.Completer;
 
-import org.spout.api.Client;
 import org.spout.api.Engine;
-import org.spout.api.Platform;
-import org.spout.api.Spout;
 import org.spout.engine.SpoutEngine;
 import org.spout.logging.LoggerOutputStream;
 import org.spout.logging.MessageFormatter;

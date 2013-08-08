@@ -30,13 +30,14 @@ import org.spout.api.Spout;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
-
 import org.spout.engine.protocol.builtin.message.ReadyMessage;
 
 public class ReadyMessageHandler extends MessageHandler<ReadyMessage> {
 	@Override
 	public void handleServer(ServerSession session, ReadyMessage message) {
 		session.setState(Session.State.GAME);
-		if (Spout.debugMode()) System.out.println("Packets: " + session.getProtocol().getDynamicallyRegisteredPackets());
+		if (Spout.debugMode()) {
+			System.out.println("Packets: " + session.getProtocol().getDynamicallyRegisteredPackets());
+		}
 	}
 }

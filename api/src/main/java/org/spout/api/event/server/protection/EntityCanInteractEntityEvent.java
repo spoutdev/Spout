@@ -32,8 +32,8 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.event.entity.AbstractEntityEvent;
 
 /**
- * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can interact with the given other entity. Protection plugins should utilize this event to let other
- * plugins know about where an entity can or can't interact with a specific entity.
+ * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can interact with the given other entity. Protection plugins should
+ * utilize this event to let other plugins know about where an entity can or can't interact with a specific entity.
  */
 public class EntityCanInteractEntityEvent extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

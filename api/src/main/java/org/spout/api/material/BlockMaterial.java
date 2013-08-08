@@ -49,6 +49,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.resource.SpoutModels;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.flag.Flag;
+
 import org.spout.physics.ReactDefaults;
 import org.spout.physics.collision.shape.CollisionShape;
 
@@ -564,14 +565,9 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Sets if this BlockMaterial should be a detector "ghost" material.
-	 * <p>
-	 * This means any collisions with this BlockMaterial will not incur adjustments for the {@link Entity} which collided: instead callbacks will be alerted and the Entity will be able to move freely
-	 * through this BlockMaterial (by default).
-	 * <p>
-	 * If this BlockMaterial has a null {@link CollisionShape}, this setting will have no effect until a reference is set.
-	 *
-	 * @param isGhost
+	 * Sets if this BlockMaterial should be a detector "ghost" material. <p> This means any collisions with this BlockMaterial will not incur adjustments for the {@link Entity} which collided: instead
+	 * callbacks will be alerted and the Entity will be able to move freely through this BlockMaterial (by default). <p> If this BlockMaterial has a null {@link CollisionShape}, this setting will have no
+	 * effect until a reference is set.
 	 */
 	public void setGhost(final boolean isGhost) {
 		this.isGhost = isGhost;

@@ -35,8 +35,8 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.spout.api.Client;
 
+import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Server;
