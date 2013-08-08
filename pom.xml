@@ -5,7 +5,7 @@
 	<name>Spout</name>
 	<groupId>org.spout</groupId>
 	<artifactId>spout-parent</artifactId>
-	<version>1</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<url>http://www.spout.org</url>
 	<inceptionYear>2011</inceptionYear>
@@ -29,6 +29,7 @@
 	<!-- Build properties -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.root>.</project.root>
 		<buildNumber>0</buildNumber>
 		<ciSystem>unknown</ciSystem>
 		<commit>unknown</commit>
@@ -120,8 +121,64 @@
 	<build>
 		<defaultGoal>clean install</defaultGoal>
 
+		<!-- Resources to include -->
+		<resources>
+			<!-- Static resources -->
+			<resource>
+				<filtering>false</filtering>
+				<directory>${project.root}</directory>
+				<targetPath>.</targetPath>
+				<includes>
+					<include>LICENSE.txt</include>
+				</includes>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/resources</directory>
+				<targetPath>.</targetPath>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
+
 		<!-- Build plugins -->
 		<plugins>
+			<!-- License header plugin -->
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.10.b1</version>
+				<executions>
+					<execution>
+						<configuration>
+							<properties>
+								<url>${project.organization.url}</url>
+								<inceptionYear>${project.inceptionYear}</inceptionYear>
+								<organization>${project.organization.name}</organization>
+							</properties>
+							<quiet>true</quiet>
+							<encoding>UTF-8</encoding>
+							<strictCheck>true</strictCheck>
+							<header>${project.root}/HEADER.txt</header>
+							<mapping>
+								<java>SLASHSTAR_STYLE</java>
+							</mapping>
+							<keywords>
+								<keyword>license</keyword>
+							</keywords>
+							<includes>
+								<include>src/main/java/**</include>
+								<include>src/test/java/**</include>
+							</includes>
+						</configuration>
+						<phase>clean</phase>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<!-- Source compiler plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -4,7 +4,6 @@
 	<!-- Project information -->
 	<name>Spout API</name>
 	<artifactId>spout-api</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<url>http://www.spout.org</url>
 	<inceptionYear>2011</inceptionYear>
@@ -14,8 +13,13 @@
 	<parent>
 		<groupId>org.spout</groupId>
 		<artifactId>spout-parent</artifactId>
-		<version>1</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
+
+	<!-- Build properties -->
+	<properties>
+		<project.root>..</project.root>
+	</properties>
 
 	<!-- Project dependencies -->
 	<dependencies>
@@ -36,7 +40,7 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty</artifactId>
 			<version>3.4.6.Final</version>
-			<!-- 4.0.0.Alpha8 available -->
+			<!-- 4.0.6.Final available -->
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -103,61 +107,13 @@
 
 	<!-- Build configuration -->
 	<build>
-		<!-- Resources to include -->
-		<resources>
-			<!-- Static resources -->
-			<resource>
-				<filtering>false</filtering>
-				<directory>../</directory>
-				<targetPath>.</targetPath>
-				<includes>
-					<include>LICENSE.txt</include>
-				</includes>
-			</resource>
-		</resources>
-
 		<!-- Build plugins -->
 		<plugins>
-			<!-- License header plugin -->
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.10.b1</version>
-				<executions>
-					<execution>
-						<configuration>
-							<properties>
-								<url>${project.organization.url}</url>
-								<inceptionYear>${project.inceptionYear}</inceptionYear>
-								<organization>${project.organization.name}</organization>
-							</properties>
-							<quiet>true</quiet>
-							<encoding>UTF-8</encoding>
-							<strictCheck>true</strictCheck>
-							<header>../HEADER.txt</header>
-							<mapping>
-								<java>SLASHSTAR_STYLE</java>
-							</mapping>
-							<keywords>
-								<keyword>license</keyword>
-							</keywords>
-							<includes>
-								<include>src/main/java/**</include>
-								<include>src/test/java/**</include>
-							</includes>
-						</configuration>
-						<phase>clean</phase>
-						<goals>
-							<goal>format</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<!-- Dependency addition plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.0</version>
+				<version>2.1</version>
 				<executions>
 					<execution>
 						<configuration>
@@ -207,7 +163,7 @@
 					<bottom>
 						<![CDATA[Copyright (c) {project.inceptionYear} <a href="${project.organization.url}" target="_blank">${project.organization.name}</a>. ${project.name} is licensed under <a href="http://www.gnu.org/licenses/lgpl.html" target="_blank">GNU Lesser General Public License Version 3</a>]]></bottom>
 					<doctitle><![CDATA[${project.name} API ${project.version}-b${buildNumber}]]></doctitle>
-					<windowtitle>Javadoc | ${project.name} API ${project.version}-b${buildNumber}</windowtitle>
+					<windowtitle>${project.name} Javadocs</windowtitle>
 					<author>false</author>
 					<version>false</version>
 				</configuration>
