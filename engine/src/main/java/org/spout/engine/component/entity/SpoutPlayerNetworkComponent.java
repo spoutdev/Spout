@@ -46,7 +46,6 @@ import org.spout.api.protocol.event.ChunkFreeEvent;
 import org.spout.api.protocol.event.ChunkSendEvent;
 import org.spout.api.protocol.event.EntitySyncEvent;
 import org.spout.api.protocol.event.EntityUpdateEvent;
-import org.spout.api.protocol.event.PositionSendEvent;
 import org.spout.api.protocol.event.WorldChangeProtocolEvent;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
@@ -71,11 +70,6 @@ public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implemen
 	@EventHandler
 	public void onChunkFree(ChunkFreeEvent event) {
 		event.getMessages().add(new ChunkDataMessage(event.getPoint().getChunkX(), event.getPoint().getChunkY(), event.getPoint().getChunkZ()));
-	}
-
-	@EventHandler
-	public void onPositionSend(PositionSendEvent event) {
-		event.getMessages().add(new UpdateEntityMessage(event.getPlayerId(), new Transform(event.getPoint(), event.getRotation(), Vector3.ONE), EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()));
 	}
 
 	@EventHandler
