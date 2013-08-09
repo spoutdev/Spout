@@ -26,8 +26,12 @@
  */
 package org.spout.api.protocol;
 
+import org.spout.api.Server;
+
 /**
  * Represents a connection to the cleint.<br/> Controls the state, protocol and channels of a connection to the client.
  */
 public interface ServerSession extends Session {
+	@Override
+	public Server getEngine();
 }
