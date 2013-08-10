@@ -88,8 +88,6 @@ import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
-import org.spout.engine.world.SpoutRegion;
-import org.spout.engine.world.SpoutWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<>();
@@ -351,6 +349,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		this.world.getAndSet(world);
+		if (player.get() != null) {
+			world.addLocalPlayer(player.get());
+		}
 		return world;
 	}
 
