@@ -393,15 +393,11 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	 * Interpolates the live transform and sets the output to the render transform. <p/> This is necessary for smooth rendering.
 	 */
 	public void interpolateAndSetRender(float dt) {
-		if (render.isEmpty() || (render.getPosition().getWorld() != getOwner().getWorld())) {
-			render.set(snapshot);
-		}
-
 		//TODO: Untangle Camera position/rotation from render transform
 		//Spout Interpolation
 		if (body == null) {
-			if (getEngine() instanceof Client) {
-				Spout.info("Spout interpolating");
+			if (render.isEmpty()) {
+				render.set(snapshot);
 			}
 			final float step = dt * (60f / 20f);
 
@@ -409,20 +405,17 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			final Quaternion rotation = live.getRotation();
 			final Vector3 scale = live.getScale();
 
-			render.setPosition(snapshot.getPosition().multiply(1 - step).add(position.multiply(dt)));
+			render.setPosition(render.getPosition().multiply(1 - step).add(position.multiply(dt)));
 
-			final Quaternion renderRot = snapshot.getRotation();
+			final Quaternion renderRot = render.getRotation();
 			render.setRotation(new Quaternion(renderRot.getX() * (1 - step) + rotation.getX() * step,
 					renderRot.getY() * (1 - step) + rotation.getY() * step,
 					renderRot.getZ() * (1 - step) + rotation.getZ() * step,
 					renderRot.getW() * (1 - step) + rotation.getW() * step, false)
 			);
 
-			render.setScale(snapshot.getScale().multiply(1 - step).add(scale.multiply(step)));
+			render.setScale(render.getScale().multiply(1 - step).add(scale.multiply(step)));
 		} else {
-			if (getEngine() instanceof Client) {
-				Spout.info("React interpolating");
-			}
 			final Transform physicsLive = ReactConverter.toSpoutTransform(body.getTransform(), live.getPosition().getWorld(), live.getScale());
 			if (!live.equals(physicsLive)) {
 				live.set(physicsLive);
@@ -437,6 +430,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	public void copySnapshot() {
 		snapshot.set(live);
+		render.set(snapshot);
 	}
 
 	private void sync() {
