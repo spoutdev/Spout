@@ -470,7 +470,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void startTickRun(int stage, long delta) {
-		// TODO: Should this be removed?
 	}
 
 	@Override
