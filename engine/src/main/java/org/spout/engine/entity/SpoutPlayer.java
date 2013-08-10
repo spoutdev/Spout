@@ -72,8 +72,8 @@ import org.spout.engine.world.SpoutServerWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicReference<String> displayName = new AtomicReference<>();
+	private final AtomicReference<String> name = new AtomicReference<>();
 	private final AtomicBoolean onlineLive = new AtomicBoolean(true);
-	private final String name;
 	private boolean online;
 	private final int hashcode;
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
@@ -83,8 +83,8 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	public SpoutPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, SpoutPlayerSnapshot snapshot) {
 		super(engine, snapshot);
 		this.network = add(network);
-		this.name = snapshot.getName();
-		this.displayName.set(name);
+		this.name.set(snapshot.getName());
+		this.displayName.set(snapshot.getName());
 		this.hashcode = name.hashCode();
 		this.online = true;
 		if (Spout.getPlatform() == Platform.SERVER) {
@@ -100,7 +100,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	public SpoutPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, String name, Transform transform, UUID uid, byte[] dataMap, Class<? extends Component>... components) {
 		super(engine, transform, uid, dataMap, components);
 		this.network = add(network);
-		this.name = name;
+		this.name.set(name);
 		this.displayName.set(name);
 		this.hashcode = name.hashCode();
 		if (Spout.getPlatform() == Platform.SERVER) {
@@ -112,7 +112,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	@Threadsafe
 	public String getName() {
-		return name;
+		return name.get();
+	}
+
+	public void setName(final String name) {
+		this.name.set(name);
 	}
 
 	@Override
@@ -293,7 +297,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (getEngine().getPlatform() != Platform.SERVER) {
 			throw new IllegalStateException("Banning is only available in server mode.");
 		}
-		((Server) getEngine()).getAccessManager().ban(BanType.PLAYER, name, kick, reason);
+		((Server) getEngine()).getAccessManager().ban(BanType.PLAYER, name.get(), kick, reason);
 	}
 
 	@Override

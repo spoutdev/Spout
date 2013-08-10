@@ -150,8 +150,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void start() {
-		// Completely blank world to allow the player to start in
-		worldChanged("NullWorld", UUID.randomUUID(), new ManagedHashMap().serialize());
 		if (!connnect()) {
 			return;
 		}
@@ -350,10 +348,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			throw new RuntimeException("Unable to deserialize data", e);
 		}
 
-		SpoutWorld oldWorld = this.world.getAndSet(world);
-		if (player.get() != null && player.get().getRegion() != null) {
-			((SpoutRegion) player.get().getRegion()).getEntityManager().addEntity(player.get());
-		}
+		this.world.getAndSet(world);
 		return world;
 	}
 
