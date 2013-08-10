@@ -392,10 +392,10 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	 * Interpolates the live transform and sets the output to the render transform. <p/> This is necessary for smooth rendering.
 	 */
 	public void interpolateAndSetRender(float dt) {
-		//Only interpolate if same world
 		if (render.isEmpty()) {
 			render.set(snapshot);
 		}
+		//Only interpolate if same world
 		if (render.getPosition().getWorld() != getOwner().getWorld()) {
 			return;
 		}
@@ -403,6 +403,9 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		//TODO: Untangle Camera position/rotation from render transform
 		//Spout Interpolation
 		if (body == null) {
+			if (snapshot.equals(live)) {
+				return;
+			}
 			final float step = dt * (60f / 20f);
 
 			final Point position = live.getPosition();
@@ -420,10 +423,15 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 			render.setScale(render.getScale().multiply(1 - step).add(scale.multiply(step)));
 		} else {
-			live.set(ReactConverter.toSpoutTransform(body.getTransform(), live.getPosition().getWorld(), live.getScale()));
-			render.set(ReactConverter.toSpoutTransform(body.getInterpolatedTransform(), live.getPosition().getWorld(), live.getScale()));
-			//Physics needs to sync
-			sync();
+			final Transform physicsLive = ReactConverter.toSpoutTransform(body.getTransform(), live.getPosition().getWorld(), live.getScale());
+			if (!live.equals(physicsLive)) {
+				live.set(physicsLive);
+				sync();
+			}
+			final Transform physicsRender = ReactConverter.toSpoutTransform(body.getInterpolatedTransform(), live.getPosition().getWorld(), live.getScale());
+			if (!render.equals(physicsRender)) {
+				render.set(physicsRender);
+			}
 		}
 	}
 
