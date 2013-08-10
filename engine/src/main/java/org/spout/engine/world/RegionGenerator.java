@@ -182,7 +182,7 @@ public class RegionGenerator implements Named {
 			int czz = cz + z;
 
 			final CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE << shift, Region.BLOCKS.SIZE, Chunk.BLOCKS.SIZE << shift);
-			world.getGenerator().generate(buffer, cxx, cy, czz, world);
+			world.getGenerator().generate(buffer, world);
 
 			int[][] heights = new int[Chunk.BLOCKS.SIZE << shift][Chunk.BLOCKS.SIZE << shift];
 

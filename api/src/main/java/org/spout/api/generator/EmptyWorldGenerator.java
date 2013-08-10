@@ -36,7 +36,7 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
  */
 public class EmptyWorldGenerator implements WorldGenerator {
 	@Override
-	public void generate(CuboidBlockMaterialBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
+	public void generate(CuboidBlockMaterialBuffer blockData, World world) {
 		blockData.flood(BlockMaterial.AIR);
 	}
 

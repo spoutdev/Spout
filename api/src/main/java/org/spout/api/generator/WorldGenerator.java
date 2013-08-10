@@ -39,18 +39,16 @@ public interface WorldGenerator extends Named {
 	/**
 	 * Gets the block structure for a Chunk.
 	 *
-	 * The CuboidBuffer will always be:<br> - One Chunk in width and length {@link org.spout.api.geo.cuboid.Chunk#CHUNKS}<br> - One Region in height {@link org.spout.api.geo.cuboid.Region#CHUNKS}<br> -
-	 * Chunk aligned<br> <br> Structural blocks should not contain any lighting sources and the generator should give repeatable results.
+	 * The CuboidBuffer will always be chunk-aligned, and could be of a variable (chunk) size.<br><br>
+	 * Use {@link CuboidBlockMaterialBuffer#getBase()} and {@link CuboidBlockMaterialBuffer#getTop()}
+	 * to obtain the Block bounds in which can be generated.
 	 *
 	 * It is recommended that seeded random number generators from WorldGeneratorUtils are used.
 	 *
-	 * @param blockData a zeroed CuboidBuffer corresponding to the Chunk
-	 * @param chunkX coordinate
-	 * @param chunkY coordinate
-	 * @param chunkZ coordinate
+	 * @param blockData a zeroed CuboidBuffer which has to be fully generated
 	 * @param world in which is generated
 	 */
-	public void generate(CuboidBlockMaterialBuffer blockData, int chunkX, int chunkY, int chunkZ, World world);
+	public void generate(CuboidBlockMaterialBuffer blockData, World world);
 
 	/**
 	 * Gets the surface height of the world. This is used for initialisation purposed only, so only needs reasonable accuracy.<br> <br> The result value should be a 2d array of size {@link
