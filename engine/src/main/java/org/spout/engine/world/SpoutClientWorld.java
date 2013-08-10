@@ -216,4 +216,13 @@ public class SpoutClientWorld extends SpoutWorld {
 	public TaskManager getTaskManager() {
 		throw new UnsupportedOperationException("Client does not run world tasks");
 	}
+
+	@Override
+	public void finalizeRun() {
+	}
+
+	@Override
+	public void copySnapshotRun() {
+		snapshotManager.copyAllSnapshots();
+	}
 }

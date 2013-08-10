@@ -58,6 +58,8 @@ import org.spout.api.event.Cause;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.event.server.RetrieveDataEvent;
+import org.spout.api.event.world.EntityEnterWorldEvent;
+import org.spout.api.event.world.EntityExitWorldEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeGenerator;
@@ -79,6 +81,7 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.IntPairHashed;
 import org.spout.api.util.hashing.NibblePairHashed;
+import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.list.concurrent.UnprotectedCopyOnUpdateArray;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.map.WeakValueHashMap;
@@ -90,10 +93,13 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
+import org.spout.engine.scheduler.SpoutScheduler;
+import org.spout.engine.scheduler.SpoutTaskManager;
+import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 
-public abstract class SpoutWorld extends BaseComponentOwner implements World {
+public abstract class SpoutWorld extends BaseComponentOwner implements AsyncManager, World {
 	protected SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * The server of this world.
@@ -156,6 +162,9 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	public static final WeakReference<SpoutWorld> NULL_WEAK_REFERENCE = new WeakReference<>(null);
 	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<>();
 
+	private final SpoutTaskManager taskManager;
+	private Thread executionThread;
+
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid) {
 		this.engine = engine;
@@ -180,10 +189,13 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 		parallelTaskManager = new SpoutParallelTaskManager(engine.getScheduler(), this);
 
+		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);
+
 		lightingManagers = new UnprotectedCopyOnUpdateArray<>(LightingManager.class, true);
 
 		this.age = new SnapshotableLong(snapshotManager, age);
 		selfReference = new WeakReference<>(this);
+		getEngine().getScheduler().addAsyncManager(this);
 	}
 
 	@Override
@@ -1327,5 +1339,70 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 			return null;
 		}
 		return c.getLightBuffer(manager);
+	}
+
+	@Override
+	public void startTickRun(int stage, long delta) {
+		switch (stage) {
+			case 0: {
+				age.set(age.get() + delta);
+				parallelTaskManager.heartbeat(delta);
+				taskManager.heartbeat(delta);
+				for (Component component : values()) {
+					component.tick(delta);
+				}
+				break;
+			}
+			default: {
+				throw new IllegalStateException("Number of states exceeded limit for SpoutWorld");
+			}
+		}
+	}
+
+	@Override
+	public TaskManager getTaskManager() {
+		return taskManager;
+	}
+
+	@Override
+	public Thread getExecutionThread() {
+		return executionThread;
+	}
+
+	@Override
+	public void setExecutionThread(Thread t) {
+		this.executionThread = t;
+	}
+
+	@Override
+	public long getFirstDynamicUpdateTime() {
+		return SpoutScheduler.END_OF_THE_WORLD;
+	}
+
+	@Override
+	public int getSequence() {
+		return 0;
+	}
+
+	@Override
+	public void preSnapshotRun() {
+	}
+
+	// Worlds don't do any of these
+	@Override
+	public void runPhysics(int sequence) {
+	}
+
+	@Override
+	public void runLighting(int sequence) {
+	}
+
+	@Override
+	public void runDynamicUpdates(long time, int sequence) {
+	}
+
+	@Override
+	public int getMaxStage() {
+		return 0;
 	}
 }
