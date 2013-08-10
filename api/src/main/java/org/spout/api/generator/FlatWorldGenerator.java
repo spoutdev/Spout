@@ -36,8 +36,8 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
  */
 public class FlatWorldGenerator implements WorldGenerator {
 	@Override
-	public void generate(CuboidBlockMaterialBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
-		if (chunkY < 0) {
+	public void generate(CuboidBlockMaterialBuffer blockData, World world) {
+		if (blockData.getBase().getY() < 0) {
 			blockData.flood(BlockMaterial.SOLID_BLUE);
 		}
 	}
