@@ -150,6 +150,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void start() {
+		worldChanged("NullWorld", UUID.randomUUID(), new ManagedHashMap().serialize());
+
 		if (!connnect()) {
 			return;
 		}

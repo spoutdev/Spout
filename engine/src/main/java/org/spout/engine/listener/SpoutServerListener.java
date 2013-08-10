@@ -59,9 +59,6 @@ public class SpoutServerListener implements Listener {
 
 	@EventHandler (order = Order.MONITOR)
 	public void onPlayerConnect(PlayerConnectEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
 		//Create the player
 		final SpoutPlayer player = (SpoutPlayer) server.addPlayer(event.getPlayerName(), (SpoutServerSession<?>) event.getSession(), event.getViewDistance());
 
