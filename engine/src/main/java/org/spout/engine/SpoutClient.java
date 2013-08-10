@@ -88,6 +88,7 @@ import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
+import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
@@ -340,7 +341,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
-		System.out.println("WORLD CHANGED!");
 		SpoutClientWorld world = new SpoutClientWorld(name, this, uuid);
 		// Load in datatable
 		SerializableMap map = world.getData();
@@ -351,6 +351,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		SpoutWorld oldWorld = this.world.getAndSet(world);
+		if (player.get() != null && player.get().getRegion() != null) {
+			((SpoutRegion) player.get().getRegion()).getEntityManager().addEntity(player.get());
+		}
 		return world;
 	}
 

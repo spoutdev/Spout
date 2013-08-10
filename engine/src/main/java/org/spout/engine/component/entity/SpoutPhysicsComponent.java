@@ -26,6 +26,7 @@
  */
 package org.spout.engine.component.entity;
 
+import org.spout.api.Client;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.entity.PhysicsComponent;
@@ -399,8 +400,8 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		//TODO: Untangle Camera position/rotation from render transform
 		//Spout Interpolation
 		if (body == null) {
-			if (snapshot.equals(live)) {
-				return;
+			if (getEngine() instanceof Client) {
+				Spout.info("Spout interpolating");
 			}
 			final float step = dt * (60f / 20f);
 
@@ -408,17 +409,20 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			final Quaternion rotation = live.getRotation();
 			final Vector3 scale = live.getScale();
 
-			render.setPosition(render.getPosition().multiply(1 - step).add(position.multiply(dt)));
+			render.setPosition(snapshot.getPosition().multiply(1 - step).add(position.multiply(dt)));
 
-			final Quaternion renderRot = render.getRotation();
+			final Quaternion renderRot = snapshot.getRotation();
 			render.setRotation(new Quaternion(renderRot.getX() * (1 - step) + rotation.getX() * step,
 					renderRot.getY() * (1 - step) + rotation.getY() * step,
 					renderRot.getZ() * (1 - step) + rotation.getZ() * step,
 					renderRot.getW() * (1 - step) + rotation.getW() * step, false)
 			);
 
-			render.setScale(render.getScale().multiply(1 - step).add(scale.multiply(step)));
+			render.setScale(snapshot.getScale().multiply(1 - step).add(scale.multiply(step)));
 		} else {
+			if (getEngine() instanceof Client) {
+				Spout.info("React interpolating");
+			}
 			final Transform physicsLive = ReactConverter.toSpoutTransform(body.getTransform(), live.getPosition().getWorld(), live.getScale());
 			if (!live.equals(physicsLive)) {
 				live.set(physicsLive);
