@@ -196,7 +196,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 
 		this.age = new SnapshotableLong(snapshotManager, age);
 		selfReference = new WeakReference<>(this);
-		getEngine().getScheduler().addAsyncManager(this);
 	}
 
 	@Override

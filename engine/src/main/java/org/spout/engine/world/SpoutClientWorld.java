@@ -234,7 +234,6 @@ public class SpoutClientWorld extends SpoutWorld {
 	public void addLocalPlayer(final SpoutClientPlayer player) {
 		final SpoutRegion region = (SpoutRegion) player.getRegion();
 		EntitySpawnEvent event = getEngine().getEventManager().callEvent(new EntitySpawnEvent(player, player.getPhysics().getPosition()));
-		region.getEntityManager().addEntity(player);
 		//Alert world components that an entity entered
 		for (Component component : values()) {
 			if (component instanceof WorldComponent) {

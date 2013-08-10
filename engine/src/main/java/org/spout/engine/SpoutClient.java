@@ -88,6 +88,7 @@ import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
+import org.spout.engine.world.SpoutRegion;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<>();
@@ -148,8 +149,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void start() {
-		worldChanged("NullWorld", UUID.randomUUID(), new ManagedHashMap().serialize());
-
+		// Completely blank world to allow the player to start in
+		this.world.getAndSet(new SpoutClientWorld("NullWorld", this, UUID.randomUUID()));
 		if (!connnect()) {
 			return;
 		}
@@ -348,9 +349,18 @@ public class SpoutClient extends SpoutEngine implements Client {
 			throw new RuntimeException("Unable to deserialize data", e);
 		}
 
-		this.world.getAndSet(world);
-		if (player.get() != null) {
+		SpoutClientWorld oldWorld = this.world.getAndSet(world);
+		if (oldWorld != null) {
+			if (oldWorld.getName().equals("NullWorld")) {
+				((SpoutRegion) player.get().getRegion()).getEntityManager().addEntity(player.get());
+			} else if (!scheduler.removeAsyncManager(oldWorld)) {
+				throw new IllegalStateException("Unable to remove old world from scheduler");
+			}
 			world.addLocalPlayer(player.get());
+		}
+		if (!scheduler.addAsyncManager(world)) {
+			this.world.compareAndSet(world, null);
+			throw new IllegalStateException("Unable to add new world to the scheduler");
 		}
 		return world;
 	}
