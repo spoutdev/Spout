@@ -392,12 +392,8 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	 * Interpolates the live transform and sets the output to the render transform. <p/> This is necessary for smooth rendering.
 	 */
 	public void interpolateAndSetRender(float dt) {
-		if (render.isEmpty()) {
+		if (render.isEmpty() || (render.getPosition().getWorld() != getOwner().getWorld())) {
 			render.set(snapshot);
-		}
-		//Only interpolate if same world
-		if (render.getPosition().getWorld() != getOwner().getWorld()) {
-			return;
 		}
 
 		//TODO: Untangle Camera position/rotation from render transform
