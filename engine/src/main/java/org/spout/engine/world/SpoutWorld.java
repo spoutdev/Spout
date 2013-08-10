@@ -43,6 +43,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.spout.api.Client;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentOwner;
@@ -510,7 +511,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	 * Spawns an entity into the world. Fires off a cancellable EntitySpawnEvent
 	 */
 	public void spawnEntity(Entity e, int entityID) {
-		if (e.isSpawned()) {
+		if (e.isSpawned() && !(engine instanceof Client)) {
 			throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
 		}
 
@@ -575,6 +576,13 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	@Override
 	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, LoadOption option, Class<? extends Component>... classes) {
 		return createAndSpawnEntity(arrangement.getArrangement(), option, classes);
+	}
+
+	public Entity createAndSpawnEntity(Point point, LoadOption option, int id) {
+		getRegionFromBlock(point, option);
+		Entity e = createEntity(point);
+		spawnEntity(e, id);
+		return e;
 	}
 
 	@Override

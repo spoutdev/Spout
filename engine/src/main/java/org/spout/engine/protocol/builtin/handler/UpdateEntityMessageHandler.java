@@ -27,6 +27,7 @@
 package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ServerSession;
@@ -45,9 +46,7 @@ public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessa
 
 		// Add is a special case because the player is already spawned
 		if (message.getAction() == ADD) {
-			Entity entity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()));
-			entity.getPhysics().setTransform(rmInverse.convert(message.getTransform()));
-			((SpoutWorld) session.getEngine().getDefaultWorld()).spawnEntity(entity, message.getEntityId());
+			((SpoutWorld) session.getEngine().getDefaultWorld()).createAndSpawnEntity(rmInverse.convert(message.getTransform().getPosition()), LoadOption.NO_LOAD, message.getEntityId());
 		} else {
 			Entity entity;
 			if (message.getEntityId() == session.getPlayer().getId()) {
