@@ -34,7 +34,10 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.spout.api.component.Component;
+import org.spout.api.component.entity.EntityComponent;
+import org.spout.api.component.world.WorldComponent;
 import org.spout.api.entity.Player;
+import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -45,6 +48,8 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.engine.SpoutClient;
+import org.spout.engine.entity.SpoutClientPlayer;
+import org.spout.engine.entity.SpoutEntity;
 
 public class SpoutClientWorld extends SpoutWorld {
 	/**
@@ -224,5 +229,23 @@ public class SpoutClientWorld extends SpoutWorld {
 	@Override
 	public void copySnapshotRun() {
 		snapshotManager.copyAllSnapshots();
+	}
+
+	public void addLocalPlayer(final SpoutClientPlayer player) {
+		final SpoutRegion region = (SpoutRegion) player.getRegion();
+		EntitySpawnEvent event = getEngine().getEventManager().callEvent(new EntitySpawnEvent(player, player.getPhysics().getPosition()));
+		region.getEntityManager().addEntity(player);
+		//Alert world components that an entity entered
+		for (Component component : values()) {
+			if (component instanceof WorldComponent) {
+				((WorldComponent) component).onSpawn(event);
+			}
+		}
+		//Alert entity components that their owner spawned
+		for (Component component : player.values()) {
+			if (component instanceof EntityComponent) {
+				((EntityComponent) component).onSpawned(event);
+			}
+		}
 	}
 }
