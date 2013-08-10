@@ -422,6 +422,8 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		} else {
 			live.set(ReactConverter.toSpoutTransform(body.getTransform(), live.getPosition().getWorld(), live.getScale()));
 			render.set(ReactConverter.toSpoutTransform(body.getInterpolatedTransform(), live.getPosition().getWorld(), live.getScale()));
+			//Physics needs to sync
+			sync();
 		}
 	}
 
