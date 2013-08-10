@@ -386,7 +386,6 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	 */
 	public void onPostPhysicsTick(float dt) {
 		interpolateAndSetRender(dt);
-		sync();
 	}
 
 	/**
@@ -421,7 +420,8 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 			render.setScale(render.getScale().multiply(1 - step).add(scale.multiply(step)));
 		} else {
-			render.set(ReactConverter.toSpoutTransform(body.getTransform(), live.getPosition().getWorld(), live.getScale()));
+			live.set(ReactConverter.toSpoutTransform(body.getTransform(), live.getPosition().getWorld(), live.getScale()));
+			render.set(ReactConverter.toSpoutTransform(body.getInterpolatedTransform(), live.getPosition().getWorld(), live.getScale()));
 		}
 	}
 
