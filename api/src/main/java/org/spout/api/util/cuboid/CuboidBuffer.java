@@ -107,7 +107,7 @@ public abstract class CuboidBuffer {
 	 * @return base chunk X-coordinate
 	 */
 	public int getBaseChunkX() {
-		return baseX << Chunk.BLOCKS.BITS;
+		return baseX >> Chunk.BLOCKS.BITS;
 	}
 
 	/**
@@ -116,7 +116,7 @@ public abstract class CuboidBuffer {
 	 * @return base chunk Y-coordinate
 	 */
 	public int getBaseChunkY() {
-		return baseY << Chunk.BLOCKS.BITS;
+		return baseY >> Chunk.BLOCKS.BITS;
 	}
 
 	/**
@@ -125,7 +125,7 @@ public abstract class CuboidBuffer {
 	 * @return base chunk Z-coordinate
 	 */
 	public int getBaseChunkZ() {
-		return baseZ << Chunk.BLOCKS.BITS;
+		return baseZ >> Chunk.BLOCKS.BITS;
 	}
 
 	/**
