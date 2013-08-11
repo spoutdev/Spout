@@ -147,6 +147,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			((SpoutServerWorld) getWorld()).removePlayer(this);
 			//save player data on disconnect, probably should do this periodically as well...
 			PlayerFiles.savePlayerData(this, async);
+			remove();
 		}
 		onlineLive.set(false);
 		return true;

@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
 
+import org.spout.api.Server;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.protocol.Message;
@@ -44,6 +45,7 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
 
 /**
@@ -157,10 +159,10 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	public void setPlayer(SpoutPlayer player) {
 		if (!this.player.compareAndSet(null, player)) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("Not allowed to set the player of a session twice");
 		}
 		if (!this.networkSendThread.compareAndSet(null, NetworkSendThreadPool.getNetworkThread(player.getId()))) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("Not allowed to set the network thread for a player twice");
 		}
 	}
 
