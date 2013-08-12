@@ -26,51 +26,21 @@
  */
 package org.spout.api.ai;
 
-import java.util.Collections;
-import java.util.List;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
-import com.google.common.collect.Lists;
+import java.util.HashMap;
+import java.util.Map;
 
-public abstract class AStarNode implements Comparable<AStarNode> {
-	float f, g, h;
-	AStarNode parent;
-	List<AStarNode> parents;
+import org.junit.Test;
+import org.spout.api.ai.pathfinder.VectorNode;
+import org.spout.api.math.Vector3;
 
-	public abstract Plan<?> buildPlan();
-
-	@Override
-	public int compareTo(AStarNode other) {
-		return Float.compare(f, other.f);
+public class VectorNodeTest {
+	@Test
+	public void testOverridesHashCode() {
+		Map<VectorNode, Float> costMap = new HashMap<VectorNode, Float>();
+		costMap.put(new VectorNode(Vector3.ONE, null), 2F);
+		assertThat(costMap.get(new VectorNode(Vector3.ONE, null)), equalTo(2F));
 	}
-
-	@Override
-	public abstract boolean equals(Object other);
-
-	public abstract Iterable<AStarNode> getNeighbours();
-
-	protected AStarNode getParent() {
-		return parent;
-	}
-
-	@SuppressWarnings ("unchecked")
-	protected <T extends AStarNode> Iterable<T> getParents() {
-		if (parents != null) {
-			return (Iterable<T>) parents;
-		}
-		parents = Lists.newArrayList();
-		AStarNode start = this;
-		while (start != null) {
-			parents.add(start);
-			start = start.parent;
-		}
-		Collections.reverse(parents);
-		return (Iterable<T>) parents;
-	}
-
-	protected float getPathCost() {
-		return f;
-	}
-
-	@Override
-	public abstract int hashCode();
 }
