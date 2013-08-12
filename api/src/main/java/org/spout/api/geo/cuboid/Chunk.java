@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Future;
+import org.spout.api.ServerOnly;
 
 import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.entity.Entity;
@@ -142,6 +143,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @return false if the player was already observing the chunk
 	 */
 	@DelayedWrite
+	@ServerOnly
 	public abstract boolean refreshObserver(Entity player);
 
 	/**
@@ -151,6 +153,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @return true if the player was observing the chunk
 	 */
 	@DelayedWrite
+	@ServerOnly
 	public abstract boolean removeObserver(Entity player);
 
 	/**
