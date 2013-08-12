@@ -59,8 +59,6 @@ import org.spout.api.event.Cause;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.event.server.RetrieveDataEvent;
-import org.spout.api.event.world.EntityEnterWorldEvent;
-import org.spout.api.event.world.EntityExitWorldEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeGenerator;
@@ -82,7 +80,6 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.IntPairHashed;
 import org.spout.api.util.hashing.NibblePairHashed;
-import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.list.concurrent.UnprotectedCopyOnUpdateArray;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.map.WeakValueHashMap;
@@ -162,7 +159,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	private final WeakReference<SpoutWorld> selfReference;
 	public static final WeakReference<SpoutWorld> NULL_WEAK_REFERENCE = new WeakReference<>(null);
 	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<>();
-
 	private final SpoutTaskManager taskManager;
 	private Thread executionThread;
 

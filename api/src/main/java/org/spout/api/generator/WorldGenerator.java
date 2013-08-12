@@ -39,9 +39,8 @@ public interface WorldGenerator extends Named {
 	/**
 	 * Gets the block structure for a Chunk.
 	 *
-	 * The CuboidBuffer will always be chunk-aligned, and could be of a variable (chunk) size.<br><br>
-	 * Use {@link CuboidBlockMaterialBuffer#getBase()} and {@link CuboidBlockMaterialBuffer#getTop()}
-	 * to obtain the Block bounds in which can be generated.
+	 * The CuboidBuffer will always be chunk-aligned, and could be of a variable (chunk) size.<br><br> Use {@link CuboidBlockMaterialBuffer#getBase()} and {@link CuboidBlockMaterialBuffer#getTop()} to
+	 * obtain the Block bounds in which can be generated.
 	 *
 	 * It is recommended that seeded random number generators from WorldGeneratorUtils are used.
 	 *

@@ -76,7 +76,6 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.BlockComponentContainer;
 import org.spout.api.geo.cuboid.BlockContainer;
 import org.spout.api.geo.cuboid.Chunk;
-import static org.spout.api.geo.cuboid.Chunk.BLOCKS;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
@@ -111,7 +110,6 @@ import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
-
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
@@ -2167,7 +2165,9 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {
 		BlockMaterial material = MaterialRegistry.get(blockState);
-		if (material == null) return;
+		if (material == null) {
+			return;
+		}
 		set.add(material.getModel().getRenderMaterial());
 	}
 

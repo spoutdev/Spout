@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
 
-import org.spout.api.Server;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.protocol.Message;
@@ -45,7 +44,6 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
 
 /**

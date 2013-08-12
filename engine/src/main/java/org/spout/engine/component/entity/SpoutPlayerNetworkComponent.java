@@ -37,7 +37,6 @@ import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.event.BlockUpdateEvent;
