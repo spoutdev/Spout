@@ -103,7 +103,7 @@ public abstract class CuboidBuffer {
 
 	/**
 	 * Gets the X-coordinate of the chunk the base of this CuboidBuffer is in
-	 * 
+	 *
 	 * @return base chunk X-coordinate
 	 */
 	public int getBaseChunkX() {
@@ -112,7 +112,7 @@ public abstract class CuboidBuffer {
 
 	/**
 	 * Gets the Y-coordinate of the chunk the base of this CuboidBuffer is in
-	 * 
+	 *
 	 * @return base chunk Y-coordinate
 	 */
 	public int getBaseChunkY() {
@@ -121,7 +121,7 @@ public abstract class CuboidBuffer {
 
 	/**
 	 * Gets the Z-coordinate of the chunk the base of this CuboidBuffer is in
-	 * 
+	 *
 	 * @return base chunk Z-coordinate
 	 */
 	public int getBaseChunkZ() {

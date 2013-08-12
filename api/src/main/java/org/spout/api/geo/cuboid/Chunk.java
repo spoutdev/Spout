@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Future;
-import org.spout.api.ServerOnly;
 
+import org.spout.api.ServerOnly;
 import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;

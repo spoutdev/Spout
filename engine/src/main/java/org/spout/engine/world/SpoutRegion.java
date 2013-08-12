@@ -84,7 +84,6 @@ import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
-
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.EntityManager;
@@ -807,7 +806,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public void runPhysics(int sequence) {
-		if (Spout.getPlatform() != Platform.SERVER) return;
+		if (Spout.getPlatform() != Platform.SERVER) {
+			return;
+		}
 		dynamicBlockTree.setRegionThread(Thread.currentThread());
 
 		if (sequence == -1) {
@@ -838,7 +839,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public void runDynamicUpdates(long time, int sequence) {
-		if (Spout.getPlatform() != Platform.SERVER) return;
+		if (Spout.getPlatform() != Platform.SERVER) {
+			return;
+		}
 		scheduler.addUpdates(dynamicBlockTree.getLastUpdates());
 		dynamicBlockTree.resetLastUpdates();
 		dynamicBlockTree.setRegionThread(Thread.currentThread());

@@ -26,7 +26,6 @@
  */
 package org.spout.engine.component.entity;
 
-import org.spout.api.Client;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.entity.PhysicsComponent;

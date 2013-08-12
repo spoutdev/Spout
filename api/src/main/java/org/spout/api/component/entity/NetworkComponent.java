@@ -36,10 +36,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+
 import org.spout.api.Platform;
 import org.spout.api.ServerOnly;
 import org.spout.api.Spout;
-
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.ProtocolEvent;
@@ -281,7 +281,9 @@ public class NetworkComponent extends EntityComponent {
 	 * @param live A copy of the owner's live transform state
 	 */
 	public void finalizeRun(final Transform live) {
-		if (Spout.getPlatform() != Platform.SERVER) return;
+		if (Spout.getPlatform() != Platform.SERVER) {
+			return;
+		}
 		//Entity changed chunks as observer OR observer status changed so update
 		WrappedSerizableIterator old = getData().get(OBSERVER_ITERATOR);
 		if (getOwner().getPhysics().getPosition().getChunk(LoadOption.NO_LOAD) != live.getPosition().getChunk(LoadOption.NO_LOAD) && isObserver()

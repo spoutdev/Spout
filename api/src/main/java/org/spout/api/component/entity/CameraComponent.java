@@ -101,7 +101,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 
 	@Override
 	public Matrix getRotation() {
-		Transform transform = getOwner().getPhysics().getTransform().copy().translate(0, 2, 0);;
+		Transform transform = getOwner().getPhysics().getTransform().copy().translate(0, 2, 0);
 		return MatrixMath.createRotated(transform.getRotation());
 	}
 }

@@ -61,7 +61,6 @@ import org.spout.api.Platform;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
 import org.spout.api.component.entity.PlayerNetworkComponent;
-import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.engine.EngineStartEvent;

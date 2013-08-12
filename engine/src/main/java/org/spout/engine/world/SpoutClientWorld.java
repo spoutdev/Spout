@@ -50,7 +50,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.entity.SpoutClientPlayer;
-import org.spout.engine.entity.SpoutEntity;
 
 public class SpoutClientWorld extends SpoutWorld {
 	/**
