@@ -27,6 +27,7 @@
 package org.spout.engine.world;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -204,7 +205,7 @@ public class SpoutClientWorld extends SpoutWorld {
 
 	@Override
 	public List<Player> getPlayers() {
-		throw new UnsupportedOperationException("Client worlds do not hold players");
+		return Arrays.asList((Player) ((SpoutClient) engine).getPlayer());
 	}
 
 	@Override

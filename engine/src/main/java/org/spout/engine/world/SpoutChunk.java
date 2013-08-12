@@ -55,7 +55,9 @@ import gnu.trove.map.hash.TShortObjectHashMap;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.procedure.TShortObjectProcedure;
 
+import org.spout.api.ClientOnly;
 import org.spout.api.Platform;
+import org.spout.api.ServerOnly;
 import org.spout.api.Spout;
 import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
@@ -74,6 +76,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.BlockComponentContainer;
 import org.spout.api.geo.cuboid.BlockContainer;
 import org.spout.api.geo.cuboid.Chunk;
+import static org.spout.api.geo.cuboid.Chunk.BLOCKS;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
@@ -206,7 +209,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	private final ChunkSetQueueElement<SpoutChunk> unloadQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> populationQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> populationPriorityQueueElement;
-	private final ChunkSetQueueElement<SpoutChunk> chunkObserversDirtyQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> localPhysicsChunkQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> globalPhysicsChunkQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> dirtyChunkQueueElement;
@@ -233,18 +235,18 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, AtomicBlockStore blockStore, ManagedHashMap extraData) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, extraData, false, blockStore);
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, extraData, blockStore);
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, ManagedHashMap extraData, boolean lightStable) {
-		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, palette, blockArrayWidth, variableWidthBlockArray));
+		this(world, region, x, y, z, popState, extraData, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, palette, blockArrayWidth, variableWidthBlockArray));
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, ManagedHashMap extraData, boolean lightStable) {
-		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, false, 10, blocks, data));
+		this(world, region, x, y, z, popState, extraData, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, false, 10, blocks, data));
 	}
 
-	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, boolean lightStable, AtomicBlockStore blockStore) {
+	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, AtomicBlockStore blockStore) {
 		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
 		parentRegion = region;
 		this.populationState = new AtomicReference<>(popState);
@@ -275,7 +277,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		this.unloadQueueElement = new ChunkSetQueueElement<>(getRegion().unloadQueue, this);
 		this.populationQueueElement = new ChunkSetQueueElement<>(getRegion().populationQueue, this);
 		this.populationPriorityQueueElement = new ChunkSetQueueElement<>(getRegion().populationPriorityQueue, this);
-		this.chunkObserversDirtyQueueElement = new ChunkSetQueueElement<>(getRegion().chunkObserversDirtyQueue, this, true);
 		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement<>(getRegion().localPhysicsChunkQueue, this);
 		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<>(getRegion().globalPhysicsChunkQueue, this);
 		this.dirtyChunkQueueElement = new ChunkSetQueueElement<>(getRegion().dirtyChunkQueue, this);
@@ -784,10 +785,12 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	@Override
 	public boolean refreshObserver(Entity entity) {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Cannot refresh observers when not in server mode!");
+		}
 		TickStage.checkStage(TickStage.FINALIZE);
-
 		checkChunkLoaded();
-		chunkObserversDirtyQueueElement.add();
+
 		if (!isPopulated()) {
 			queueForPopulation(false);
 		}
@@ -807,9 +810,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	@Override
 	public boolean removeObserver(Entity entity) {
-		checkChunkLoaded();
-		chunkObserversDirtyQueueElement.add();
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Cannot remove observers when not in server mode!");
+		}
 		TickStage.checkStage(TickStage.FINALIZE);
+		checkChunkLoaded();
 
 		if (observers.remove(entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.remove(entity);
@@ -821,11 +826,13 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		return true;
 	}
 
+	@ServerOnly
 	public boolean isObserved() {
 		return !observers.isEmpty();
 	}
 
 	@Override
+	@ServerOnly
 	public int getNumObservers() {
 		return observers.size();
 	}
@@ -2160,6 +2167,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {
 		BlockMaterial material = MaterialRegistry.get(blockState);
+		if (material == null) return;
 		set.add(material.getModel().getRenderMaterial());
 	}
 
@@ -2181,5 +2189,15 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		} else {
 			network.callProtocolEvent(new ChunkSendEvent(this));
 		}
+	}
+
+	@ClientOnly
+	public void rawSetBlockStore(short[] blocks, short[] data) {
+		if (Spout.getPlatform() != Platform.CLIENT) {
+			throw new UnsupportedOperationException("Cannot raw set the block store unless in client mode.");
+		}
+		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, false, false, 10, blocks, data);
+		// Basically a new chunk, we want to rerender everything
+		firstRender = true;
 	}
 }

@@ -28,6 +28,7 @@ package org.spout.api.geo;
 
 import java.util.List;
 
+import org.spout.api.ServerOnly;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.math.Vector3;
@@ -167,6 +168,7 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 *
 	 * @param chunks a list of chunk coordinates
 	 */
+	@ServerOnly
 	public void queueChunksForGeneration(List<Vector3> chunks);
 
 	/**
@@ -174,6 +176,7 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 *
 	 * @param chunks a list of chunk coordinates
 	 */
+	@ServerOnly
 	public void queueChunkForGeneration(Vector3 chunk);
 
 	/**
