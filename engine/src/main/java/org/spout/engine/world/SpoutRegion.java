@@ -342,9 +342,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 					newChunk.notifyColumn();
 					newChunk.queueNew();
 				}
-				if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-					newChunk.setNeighbourRenderDirty(true);
-				}
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
 					for (SpoutEntitySnapshot snapshot : dataForRegion.loadedEntities) {
