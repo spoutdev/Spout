@@ -85,9 +85,34 @@ public class WorldState implements Cloneable {
 		return differences;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		WorldState other = (WorldState) obj;
+		if (state == null) {
+			if (other.state != null) {
+				return false;
+			}
+		} else if (!state.equals(other.state)) {
+			return false;
+		}
+		return true;
+	}
+
 	@SuppressWarnings ("unchecked")
 	public <T> T get(String string) {
 		return (T) state.get(string);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		return prime + ((state == null) ? 0 : state.hashCode());
 	}
 
 	public void put(String key, Object value) {
@@ -98,8 +123,6 @@ public class WorldState implements Cloneable {
 	public String toString() {
 		return state.toString();
 	}
-
-	public static final WorldState EMPTY = WorldState.createEmptyState();
 
 	private static WorldState create(Object[] objects) {
 		return create(objects, false);
@@ -135,4 +158,6 @@ public class WorldState implements Cloneable {
 	public static WorldState createImmutable(String firstKey, Object firstValue, String secondKey, Object secondValue) {
 		return create(new Object[] {firstKey, firstValue, secondKey, secondValue}, true);
 	}
+
+	public static final WorldState EMPTY = WorldState.createEmptyState();
 }
