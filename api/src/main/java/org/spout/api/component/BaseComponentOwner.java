@@ -140,14 +140,18 @@ public class BaseComponentOwner implements ComponentOwner {
 		}
 	}
 
-	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends Component> T detach(Class<? extends Component> type) {
+		return detach(type, false);
+	}
+
+	@SuppressWarnings ("unchecked")
+	protected <T extends Component> T detach(Class<? extends Component> type, boolean force) {
 		Preconditions.checkNotNull(type);
 		synchronized (components) {
 			T component = (T) get(type);
 
-			if (component != null && component.isDetachable()) {
+			if (component != null && (component.isDetachable() || force)) {
 				components.inverse().remove(component);
 				try {
 					component.onDetached();

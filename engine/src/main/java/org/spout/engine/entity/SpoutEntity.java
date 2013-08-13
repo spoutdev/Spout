@@ -152,7 +152,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().add((SpoutModelComponent) component);
 			}
 			return component;
-		} else if (NetworkComponent.class.isAssignableFrom(type)) {
+		} else if (NetworkComponent.class.isAssignableFrom(type) && get(type) == null) {
 			//Detach old NetworkComponent
 			super.detach(NetworkComponent.class);
 			//Attach new one
@@ -163,14 +163,14 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	@Override
-	public <T extends Component> T detach(Class<? extends Component> type) {
+	protected <T extends Component> T detach(Class<? extends Component> type, boolean force) {
 		if (ModelComponent.class.equals(type)) {
 			T component = super.detach(type);
 			if (getEngine() instanceof SpoutClient) {
 				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().remove((SpoutModelComponent) component);
 			}
 			return component;
-		} else if (NetworkComponent.class.isAssignableFrom(type)) {
+		} else if (NetworkComponent.class.isAssignableFrom(type) && force) {
 			return (T) network;
 		}
 		return super.detach(type);
@@ -219,7 +219,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 			physics.deactivate();
 			//Call onRemoved for Components and remove them
 			for (Component component : values()) {
-				detach(component.getClass());
+				detach(component.getClass(), true);
 			}
 			//Track entities w/their chunks
 			if (chunk != null) {
