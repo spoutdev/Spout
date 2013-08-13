@@ -74,7 +74,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicReference<String> displayName = new AtomicReference<>();
 	private final AtomicReference<String> name = new AtomicReference<>();
 	private final AtomicBoolean onlineLive = new AtomicBoolean(true);
-	private boolean online;
+	private boolean online = true;
 	private final int hashcode;
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
@@ -86,7 +86,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		this.name.set(snapshot.getName());
 		this.displayName.set(snapshot.getName());
 		this.hashcode = name.hashCode();
-		this.online = true;
 		if (Spout.getPlatform() == Platform.SERVER) {
 			add(MovementValidatorComponent.class);
 		}
@@ -197,12 +196,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public int hashCode() {
 		return hashcode;
-	}
-
-	@Override
-	public void copySnapshot() {
-		super.copySnapshot();
-		online = onlineLive.get();
 	}
 
 	@Override
@@ -327,7 +320,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void finalizeRun() {
-		if (getEngine().getPlatform() != Platform.CLIENT && !this.isOnlineLive()) {
+		if (getEngine().getPlatform() == Platform.SERVER && !this.isOnlineLive()) {
 			remove();
 		}
 
@@ -335,8 +328,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			if (getEngine().getPlatform() == Platform.SERVER) {
 				((SpoutServer) getEngine()).removePlayer(this);
 			}
-			// TODO stop client?
-			return;
 		}
 		super.finalizeRun();
 	}
@@ -344,9 +335,16 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public void preSnapshotRun() {
 		super.preSnapshotRun();
-		if (this.isOnline()) {
-			this.getNetwork().preSnapshot(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
+		if (isRemoved()) {
+			return;
 		}
+		this.getNetwork().preSnapshot(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
+	}
+
+	@Override
+	public void copySnapshot() {
+		super.copySnapshot();
+		online = onlineLive.get();
 	}
 
 	@Override

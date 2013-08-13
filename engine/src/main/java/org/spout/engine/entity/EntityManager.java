@@ -31,6 +31,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
@@ -163,9 +165,6 @@ public class EntityManager {
 	public void finalizeRun() {
 		for (SpoutEntity e : entities.get().values()) {
 			e.finalizeRun();
-			if (e.isRemoved()) {
-				removeEntity(e);
-			}
 		}
 	}
 
@@ -186,6 +185,14 @@ public class EntityManager {
 			e.copySnapshot();
 		}
 		snapshotManager.copyAllSnapshots();
+
+		// We want one more tick with for the removed Entities
+		// The next tick works with the snapshotted values which contains has all removed entities with idRemoved true
+		for (SpoutEntity e : entities.get().values()) {
+			if (e.isRemoved()) {
+				removeEntity(e);
+			}
+		}
 	}
 
 	/**
