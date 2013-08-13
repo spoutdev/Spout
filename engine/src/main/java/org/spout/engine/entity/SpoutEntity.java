@@ -165,7 +165,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	@Override
 	protected <T extends Component> T detach(Class<? extends Component> type, boolean force) {
 		if (ModelComponent.class.equals(type)) {
-			T component = super.detach(type);
+			T component = super.detach(type, force);
 			if (getEngine() instanceof SpoutClient) {
 				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().remove((SpoutModelComponent) component);
 			}
@@ -173,7 +173,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		} else if (NetworkComponent.class.isAssignableFrom(type) && !force) {
 			return (T) network;
 		}
-		return super.detach(type);
+		return super.detach(type, force);
 	}
 
 	@Override
