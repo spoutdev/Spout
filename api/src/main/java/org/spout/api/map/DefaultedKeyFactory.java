@@ -32,9 +32,10 @@ public class DefaultedKeyFactory<T extends Serializable> implements DefaultedKey
 	private final Class<T> defaultValue;
 	private final String key;
 
-	public DefaultedKeyFactory(String key, Class<T> defaultValue) {
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public DefaultedKeyFactory(String key, Class<?> defaultValue) {
 		this.key = key;
-		this.defaultValue = defaultValue;
+		this.defaultValue = (Class) defaultValue;
 	}
 
 	@Override
