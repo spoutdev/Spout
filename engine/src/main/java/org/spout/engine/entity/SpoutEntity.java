@@ -170,7 +170,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().remove((SpoutModelComponent) component);
 			}
 			return component;
-		} else if (NetworkComponent.class.isAssignableFrom(type) && force) {
+		} else if (NetworkComponent.class.isAssignableFrom(type) && !force) {
 			return (T) network;
 		}
 		return super.detach(type);
