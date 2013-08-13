@@ -514,33 +514,33 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 		if (region == null) {
 			throw new IllegalStateException("Cannot spawn an entity that has a null region!");
 		}
-		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
-			if (entityID != SpoutEntity.NOTSPAWNEDID) {
-				if (getEngine().getPlatform() == Platform.CLIENT) {
-					((SpoutEntity) e).setId(entityID);
-				} else {
-					throw new IllegalArgumentException("Can not set entity id's manually");
-				}
-			}
-			EntitySpawnEvent event = getEngine().getEventManager().callEvent(new EntitySpawnEvent(e, e.getPhysics().getPosition()));
-			if (event.isCancelled()) {
-				return;
-			}
-			region.getEntityManager().addEntity((SpoutEntity) e);
-			//Alert world components that an entity entered
-			for (Component component : values()) {
-				if (component instanceof WorldComponent) {
-					((WorldComponent) component).onSpawn(event);
-				}
-			}
-			//Alert entity components that their owner spawned
-			for (Component component : e.values()) {
-				if (component instanceof EntityComponent) {
-					((EntityComponent) component).onSpawned(event);
-				}
-			}
-		} else {
+		if (!region.getEntityManager().isSpawnable((SpoutEntity) e)) {
 			throw new IllegalStateException("Cannot spawn an entity that already has an id!");
+		}
+
+		if (entityID != SpoutEntity.NOTSPAWNEDID) {
+			if (getEngine().getPlatform() == Platform.CLIENT) {
+				((SpoutEntity) e).setId(entityID);
+			} else {
+				throw new IllegalArgumentException("Can not set entity id's manually");
+			}
+		}
+		EntitySpawnEvent event = getEngine().getEventManager().callEvent(new EntitySpawnEvent(e, e.getPhysics().getPosition()));
+		if (event.isCancelled()) {
+			return;
+		}
+		region.getEntityManager().addEntity((SpoutEntity) e);
+		//Alert world components that an entity entered
+		for (Component component : values()) {
+			if (component instanceof WorldComponent) {
+				((WorldComponent) component).onSpawn(event);
+			}
+		}
+		//Alert entity components that their owner spawned
+		for (Component component : e.values()) {
+			if (component instanceof EntityComponent) {
+				((EntityComponent) component).onSpawned(event);
+			}
 		}
 	}
 

@@ -28,6 +28,7 @@ package org.spout.engine.entity;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -70,7 +71,8 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<>(snapshotManager, null);
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
 	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
-	private volatile boolean remove = false;
+	private AtomicBoolean remove = new AtomicBoolean(false);
+	private AtomicBoolean removeLive = new AtomicBoolean(false);
 	//Other
 	private final Engine engine;
 	private final UUID uid;
@@ -258,6 +260,9 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	public void preSnapshotRun() {
+		if (isRemoved()) {
+			return;
+		}
 		this.getNetwork().preSnapshotRun(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
 	}
 
@@ -322,16 +327,18 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		justSpawned = false;
 
 		network.copySnapshot();
+		remove.set(removeLive.get());
 	}
 
 	@Override
 	public void remove() {
-		remove = true;
+		TickStage.checkStage(~(TickStage.PRESNAPSHOT | TickStage.SNAPSHOT));
+		removeLive.set(true);
 	}
 
 	@Override
 	public boolean isRemoved() {
-		return remove;
+		return remove.get();
 	}
 
 	@Override

@@ -37,7 +37,7 @@ public class WorldChangeMessageHandler extends MessageHandler<WorldChangeMessage
 	public void handleClient(ClientSession session, WorldChangeMessage message) {
 		((SpoutClient) session.getEngine()).worldChanged(message.getWorldName(), message.getWorldUUID(), message.getCompressedData());
 		session.getPlayer().getPhysics().setTransform(message.getPlayerTransform());
-		session.send(new ReadyMessage());
+		session.send(ReadyMessage.INSTANCE);
 	}
 }
 
