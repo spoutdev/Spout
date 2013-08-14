@@ -666,7 +666,7 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 				scale / aspect, 0, 0, 0,
 				0, scale, 0, 0,
 				0, 0, (far + near) / (near - far), 2 * far * near / (near - far),
-				0, 0, -1, 1);
+				0, 0, -1, 0);
 	}
 
 	// TODO: add double overload

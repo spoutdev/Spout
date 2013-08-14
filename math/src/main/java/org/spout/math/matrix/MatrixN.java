@@ -620,6 +620,7 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		perspective.set(2, 2, (far + near) / (near - far));
 		perspective.set(2, 3, 2 * far * near / (near - far));
 		perspective.set(3, 2, -1);
+		perspective.set(3, 3, 0);
 		return perspective;
 	}
 
