@@ -156,6 +156,16 @@ public class Matrix3 implements Matrix, Serializable, Cloneable {
 						(col < 0 || col > 2 ? "col must be greater than zero and smaller than 3." : ""));
 	}
 
+	@Override
+	public Vector3 getRow(int row) {
+		return new Vector3(get(row, 0), get(row, 1), get(row, 2));
+	}
+
+	@Override
+	public Vector3 getColumn(int col) {
+		return new Vector3(get(0, col), get(1, col), get(2, col));
+	}
+
 	public Matrix3 add(Matrix3 m) {
 		return new Matrix3(
 				m00 + m.m00, m01 + m.m01, m02 + m.m02,
@@ -357,13 +367,13 @@ public class Matrix3 implements Matrix, Serializable, Cloneable {
 	@Override
 	public float[] toArray(boolean columnMajor) {
 		if (columnMajor) {
-			return new float[] {
+			return new float[]{
 					m00, m10, m20,
 					m01, m11, m21,
 					m02, m12, m22
 			};
 		} else {
-			return new float[] {
+			return new float[]{
 					m00, m01, m02,
 					m10, m11, m12,
 					m20, m21, m22

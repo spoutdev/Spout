@@ -40,6 +40,12 @@ import org.spout.math.vector.VectorN;
 
 public class Vector3Test {
 	@Test
+	public void testEmptyConstructor() {
+		Vector3 vector = new Vector3();
+		TestUtil.assertEquals(vector, 0, 0, 0);
+	}
+
+	@Test
 	public void testCopyVector2DefaultZConstructor() {
 		Vector3 vector = new Vector3(new Vector2(0, 1));
 		TestUtil.assertEquals(vector, 0, 1, 0);
@@ -361,6 +367,26 @@ public class Vector3Test {
 	public void testNormalize() {
 		Vector3 vector = new Vector3(2, 2, 0).normalize();
 		TestUtil.assertEquals(vector, (float) TrigMath.HALF_SQRT_OF_TWO, (float) TrigMath.HALF_SQRT_OF_TWO, 0);
+	}
+
+	@Test
+	public void testGetMinAxis() {
+		Vector3 vector1 = new Vector3(1, 2, 3);
+		TestUtil.assertEquals(vector1.getMinAxis(), 0);
+		Vector3 vector2 = new Vector3(2, 1, 3);
+		TestUtil.assertEquals(vector2.getMinAxis(), 1);
+		Vector3 vector3 = new Vector3(3, 2, 1);
+		TestUtil.assertEquals(vector3.getMinAxis(), 2);
+	}
+
+	@Test
+	public void testGetMaxAxis() {
+		Vector3 vector1 = new Vector3(3, 1, 2);
+		TestUtil.assertEquals(vector1.getMaxAxis(), 0);
+		Vector3 vector2 = new Vector3(1, 3, 2);
+		TestUtil.assertEquals(vector2.getMaxAxis(), 1);
+		Vector3 vector3 = new Vector3(1, 2, 3);
+		TestUtil.assertEquals(vector3.getMaxAxis(), 2);
 	}
 
 	@Test

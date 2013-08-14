@@ -113,6 +113,16 @@ public class Matrix2 implements Matrix, Serializable, Cloneable {
 						(col < 0 || col > 1 ? "col must be greater than zero and smaller than 2." : ""));
 	}
 
+	@Override
+	public Vector2 getRow(int row) {
+		return new Vector2(get(row, 0), get(row, 1));
+	}
+
+	@Override
+	public Vector2 getColumn(int col) {
+		return new Vector2(get(0, col), get(1, col));
+	}
+
 	public Matrix2 add(Matrix2 m) {
 		return new Matrix2(
 				m00 + m.m00, m01 + m.m01,
@@ -290,12 +300,12 @@ public class Matrix2 implements Matrix, Serializable, Cloneable {
 	@Override
 	public float[] toArray(boolean columnMajor) {
 		if (columnMajor) {
-			return new float[] {
+			return new float[]{
 					m00, m10,
 					m01, m11
 			};
 		} else {
-			return new float[] {
+			return new float[]{
 					m00, m01,
 					m10, m11
 			};

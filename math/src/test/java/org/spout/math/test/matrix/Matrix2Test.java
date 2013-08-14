@@ -90,6 +90,20 @@ public class Matrix2Test {
 	}
 
 	@Test
+	public void testRowGetter() {
+		Matrix2 matrix = new Matrix2(1, 2, 3, 4);
+		TestUtil.assertEquals(matrix.getRow(0), 1, 2);
+		TestUtil.assertEquals(matrix.getRow(1), 3, 4);
+	}
+
+	@Test
+	public void testColumnGetter() {
+		Matrix2 matrix = new Matrix2(1, 2, 3, 4);
+		TestUtil.assertEquals(matrix.getColumn(0), 1, 3);
+		TestUtil.assertEquals(matrix.getColumn(1), 2, 4);
+	}
+
+	@Test
 	public void testMatrix2Addition() {
 		Matrix2 matrix = new Matrix2(1, 2, 3, 4).add(new Matrix2(1, 2, 3, 4));
 		TestUtil.assertEquals(matrix, 2, 4, 6, 8);

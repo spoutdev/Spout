@@ -348,6 +348,34 @@ public class VectorN implements Vector, Comparable<VectorN>, Serializable, Clone
 		return d;
 	}
 
+	@Override
+	public int getMinAxis() {
+		int axis = 0;
+		float value = vec[axis];
+		final int size = size();
+		for (int comp = 1; comp < size; comp++) {
+			if (vec[comp] < value) {
+				value = vec[comp];
+				axis = comp;
+			}
+		}
+		return axis;
+	}
+
+	@Override
+	public int getMaxAxis() {
+		int axis = 0;
+		float value = vec[axis];
+		final int size = size();
+		for (int comp = 1; comp < size; comp++) {
+			if (vec[comp] > value) {
+				value = vec[comp];
+				axis = comp;
+			}
+		}
+		return axis;
+	}
+
 	public Vector2 toVector2() {
 		return new Vector2(this);
 	}

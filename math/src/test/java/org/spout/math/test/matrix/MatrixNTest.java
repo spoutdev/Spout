@@ -133,6 +133,32 @@ public class MatrixNTest {
 	}
 
 	@Test
+	public void testRowGetter() {
+		MatrixN matrix = new MatrixN(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		TestUtil.assertEquals(matrix.getRow(0), 1, 2, 3, 4);
+		TestUtil.assertEquals(matrix.getRow(1), 5, 6, 7, 8);
+		TestUtil.assertEquals(matrix.getRow(2), 9, 10, 11, 12);
+		TestUtil.assertEquals(matrix.getRow(3), 13, 14, 15, 16);
+	}
+
+	@Test
+	public void testColumnGetter() {
+		MatrixN matrix = new MatrixN(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		TestUtil.assertEquals(matrix.getColumn(0), 1, 5, 9, 13);
+		TestUtil.assertEquals(matrix.getColumn(1), 2, 6, 10, 14);
+		TestUtil.assertEquals(matrix.getColumn(2), 3, 7, 11, 15);
+		TestUtil.assertEquals(matrix.getColumn(3), 4, 8, 12, 16);
+	}
+
+	@Test
 	public void testSetterFloatValue() {
 		MatrixN matrix = new MatrixN(4);
 		matrix.set(0, 0, 1);

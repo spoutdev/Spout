@@ -44,6 +44,10 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 	private transient volatile boolean hashed = false;
 	private transient volatile int hashCode = 0;
 
+	public Vector4() {
+		this(0, 0, 0, 0);
+	}
+
 	public Vector4(Vector2 v) {
 		this(v, 0, 0);
 	}
@@ -291,6 +295,52 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 		return new Vector4(x / length, y / length, z / length, w / length);
 	}
 
+	/**
+	 * Return the axis with the minimal value.
+	 *
+	 * @return {@link int} axis with minimal value
+	 */
+	@Override
+	public int getMinAxis() {
+		float value = x;
+		int axis = 0;
+		if (y < value) {
+			value = y;
+			axis = 1;
+		}
+		if (z < value) {
+			value = z;
+			axis = 2;
+		}
+		if (w < value) {
+			axis = 3;
+		}
+		return axis;
+	}
+
+	/**
+	 * Return the axis with the maximum value.
+	 *
+	 * @return {@link int} axis with maximum value
+	 */
+	@Override
+	public int getMaxAxis() {
+		float value = x;
+		int axis = 0;
+		if (y > value) {
+			value = y;
+			axis = 1;
+		}
+		if (z > value) {
+			value = z;
+			axis = 2;
+		}
+		if (w > value) {
+			axis = 3;
+		}
+		return axis;
+	}
+
 	public Vector2 toVector2() {
 		return new Vector2(this);
 	}
@@ -305,7 +355,7 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 
 	@Override
 	public float[] toArray() {
-		return new float[] {x, y, z, w};
+		return new float[]{x, y, z, w};
 	}
 
 	@Override
