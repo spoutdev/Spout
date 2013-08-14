@@ -97,6 +97,22 @@ public class Matrix3Test {
 	}
 
 	@Test
+	public void testRowGetter() {
+		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+		TestUtil.assertEquals(matrix.getRow(0), 1, 2, 3);
+		TestUtil.assertEquals(matrix.getRow(1), 4, 5, 6);
+		TestUtil.assertEquals(matrix.getRow(2), 7, 8, 9);
+	}
+
+	@Test
+	public void testColumnGetter() {
+		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+		TestUtil.assertEquals(matrix.getColumn(0), 1, 4, 7);
+		TestUtil.assertEquals(matrix.getColumn(1), 2, 5, 8);
+		TestUtil.assertEquals(matrix.getColumn(2), 3, 6, 9);
+	}
+
+	@Test
 	public void testMatrix3Addition() {
 		Matrix3 matrix = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9).add(new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9));
 		TestUtil.assertEquals(matrix, 2, 4, 6, 8, 10, 12, 14, 16, 18);

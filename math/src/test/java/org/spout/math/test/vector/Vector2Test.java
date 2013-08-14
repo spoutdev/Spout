@@ -40,6 +40,12 @@ import org.spout.math.vector.VectorN;
 
 public class Vector2Test {
 	@Test
+	public void testEmptyConstructor() {
+		Vector2 vector = new Vector2();
+		TestUtil.assertEquals(vector, 0, 0);
+	}
+
+	@Test
 	public void testCopyVector2Constructor() {
 		Vector2 vector = new Vector2(new Vector2(0, 1));
 		TestUtil.assertEquals(vector, 0, 1);
@@ -335,6 +341,22 @@ public class Vector2Test {
 	public void testNormalize() {
 		Vector2 vector = new Vector2(2, 2).normalize();
 		TestUtil.assertEquals(vector, (float) TrigMath.HALF_SQRT_OF_TWO, (float) TrigMath.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testGetMinAxis() {
+		Vector2 vector1 = new Vector2(1, 2);
+		TestUtil.assertEquals(vector1.getMinAxis(), 0);
+		Vector2 vector2 = new Vector2(2, 1);
+		TestUtil.assertEquals(vector2.getMinAxis(), 1);
+	}
+
+	@Test
+	public void testGetMaxAxis() {
+		Vector2 vector1 = new Vector2(2, 1);
+		TestUtil.assertEquals(vector1.getMaxAxis(), 0);
+		Vector2 vector2 = new Vector2(1, 2);
+		TestUtil.assertEquals(vector2.getMaxAxis(), 1);
 	}
 
 	@Test

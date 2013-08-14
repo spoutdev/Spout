@@ -40,9 +40,9 @@ import static org.junit.Assert.assertEquals;
 
 public class VectorNTest {
 	@Test
-	public void testDefaultConstructor() {
-		VectorN vector = new VectorN(0, 1, 2, 3, 4, 5);
-		TestUtil.assertEquals(vector, 0, 1, 2, 3, 4, 5);
+	public void testSizeConstructor() {
+		VectorN vector = new VectorN(5);
+		TestUtil.assertEquals(vector, 0, 0, 0, 0, 0);
 	}
 
 	@Test
@@ -325,6 +325,30 @@ public class VectorNTest {
 		TestUtil.assertEquals(v1, (float) TrigMath.HALF_SQRT_OF_TWO, (float) TrigMath.HALF_SQRT_OF_TWO, 0, 0);
 		VectorN v2 = new VectorN(0, 1, 0, 1).normalize();
 		TestUtil.assertEquals(v2, 0, (float) TrigMath.HALF_SQRT_OF_TWO, 0, (float) TrigMath.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testGetMinAxis() {
+		VectorN vector1 = new VectorN(1, 2, 3, 4);
+		TestUtil.assertEquals(vector1.getMinAxis(), 0);
+		VectorN vector2 = new VectorN(2, 1, 3, 4);
+		TestUtil.assertEquals(vector2.getMinAxis(), 1);
+		VectorN vector3 = new VectorN(3, 2, 1, 4);
+		TestUtil.assertEquals(vector3.getMinAxis(), 2);
+		VectorN vector4 = new VectorN(4, 2, 3, 1);
+		TestUtil.assertEquals(vector4.getMinAxis(), 3);
+	}
+
+	@Test
+	public void testGetMaxAxis() {
+		VectorN vector1 = new VectorN(4, 2, 3, 1);
+		TestUtil.assertEquals(vector1.getMaxAxis(), 0);
+		VectorN vector2 = new VectorN(1, 4, 3, 2);
+		TestUtil.assertEquals(vector2.getMaxAxis(), 1);
+		VectorN vector3 = new VectorN(1, 2, 4, 3);
+		TestUtil.assertEquals(vector3.getMaxAxis(), 2);
+		VectorN vector4 = new VectorN(1, 2, 3, 4);
+		TestUtil.assertEquals(vector4.getMaxAxis(), 3);
 	}
 
 	@Test
