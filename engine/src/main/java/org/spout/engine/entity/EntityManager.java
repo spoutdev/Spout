@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
+import org.spout.api.component.Component;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -164,7 +165,51 @@ public class EntityManager {
 	 */
 	public void finalizeRun() {
 		for (SpoutEntity e : entities.get().values()) {
-			e.finalizeRun();
+			SpoutChunk chunkLive = (SpoutChunk) e.getChunkLive();
+			SpoutChunk chunk = (SpoutChunk) e.getChunk();
+
+			//Entity was removed so automatically remove components
+			if (e.isRemoved()) {
+				//Get rid of physics
+				e.getPhysics().deactivate();
+				//Call onRemoved for Components and remove them
+				for (Component component : e.values()) {
+					e.detach(component.getClass(), true);
+				}
+				//Track entities w/their chunks
+				if (chunk != null) {
+					chunk.onEntityLeave(e);
+				}
+				return;
+			}
+
+			//Track entities w/their chunks, for saving purposes
+			if (!(e instanceof SpoutPlayer)) {
+				if (chunk != chunkLive) {
+					if (chunk != null) {
+						chunk.onEntityLeave(e);
+					}
+					if (chunkLive != null) {
+						chunkLive.onEntityEnter(e);
+					}
+				}
+			}
+
+			//Move entity from Region A to Region B
+			if (chunkLive != null && (chunk == null || chunk.getRegion() != chunkLive.getRegion())) {
+				boolean activated = e.getPhysics().isActivated();
+				e.getPhysics().deactivate();
+				removeEntity(e);
+				//Set the new EntityManager for the new region
+				e.setRegion(chunkLive.getRegion());
+				//Add entity to Region B
+				((SpoutRegion) e.getRegion()).getEntityManager().addEntity(e);
+				if (activated) {
+					((SpoutPhysicsComponent) e.getPhysics()).activate((SpoutRegion) e.getRegion());
+				}
+			}
+
+			e.getNetwork().finalizeRun(((SpoutPhysicsComponent) e.getPhysics()).getTransformLive().copy());
 		}
 	}
 
