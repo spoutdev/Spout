@@ -28,8 +28,8 @@ package org.spout.engine.protocol.builtin;
 
 import java.net.InetSocketAddress;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufs;
 
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
@@ -105,7 +105,7 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	@Override
-	public MessageCodec<?> readHeader(ChannelBuffer buf) {
+	public MessageCodec<?> readHeader(ByteBuf buf) {
 		int id = buf.readUnsignedShort();
 		//if (Spout.debugMode()) System.out.println("Reading codec header: " + id);
 		int length = buf.readInt();
@@ -122,8 +122,8 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	@Override
-	public ChannelBuffer writeHeader(MessageCodec<?> codec, ChannelBuffer data) {
-		ChannelBuffer buf = ChannelBuffers.buffer(6);
+	public ByteBuf writeHeader(MessageCodec<?> codec, ByteBuf data) {
+		ByteBuf buf = ByteBufs.buffer(6);
 		buf.writeShort(codec.getOpcode());
 		//if (Spout.debugMode()) System.out.println("Writing codec header: " + codec.getOpcode());
 		buf.writeInt(data.writerIndex());

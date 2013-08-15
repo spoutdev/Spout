@@ -26,11 +26,11 @@
  */
 package org.spout.engine.protocol.builtin.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufs;
 
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.util.ChannelBufferUtils;
+import org.spout.api.util.ByteBufUtils;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 
 public class CommandCodec extends MessageCodec<CommandMessage> {
@@ -39,17 +39,17 @@ public class CommandCodec extends MessageCodec<CommandMessage> {
 	}
 
 	@Override
-	public ChannelBuffer encode(CommandMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-		ChannelBufferUtils.writeString(buffer, message.getCommand());
-		ChannelBufferUtils.writeStringArray(buffer, message.getArguments());
+	public ByteBuf encode(CommandMessage message) {
+		ByteBuf buffer = ByteBufs.dynamicBuffer();
+		ByteBufUtils.writeString(buffer, message.getCommand());
+		ByteBufUtils.writeStringArray(buffer, message.getArguments());
 		return buffer;
 	}
 
 	@Override
-	public CommandMessage decode(ChannelBuffer buffer) {
-		final String command = ChannelBufferUtils.readString(buffer);
-		final String[] args = ChannelBufferUtils.readStringArray(buffer);
+	public CommandMessage decode(ByteBuf buffer) {
+		final String command = ByteBufUtils.readString(buffer);
+		final String[] args = ByteBufUtils.readStringArray(buffer);
 		return new CommandMessage(command, args);
 	}
 }

@@ -26,14 +26,14 @@
  */
 package org.spout.engine.protocol.builtin.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufs;
 
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 import org.spout.api.protocol.reposition.NullRepositionManager;
-import org.spout.api.util.ChannelBufferUtils;
+import org.spout.api.util.ByteBufUtils;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 
 public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
@@ -42,20 +42,20 @@ public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
 	}
 
 	@Override
-	public ChannelBuffer encode(UpdateEntityMessage message) {
-		ChannelBuffer buffer = null;
+	public ByteBuf encode(UpdateEntityMessage message) {
+		ByteBuf buffer = null;
 		switch (message.getAction()) {
 			case REMOVE:
-				buffer = ChannelBuffers.buffer(5);
+				buffer = ByteBufs.buffer(5);
 				buffer.writeByte(message.getAction().ordinal());
 				buffer.writeInt(message.getEntityId());
 				break;
 			case ADD:
 			case TRANSFORM:
-				buffer = ChannelBuffers.buffer(5 + ChannelBufferUtils.UUID_SIZE + ChannelBufferUtils.VECTOR3_SIZE * 2 + ChannelBufferUtils.QUATERNINON_SIZE);
+				buffer = ByteBufs.buffer(5 + ByteBufUtils.UUID_SIZE + ByteBufUtils.VECTOR3_SIZE * 2 + ByteBufUtils.QUATERNINON_SIZE);
 				buffer.writeByte(message.getAction().ordinal());
 				buffer.writeInt(message.getEntityId());
-				ChannelBufferUtils.writeTransform(buffer, message.getTransform());
+				ByteBufUtils.writeTransform(buffer, message.getTransform());
 				break;
 			case POSITION:
 				throw new UnsupportedOperationException("Position is unimplemented!");
@@ -66,7 +66,7 @@ public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
 	}
 
 	@Override
-	public UpdateEntityMessage decode(ChannelBuffer buffer) {
+	public UpdateEntityMessage decode(ByteBuf buffer) {
 		final byte actionByte = buffer.readByte();
 		if (actionByte < 0 || actionByte >= UpdateAction.values().length) {
 			throw new IllegalArgumentException("Unknown response ID " + actionByte);
@@ -83,7 +83,7 @@ public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
 			case ADD:
 			case TRANSFORM:
 				entityId = buffer.readInt();
-				transform = ChannelBufferUtils.readTransform(buffer);
+				transform = ByteBufUtils.readTransform(buffer);
 				break;
 			case POSITION:
 				throw new UnsupportedOperationException("Position is unimplemented!");

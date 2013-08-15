@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import org.jboss.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.ChannelGroup;
 
 import org.spout.api.entity.Player;
 import org.spout.api.generator.WorldGenerator;

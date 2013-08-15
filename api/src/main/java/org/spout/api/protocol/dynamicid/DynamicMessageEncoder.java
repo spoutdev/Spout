@@ -26,9 +26,10 @@
  */
 package org.spout.api.protocol.dynamicid;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageEncoder;
+
+import java.util.List;
 
 import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.Message;
@@ -39,19 +40,17 @@ import org.spout.api.protocol.Session;
 /**
  * Process dynamically registered messages before sending them to give extra usefulness
  */
-public class DynamicMessageEncoder extends OneToOneEncoder {
+public class DynamicMessageEncoder extends MessageToMessageEncoder<Message> {
 	@Override
-	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object o) throws Exception {
-		if (o instanceof Message) {
-			Session session = ctx.getPipeline().get(CommonHandler.class).getSession();
-			if (session != null) {
-				Protocol protocol = session.getProtocol();
-				MessageCodec<?> codec = protocol.getCodecLookupService().find(((Message) o).getClass());
-				if (codec != null && codec.isDynamic()) {
-					return protocol.getWrappedMessage(false, (Message) o);
-				}
+	protected void encode(ChannelHandlerContext ctx, Message o, List<Object> out) throws Exception {
+		Session session = ctx.pipeline().get(CommonHandler.class).getSession();
+		if (session != null) {
+			Protocol protocol = session.getProtocol();
+			MessageCodec<?> codec = protocol.getCodecLookupService().find(o.getClass());
+			if (codec != null && codec.isDynamic()) {
+				o = protocol.getWrappedMessage(o);
 			}
 		}
-		return o;
+		out.add(o);
 	}
 }

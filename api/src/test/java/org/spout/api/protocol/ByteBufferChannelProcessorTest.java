@@ -28,14 +28,14 @@ package org.spout.api.protocol;
 
 import java.util.Random;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.ChannelHandlerContext;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
+
 import org.junit.Test;
-
-import org.spout.api.protocol.fake.FakeChannelHandlerContext;
-
 import static org.junit.Assert.assertTrue;
+
+import org.spout.api.protocol.fake.ChannelHandlerContextFaker;
 
 public class ByteBufferChannelProcessorTest {
 	private final int LENGTH = 65536;
@@ -46,9 +46,9 @@ public class ByteBufferChannelProcessorTest {
 
 		mainThread = Thread.currentThread();
 
-		ChannelBuffer buffer = ChannelBuffers.buffer(2048);
+		ByteBuf buffer = Unpooled.buffer(2048);
 
-		ChannelHandlerContext ctx = new FakeChannelHandlerContext();
+		ChannelHandlerContext ctx = ChannelHandlerContextFaker.setup();
 
 		ByteBufferChannelProcessor processor = new ByteBufferChannelProcessor(256);
 
@@ -87,11 +87,11 @@ public class ByteBufferChannelProcessorTest {
 			buffer.writeBytes(input, writePointer, toWrite);
 			writePointer += toWrite;
 
-			ChannelBuffer outputBuffer = processor.write(ctx, buffer);
+			ByteBuf outputBuffer = processor.write(ctx, buffer);
 
 			buffer.discardReadBytes();
 
-			while (outputBuffer.readable()) {
+			while (outputBuffer.isReadable()) {
 				int toRead = r.nextInt(768);
 				if (toRead > outputBuffer.readableBytes()) {
 					toRead = outputBuffer.readableBytes();

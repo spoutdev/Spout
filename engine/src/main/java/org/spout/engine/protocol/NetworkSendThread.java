@@ -30,7 +30,7 @@ import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
 
 import org.spout.api.Spout;
 import org.spout.api.protocol.Message;

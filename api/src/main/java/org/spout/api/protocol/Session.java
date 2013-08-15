@@ -29,7 +29,7 @@ package org.spout.api.protocol;
 import java.net.InetSocketAddress;
 import java.util.logging.Level;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
 
 import org.spout.api.Engine;
 import org.spout.api.Spout;

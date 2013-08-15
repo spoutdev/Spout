@@ -54,13 +54,13 @@ import org.fourthline.cling.controlpoint.ControlPoint;
 import org.fourthline.cling.support.igd.PortMappingListener;
 import org.fourthline.cling.support.model.PortMapping;
 import org.fourthline.cling.transport.spi.InitializationException;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFactory;
+import io.netty.channel.ChannelPipelineFactory;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.ChannelGroupFuture;
+import io.netty.channel.group.DefaultChannelGroup;
 
 import org.spout.api.Platform;
 import org.spout.api.Server;
@@ -288,7 +288,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		boundProtocols.put(binding.getAddress(), binding.getProtocol());
 		try {
 			getChannelGroup().add(bootstrap.bind(binding.getAddress()));
-		} catch (org.jboss.netty.channel.ChannelException ex) {
+		} catch (io.netty.channel.ChannelException ex) {
 			Spout.severe("Failed to bind to address " + binding.getAddress() + ". Is there already another server running on this address?", ex);
 			return false;
 		}

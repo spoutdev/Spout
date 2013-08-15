@@ -30,7 +30,7 @@ import java.io.IOException;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 import org.junit.Test;
 
 import org.spout.api.protocol.CodecLookupService;
@@ -68,7 +68,7 @@ public abstract class BaseProtocolTest {
 	public void testMessageEncoding() throws IOException {
 		for (Message message : testMessages) {
 			MessageCodec codec = codecLookup.find(message.getClass());
-			ChannelBuffer encoded;
+			ByteBuf encoded;
 			Message decoded;
 			try {
 				encoded = codec.encodeToServer(message);

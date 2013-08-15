@@ -26,8 +26,8 @@
  */
 package org.spout.api.protocol;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.ChannelHandlerContext;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 
 public interface ChannelProcessor {
 	/**
@@ -36,7 +36,7 @@ public interface ChannelProcessor {
 	 * @param ctx the channel handler context
 	 * @param input the buffer containing the input data
 	 */
-	public ChannelBuffer write(ChannelHandlerContext ctx, ChannelBuffer input);
+	public ByteBuf write(ChannelHandlerContext ctx, ByteBuf input);
 
 	/**
 	 * Adds the data contained in the given channel buffer to the processor and returns the output channel buffer. The method may be called from multiple threads.
@@ -45,5 +45,5 @@ public interface ChannelProcessor {
 	 * @param input the buffer containing the input data
 	 * @param buffer the buffer to add the data to
 	 */
-	public ChannelBuffer write(ChannelHandlerContext ctx, ChannelBuffer input, ChannelBuffer buffer);
+	public ByteBuf write(ChannelHandlerContext ctx, ByteBuf input, ByteBuf buffer);
 }

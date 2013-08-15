@@ -31,11 +31,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufs;
 
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.util.ChannelBufferUtils;
+import org.spout.api.util.ByteBufUtils;
 import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 
 public class SyncedMapCodec extends MessageCodec<SyncedMapMessage> {
@@ -44,27 +44,27 @@ public class SyncedMapCodec extends MessageCodec<SyncedMapMessage> {
 	}
 
 	@Override
-	public ChannelBuffer encode(SyncedMapMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+	public ByteBuf encode(SyncedMapMessage message) {
+		ByteBuf buffer = ByteBufs.dynamicBuffer();
 		buffer.writeInt(message.getMap());
 		buffer.writeByte(message.getAction().ordinal());
 		buffer.writeInt(message.getElements().size());
 		for (Pair<Integer, String> el : message.getElements()) {
 			buffer.writeInt(el.getKey());
-			ChannelBufferUtils.writeString(buffer, el.getValue());
+			ByteBufUtils.writeString(buffer, el.getValue());
 		}
 		return buffer;
 	}
 
 	@Override
-	public SyncedMapMessage decode(ChannelBuffer buffer) {
+	public SyncedMapMessage decode(ByteBuf buffer) {
 		final int map = buffer.readInt();
 		final byte action = buffer.readByte();
 		final int elementCount = buffer.readInt();
 		List<Pair<Integer, String>> elements = new ArrayList<>(elementCount);
 		for (int i = 0; i < elementCount; ++i) {
 			final int key = buffer.readInt();
-			final String value = ChannelBufferUtils.readString(buffer);
+			final String value = ByteBufUtils.readString(buffer);
 			elements.add(new ImmutablePair<>(key, value));
 		}
 		return new SyncedMapMessage(map, action, elements);

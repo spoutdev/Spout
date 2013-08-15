@@ -28,10 +28,10 @@ package org.spout.engine.listener.channel;
 
 import java.net.InetSocketAddress;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelPipeline;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelPipeline;
 
 import org.spout.api.Engine;
 import org.spout.api.Spout;

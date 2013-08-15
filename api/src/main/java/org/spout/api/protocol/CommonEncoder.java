@@ -28,19 +28,17 @@ package org.spout.api.protocol;
 
 import java.io.IOException;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
 
 /**
- * A {@link OneToOneEncoder} which encodes into {@link ChannelBuffer}s.
+ * A {@link MessageToMessageEncoder} which encodes into {@link ByteBuf}s.
  */
-public class CommonEncoder extends PostprocessEncoder {
+public class CommonEncoder extends ProcessingEncoder {
 	private volatile Protocol protocol = null;
 	private final boolean onClient;
 
@@ -50,13 +48,13 @@ public class CommonEncoder extends PostprocessEncoder {
 
 	@SuppressWarnings ("unchecked")
 	@Override
-	protected Object encode(ChannelHandlerContext ctx, Channel c, Object msg) throws IOException {
+	protected Object encodePreProcess(ChannelHandlerContext ctx, Object msg) throws IOException {
 		if (msg instanceof Message) {
 			if (protocol == null) {
 				if (onClient) {
 					protocol = ((Client) Spout.getEngine()).getAddress().getProtocol();
 				} else {
-					protocol = Spout.getEngine().getProtocol(c.getLocalAddress());
+					protocol = Spout.getEngine().getProtocol(ctx.channel().localAddress());
 				}
 			}
 			final Message message = (Message) msg;
@@ -65,9 +63,9 @@ public class CommonEncoder extends PostprocessEncoder {
 			if (codec == null) {
 				throw new IOException("Unknown message type: " + clazz + ".");
 			}
-			final ChannelBuffer messageBuf = codec.encode(onClient, message);
-			final ChannelBuffer headerBuf = protocol.writeHeader(codec, messageBuf);
-			return ChannelBuffers.wrappedBuffer(headerBuf, messageBuf);
+			final ByteBuf messageBuf = codec.encode(onClient, message);
+			final ByteBuf headerBuf = protocol.writeHeader(codec, messageBuf);
+			return Unpooled.wrappedBuffer(headerBuf, messageBuf);
 		}
 		return msg;
 	}
