@@ -66,18 +66,21 @@ import org.spout.engine.world.SpoutRegion;
 
 public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = Integer.MIN_VALUE;
-	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
-	//Snapshotable fields
 	private final SnapshotManager snapshotManager = new SnapshotManager();
-	private final SnapshotableReference<Region> region = new SnapshotableReference<>(snapshotManager, null);
-	private final SnapshotableBoolean remove = new SnapshotableBoolean(snapshotManager, false);
+	//Snapshotable fields
+	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<>(snapshotManager, null);
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
+	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
+	private AtomicBoolean remove = new AtomicBoolean(false);
+	private AtomicBoolean removeLive = new AtomicBoolean(false);
 	//Other
 	private final Engine engine;
 	private final UUID uid;
+	protected boolean justSpawned = true;
 	//For faster access
 	private final SpoutPhysicsComponent physics;
 	protected NetworkComponent network;
+	private Class<? extends Component>[] initialComponents = null;
 
 	public SpoutEntity(Engine engine, Transform transform) {
 		this(engine, transform, null, (byte[]) null, (Class<? extends Component>[]) null);
@@ -121,6 +124,10 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 		physics.setTransform(transform, false);
 
+		if (components != null && components.length > 0) {
+			initialComponents = components;
+		}
+
 		if (dataMap != null) {
 			try {
 				this.getData().deserialize(dataMap);
@@ -129,11 +136,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 			}
 		}
 
-		physics.copySnapshot();
-
-		snapshotManager.copyAllSnapshots();
-
-		add(components);
+		setupInitialChunk();
 	}
 
 	@Override
@@ -208,6 +211,54 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		return id.get() != NOTSPAWNEDID;
 	}
 
+	public void finalizeRun() {
+		SpoutChunk chunkLive = (SpoutChunk) getChunkLive();
+		SpoutChunk chunk = (SpoutChunk) getChunk();
+
+		//Entity was removed so automatically remove components
+		if (isRemoved()) {
+			//Get rid of physics
+			physics.deactivate();
+			//Call onRemoved for Components and remove them
+			for (Component component : values()) {
+				detach(component.getClass(), true);
+			}
+			//Track entities w/their chunks
+			if (chunk != null) {
+				chunk.onEntityLeave(this);
+			}
+			return;
+		}
+
+		//Track entities w/their chunks, for saving purposes
+		if (!(this instanceof SpoutPlayer)) {
+			if (chunk != chunkLive) {
+				if (chunk != null) {
+					chunk.onEntityLeave(this);
+				}
+				if (chunkLive != null) {
+					chunkLive.onEntityEnter(this);
+				}
+			}
+		}
+
+		//Move entity from Region A to Region B
+		if (chunkLive != null && (chunk == null || chunk.getRegion() != chunkLive.getRegion())) {
+			boolean activated = physics.isActivated();
+			physics.deactivate();
+			entityManager.get().removeEntity(this);
+			//Set the new EntityManager for the new region
+			entityManager.set(chunkLive.getRegion().getEntityManager());
+			//Add entity to Region B
+			entityManager.getLive().addEntity(this);
+			if (activated) {
+				physics.activate(chunkLive.getRegion());
+			}
+		}
+
+		this.getNetwork().finalizeRun(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
+	}
+
 	public void preSnapshotRun() {
 		if (isRemoved()) {
 			return;
@@ -217,9 +268,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	@Override
 	public Chunk getChunk() {
-		if (!isSpawned()) {
-			throw new IllegalStateException("Entities have no Chunk until spawned (did you make sure to spawn the Entity?)");
-		}
 		return physics.getPosition().getChunk(LoadOption.NO_LOAD);
 	}
 
@@ -229,14 +277,14 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	@Override
 	public Region getRegion() {
-		if (!isSpawned()) {
-			throw new IllegalStateException("Entities have no Region until spawned (did you make sure to spawn the Entity?)");
+		// TODO: we should have an entityManager
+		//return entityManager.get().getRegion();
+		// TODO: are we going to make this a thing...or?
+		if (TickStage.testStage(~TickStage.SNAPSHOT)) {
+			return physics.getPosition().getRegion(LoadOption.LOAD_GEN);
+		} else {
+			return physics.getPosition().getRegion(LoadOption.NO_LOAD);
 		}
-		return region.get();
-	}
-
-	public void setRegion(Region region) {
-		this.region.set(region);
 	}
 
 	@Override
@@ -254,18 +302,38 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		return uid;
 	}
 
+	/**
+	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
+	 */
+	public void setupInitialChunk() {
+		physics.copySnapshot();
+		SpoutRegion region = (SpoutRegion) physics.getTransformLive().getPosition().getRegion(LoadOption.LOAD_GEN);
+
+		entityManager.set(region.getEntityManager());
+
+		snapshotManager.copyAllSnapshots();
+
+		if (initialComponents != null) {
+			this.add(initialComponents);
+			initialComponents = null;
+		}
+	}
+
 	@Override
 	public void copySnapshot() {
 		physics.copySnapshot();
 		snapshotManager.copyAllSnapshots();
 
+		justSpawned = false;
+
 		network.copySnapshot();
+		remove.set(removeLive.get());
 	}
 
 	@Override
 	public void remove() {
 		TickStage.checkStage(~(TickStage.PRESNAPSHOT | TickStage.SNAPSHOT));
-		remove.set(true);
+		removeLive.set(true);
 	}
 
 	@Override
