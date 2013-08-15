@@ -27,7 +27,7 @@
 package org.spout.engine.protocol.builtin.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
@@ -39,7 +39,7 @@ public class ClickRequestCodec extends MessageCodec<ClickRequestMessage> {
 
 	@Override
 	public ByteBuf encode(ClickRequestMessage message) {
-		ByteBuf buffer = ByteBufs.buffer(3);
+		ByteBuf buffer = Unpooled.buffer(3);
 		buffer.writeByte(message.getX());
 		buffer.writeByte(message.getY());
 		buffer.writeByte(message.getClickType().ordinal());

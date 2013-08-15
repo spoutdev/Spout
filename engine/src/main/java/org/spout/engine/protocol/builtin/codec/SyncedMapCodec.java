@@ -32,7 +32,7 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.util.ByteBufUtils;
@@ -45,7 +45,7 @@ public class SyncedMapCodec extends MessageCodec<SyncedMapMessage> {
 
 	@Override
 	public ByteBuf encode(SyncedMapMessage message) {
-		ByteBuf buffer = ByteBufs.dynamicBuffer();
+		ByteBuf buffer = Unpooled.buffer();
 		buffer.writeInt(message.getMap());
 		buffer.writeByte(message.getAction().ordinal());
 		buffer.writeInt(message.getElements().size());

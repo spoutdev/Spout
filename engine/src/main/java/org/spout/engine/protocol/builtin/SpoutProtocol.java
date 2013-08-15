@@ -29,7 +29,7 @@ package org.spout.engine.protocol.builtin;
 import java.net.InetSocketAddress;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
@@ -123,7 +123,7 @@ public class SpoutProtocol extends Protocol {
 
 	@Override
 	public ByteBuf writeHeader(MessageCodec<?> codec, ByteBuf data) {
-		ByteBuf buf = ByteBufs.buffer(6);
+		ByteBuf buf = Unpooled.buffer(4);
 		buf.writeShort(codec.getOpcode());
 		//if (Spout.debugMode()) System.out.println("Writing codec header: " + codec.getOpcode());
 		buf.writeInt(data.writerIndex());

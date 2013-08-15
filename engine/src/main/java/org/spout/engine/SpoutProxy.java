@@ -30,18 +30,18 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import io.netty.bootstrap.ClientBootstrap;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFactory;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelPipelineFactory;
-import io.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
 
 import org.spout.api.Platform;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Player;
-import org.spout.api.protocol.CommonPipelineFactory;
+import org.spout.api.protocol.CommonChannelInitializer;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.engine.entity.SpoutPlayer;
@@ -55,7 +55,7 @@ public class SpoutProxy extends SpoutServer {
 	/**
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
-	private final ClientBootstrap clientBootstrap = new ClientBootstrap();
+	private final Bootstrap bootstrap = new Bootstrap();
 
 	@Override
 	public void start() {
@@ -82,28 +82,23 @@ public class SpoutProxy extends SpoutServer {
 	public void connect(String hostname, int port, String playerName, Session session) {
 		ChannelFutureListener listener = new SpoutProxyConnectListener(this, playerName, session);
 		InetSocketAddress addr = new InetSocketAddress(hostname, port);
-		clientBootstrap.connect(addr).addListener(listener);
+		bootstrap.connect(addr).addListener(listener);
 	}
 
 	@Override
 	public void init(SpoutApplication args) {
 		super.init(args);
-		//Note: All threads are daemons, cleanup of the executors is handled by clientBootstrap.getFactory().releaseExternalResources(); in stop(...).
-		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
-		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
-		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
-		clientBootstrap.setFactory(factory);
-
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory();
-		clientBootstrap.setPipelineFactory(pipelineFactory);
-
-		clientBootstrap.setOption("tcpNoDelay", true);
-		clientBootstrap.setOption("keepAlive", true);
+		bootstrap
+			.group(new NioEventLoopGroup())
+			.handler(new CommonChannelInitializer())
+			.channel(NioSocketChannel.class)
+			.option(ChannelOption.TCP_NODELAY, true)
+			.option(ChannelOption.SO_KEEPALIVE, true);
 	}
 
 	@Override
 	public Session newSession(Channel channel) {
-		Protocol protocol = getProtocol(channel.getLocalAddress());
+		Protocol protocol = getProtocol(channel.localAddress());
 		return new SpoutProxySession(this, channel, protocol);
 	}
 
@@ -115,7 +110,7 @@ public class SpoutProxy extends SpoutServer {
 		Runnable finalTask = new Runnable() {
 			@Override
 			public void run() {
-				clientBootstrap.getFactory().releaseExternalResources();
+				bootstrap.group().shutdownGracefully();
 			}
 		};
 		getScheduler().submitFinalTask(finalTask, true);

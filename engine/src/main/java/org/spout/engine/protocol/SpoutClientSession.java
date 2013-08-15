@@ -90,7 +90,7 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 	}
 
 	public PortBinding getActiveAddress() {
-		return new PortBindingImpl(getProtocol(), getChannel().getRemoteAddress());
+		return new PortBindingImpl(getProtocol(), getChannel().remoteAddress());
 	}
 
 	@Override

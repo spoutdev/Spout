@@ -27,7 +27,7 @@
 package org.spout.engine.protocol.builtin.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
@@ -42,7 +42,7 @@ public class BlockUpdateCodec extends MessageCodec<BlockUpdateMessage> {
 
 	@Override
 	public ByteBuf encode(BlockUpdateMessage message) {
-		ByteBuf buffer = ByteBufs.buffer(17);
+		ByteBuf buffer = Unpooled.buffer(17);
 		buffer.writeInt(message.getX());
 		buffer.writeInt(message.getY());
 		buffer.writeInt(message.getZ());

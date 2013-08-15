@@ -27,7 +27,7 @@
 package org.spout.engine.protocol.builtin.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.MessageCodec;
@@ -46,13 +46,13 @@ public class UpdateEntityCodec extends MessageCodec<UpdateEntityMessage> {
 		ByteBuf buffer = null;
 		switch (message.getAction()) {
 			case REMOVE:
-				buffer = ByteBufs.buffer(5);
+				buffer = Unpooled.buffer(5);
 				buffer.writeByte(message.getAction().ordinal());
 				buffer.writeInt(message.getEntityId());
 				break;
 			case ADD:
 			case TRANSFORM:
-				buffer = ByteBufs.buffer(5 + ByteBufUtils.UUID_SIZE + ByteBufUtils.VECTOR3_SIZE * 2 + ByteBufUtils.QUATERNINON_SIZE);
+				buffer = Unpooled.buffer(5 + ByteBufUtils.UUID_SIZE + ByteBufUtils.VECTOR3_SIZE * 2 + ByteBufUtils.QUATERNINON_SIZE);
 				buffer.writeByte(message.getAction().ordinal());
 				buffer.writeInt(message.getEntityId());
 				ByteBufUtils.writeTransform(buffer, message.getTransform());
