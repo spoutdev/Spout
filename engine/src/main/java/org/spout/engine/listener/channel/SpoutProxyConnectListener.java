@@ -66,11 +66,11 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 		if (!future.isDone()) {
 			throw new IllegalStateException("Connect operation was not done when listener was triggered");
 		} else {
-			Channel c = future.getChannel();
+			Channel c = future.channel();
 			if (future.isSuccess()) {
-				Spout.getLogger().info("Connect to server successful " + c.getRemoteAddress() + ", " + playerName);
+				Spout.getLogger().info("Connect to server successful " + c.remoteAddress() + ", " + playerName);
 				session.bindAuxChannel(c);
-				ChannelPipeline pipeline = c.getPipeline();
+				ChannelPipeline pipeline = c.pipeline();
 				if (pipeline != null) {
 					CommonHandler d = pipeline.get(CommonHandler.class);
 					if (d != null) {
@@ -78,14 +78,14 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 					}
 					Protocol protocol = session.getProtocol();
 					if (protocol != null) {
-						Message intro = protocol.getIntroductionMessage(playerName, (InetSocketAddress) c.getRemoteAddress());
+						Message intro = protocol.getIntroductionMessage(playerName, (InetSocketAddress) c.remoteAddress());
 						c.write(intro);
 						return;
 					}
 				}
 				session.disconnect("Login failed for backend server");
 			} else {
-				Spout.getLogger().info("Failed to connect to server " + c.getRemoteAddress() + ", " + playerName);
+				Spout.getLogger().info("Failed to connect to server " + c.remoteAddress() + ", " + playerName);
 				session.disconnect("Unable to connect to backend server");
 			}
 		}

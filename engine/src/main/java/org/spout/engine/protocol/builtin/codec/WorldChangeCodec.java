@@ -29,7 +29,7 @@ package org.spout.engine.protocol.builtin.codec;
 import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.math.Quaternion;
@@ -45,7 +45,7 @@ public class WorldChangeCodec extends MessageCodec<WorldChangeMessage> {
 
 	@Override
 	public ByteBuf encode(WorldChangeMessage message) {
-		ByteBuf buffer = ByteBufs.dynamicBuffer();
+		ByteBuf buffer = Unpooled.buffer();
 		ByteBufUtils.writeString(buffer, message.getWorldName());
 		ByteBufUtils.writeUUID(buffer, message.getWorldUUID());
 		ByteBufUtils.writeVector3(buffer, message.getPosition());

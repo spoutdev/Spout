@@ -35,7 +35,7 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Chunk;
@@ -59,7 +59,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 	public ByteBuf encode(ChunkDataMessage message) throws IOException {
 		final ByteBuf buffer;
 		if (message.isUnload()) {
-			buffer = ByteBufs.buffer(13);
+			buffer = Unpooled.buffer(13);
 			buffer.writeByte(ISUNLOAD); // we're unloading
 			buffer.writeInt(message.getX());
 			buffer.writeInt(message.getY());
@@ -109,7 +109,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			}
 
 			size += compressedSize;
-			buffer = ByteBufs.dynamicBuffer(size);
+			buffer = Unpooled.buffer(size);
 			buffer.writeByte(hasBiomes ? HASBIOMES : 0); // Has biomes only, not unload
 			buffer.writeInt(message.getX());
 			buffer.writeInt(message.getY());

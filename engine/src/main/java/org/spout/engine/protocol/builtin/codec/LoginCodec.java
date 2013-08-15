@@ -27,7 +27,7 @@
 package org.spout.engine.protocol.builtin.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.util.ByteBufUtils;
@@ -40,7 +40,7 @@ public class LoginCodec extends MessageCodec<LoginMessage> {
 
 	@Override
 	public ByteBuf encode(LoginMessage message) {
-		ByteBuf buffer = ByteBufs.dynamicBuffer();
+		ByteBuf buffer = Unpooled.buffer();
 		ByteBufUtils.writeString(buffer, message.getPlayerName());
 		buffer.writeInt(message.getExtraInt());
 		return buffer;

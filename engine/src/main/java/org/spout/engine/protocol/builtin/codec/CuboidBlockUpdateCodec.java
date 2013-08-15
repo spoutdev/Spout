@@ -29,7 +29,7 @@ package org.spout.engine.protocol.builtin.codec;
 import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.util.ByteBufUtils;
@@ -45,7 +45,7 @@ public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessag
 
 	@Override
 	public ByteBuf encode(CuboidBlockUpdateMessage message) {
-		ByteBuf buffer = ByteBufs.buffer(4 * 6 + message.getBlockTypes().length * 2 + message.getBlockData().length * 2 + message.getBlockLight().length + message.getSkyLight().length + ByteBufUtils.UUID_SIZE);
+		ByteBuf buffer = Unpooled.buffer(4 * 6 + message.getBlockTypes().length * 2 + message.getBlockData().length * 2 + message.getBlockLight().length + message.getSkyLight().length + ByteBufUtils.UUID_SIZE);
 		buffer.writeInt(message.getMinX());
 		buffer.writeInt(message.getMinY());
 		buffer.writeInt(message.getMinZ());

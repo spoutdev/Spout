@@ -27,7 +27,7 @@
 package org.spout.engine.protocol.builtin.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.util.ByteBufUtils;
@@ -40,7 +40,7 @@ public class CommandCodec extends MessageCodec<CommandMessage> {
 
 	@Override
 	public ByteBuf encode(CommandMessage message) {
-		ByteBuf buffer = ByteBufs.dynamicBuffer();
+		ByteBuf buffer = Unpooled.buffer();
 		ByteBufUtils.writeString(buffer, message.getCommand());
 		ByteBufUtils.writeStringArray(buffer, message.getArguments());
 		return buffer;

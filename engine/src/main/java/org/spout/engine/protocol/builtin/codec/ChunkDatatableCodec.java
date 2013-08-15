@@ -27,7 +27,7 @@
 package org.spout.engine.protocol.builtin.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.protocol.MessageCodec;
@@ -41,7 +41,7 @@ public class ChunkDatatableCodec extends MessageCodec<ChunkDatatableMessage> {
 
 	@Override
 	public ByteBuf encode(ChunkDatatableMessage message) {
-		ByteBuf buffer = ByteBufs.dynamicBuffer();
+		ByteBuf buffer = Unpooled.buffer();
 		ByteBufUtils.writeString(buffer, message.getWorld());
 		buffer.writeInt(message.getX());
 		buffer.writeInt(message.getY());

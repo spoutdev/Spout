@@ -254,7 +254,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	@Override
 	public InetSocketAddress getAddress() {
-		SocketAddress addr = channel.getRemoteAddress();
+		SocketAddress addr = channel.remoteAddress();
 		if (!(addr instanceof InetSocketAddress)) {
 			return null;
 		}
@@ -264,7 +264,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	@Override
 	public String toString() {
-		return SpoutSession.class.getName() + " [address=" + channel.getRemoteAddress() + "]";
+		return SpoutSession.class.getName() + " [address=" + channel.remoteAddress() + "]";
 	}
 
 	/**

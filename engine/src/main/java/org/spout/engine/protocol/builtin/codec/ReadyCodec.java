@@ -27,7 +27,7 @@
 package org.spout.engine.protocol.builtin.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.message.ReadyMessage;
@@ -39,7 +39,7 @@ public class ReadyCodec extends MessageCodec<ReadyMessage> {
 
 	@Override
 	public ByteBuf encode(ReadyMessage message) {
-		return ByteBufs.buffer(0);
+		return Unpooled.buffer(0);
 	}
 
 	@Override

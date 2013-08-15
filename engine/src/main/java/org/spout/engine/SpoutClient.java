@@ -49,12 +49,14 @@ import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import io.netty.bootstrap.ClientBootstrap;
+
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ChannelFactory;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFactory;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelPipelineFactory;
-import io.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
 
 import org.spout.api.Client;
 import org.spout.api.Platform;
@@ -69,8 +71,8 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Vector2;
+import org.spout.api.protocol.CommonChannelInitializer;
 import org.spout.api.protocol.CommonHandler;
-import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.render.RenderMode;
@@ -92,7 +94,7 @@ import org.spout.engine.world.SpoutRegion;
 public class SpoutClient extends SpoutEngine implements Client {
 	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<>();
 	private final AtomicReference<SpoutClientWorld> world = new AtomicReference<>();
-	private final ClientBootstrap bootstrap = new ClientBootstrap();
+	private final Bootstrap bootstrap = new Bootstrap();
 	private final ClientFileSystem filesystem = new ClientFileSystem();
 	private final SessionTask sessionTask = new SessionTask();
 	// Handle stopping
@@ -122,13 +124,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 			unpackNatives(args.path);
 		}
 
-		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutClient - Boss", true));
-		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutClient - Worker", true));
-		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
-		bootstrap.setFactory(factory);
-
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory();
-		bootstrap.setPipelineFactory(pipelineFactory);
+		bootstrap
+			.handler(new CommonChannelInitializer())
+			.channel(NioSocketChannel.class)
+			.group(new NioEventLoopGroup());
+			
 		super.init(args);
 
 		this.ccoverride = args.ccoverride;
@@ -176,7 +176,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		// Send handshake message first
 		SpoutClientSession get = (SpoutClientSession) player.get().getNetwork().getSession();
-		get.send(true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().getRemoteAddress()));
+		get.send(true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().remoteAddress()));
 	}
 
 	private boolean connnect() {
@@ -205,14 +205,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 			return false;
 		}
 
-		Channel channel = connect.getChannel();
+		Channel channel = connect.channel();
 		if (!connect.isSuccess()) {
-			getLogger().log(Level.SEVERE, "Could not connect to " + binding, connect.getCause());
+			getLogger().log(Level.SEVERE, "Could not connect to " + binding, connect.cause());
 			return false;
 		}
 
 		getLogger().log(Level.INFO, "Connected to " + address + ":" + port + " with protocol " + protocol.getName());
-		CommonHandler handler = channel.getPipeline().get(CommonHandler.class);
+		CommonHandler handler = channel.pipeline().get(CommonHandler.class);
 		SpoutClientSession session = new SpoutClientSession(this, channel, protocol);
 		handler.setSession(session);
 
@@ -299,7 +299,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				stopMessage = stopEvent.getMessage();
 				System.out.println(stopMessage);
 
-				bootstrap.getFactory().releaseExternalResources();
+				bootstrap.group().shutdownGracefully();
 				boundProtocols.clear();
 			}
 		};
@@ -364,7 +364,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return world;
 	}
 
-	public ClientBootstrap getBootstrap() {
+	public Bootstrap getBootstrap() {
 		return bootstrap;
 	}
 

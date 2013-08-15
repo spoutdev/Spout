@@ -27,7 +27,7 @@
 package org.spout.engine.protocol.builtin.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.protocol.MessageCodec;
@@ -40,7 +40,7 @@ public class EntityDatatableCodec extends MessageCodec<EntityDatatableMessage> {
 
 	@Override
 	public ByteBuf encode(EntityDatatableMessage message) {
-		ByteBuf buffer = ByteBufs.buffer(4 + 4 + message.getCompressedData().length + 1);
+		ByteBuf buffer = Unpooled.buffer(4 + 4 + message.getCompressedData().length + 1);
 		buffer.writeInt(message.getEntityId());
 		buffer.writeInt(message.getCompressedData().length);
 		buffer.writeBytes(message.getCompressedData());
