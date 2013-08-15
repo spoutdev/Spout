@@ -29,12 +29,9 @@ package org.spout.api.protocol;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -45,7 +42,7 @@ import org.spout.api.Spout;
 /**
  * A {@link SimpleChannelUpstreamHandler} which processes incoming network events.
  */
-public class CommonHandler extends SimpleChannelUpstreamHandler {
+public class CommonHandler extends SimpleChannelInboundHandler<Message> {
 	/**
 	 * The server.
 	 */
@@ -80,8 +77,8 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	}
 
 	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
-		final Channel c = e.getChannel();
+	public void channelActive(ChannelHandlerContext ctx) {
+		final Channel c = ctx.channel();
 		// ctx.getPipeline().addBefore("2", "messagePrinter", new MessagePrintingHandler());
 		if (onClient) {
 			// Client
@@ -94,7 +91,6 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 				Session session = engine.newSession(c);
 				server.getSessionRegistry().add(session);
 				setSession(session);
-				ctx.setAttachment(session);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				throw new RuntimeException("Exception thrown when connecting", ex);
@@ -103,9 +99,9 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	}
 
 	@Override
-	public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
+	public void channelInactive(ChannelHandlerContext ctx) {
 		try {
-			Channel c = e.getChannel();
+			Channel c = ctx.channel();
 			Session session = this.session.get();
 
 			if (!onClient) {
@@ -124,18 +120,18 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	}
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
+	protected void channelRead0(ChannelHandlerContext ctx, Message i){
 		Session session = this.session.get();
-		if (session.isPrimary(ctx.getChannel())) {
-			session.messageReceived((Message) e.getMessage());
+		if (session.isPrimary(ctx.channel())) {
+			session.messageReceived(i);
 		} else {
-			session.messageReceivedOnAuxChannel(ctx.getChannel(), (Message) e.getMessage());
+			session.messageReceivedOnAuxChannel(ctx.channel(), i);
 		}
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-		Channel c = e.getChannel();
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+		Channel c = ctx.channel();
 		if (c.isOpen()) {
 			Session session = this.session.get();
 
@@ -148,7 +144,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 			if (session.isPrimary(c)) {
 				session.dispose();
 			}
-			engine.getLogger().log(Level.WARNING, "Exception caught, closing channel: " + c + "...", e.getCause());
+			engine.getLogger().log(Level.WARNING, "Exception caught, closing channel: " + c + "...", cause);
 			c.close();
 		}
 	}

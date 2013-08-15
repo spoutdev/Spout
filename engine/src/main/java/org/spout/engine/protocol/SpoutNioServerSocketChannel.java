@@ -28,10 +28,10 @@ package org.spout.engine.protocol;
 
 import java.util.concurrent.Executor;
 
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.socket.ServerSocketChannel;
-import org.jboss.netty.channel.socket.SocketChannelConfig;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.ServerSocketChannel;
+import io.netty.channel.socket.SocketChannelConfig;
+import io.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 public class SpoutNioServerSocketChannel extends NioServerSocketChannelFactory {
 	public SpoutNioServerSocketChannel(Executor boss, Executor worker) {

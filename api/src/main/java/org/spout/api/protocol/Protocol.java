@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
@@ -130,7 +130,7 @@ public abstract class Protocol {
 	 * @param dynamicMessage The message with a dynamically-allocated codec
 	 * @return The new message
 	 */
-	public <T extends Message> Message getWrappedMessage(boolean upstream, T dynamicMessage) throws IOException {
+	public <T extends Message> Message getWrappedMessage(T dynamicMessage) throws IOException {
 		return dynamicMessage;
 	}
 
@@ -142,7 +142,7 @@ public abstract class Protocol {
 	 * @return The correct codec
 	 * @throws UnknownPacketException when the opcode does not have an associated codec and the packet length is unknown
 	 */
-	public abstract MessageCodec<?> readHeader(ChannelBuffer buf) throws UnknownPacketException;
+	public abstract MessageCodec<?> readHeader(ByteBuf buf) throws UnknownPacketException;
 
 	/**
 	 * Writes a packet header to a new buffer.
@@ -151,7 +151,7 @@ public abstract class Protocol {
 	 * @param data The data from the encoded message
 	 * @return The buffer with the packet header
 	 */
-	public abstract ChannelBuffer writeHeader(MessageCodec<?> codec, ChannelBuffer data);
+	public abstract ByteBuf writeHeader(MessageCodec<?> codec, ByteBuf data);
 
 	/**
 	 * Gets a packet for kicking a player

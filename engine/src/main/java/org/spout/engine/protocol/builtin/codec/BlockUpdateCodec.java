@@ -26,8 +26,8 @@
  */
 package org.spout.engine.protocol.builtin.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufs;
 
 import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
@@ -41,8 +41,8 @@ public class BlockUpdateCodec extends MessageCodec<BlockUpdateMessage> {
 	}
 
 	@Override
-	public ChannelBuffer encode(BlockUpdateMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(17);
+	public ByteBuf encode(BlockUpdateMessage message) {
+		ByteBuf buffer = ByteBufs.buffer(17);
 		buffer.writeInt(message.getX());
 		buffer.writeInt(message.getY());
 		buffer.writeInt(message.getZ());
@@ -52,7 +52,7 @@ public class BlockUpdateCodec extends MessageCodec<BlockUpdateMessage> {
 	}
 
 	@Override
-	public BlockUpdateMessage decode(ChannelBuffer buffer) {
+	public BlockUpdateMessage decode(ByteBuf buffer) {
 		final int x = buffer.readInt();
 		final int y = buffer.readInt();
 		final int z = buffer.readInt();

@@ -28,15 +28,15 @@ package org.spout.api.protocol;
 
 import java.util.ArrayList;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.ChannelHandlerContext;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
 
 /**
- * Bridge class for passing ChannelBuffers through byte array read/write processing
+ * Bridge class for passing ByteBufs through byte array read/write processing
  */
 public abstract class CommonChannelProcessor implements ChannelProcessor {
-	private final static ChannelBuffer[] DUMMY_ARRAY = new ChannelBuffer[0];
+	private final static ByteBuf[] DUMMY_ARRAY = new ByteBuf[0];
 	private final byte[] byteBuffer;
 	protected final int capacity;
 
@@ -46,42 +46,42 @@ public abstract class CommonChannelProcessor implements ChannelProcessor {
 	}
 
 	@Override
-	public final ChannelBuffer write(ChannelHandlerContext ctx, ChannelBuffer input) {
+	public final ByteBuf write(ChannelHandlerContext ctx, ByteBuf input) {
 		return write(ctx, input, null);
 	}
 
 	@Override
-	public final synchronized ChannelBuffer write(ChannelHandlerContext ctx, ChannelBuffer input, ChannelBuffer buffer) {
-		ChannelBuffer channelBuffer = buffer == null ? getNewBufferInstance(ctx, capacity) : buffer;
+	public final synchronized ByteBuf write(ChannelHandlerContext ctx, ByteBuf input, ByteBuf buffer) {
+		ByteBuf ByteBuf = buffer == null ? getNewBufferInstance(ctx, capacity) : buffer;
 		int nextSize = capacity;
 		int remaining;
-		ArrayList<ChannelBuffer> consumedBuffers = null;
+		ArrayList<ByteBuf> consumedBuffers = null;
 		while ((remaining = input.readableBytes()) > 0) {
 			int clamped = (remaining > byteBuffer.length) ? byteBuffer.length : remaining;
 			input.readBytes(byteBuffer, 0, clamped);
 			write(byteBuffer, clamped);
 			int read;
 			while ((read = read(byteBuffer)) > 0) {
-				if (channelBuffer.writableBytes() >= read) {
-					channelBuffer.writeBytes(byteBuffer, 0, read);
+				if (ByteBuf.writableBytes() >= read) {
+					ByteBuf.writeBytes(byteBuffer, 0, read);
 				} else {
-					ChannelBuffer newBuffer = getNewBufferInstance(ctx, nextSize);
+					ByteBuf newBuffer = getNewBufferInstance(ctx, nextSize);
 					nextSize *= 2;
 					if (consumedBuffers == null) {
 						consumedBuffers = new ArrayList<>(16);
 					}
-					consumedBuffers.add(channelBuffer);
-					channelBuffer = newBuffer;
-					channelBuffer.writeBytes(byteBuffer, 0, read);
+					consumedBuffers.add(ByteBuf);
+					ByteBuf = newBuffer;
+					ByteBuf.writeBytes(byteBuffer, 0, read);
 				}
 			}
 		}
 		if (consumedBuffers == null) {
-			return channelBuffer;
+			return ByteBuf;
 		}
 
-		consumedBuffers.add(channelBuffer);
-		return ChannelBuffers.wrappedBuffer(consumedBuffers.toArray(DUMMY_ARRAY));
+		consumedBuffers.add(ByteBuf);
+		return Unpooled.wrappedBuffer(consumedBuffers.toArray(DUMMY_ARRAY));
 	}
 
 	/**
@@ -100,7 +100,7 @@ public abstract class CommonChannelProcessor implements ChannelProcessor {
 	 */
 	protected abstract int read(byte[] buf);
 
-	private ChannelBuffer getNewBufferInstance(ChannelHandlerContext ctx, int capacity) {
-		return ctx.getChannel().getConfig().getBufferFactory().getBuffer(capacity);
+	private ByteBuf getNewBufferInstance(ChannelHandlerContext ctx, int capacity) {
+		return ctx.channel().config().getAllocator().buffer(capacity);
 	}
 }

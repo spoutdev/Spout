@@ -29,7 +29,7 @@ package org.spout.api.protocol;
 /**
  * Implementers of this class represent the data of a packet to be sent through the SpoutAPI networking system. There are a few rules that messages should follow: <ul> <li>All message fields should be
  * immutable. This ensures thread-safety and makes it so Message objects can be safely stored</li> <li>Message subclasses should override {@link #toString()}, {@link #equals(Object)} , and {@link
- * #hashCode()}. </li> <li>All fields in a Message should be protocol-primitive (can be written directly via ChannelBuffer methods or via a *single* ChannelBufferUtils method)</li> </ul> Any committer
+ * #hashCode()}. </li> <li>All fields in a Message should be protocol-primitive (can be written directly via ByteBuf methods or via a *single* ByteBufUtils method)</li> </ul> Any committer
  * who violates these rules (except for the hashCode() one) will be hunted down and beaten with a shovel by zml2008 (Offer only valid in the Portland, OR area)
  */
 public interface Message {

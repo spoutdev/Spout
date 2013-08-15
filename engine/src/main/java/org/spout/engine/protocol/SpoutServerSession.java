@@ -28,8 +28,8 @@ package org.spout.engine.protocol;
 
 import java.util.logging.Level;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 
 import org.spout.api.Spout;
 import org.spout.api.event.player.PlayerKickEvent;
