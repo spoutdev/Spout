@@ -32,6 +32,7 @@ import io.netty.channel.ChannelHandlerContext;
 public interface ChannelProcessor {
 	/**
 	 * Adds the data contained in the given channel buffer to the processor and returns the output channel buffer. The method may be called from multiple threads.
+	 * {@code input.release} should NOT be called; it is done externally.
 	 *
 	 * @param ctx the channel handler context
 	 * @param input the buffer containing the input data
@@ -40,6 +41,8 @@ public interface ChannelProcessor {
 
 	/**
 	 * Adds the data contained in the given channel buffer to the processor and returns the output channel buffer. The method may be called from multiple threads.
+	 * {@code input.release} should NOT be called; it is done externally.
+	 * {@code buffer.release} should NOT be called; it is done externally.
 	 *
 	 * @param ctx the channel handler context
 	 * @param input the buffer containing the input data

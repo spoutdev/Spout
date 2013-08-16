@@ -131,7 +131,9 @@ public abstract class PreprocessReplayingDecoder extends ByteToMessageDecoder im
 					// However, for some reason, if processedBuffer is zero length, it causes an exception.
 					newBuffer.writeBytes(processedBuffer);
 				}
+				ByteBuf old = processedBuffer;
 				processedBuffer = newBuffer;
+				old.release();
 			}
 			processedBuffer.discardReadBytes();
 		}

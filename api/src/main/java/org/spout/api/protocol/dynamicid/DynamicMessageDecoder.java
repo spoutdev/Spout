@@ -51,6 +51,8 @@ public class DynamicMessageDecoder extends MessageToMessageDecoder<Message> {
 				unwrapped = ((DynamicWrapperMessage) unwrapped).unwrap(protocol);
 			}
 		}
-		out.add(unwrapped);
+		if (unwrapped != null) {
+			out.add(unwrapped);
+		}
 	}
 }

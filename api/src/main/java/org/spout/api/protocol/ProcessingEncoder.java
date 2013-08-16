@@ -82,19 +82,20 @@ public abstract class ProcessingEncoder extends MessageToMessageEncoder<Object> 
 	}
 
 	@Override
-	protected void encode(ChannelHandlerContext ctx, Object msg, List<Object> out) throws Exception {
+	protected void encode(ChannelHandlerContext ctx, final Object msg, List<Object> out) throws Exception {
 		List<Object> newOut = new ArrayList<>();
 		encodePreProcess(ctx, msg, newOut);
 		final ChannelProcessor processor = this.processor.get();
-		for (Object encoded : newOut) {
+		for (final Object encoded : newOut) {
+			Object toAdd = encoded;
 			if (processor != null && encoded instanceof ByteBuf) {
 				synchronized (this) {
 					// Gotta release the old
-					//((ByteBuf) encoded).release();
-					encoded = processor.write(ctx, (ByteBuf) encoded);
+					toAdd = processor.write(ctx, (ByteBuf) encoded);
+					((ByteBuf) encoded).release();
 				}
 			}
-			out.add(encoded);
+			out.add(toAdd);
 		}
 		checkForSetupMessage(msg);
 	}
