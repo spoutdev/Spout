@@ -86,17 +86,6 @@ public class SpoutProxy extends SpoutServer {
 	}
 
 	@Override
-	public void init(SpoutApplication args) {
-		super.init(args);
-		bootstrap
-			.group(new NioEventLoopGroup())
-			.handler(new CommonChannelInitializer())
-			.channel(NioSocketChannel.class)
-			.option(ChannelOption.TCP_NODELAY, true)
-			.option(ChannelOption.SO_KEEPALIVE, true);
-	}
-
-	@Override
 	public Session newSession(Channel channel) {
 		Protocol protocol = getProtocol(channel.localAddress());
 		return new SpoutProxySession(this, channel, protocol);

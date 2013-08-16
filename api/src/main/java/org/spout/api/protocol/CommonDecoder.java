@@ -81,7 +81,9 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 		}
 
 		previousOpcodes[(opcodeCounter++) & previousMask] = codec.getOpcode();
-		return codec.decode(onClient, buf);
+		Object decoded = codec.decode(onClient, buf);
+		buf.release();
+		return decoded;
 	}
 
 	void setProtocol(Protocol proto) {

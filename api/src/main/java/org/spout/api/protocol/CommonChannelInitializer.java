@@ -28,6 +28,7 @@ package org.spout.api.protocol;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.socket.SocketChannel;
 
 import org.spout.api.Spout;
 import org.spout.api.protocol.dynamicid.DynamicMessageDecoder;
@@ -36,7 +37,7 @@ import org.spout.api.protocol.dynamicid.DynamicMessageEncoder;
 /**
  * A common {@link ChannelPipelineFactory}
  */
-public final class CommonChannelInitializer extends ChannelInitializer {
+public final class CommonChannelInitializer extends ChannelInitializer<SocketChannel> {
 	/**
 	 * Indicates if the channel is an upstream channel
 	 */
@@ -62,13 +63,15 @@ public final class CommonChannelInitializer extends ChannelInitializer {
 	}
 
 	@Override
-	protected void initChannel(Channel c) throws Exception {
-		// Up for encoding/sending/downstream; Down for decoding/receiving/upstream
+	protected void initChannel(SocketChannel c) throws Exception {
+		// Up for encoding/sending/outbound; Down for decoding/receiving/inbound
+		System.out.println("Init channel");
 		CommonEncoder encoder = new CommonEncoder(onClient);
 		CommonDecoder decoder = new CommonDecoder(onClient);
-		CommonHandler handler = new CommonHandler(encoder, decoder);
 		DynamicMessageDecoder dynamicDecoder = new DynamicMessageDecoder();
 		DynamicMessageEncoder dynamicEncoder = new DynamicMessageEncoder();
+		CommonHandler handler = new CommonHandler(encoder, decoder);
+
 		c.pipeline().addLast(decoder, encoder, dynamicDecoder, dynamicEncoder, handler);
 	}
 }

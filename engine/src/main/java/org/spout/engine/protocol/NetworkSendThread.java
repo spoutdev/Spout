@@ -164,7 +164,7 @@ public class NetworkSendThread {
 			Channel channel = node.getChannel();
 			try {
 				if (channel.isOpen()) {
-					channel.write(node.getMessage());
+					channel.writeAndFlush(node.getMessage());
 				}
 			} catch (Exception e) {
 				try {

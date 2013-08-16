@@ -55,6 +55,7 @@ import org.fourthline.cling.transport.spi.InitializationException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -128,6 +129,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private UpnpService upnpService;
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 	protected final ChannelGroup group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+	protected final EventLoopGroup bossGroup = new NioEventLoopGroup();
+	protected final EventLoopGroup workerGroup = new NioEventLoopGroup();
 	/**
 	 * The {@link AccessManager} for the Server.
 	 */
@@ -208,7 +211,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public void init(SpoutApplication args) {
 		super.init(args);
 		bootstrap
-			.group(new NioEventLoopGroup(), new NioEventLoopGroup())
+			.group(bossGroup, workerGroup)
 			.channel(NioServerSocketChannel.class)
 			.childHandler(new CommonChannelInitializer())
 			.childOption(ChannelOption.TCP_NODELAY, true)
@@ -259,7 +262,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 				WorldSavingThread.finish();
 				WorldSavingThread.staticJoin();
 
-				bootstrap.group().shutdownGracefully();
+				bossGroup.shutdownGracefully();
+				workerGroup.shutdownGracefully();
 				boundProtocols.clear();
 			}
 		};
