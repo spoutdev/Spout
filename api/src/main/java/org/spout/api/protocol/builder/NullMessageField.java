@@ -26,7 +26,7 @@
  */
 package org.spout.api.protocol.builder;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 
 public class NullMessageField extends FixedMessageField {
 	protected NullMessageField() {
@@ -34,12 +34,12 @@ public class NullMessageField extends FixedMessageField {
 	}
 
 	@Override
-	public Object read(ChannelBuffer buffer) {
+	public Object read(ByteBuf buffer) {
 		return null;
 	}
 
 	@Override
-	public void write(ChannelBuffer buffer, Object value) {
+	public void write(ByteBuf buffer, Object value) {
 		if (value != null) {
 			throw new IllegalArgumentException("The value passed to a NullMessageField must be null");
 		}

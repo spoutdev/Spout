@@ -26,32 +26,27 @@
  */
 package org.spout.api.protocol;
 
-import org.jboss.netty.channel.ChannelEvent;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
 
 import org.spout.api.Spout;
 
 /**
  * A {@link SimpleChannelHandler} that prints messages that are sent and received
  */
-public class MessagePrintingHandler extends SimpleChannelHandler {
+public class MessagePrintingHandler extends ChannelDuplexHandler {
+
 	@Override
-	public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-		if (e instanceof MessageEvent) {
-			final Object msg = ((MessageEvent) e).getMessage();
-			Spout.getEngine().getLogger().info("Receiving: " + msg);
-		}
-		super.handleUpstream(ctx, e);
+	public void channelRead(ChannelHandlerContext chc, Object msg) {
+		Spout.getEngine().getLogger().info("Receiving: " + msg);
+		chc.fireChannelRead(msg);
 	}
 
 	@Override
-	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-		if (e instanceof MessageEvent) {
-			final Object msg = ((MessageEvent) e).getMessage();
-			Spout.getEngine().getLogger().info("Sending: " + msg);
-		}
-		super.handleDownstream(ctx, e);
+	public void write(ChannelHandlerContext chc, Object msg, ChannelPromise cp) {
+		Spout.getEngine().getLogger().info("Sending: " + msg);
+		chc.write(msg, cp);
 	}
+
 }

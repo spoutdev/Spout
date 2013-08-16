@@ -26,11 +26,11 @@
  */
 package org.spout.engine.protocol.builtin.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.util.ChannelBufferUtils;
+import org.spout.api.util.ByteBufUtils;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 
 public class LoginCodec extends MessageCodec<LoginMessage> {
@@ -39,16 +39,16 @@ public class LoginCodec extends MessageCodec<LoginMessage> {
 	}
 
 	@Override
-	public ChannelBuffer encode(LoginMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-		ChannelBufferUtils.writeString(buffer, message.getPlayerName());
+	public ByteBuf encode(LoginMessage message) {
+		ByteBuf buffer = Unpooled.buffer();
+		ByteBufUtils.writeString(buffer, message.getPlayerName());
 		buffer.writeInt(message.getExtraInt());
 		return buffer;
 	}
 
 	@Override
-	public LoginMessage decode(ChannelBuffer buffer) {
-		final String playerName = ChannelBufferUtils.readString(buffer);
+	public LoginMessage decode(ByteBuf buffer) {
+		final String playerName = ByteBufUtils.readString(buffer);
 		final int protocolVersion = buffer.readInt();
 		return new LoginMessage(playerName, protocolVersion);
 	}

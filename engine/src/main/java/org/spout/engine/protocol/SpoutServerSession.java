@@ -28,8 +28,8 @@ package org.spout.engine.protocol;
 
 import java.util.logging.Level;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 
 import org.spout.api.Spout;
 import org.spout.api.event.player.PlayerKickEvent;
@@ -89,7 +89,7 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> i
 			kickMessage = protocol.getKickMessage(reason);
 		}
 		if (kickMessage != null) {
-			getChannel().write(kickMessage).addListener(ChannelFutureListener.CLOSE);
+			getChannel().writeAndFlush(kickMessage).addListener(ChannelFutureListener.CLOSE);
 		} else {
 			getChannel().close();
 		}

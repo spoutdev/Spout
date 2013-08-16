@@ -34,7 +34,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
 
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
@@ -170,7 +170,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	private long spikeEnd = 0;
 
 	public void pulse() {
-
 		Message message;
 
 		if (state == State.GAME) {
@@ -218,10 +217,10 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		}
 		try {
 			if (force || this.state == State.GAME) {
-				if (channel.isOpen()) {
+				if (channel.isActive()) {
 					NetworkSendThread sendThread = networkSendThread.get();
 					if (sendThread == null) {
-						channel.write(message);
+						channel.writeAndFlush(message);
 					} else {
 						sendThread.send(this, channel, message);
 					}
@@ -254,7 +253,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	@Override
 	public InetSocketAddress getAddress() {
-		SocketAddress addr = channel.getRemoteAddress();
+		SocketAddress addr = channel.remoteAddress();
 		if (!(addr instanceof InetSocketAddress)) {
 			return null;
 		}
@@ -264,7 +263,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	@Override
 	public String toString() {
-		return SpoutSession.class.getName() + " [address=" + channel.getRemoteAddress() + "]";
+		return SpoutSession.class.getName() + " [address=" + channel.remoteAddress() + "]";
 	}
 
 	/**

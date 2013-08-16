@@ -28,17 +28,17 @@ package org.spout.api.protocol;
 
 import java.io.IOException;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ReplayingDecoder;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.exception.UnknownPacketException;
 
 /**
- * A {@link ReplayingDecoder} which decodes {@link ChannelBuffer}s into Common {@link org.spout.api.protocol.Message}s.
+ * A {@link ReplayingDecoder} which decodes {@link ByteBuf}s into Common {@link org.spout.api.protocol.Message}s.
  */
 public class CommonDecoder extends PreprocessReplayingDecoder {
 	private final int previousMask = 0x1F;
@@ -53,12 +53,12 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 	}
 
 	@Override
-	protected Object decodeProcessed(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf) throws Exception {
+	protected Object decodeProcessed(ChannelHandlerContext ctx, Channel c, ByteBuf buf) throws Exception {
 		if (protocol == null) {
 			if (Spout.getEngine() instanceof Client) {
 				protocol = ((Client) Spout.getEngine()).getAddress().getProtocol();
 			} else {
-				protocol = Spout.getEngine().getProtocol(c.getLocalAddress());
+				protocol = Spout.getEngine().getProtocol(c.localAddress());
 			}
 		}
 
@@ -81,7 +81,9 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 		}
 
 		previousOpcodes[(opcodeCounter++) & previousMask] = codec.getOpcode();
-		return codec.decode(onClient, buf);
+		Object decoded = codec.decode(onClient, buf);
+		buf.release();
+		return decoded;
 	}
 
 	void setProtocol(Protocol proto) {

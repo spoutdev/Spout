@@ -26,12 +26,12 @@
  */
 package org.spout.engine.protocol.builtin.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.util.ChannelBufferUtils;
+import org.spout.api.util.ByteBufUtils;
 import org.spout.engine.protocol.builtin.message.ChunkDatatableMessage;
 
 public class ChunkDatatableCodec extends MessageCodec<ChunkDatatableMessage> {
@@ -40,9 +40,9 @@ public class ChunkDatatableCodec extends MessageCodec<ChunkDatatableMessage> {
 	}
 
 	@Override
-	public ChannelBuffer encode(ChunkDatatableMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-		ChannelBufferUtils.writeString(buffer, message.getWorld());
+	public ByteBuf encode(ChunkDatatableMessage message) {
+		ByteBuf buffer = Unpooled.buffer();
+		ByteBufUtils.writeString(buffer, message.getWorld());
 		buffer.writeInt(message.getX());
 		buffer.writeInt(message.getY());
 		buffer.writeInt(message.getZ());
@@ -53,8 +53,8 @@ public class ChunkDatatableCodec extends MessageCodec<ChunkDatatableMessage> {
 	}
 
 	@Override
-	public ChunkDatatableMessage decode(ChannelBuffer buffer) {
-		final String world = ChannelBufferUtils.readString(buffer);
+	public ChunkDatatableMessage decode(ByteBuf buffer) {
+		final String world = ByteBufUtils.readString(buffer);
 		final int x = buffer.readInt();
 		final int y = buffer.readInt();
 		final int z = buffer.readInt();

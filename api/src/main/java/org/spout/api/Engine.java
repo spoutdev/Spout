@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
 
 import org.spout.api.command.CommandManager;
 import org.spout.api.command.CommandSource;

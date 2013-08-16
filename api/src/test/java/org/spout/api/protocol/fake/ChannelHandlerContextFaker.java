@@ -26,37 +26,41 @@
  */
 package org.spout.api.protocol.fake;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelConfig;
 import io.netty.channel.ChannelHandlerContext;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.powermock.api.mockito.PowerMockito;
 
-import java.util.List;
+public class ChannelHandlerContextFaker {
+	private static FakeChannelHandlerContext context = null;
+	private static Channel channel = null;
+	private static ChannelConfig config = null;
+	private static ByteBufAllocator alloc = null;
 
-public abstract class FakeChannelHandlerContext implements ChannelHandlerContext {
-	private List<byte[]> list;
-	boolean first;
-
-	public void setList(List<byte[]> list) {
-		this.list = list;
-	}
-
-	public List<byte[]> getList() {
-		return list;
-	}
-
-	@Override
-	public ChannelHandlerContext fireChannelRead(Object msg) {
-		if (list != null && msg instanceof byte[]) {
-			list.add((byte[]) msg);
+	public static FakeChannelHandlerContext setup() {
+		if (context == null) {
+			context = Mockito.mock(FakeChannelHandlerContext.class, Mockito.CALLS_REAL_METHODS);
+			channel = Mockito.mock(Channel.class);
+			config = Mockito.mock(ChannelConfig.class);
+			alloc = Mockito.mock(ByteBufAllocator.class);
+			Mockito.doReturn(channel).when(context).channel();
+			Mockito.when(channel.config()).thenReturn(config);
+			Mockito.when(config.getAllocator()).thenReturn(alloc);
+			Mockito.when(alloc.buffer(Mockito.anyInt())).thenAnswer(new Answer<ByteBuf>() {
+				@Override
+				public ByteBuf answer(InvocationOnMock invocation) throws Throwable {
+					ByteBuf buffer = Unpooled.buffer();
+					buffer.retain();
+					return buffer;
+				}
+			});
 		}
-		return this;
-	}
-
-	@Override
-	public abstract Channel channel();
-
-	@Override
-	public boolean isRemoved() {
-		return false;
+		return context;
 	}
 }
-

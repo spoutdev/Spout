@@ -26,8 +26,8 @@
  */
 package org.spout.engine.protocol.builtin.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.message.ReadyMessage;
@@ -38,12 +38,12 @@ public class ReadyCodec extends MessageCodec<ReadyMessage> {
 	}
 
 	@Override
-	public ChannelBuffer encode(ReadyMessage message) {
-		return ChannelBuffers.buffer(0);
+	public ByteBuf encode(ReadyMessage message) {
+		return Unpooled.buffer(0);
 	}
 
 	@Override
-	public ReadyMessage decode(ChannelBuffer buffer) {
+	public ReadyMessage decode(ByteBuf buffer) {
 		return ReadyMessage.INSTANCE;
 	}
 }

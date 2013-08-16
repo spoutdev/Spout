@@ -26,9 +26,10 @@
  */
 package org.spout.api.protocol.dynamicid;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageDecoder;
+import java.util.List;
 
 import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.Message;
@@ -38,18 +39,20 @@ import org.spout.api.protocol.Session;
 /**
  * Unwraps dynamically allocated id messages
  */
-public class DynamicMessageDecoder extends OneToOneDecoder {
+public class DynamicMessageDecoder extends MessageToMessageDecoder<Message> {
+
 	@Override
-	protected Object decode(ChannelHandlerContext ctx, Channel channel, Object message) throws Exception {
-		if (message instanceof Message) {
-			Session session = ctx.getPipeline().get(CommonHandler.class).getSession();
-			if (session != null) {
-				Protocol protocol = session.getProtocol();
-				while (message instanceof DynamicWrapperMessage) {
-					message = ((DynamicWrapperMessage) message).unwrap(true, protocol);
-				}
+	protected void decode(ChannelHandlerContext ctx, Message message, List<Object> out) throws Exception {
+		Message unwrapped = message;
+		Session session = ctx.pipeline().get(CommonHandler.class).getSession();
+		if (session != null) {
+			Protocol protocol = session.getProtocol();
+			while (unwrapped instanceof DynamicWrapperMessage) {
+				unwrapped = ((DynamicWrapperMessage) unwrapped).unwrap(protocol);
 			}
 		}
-		return message;
+		if (unwrapped != null) {
+			out.add(unwrapped);
+		}
 	}
 }

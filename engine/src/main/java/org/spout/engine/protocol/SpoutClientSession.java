@@ -28,7 +28,7 @@ package org.spout.engine.protocol;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
 
 import org.spout.api.geo.World;
 import org.spout.api.protocol.ClientSession;
@@ -90,7 +90,7 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 	}
 
 	public PortBinding getActiveAddress() {
-		return new PortBindingImpl(getProtocol(), getChannel().getRemoteAddress());
+		return new PortBindingImpl(getProtocol(), getChannel().remoteAddress());
 	}
 
 	@Override

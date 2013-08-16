@@ -40,8 +40,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
@@ -54,13 +52,16 @@ import org.fourthline.cling.controlpoint.ControlPoint;
 import org.fourthline.cling.support.igd.PortMappingListener;
 import org.fourthline.cling.support.model.PortMapping;
 import org.fourthline.cling.transport.spi.InitializationException;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.ChannelGroupFuture;
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.concurrent.GlobalEventExecutor;
 
 import org.spout.api.Platform;
 import org.spout.api.Server;
@@ -83,7 +84,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.permissions.PermissionsSubject;
-import org.spout.api.protocol.CommonPipelineFactory;
+import org.spout.api.protocol.CommonChannelInitializer;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
@@ -101,12 +102,10 @@ import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.listener.SpoutServerListener;
 import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.PortBindings;
-import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutServerSession;
 import org.spout.engine.protocol.SpoutSessionRegistry;
 import org.spout.engine.util.access.SpoutAccessManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
-import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutServerWorld;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
@@ -129,7 +128,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 */
 	private UpnpService upnpService;
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
-	protected final ChannelGroup group = new DefaultChannelGroup();
+	protected final ChannelGroup group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+	protected final EventLoopGroup bossGroup = new NioEventLoopGroup();
+	protected final EventLoopGroup workerGroup = new NioEventLoopGroup();
 	/**
 	 * The {@link AccessManager} for the Server.
 	 */
@@ -205,19 +206,16 @@ public class SpoutServer extends SpoutEngine implements Server {
 		}
 	}
 
+	
 	@Override
 	public void init(SpoutApplication args) {
 		super.init(args);
-		// Note: All threads are daemons, cleanup of the executors is handled by bootstrap.getFactory().releaseExternalResources(); in stop(...).
-		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
-		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
-		ChannelFactory factory = new SpoutNioServerSocketChannel(executorBoss, executorWorker);
-		bootstrap.setFactory(factory);
-		bootstrap.setOption("tcpNoDelay", true);
-		bootstrap.setOption("keepAlive", true);
-
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory();
-		bootstrap.setPipelineFactory(pipelineFactory);
+		bootstrap
+			.group(bossGroup, workerGroup)
+			.channel(NioServerSocketChannel.class)
+			.childHandler(new CommonChannelInitializer())
+			.childOption(ChannelOption.TCP_NODELAY, true)
+			.childOption(ChannelOption.SO_KEEPALIVE, true);
 
 		accessManager.load();
 		accessManager.setWhitelistEnabled(SpoutConfiguration.WHITELIST_ENABLED.getBoolean());
@@ -264,7 +262,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 				WorldSavingThread.finish();
 				WorldSavingThread.staticJoin();
 
-				bootstrap.getFactory().releaseExternalResources();
+				bossGroup.shutdownGracefully();
+				workerGroup.shutdownGracefully();
 				boundProtocols.clear();
 			}
 		};
@@ -287,8 +286,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 		}
 		boundProtocols.put(binding.getAddress(), binding.getProtocol());
 		try {
-			getChannelGroup().add(bootstrap.bind(binding.getAddress()));
-		} catch (org.jboss.netty.channel.ChannelException ex) {
+			getChannelGroup().add(bootstrap.bind(binding.getAddress()).awaitUninterruptibly().channel());
+		} catch (io.netty.channel.ChannelException ex) {
 			Spout.severe("Failed to bind to address " + binding.getAddress() + ". Is there already another server running on this address?", ex);
 			return false;
 		}
@@ -355,7 +354,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public Session newSession(Channel channel) {
-		Protocol protocol = getProtocol(channel.getLocalAddress());
+		Protocol protocol = getProtocol(channel.localAddress());
 		if (SpoutConfiguration.SHOW_CONNECTIONS.getBoolean()) {
 			getLogger().info("Downstream channel connected: " + channel + ".");
 		}

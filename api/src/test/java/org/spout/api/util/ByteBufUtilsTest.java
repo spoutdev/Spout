@@ -32,8 +32,9 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 import org.junit.Test;
 
 import org.spout.api.faker.EngineFaker;
@@ -51,30 +52,30 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import static org.spout.api.faker.EngineFaker.TEST_UUID;
-import static org.spout.api.util.ChannelBufferUtils.getExpandedHeight;
-import static org.spout.api.util.ChannelBufferUtils.getShifts;
-import static org.spout.api.util.ChannelBufferUtils.readColor;
-import static org.spout.api.util.ChannelBufferUtils.readParameters;
-import static org.spout.api.util.ChannelBufferUtils.readPoint;
-import static org.spout.api.util.ChannelBufferUtils.readQuaternion;
-import static org.spout.api.util.ChannelBufferUtils.readString;
-import static org.spout.api.util.ChannelBufferUtils.readStringArray;
-import static org.spout.api.util.ChannelBufferUtils.readTransform;
-import static org.spout.api.util.ChannelBufferUtils.readUUID;
-import static org.spout.api.util.ChannelBufferUtils.readVector2;
-import static org.spout.api.util.ChannelBufferUtils.readVector3;
-import static org.spout.api.util.ChannelBufferUtils.writeColor;
-import static org.spout.api.util.ChannelBufferUtils.writeParameters;
-import static org.spout.api.util.ChannelBufferUtils.writePoint;
-import static org.spout.api.util.ChannelBufferUtils.writeQuaternion;
-import static org.spout.api.util.ChannelBufferUtils.writeString;
-import static org.spout.api.util.ChannelBufferUtils.writeStringArray;
-import static org.spout.api.util.ChannelBufferUtils.writeTransform;
-import static org.spout.api.util.ChannelBufferUtils.writeUUID;
-import static org.spout.api.util.ChannelBufferUtils.writeVector2;
-import static org.spout.api.util.ChannelBufferUtils.writeVector3;
+import static org.spout.api.util.ByteBufUtils.getExpandedHeight;
+import static org.spout.api.util.ByteBufUtils.getShifts;
+import static org.spout.api.util.ByteBufUtils.readColor;
+import static org.spout.api.util.ByteBufUtils.readParameters;
+import static org.spout.api.util.ByteBufUtils.readPoint;
+import static org.spout.api.util.ByteBufUtils.readQuaternion;
+import static org.spout.api.util.ByteBufUtils.readString;
+import static org.spout.api.util.ByteBufUtils.readStringArray;
+import static org.spout.api.util.ByteBufUtils.readTransform;
+import static org.spout.api.util.ByteBufUtils.readUUID;
+import static org.spout.api.util.ByteBufUtils.readVector2;
+import static org.spout.api.util.ByteBufUtils.readVector3;
+import static org.spout.api.util.ByteBufUtils.writeColor;
+import static org.spout.api.util.ByteBufUtils.writeParameters;
+import static org.spout.api.util.ByteBufUtils.writePoint;
+import static org.spout.api.util.ByteBufUtils.writeQuaternion;
+import static org.spout.api.util.ByteBufUtils.writeString;
+import static org.spout.api.util.ByteBufUtils.writeStringArray;
+import static org.spout.api.util.ByteBufUtils.writeTransform;
+import static org.spout.api.util.ByteBufUtils.writeUUID;
+import static org.spout.api.util.ByteBufUtils.writeVector2;
+import static org.spout.api.util.ByteBufUtils.writeVector3;
 
-public class ChannelBufferUtilsTest {
+public class ByteBufUtilsTest {
 	public static final List<Parameter<?>> TEST_PARAMS = new ArrayList<>();
 
 	static {
@@ -90,7 +91,7 @@ public class ChannelBufferUtilsTest {
 
 	@Test
 	public void testParameters() throws Exception {
-		ChannelBuffer buf = ChannelBuffers.dynamicBuffer();
+		ByteBuf buf = Unpooled.buffer();
 		writeParameters(buf, TEST_PARAMS);
 		assertEquals(TEST_PARAMS, readParameters(buf));
 	}
@@ -99,14 +100,14 @@ public class ChannelBufferUtilsTest {
 
 	@Test
 	public void testString() throws Exception {
-		ChannelBuffer buf = ChannelBuffers.dynamicBuffer();
+		ByteBuf buf = Unpooled.buffer();
 		writeString(buf, TEST_STRING);
 		assertEquals(TEST_STRING, readString(buf));
 	}
 
 	@Test
 	public void testUUID() throws Exception {
-		ChannelBuffer buf = ChannelBuffers.dynamicBuffer();
+		ByteBuf buf = Unpooled.buffer();
 		writeUUID(buf, TEST_UUID);
 		assertEquals(TEST_UUID, readUUID(buf));
 	}
@@ -116,7 +117,7 @@ public class ChannelBufferUtilsTest {
 		for (Field field : Vector3.class.getFields()) {
 			if (Modifier.isStatic(field.getModifiers()) && Vector2.class.isAssignableFrom(field.getType())) {
 				Vector3 vec = (Vector3) field.get(null);
-				ChannelBuffer buf = ChannelBuffers.buffer(12);
+				ByteBuf buf = Unpooled.buffer(12);
 				writeVector3(buf, vec);
 				assertEquals(vec, readVector3(buf));
 			}
@@ -129,21 +130,21 @@ public class ChannelBufferUtilsTest {
 
 	@Test
 	public void testTransform() throws IllegalAccessException {
-		ChannelBuffer buf = ChannelBuffers.dynamicBuffer();
+		ByteBuf buf = Unpooled.buffer();
 		writeTransform(buf, TEST_TRANSFORM);
 		assertEquals(TEST_TRANSFORM, readTransform(buf));
 	}
 
 	@Test
 	public void testPoint() throws IllegalAccessException {
-		ChannelBuffer buf = ChannelBuffers.dynamicBuffer();
+		ByteBuf buf = Unpooled.buffer();
 		writePoint(buf, TEST_POINT);
 		assertEquals(TEST_POINT, readPoint(buf));
 	}
 
 	@Test
 	public void testQuaternion() throws IllegalAccessException {
-		ChannelBuffer buf = ChannelBuffers.dynamicBuffer();
+		ByteBuf buf = Unpooled.buffer();
 		writeQuaternion(buf, Quaternion.IDENTITY);
 		assertEquals(Quaternion.IDENTITY, readQuaternion(buf));
 	}
@@ -152,7 +153,7 @@ public class ChannelBufferUtilsTest {
 
 	@Test
 	public void testStringArray() throws IllegalAccessException {
-		ChannelBuffer buf = ChannelBuffers.dynamicBuffer();
+		ByteBuf buf = Unpooled.buffer();
 		writeStringArray(buf, TEST_STRING_ARRAY);
 		assertArrayEquals(TEST_STRING_ARRAY, readStringArray(buf));
 	}
@@ -170,7 +171,7 @@ public class ChannelBufferUtilsTest {
 		for (Field field : Vector2.class.getFields()) {
 			if (Modifier.isStatic(field.getModifiers()) && Vector2.class.isAssignableFrom(field.getType())) {
 				Vector2 vec = (Vector2) field.get(null);
-				ChannelBuffer buf = ChannelBuffers.buffer(8);
+				ByteBuf buf = Unpooled.buffer(8);
 				writeVector2(buf, vec);
 				assertEquals(vec, readVector2(buf));
 			}
@@ -182,7 +183,7 @@ public class ChannelBufferUtilsTest {
 		for (Field field : Color.class.getFields()) {
 			if (Modifier.isStatic(field.getModifiers()) && Color.class.isAssignableFrom(field.getType())) {
 				Color color = (Color) field.get(null);
-				ChannelBuffer buf = ChannelBuffers.buffer(4);
+				ByteBuf buf = Unpooled.buffer(4);
 				writeColor(color, buf);
 				assertEquals(color, readColor(buf));
 			}

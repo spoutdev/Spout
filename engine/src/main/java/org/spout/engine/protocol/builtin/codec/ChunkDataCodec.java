@@ -34,13 +34,13 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.util.ChannelBufferUtils;
+import org.spout.api.util.ByteBufUtils;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 
 /**
@@ -56,10 +56,10 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 	}
 
 	@Override
-	public ChannelBuffer encode(ChunkDataMessage message) throws IOException {
-		final ChannelBuffer buffer;
+	public ByteBuf encode(ChunkDataMessage message) throws IOException {
+		final ByteBuf buffer;
 		if (message.isUnload()) {
-			buffer = ChannelBuffers.buffer(13);
+			buffer = Unpooled.buffer(13);
 			buffer.writeByte(ISUNLOAD); // we're unloading
 			buffer.writeInt(message.getX());
 			buffer.writeInt(message.getY());
@@ -109,13 +109,13 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			}
 
 			size += compressedSize;
-			buffer = ChannelBuffers.dynamicBuffer(size);
+			buffer = Unpooled.buffer(size);
 			buffer.writeByte(hasBiomes ? HASBIOMES : 0); // Has biomes only, not unload
 			buffer.writeInt(message.getX());
 			buffer.writeInt(message.getY());
 			buffer.writeInt(message.getZ());
 			if (hasBiomes) {
-				ChannelBufferUtils.writeString(buffer, message.getBiomeManagerClass());
+				ByteBufUtils.writeString(buffer, message.getBiomeManagerClass());
 			}
 			buffer.writeShort(lightSize);
 			buffer.writeInt(compressedSize);
@@ -125,7 +125,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 	}
 
 	@Override
-	public ChunkDataMessage decode(ChannelBuffer buffer) throws IOException {
+	public ChunkDataMessage decode(ByteBuf buffer) throws IOException {
 		final byte info = buffer.readByte();
 		final boolean unload = (info & ISUNLOAD) == ISUNLOAD;
 		final boolean hasBiomes = (info & HASBIOMES) == HASBIOMES;
@@ -135,7 +135,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 		if (unload) {
 			return new ChunkDataMessage(x, y, z);
 		} else {
-			final String biomeManagerClass = hasBiomes ? ChannelBufferUtils.readString(buffer) : null;
+			final String biomeManagerClass = hasBiomes ? ByteBufUtils.readString(buffer) : null;
 			final short lightSize = buffer.readShort();
 			int uncompressedSize = INTIAL_DATA_SIZE;
 			if (hasBiomes) {
