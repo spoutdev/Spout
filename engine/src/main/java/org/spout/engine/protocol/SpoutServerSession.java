@@ -89,7 +89,7 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> i
 			kickMessage = protocol.getKickMessage(reason);
 		}
 		if (kickMessage != null) {
-			getChannel().write(kickMessage).addListener(ChannelFutureListener.CLOSE);
+			getChannel().writeAndFlush(kickMessage).addListener(ChannelFutureListener.CLOSE);
 		} else {
 			getChannel().close();
 		}

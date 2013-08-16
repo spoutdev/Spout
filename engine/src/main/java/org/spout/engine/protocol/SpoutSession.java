@@ -170,7 +170,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	private long spikeEnd = 0;
 
 	public void pulse() {
-
 		Message message;
 
 		if (state == State.GAME) {
@@ -218,10 +217,10 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		}
 		try {
 			if (force || this.state == State.GAME) {
-				if (channel.isOpen()) {
+				if (channel.isActive()) {
 					NetworkSendThread sendThread = networkSendThread.get();
 					if (sendThread == null) {
-						channel.write(message);
+						channel.writeAndFlush(message);
 					} else {
 						sendThread.send(this, channel, message);
 					}

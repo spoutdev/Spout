@@ -837,28 +837,26 @@ public class ReplayableByteBuf extends ByteBuf {
 
 	@Override
 	public ByteBuf retain(int increment) {
-		buffer.retain(increment);
 		return this;
 	}
 
 	@Override
 	public ByteBuf retain() {
-		buffer.retain();
 		return this;
 	}
 
 	@Override
 	public int refCnt() {
-		return unsupported();
+		return 1;
 	}
 
 	@Override
 	public boolean release() {
-		return unsupported();
+		return true;
 	}
 
 	@Override
 	public boolean release(int decrement) {
-		return unsupported();
+		return true;
 	}
 }
