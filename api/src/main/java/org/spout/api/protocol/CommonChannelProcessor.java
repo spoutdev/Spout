@@ -51,7 +51,7 @@ public abstract class CommonChannelProcessor implements ChannelProcessor {
 	}
 
 	@Override
-	public final synchronized ByteBuf write(ChannelHandlerContext ctx, ByteBuf input, ByteBuf buffer) {
+	public final synchronized ByteBuf write(ChannelHandlerContext ctx, final ByteBuf input, final ByteBuf buffer) {
 		ByteBuf ByteBuf = buffer == null ? getNewBufferInstance(ctx, capacity) : buffer;
 		int nextSize = capacity;
 		int remaining;

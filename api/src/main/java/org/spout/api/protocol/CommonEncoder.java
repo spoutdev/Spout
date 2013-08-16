@@ -49,7 +49,7 @@ public class CommonEncoder extends ProcessingEncoder {
 
 	@SuppressWarnings ("unchecked")
 	@Override
-	protected void encodePreProcess(ChannelHandlerContext ctx, Object msg, List<Object> out) throws IOException {
+	protected void encodePreProcess(ChannelHandlerContext ctx, final Object msg, List<Object> out) throws IOException {
 		if (msg instanceof Message) {
 			if (protocol == null) {
 				if (onClient) {
