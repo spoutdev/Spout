@@ -65,7 +65,6 @@ public final class CommonChannelInitializer extends ChannelInitializer<SocketCha
 	@Override
 	protected void initChannel(SocketChannel c) throws Exception {
 		// Up for encoding/sending/outbound; Down for decoding/receiving/inbound
-		System.out.println("Init channel");
 		CommonEncoder encoder = new CommonEncoder(onClient);
 		CommonDecoder decoder = new CommonDecoder(onClient);
 		DynamicMessageDecoder dynamicDecoder = new DynamicMessageDecoder();

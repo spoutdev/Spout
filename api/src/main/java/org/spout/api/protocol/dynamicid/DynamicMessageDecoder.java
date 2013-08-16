@@ -43,13 +43,14 @@ public class DynamicMessageDecoder extends MessageToMessageDecoder<Message> {
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, Message message, List<Object> out) throws Exception {
+		Message unwrapped = message;
 		Session session = ctx.pipeline().get(CommonHandler.class).getSession();
 		if (session != null) {
 			Protocol protocol = session.getProtocol();
-			while (message instanceof DynamicWrapperMessage) {
-				message = ((DynamicWrapperMessage) message).unwrap(true, protocol);
+			while (unwrapped instanceof DynamicWrapperMessage) {
+				unwrapped = ((DynamicWrapperMessage) unwrapped).unwrap(protocol);
 			}
 		}
-		out.add(message);
+		out.add(unwrapped);
 	}
 }

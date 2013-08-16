@@ -27,6 +27,7 @@
 package org.spout.api.protocol;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -48,7 +49,7 @@ public class CommonEncoder extends ProcessingEncoder {
 
 	@SuppressWarnings ("unchecked")
 	@Override
-	protected Object encodePreProcess(ChannelHandlerContext ctx, Object msg) throws IOException {
+	protected void encodePreProcess(ChannelHandlerContext ctx, Object msg, List<Object> out) throws IOException {
 		if (msg instanceof Message) {
 			if (protocol == null) {
 				if (onClient) {
@@ -65,9 +66,8 @@ public class CommonEncoder extends ProcessingEncoder {
 			}
 			final ByteBuf messageBuf = codec.encode(onClient, message);
 			final ByteBuf headerBuf = protocol.writeHeader(codec, messageBuf);
-			return Unpooled.wrappedBuffer(headerBuf, messageBuf);
+			out.add(Unpooled.wrappedBuffer(headerBuf, messageBuf));
 		}
-		return msg;
 	}
 
 	void setProtocol(Protocol protocol) {
