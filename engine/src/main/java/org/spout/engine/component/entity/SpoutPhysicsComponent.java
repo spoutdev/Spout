@@ -398,6 +398,9 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			if (render.isEmpty()) {
 				render.set(snapshot);
 			}
+			if (isWorldDirty()) {
+				render.set(live);
+			}
 			final float step = dt * (60f / 20f);
 
 			final Point position = live.getPosition();

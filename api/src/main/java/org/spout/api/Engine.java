@@ -140,14 +140,6 @@ public interface Engine extends Named {
 	public File getPluginFolder();
 
 	/**
-	 * Creates a new Session
-	 *
-	 * @param channel the associated channel
-	 * @return the session
-	 */
-	public Session newSession(Channel channel);
-
-	/**
 	 * Gets the {@link Entity} with the matching unique id <br/> <br/> Performs a search on each world and then searches each world respectively for the entity, stopping when it is found, or after all
 	 * the worlds have been searched upon failure.
 	 *

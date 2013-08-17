@@ -86,7 +86,7 @@ public class SpoutProxy extends SpoutServer {
 	}
 
 	@Override
-	public Session newSession(Channel channel) {
+	public SpoutProxySession newSession(Channel channel) {
 		Protocol protocol = getProtocol(channel.localAddress());
 		return new SpoutProxySession(this, channel, protocol);
 	}

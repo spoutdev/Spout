@@ -88,7 +88,7 @@ public class CommonHandler extends SimpleChannelInboundHandler<Message> {
 			try {
 				Server server = (Server) engine;
 				server.getChannelGroup().add(c);
-				Session session = engine.newSession(c);
+				Session session = server.newSession(c);
 				server.getSessionRegistry().add(session);
 				setSession(session);
 			} catch (Exception ex) {
