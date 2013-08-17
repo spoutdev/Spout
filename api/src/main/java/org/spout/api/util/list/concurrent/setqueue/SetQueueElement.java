@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * An element for a SetQueue.<br> <br> Calls to the add() method have no effect if the element is already in the queue.
  */
-public abstract class SetQueueElement<T> {
+public class SetQueueElement<T> {
 	private final SetQueue<T> queue;
 	private final T value;
 	private final AtomicBoolean queued = new AtomicBoolean(false);
@@ -69,7 +69,9 @@ public abstract class SetQueueElement<T> {
 		return false;
 	}
 
-	protected abstract boolean isValid();
+	protected boolean isValid() {
+		return true;
+	}
 
 	@Override
 	public String toString() {
