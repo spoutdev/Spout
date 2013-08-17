@@ -34,6 +34,7 @@ import io.netty.channel.Channel;
 
 import org.spout.api.Spout;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.ServerSession;
 import org.spout.engine.SpoutConfiguration;
 
 public class NetworkSendThread {
@@ -168,7 +169,7 @@ public class NetworkSendThread {
 				}
 			} catch (Exception e) {
 				try {
-					node.getSession().disconnect(false, "Socket Error!");
+					node.getSession().disconnect("Socket Error!");
 				} catch (Exception e2) {
 					try {
 						Spout.getLogger().info("Unable to cleanly close session for " + node.getSession().getPlayer().getName());

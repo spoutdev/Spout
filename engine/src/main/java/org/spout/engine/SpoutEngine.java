@@ -160,7 +160,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	public void start() {
 		Spout.info("Spout is starting in {0}-only mode.", getPlatform().name().toLowerCase());
-		Spout.info("This server is running Spout #{0}.", Spout.getAPIVersion().replace("dev b", ""));
+		Spout.info("This {0}'s version is {1}.", getPlatform().name().toLowerCase(), Spout.getAPIVersion().replace("dev b", ""));
 		Spout.info("This software is currently in alpha status so components may");
 		Spout.info("have bugs or not work at all. Please report any issues to");
 		Spout.info("http://issues.spout.org");
@@ -415,11 +415,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	@Override
 	public String getLogFile() {
 		return logFile;
-	}
-
-	public EntityManager getExpectedEntityManager(Point point) {
-		Region region = point.getWorld().getRegionFromBlock(point);
-		return ((SpoutRegion) region).getEntityManager();
 	}
 
 	@Override

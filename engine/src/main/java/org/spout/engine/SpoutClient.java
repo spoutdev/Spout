@@ -201,7 +201,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			connect.await(10, TimeUnit.SECONDS);
 		} catch (InterruptedException ex) {
 			getLogger().log(Level.SEVERE, "Connection took too long! Cancelling connect and stopping engine!");
-			stop(); // TODO: Make sure that this is fine here
+			stop();
 			return false;
 		}
 
@@ -228,6 +228,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	protected Runnable getSessionTask() {
 		return sessionTask;
+	}
+
+	@Override
+	public void startTickRun(int stage, long delta) {
 	}
 
 	private class SessionTask implements Runnable {
@@ -283,7 +287,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 			return false;
 		}
 
-		player.get().getNetwork().getSession().dispose();
+		if (!player.get().getNetwork().getSession().isDisconnected()) {
+			player.get().getNetwork().getSession().disconnect("Spout shutting down");
+		}
 
 		// De-init OpenAL
 		soundManager.destroy();
@@ -310,13 +316,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	public boolean isRendering() {
 		return rendering;
-	}
-
-	public void stopEngine() {
-		if (rendering) {
-			throw new IllegalStateException("Client is still rendering!");
-		}
-		super.stop(stopMessage);
 	}
 
 	@Override
@@ -362,24 +361,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 			throw new IllegalStateException("Unable to add new world to the scheduler");
 		}
 		return world;
-	}
-
-	public Bootstrap getBootstrap() {
-		return bootstrap;
-	}
-
-	@Override
-	public SpoutClientSession newSession(Channel channel) {
-		// TODO: This really needs to be removed and moved to server only
-		throw new UnsupportedOperationException("Can't add new session on client!");
-		//return new SpoutClientSession(this, channel, protocol);
-	}
-
-	public void disconnected() {
-		//getLogger().log(Level.WARNING, "ENGINE DISCONNECTING!");
-		//new RuntimeException("Not real exception.").printStackTrace();
-		stop("Disconnected for some unknown reason!");
-		//this.session.set(null);
 	}
 
 	@Override
@@ -465,15 +446,5 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	public SpoutRenderer getRenderer() {
 		return renderer;
-	}
-
-	@Override
-	public void startTickRun(int stage, long delta) {
-	}
-
-	@Override
-	public void copySnapshotRun() {
-		super.copySnapshotRun();
-		getPlayer().copySnapshot();
 	}
 }

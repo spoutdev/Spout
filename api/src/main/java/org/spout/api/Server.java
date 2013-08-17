@@ -31,12 +31,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 
 import org.spout.api.entity.Player;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.protocol.PortBinding;
+import org.spout.api.protocol.ServerSession;
+import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.util.access.AccessManager;
 import org.spout.api.util.thread.annotation.LiveRead;
@@ -324,4 +327,6 @@ public interface Server extends Engine {
 	 * @return world folder
 	 */
 	public File getWorldFolder();
+
+	public ServerSession newSession(Channel c);
 }

@@ -59,66 +59,66 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> i
 	// TODO why is this not is SpoutSession
 	@Override
 	public boolean disconnect(String reason) {
-		return disconnect(true, reason);
+		return disconnect(false, reason);
 	}
 
-	@Override
-	public boolean disconnect(boolean kick, String reason) {
-		return disconnect(kick, !kick, reason);
-	}
-
-	@Override
-	public boolean disconnect(boolean kick, boolean stop, String reason) {
-		if (getPlayer() != null) {
-			PlayerLeaveEvent event;
-			if (kick) {
-				event = getEngine().getEventManager().callEvent(new PlayerKickEvent(getPlayer(), getDefaultLeaveMessage(), reason));
-				if (event.isCancelled()) {
-					return false;
-				}
-				reason = ((PlayerKickEvent) event).getKickReason();
-				getEngine().getCommandSource().sendMessage("Player " + getPlayer().getName() + " kicked: " + reason);
-			} else {
-				event = new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage());
+	public boolean disconnect(boolean stopping, String reason) {
+		if (isDisconnected()) {
+			throw new IllegalStateException("Tried to call disconnect on a session that has already been disconnected!");
+		}
+		if (getPlayer() == null) {
+			throw new IllegalStateException("Tried to disconnect a session with a null player!");
+		}
+		isDisconnected = true;
+		PlayerLeaveEvent event;
+		if (!stopping) {
+			event = getEngine().getEventManager().callEvent(new PlayerKickEvent(getPlayer(), getDefaultLeaveMessage(), reason));
+			if (event.isCancelled()) {
+				return false;
 			}
-			dispose(event, stop);
+			reason = ((PlayerKickEvent) event).getKickReason();
+			getEngine().getCommandSource().sendMessage("Player " + getPlayer().getName() + " kicked: " + reason);
+		} else {
+			event = getEngine().getEventManager().callEvent(new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage()));
 		}
+		broadcastLeaveMessage(event);
+
 		Protocol protocol = getProtocol();
-		Message kickMessage = null;
-		if (protocol != null) {
-			kickMessage = protocol.getKickMessage(reason);
-		}
+		Message kickMessage = protocol == null ? null : protocol.getKickMessage(reason);
+
 		if (kickMessage != null) {
 			getChannel().writeAndFlush(kickMessage).addListener(ChannelFutureListener.CLOSE);
 		} else {
 			getChannel().close();
 		}
+		dispose(stopping);
 		return true;
+	}
+
+	private void broadcastLeaveMessage(PlayerLeaveEvent leaveEvent) {
+		String msg = leaveEvent.getMessage();
+		if (msg != null) {
+			getEngine().broadcastMessage(msg);
+		}
 	}
 
 	@Override
 	public void dispose() {
 		super.dispose();
-		dispose(new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage()), false);
+		broadcastLeaveMessage(getEngine().getEventManager().callEvent(new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage())));
+		dispose(false);
 	}
 
-	public void dispose(PlayerLeaveEvent leaveEvent, boolean stop) {
+	public void dispose(boolean isStopping) {
 		SpoutPlayer player = getPlayer();
-		if (player != null) {
-			if (!leaveEvent.hasBeenCalled()) {
-				getEngine().getEventManager().callEvent(leaveEvent);
-			}
+		if (player == null) {
+			throw new IllegalStateException("Tried to dispose of a session with a null player!");
+		}
 
-			String msg = leaveEvent.getMessage();
-			if (msg != null) {
-				getEngine().broadcastMessage(msg);
-			}
-
-			try {
-				player.disconnect(!stop); //can not save async if the engine is stopping
-			} catch (Exception e) {
-				Spout.getLogger().log(Level.WARNING, "Did not disconnect " + player.getName() + " cleanly", e);
-			}
+		try {
+			player.disconnect(!isStopping); //can not save async if the engine is stopping
+		} catch (Exception e) {
+			Spout.getLogger().log(Level.WARNING, "Did not disconnect " + player.getName() + " cleanly", e);
 		}
 	}
 }

@@ -491,7 +491,7 @@ public class TestCommands {
 		switch (engine.getPlatform()) {
 			case CLIENT:
 				Session session = ((SpoutClient) engine).getPlayer().getNetwork().getSession();
-				if (session.isConnected()) {
+				if (session.isActive()) {
 					source.sendMessage("Network is open and connected");
 				} else {
 					source.sendMessage("Network is down. Stopping.");

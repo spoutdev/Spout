@@ -56,37 +56,19 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 	}
 
 	@Override
-	public void dispose() {
+	public boolean disconnect(String reason) {
+		if (isDisconnected()) {
+			throw new IllegalStateException("Tried to disconnect a session that has already been disconnected!");
+		}
+		isDisconnected = true;
 		activeWorld.set(null);
 		SpoutPlayer player = getPlayer();
-		if (player != null) {
-			player.disconnect(false);
+		if (player == null) {
+			throw new IllegalStateException("Tried to disconnect a session with a null player!");
 		}
-		getEngine().disconnected();
-	}
-
-	public World getActiveWorld() {
-		return activeWorld.get();
-	}
-
-	@Override
-	public boolean disconnect(String reason) {
-		return disconnect(true, reason);
-	}
-
-	@Override
-	public boolean disconnect(boolean kick, String reason) {
-		return disconnect(kick, false, reason);
-	}
-
-	@Override
-	public boolean disconnect(boolean kick, boolean stop, String reason) {
-		SpoutPlayer player = getPlayer();
-		if (player != null) {
-			player.sendCommand("disconnect", reason);
-			return true;
-		}
-		return false;
+		player.disconnect(false);
+		getEngine().stop(reason);
+		return true;
 	}
 
 	public PortBinding getActiveAddress() {
@@ -105,5 +87,10 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 			throw new IllegalArgumentException("Player in SpoutClientSession MUST be a SpoutClientPlayer");
 		}
 		super.setPlayer(player);
+	}
+
+	@Override
+	public void dispose() {
+		getEngine().stop("Client is stopping from loss of server");
 	}
 }

@@ -353,7 +353,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public Session newSession(Channel channel) {
+	public SpoutServerSession newSession(Channel channel) {
 		Protocol protocol = getProtocol(channel.localAddress());
 		if (SpoutConfiguration.SHOW_CONNECTIONS.getBoolean()) {
 			getLogger().info("Downstream channel connected: " + channel + ".");
@@ -497,14 +497,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public void copySnapshotRun() {
-		super.copySnapshotRun();
-		for (Player player : players.get().values()) {
-			((SpoutPlayer) player).copySnapshot();
-		}
-	}
-
-	@Override
 	public AccessManager getAccessManager() {
 		return accessManager;
 	}
@@ -620,7 +612,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 			return loadedWorlds.getLive().get(name);
 		}
 
-		// TODO: Should include generator (and non-zero seed)
 		if (generator == null) {
 			generator = defaultGenerator;
 		}
@@ -741,7 +732,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 		player.getNetwork().setSession(session);
 		//Set the player's sync distance
 		player.getNetwork().setSyncDistance(syncDistance);
-		player.getNetwork().forceSync();
 
 		SpoutPlayer oldPlayer = players.put(playerName, player);
 
@@ -762,6 +752,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		// Initialize the session
 		session.getProtocol().initializeServerSession(session);
 
+		player.getNetwork().forceSync();
 		return player;
 	}
 

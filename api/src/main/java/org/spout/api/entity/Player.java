@@ -28,6 +28,7 @@ package org.spout.api.entity;
 
 import java.util.List;
 
+import org.spout.api.ServerOnly;
 import org.spout.api.command.CommandSource;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.state.PlayerInputState;
@@ -69,6 +70,7 @@ public interface Player extends CommandSource, Entity {
 	/**
 	 * Kicks the player without giving a reason, or forcing it.
 	 */
+	@ServerOnly
 	public void kick();
 
 	/**
@@ -76,11 +78,13 @@ public interface Player extends CommandSource, Entity {
 	 *
 	 * @param reason the message to send to the player.
 	 */
+	@ServerOnly
 	public void kick(String reason);
 
 	/**
 	 * Bans the player without giving a reason.
 	 */
+	@ServerOnly
 	public void ban();
 
 	/**
@@ -88,6 +92,7 @@ public interface Player extends CommandSource, Entity {
 	 *
 	 * @param kick whether to kick or not
 	 */
+	@ServerOnly
 	public void ban(boolean kick);
 
 	/**
@@ -96,6 +101,7 @@ public interface Player extends CommandSource, Entity {
 	 * @param kick whether to kick or not
 	 * @param reason for ban
 	 */
+	@ServerOnly
 	public void ban(boolean kick, String reason);
 
 	/**

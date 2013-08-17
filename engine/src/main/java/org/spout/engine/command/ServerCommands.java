@@ -215,7 +215,7 @@ public class ServerCommands extends CommonCommands {
 		String message = args.popRemainingStrings("message", "Oops!");
 
 		if (source instanceof Player) {
-			((Player) source).getNetwork().getSession().disconnect(false, message);
+			((Player) source).getNetwork().getSession().disconnect(message);
 		}
 	}
 
