@@ -384,6 +384,7 @@ public final class SpoutScheduler implements Scheduler {
 			heavyLoad.set(false);
 
 			asyncManagers.copySnapshot();
+
 			try {
 				copySnapshotWithLock(asyncManagers.get());
 			} catch (InterruptedException ex) {
@@ -415,29 +416,6 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			runLastTickTasks();
-
-			asyncManagers.copySnapshot();
-			try {
-				copySnapshotWithLock(asyncManagers.get());
-			} catch (InterruptedException ex) {
-				Spout.severe("Interrupt while running final snapshot copy: {0}", ex.getMessage());
-			}
-
-			asyncManagers.copySnapshot();
-
-			try {
-				copySnapshotWithLock(asyncManagers.get());
-			} catch (InterruptedException ex) {
-				Spout.severe("Error while halting all executors: {0}", ex.getMessage());
-			}
-
-			asyncManagers.copySnapshot();
-
-			try {
-				copySnapshotWithLock(asyncManagers.get());
-			} catch (InterruptedException ex) {
-				Spout.severe("Error while shutting down engine: {0}", ex.getMessage());
-			}
 
 			// Shutdown manager thread pool
 
