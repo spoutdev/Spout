@@ -27,6 +27,7 @@
 package org.spout.api.plugin;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -189,7 +190,12 @@ public class PluginManager {
 		loadMetaPlugin();
 
 		List<Plugin> result = new ArrayList<>();
-		LinkedList<File> files = new LinkedList<>(Arrays.asList(paramFile.listFiles()));
+		LinkedList<File> files = new LinkedList<>(Arrays.asList(paramFile.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.contains(".jar");
+            }
+        })));
 		boolean failed = false;
 		boolean lastPass = false;
 
