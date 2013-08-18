@@ -38,17 +38,18 @@ import org.spout.api.Spout;
 import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.Session;
-import org.spout.engine.protocol.SpoutSession;
+import org.spout.api.protocol.ServerSession;
+
+import org.spout.engine.protocol.SpoutServerSession;
 
 public class SpoutProxyConnectListener implements ChannelFutureListener {
 	private final Engine engine;
-	private final SpoutSession<?> session;
+	private final SpoutServerSession<?> session;
 	private final String playerName;
 
-	public SpoutProxyConnectListener(Engine engine, String playerName, Session session) {
+	public SpoutProxyConnectListener(Engine engine, String playerName, ServerSession session) {
 		this.engine = engine;
-		this.session = (SpoutSession<?>) session;
+		this.session = (SpoutServerSession<?>) session;
 		this.playerName = playerName;
 	}
 

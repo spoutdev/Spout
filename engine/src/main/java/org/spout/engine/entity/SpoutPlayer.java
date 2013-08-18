@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import org.spout.api.Client;
 
 import org.spout.api.Engine;
 import org.spout.api.Platform;
@@ -67,6 +68,7 @@ import org.spout.engine.SpoutServer;
 import org.spout.engine.component.entity.MovementValidatorComponent;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
+import org.spout.engine.protocol.SpoutServerSession;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutServerWorld;
 
@@ -266,14 +268,17 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		kick(false, reason);
 	}
 
-	public void kick(boolean stop, String reason) {
+	public void kick(boolean isStopping, String reason) {
+		if (getEngine().getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Must be on the server to kick players!");
+		}
 		if (reason == null) {
-			reason = "Kicked from server.";
+			reason = "Kicked from server";
 		}
 		//If we are stopping, it's not really a kick (it's a friendly disconnect)
 		//If we aren't stopping, it really is a kick
 
-		((SpoutSession) getNetwork().getSession()).disconnect(!stop, stop, reason);
+		((SpoutServerSession) getNetwork().getSession()).disconnect(isStopping, reason);
 	}
 
 	@Override

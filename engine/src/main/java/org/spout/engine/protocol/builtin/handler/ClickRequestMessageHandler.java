@@ -48,6 +48,6 @@ public class ClickRequestMessageHandler extends MessageHandler<ClickRequestMessa
 
 	@Override
 	public void handleClient(ClientSession session, ClickRequestMessage message) {
-		session.disconnect(true, "Client cannot recieve click request from server");
+		session.disconnect("Client cannot recieve click request from server");
 	}
 }

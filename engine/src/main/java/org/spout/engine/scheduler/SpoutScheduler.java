@@ -308,7 +308,7 @@ public final class SpoutScheduler implements Scheduler {
 				frames++;
 			}
 			Display.destroy();
-			((SpoutClient) engine).stopEngine();
+			engine.stop("Spout is shutting down");
 		}
 	}
 

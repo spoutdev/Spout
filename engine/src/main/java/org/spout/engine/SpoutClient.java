@@ -287,7 +287,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 			return false;
 		}
 
-		player.get().getNetwork().getSession().dispose();
+		if (!player.get().getNetwork().getSession().isDisconnected()) {
+			player.get().getNetwork().getSession().disconnect("Spout shutting down");
+		}
 
 		// De-init OpenAL
 		soundManager.destroy();
@@ -314,13 +316,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	public boolean isRendering() {
 		return rendering;
-	}
-
-	public void stopEngine() {
-		if (rendering) {
-			throw new IllegalStateException("Client is still rendering!");
-		}
-		super.stop(stopMessage);
 	}
 
 	@Override
@@ -366,10 +361,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 			throw new IllegalStateException("Unable to add new world to the scheduler");
 		}
 		return world;
-	}
-
-	public void disconnected() {
-		stop("Disconnected for some unknown reason!");
 	}
 
 	@Override

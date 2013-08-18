@@ -139,8 +139,8 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 	}
 
 	@Override
-	public boolean disconnect(boolean kick, String reason) {
-		boolean result = super.disconnect(kick, reason);
+	public boolean disconnect(String reason) {
+		boolean result = super.disconnect(reason);
 		closeAuxChannel(false, reason);
 		return result;
 	}

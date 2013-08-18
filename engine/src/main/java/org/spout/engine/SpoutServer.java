@@ -732,7 +732,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 		player.getNetwork().setSession(session);
 		//Set the player's sync distance
 		player.getNetwork().setSyncDistance(syncDistance);
-		player.getNetwork().forceSync();
 
 		SpoutPlayer oldPlayer = players.put(playerName, player);
 
@@ -753,6 +752,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		// Initialize the session
 		session.getProtocol().initializeServerSession(session);
 
+		player.getNetwork().forceSync();
 		return player;
 	}
 
