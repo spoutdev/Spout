@@ -86,7 +86,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 * The protocol for this session
 	 */
 	private final AtomicReference<Protocol> protocol;
-	private final Thread pulseThread;
 	/**
 	 * The current state.
 	 */
@@ -112,18 +111,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		this.channel = channel;
 		this.protocol = new AtomicReference<>(bootstrapProtocol);
 		this.exceptionHandler = new AtomicReference<UncaughtExceptionHandler>(new DefaultUncaughtExceptionHandler(this));
-
-		//test
-		this.pulseThread = new Thread(new Runnable() {
-			{
-				System.out.println("Commencing test thread for SpoutSession -> " + this);
-			}
-			@Override
-			public void run() {
-				System.out.println("Executing a pulse on SpoutSession -> " + this);
-			}
-		}, "SpoutSession -> Pulse Test Thread");
-		pulseThread.start();
 	}
 
 	/**
@@ -182,7 +169,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	private long spikeEnd = 0;
 
 	public void pulse() {
-		pulseThread.run();
 		Message message;
 
 		if (state == State.GAME) {
