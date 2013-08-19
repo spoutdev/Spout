@@ -382,4 +382,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	public PlayerNetworkComponent getNetwork() {
 		return (PlayerNetworkComponent) network;
 	}
+
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder(super.toString());
+		builder.append("This entity is a Player with name " + getName());
+		return builder.toString();
+	}
 }
