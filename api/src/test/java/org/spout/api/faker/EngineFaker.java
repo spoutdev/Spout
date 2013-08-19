@@ -87,17 +87,18 @@ public class EngineFaker {
 
 		@Override
 		public <T extends Event> void callDelayedEvent(T event) {
-
 		}
 
 		@Override
 		public void registerEvents(Listener listener, Object owner) {
-
 		}
 
 		@Override
 		public void registerEvent(Class<? extends Event> event, Order priority, EventExecutor executor, Object owner) {
+		}
 
+		@Override
+		public void unRegisterEvents(Listener listener) {
 		}
 	}
 }

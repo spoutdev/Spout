@@ -26,6 +26,8 @@
  */
 package org.spout.api.event;
 
+import java.util.Objects;
+
 /**
  * Represents an {@link EventExecutor}'s registration.
  */
@@ -71,4 +73,31 @@ public class ListenerRegistration {
 	public Order getOrder() {
 		return orderSlot;
 	}
+
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 97 * hash + Objects.hashCode(this.executor);
+		hash = 97 * hash + Objects.hashCode(this.orderSlot);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final ListenerRegistration other = (ListenerRegistration) obj;
+		if (!Objects.equals(this.executor, other.executor)) {
+			return false;
+		}
+		if (this.orderSlot != other.orderSlot) {
+			return false;
+		}
+		return true;
+	}
+
 }

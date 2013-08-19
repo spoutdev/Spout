@@ -46,6 +46,13 @@ public interface EventManager {
 	public <T extends Event> void callDelayedEvent(T event);
 
 	/**
+	 * Unregisters all the events in the given listener class
+	 *
+	 * @param listener Listener to unregister
+	 */
+	public void unRegisterEvents(Listener listener);
+
+	/**
 	 * Registers all the events in the given listener class
 	 *
 	 * @param listener Listener to register

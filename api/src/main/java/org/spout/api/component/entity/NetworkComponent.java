@@ -42,6 +42,7 @@ import org.spout.api.ServerOnly;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
+import org.spout.api.event.Listener;
 import org.spout.api.event.ProtocolEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -313,6 +314,9 @@ public class NetworkComponent extends EntityComponent {
 			}
 		}
 		observingChunks.clear();
+		if (this instanceof Listener) {
+			Spout.getEventManager().unRegisterEvents((Listener) this);
+		}
 	}
 
 	@ServerOnly
