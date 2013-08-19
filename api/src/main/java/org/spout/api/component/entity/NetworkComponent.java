@@ -74,7 +74,6 @@ public class NetworkComponent extends EntityComponent {
 	 * In chunks
 	 */
 	public final DefaultedKey<Integer> SYNC_DISTANCE = new DefaultedKeyImpl<>("SYNC_DISTANCE", 10);
-	private final AtomicReference<RepositionManager> rm = new AtomicReference<>(NullRepositionManager.getInstance());
 	private final Set<Chunk> observingChunks = new HashSet<>();
 	private AtomicReference<WrappedSerizableIterator> liveObserverIterator = new AtomicReference<>(new WrappedSerizableIterator(new OutwardIterator(0, 0, 0, 0)));
 	private boolean observeChunksFailed = false;
@@ -185,21 +184,6 @@ public class NetworkComponent extends EntityComponent {
 	public void setSyncDistance(final int syncDistance) {
 		//TODO: Enforce server maximum (but that is set in Spout...)
 		getData().put(SYNC_DISTANCE, syncDistance);
-	}
-
-	/**
-	 * Gets the reposition manager that converts local coordinates into remote coordinates
-	 */
-	public RepositionManager getRepositionManager() {
-		return rm.get();
-	}
-
-	public void setRepositionManager(RepositionManager rm) {
-		if (rm == null) {
-			this.rm.set(NullRepositionManager.getInstance());
-		} else {
-			this.rm.set(rm);
-		}
 	}
 
 	/**

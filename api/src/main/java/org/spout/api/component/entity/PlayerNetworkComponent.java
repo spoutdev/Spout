@@ -60,6 +60,8 @@ import org.spout.api.protocol.event.ChunkSendEvent;
 import org.spout.api.protocol.event.EntitySyncEvent;
 import org.spout.api.protocol.event.EntityUpdateEvent;
 import org.spout.api.protocol.event.WorldChangeProtocolEvent;
+import org.spout.api.protocol.reposition.NullRepositionManager;
+import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.SyncedStringMap;
 import org.spout.api.util.set.concurrent.TSyncIntHashSet;
@@ -95,6 +97,7 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	protected int tickCounter = 0;
 	private int chunksSent = 0;
 	private Set<Point> unsendable = new HashSet<>();
+	private final AtomicReference<RepositionManager> rm = new AtomicReference<>(NullRepositionManager.getInstance());
 
 	@Override
 	public void onAttached() {
@@ -191,6 +194,21 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	@ServerOnly
 	public void forceSync() {
 		sync = true;
+	}
+
+	/**
+	 * Gets the reposition manager that converts local coordinates into remote coordinates
+	 */
+	public RepositionManager getRepositionManager() {
+		return rm.get();
+	}
+
+	public void setRepositionManager(RepositionManager rm) {
+		if (rm == null) {
+			this.rm.set(NullRepositionManager.getInstance());
+		} else {
+			this.rm.set(rm);
+		}
 	}
 
 	/**
