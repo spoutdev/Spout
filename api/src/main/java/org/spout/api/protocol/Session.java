@@ -30,10 +30,12 @@ import java.net.InetSocketAddress;
 import java.util.logging.Level;
 
 import io.netty.channel.Channel;
+import java.util.UUID;
 
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.datatable.SerializableMap;
+import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 
 /**

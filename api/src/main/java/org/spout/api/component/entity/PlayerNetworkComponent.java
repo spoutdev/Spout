@@ -499,4 +499,10 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 		}
 		return chunks;
 	}
+
+	@Override
+	public void onDetached() {
+		super.onDetached();
+		session.set(null);
+	}
 }

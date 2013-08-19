@@ -30,11 +30,14 @@ import java.net.InetSocketAddress;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import java.util.UUID;
 
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.component.entity.PlayerNetworkComponent;
+import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.object.EventableListener;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
@@ -161,9 +164,14 @@ public class SpoutProtocol extends Protocol {
 	@Override
 	public void initializeServerSession(final ServerSession session) {
 		//TODO Ensure this is right, very important
+		final UUID playerUUID = session.getPlayer().getUID();
 		SyncedMapRegistry.getRegistrationMap().registerListener(new EventableListener<SyncedMapEvent>() {
 			@Override
 			public void onEvent(SyncedMapEvent event) {
+				Entity e = Spout.getEngine().getEntity(playerUUID);
+				if (e == null || !(e instanceof Player)) {
+					SyncedMapRegistry.getRegistrationMap().unregisterListener(this);
+				}
 				session.send(true, new SyncedMapMessage(event.getAssociatedObject().getId(), SyncedMapEvent.Action.ADD, event.getModifiedElements()));
 			}
 		});
