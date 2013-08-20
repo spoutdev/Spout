@@ -91,6 +91,6 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 
 	@Override
 	public void dispose() {
-		getEngine().stop("Client is stopping from loss of server");
+		getEngine().stop("Client has been disconnected from the Server");
 	}
 }
