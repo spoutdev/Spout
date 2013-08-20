@@ -193,7 +193,7 @@ public class PluginManager {
 		LinkedList<File> files = new LinkedList<>(Arrays.asList(paramFile.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.contains(".jar");
+                return name.endsWith(".jar");
             }
         })));
 		boolean failed = false;
