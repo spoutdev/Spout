@@ -44,6 +44,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
+import org.spout.api.event.Order;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -57,7 +58,6 @@ import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.event.ChunkFreeEvent;
 import org.spout.api.protocol.event.ChunkSendEvent;
-import org.spout.api.protocol.event.EntitySyncEvent;
 import org.spout.api.protocol.event.EntityUpdateEvent;
 import org.spout.api.protocol.event.WorldChangeProtocolEvent;
 import org.spout.api.protocol.reposition.NullRepositionManager;
@@ -160,16 +160,18 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	 *
 	 * @param event {@link EntitySyncEvent}
 	 */
-	@ServerOnly
-	@EventHandler
-	public void syncEntity(EntitySyncEvent event) {
-		final Entity e = event.getEntity();
-		final boolean add = event.shouldAdd();
-		final boolean remove = event.shouldRemove();
-		if (add) {
-			synchronizedEntities.add(e.getId());
-		} else if (remove) {
-			synchronizedEntities.remove(e.getId());
+	@EventHandler(order = Order.EARLIEST)
+	public final void syncEntityEarliest(EntityUpdateEvent event) {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			return;
+		}
+		switch (event.getAction()) {
+			case ADD:
+				synchronizedEntities.add(event.getEntityId());
+				break;
+			case REMOVE:
+				synchronizedEntities.remove(event.getEntityId());
+				break;
 		}
 	}
 
@@ -218,7 +220,6 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	 *
 	 * @param live A copy of the owner's live transform state
 	 */
-	@ServerOnly
 	@Override
 	public void finalizeRun(final Transform live) {
 		super.finalizeRun(live);
@@ -266,7 +267,6 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	 *
 	 * @param live A copy of the owner's live transform state
 	 */
-	@ServerOnly
 	public void preSnapshot(final Transform live) {
 		if (Spout.getPlatform() != Platform.SERVER || session.get().getState() != Session.State.GAME) {
 			return;
@@ -343,13 +343,10 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	}
 
 	private void sendPositionUpdates(Transform live) {
-		//TODO: finalizeRun has a live copy, why is this here?
 		if (getOwner().getPhysics().isTransformDirty() && sync) {
-			//TODO: Merge these events?
-			callProtocolEvent(new EntitySyncEvent(getOwner(), live, false, true, false), getOwner());
 			//TODO: Live needs to be sent here but kills the client. Fix kitskub
-			callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), new Transform(getOwner().getPhysics().getPosition(), getOwner().getPhysics().getRotation(), Vector3.ONE), EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
-			//callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), live, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
+			//callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), new Transform(getOwner().getPhysics().getPosition(), getOwner().getPhysics().getRotation(), Vector3.ONE), EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
+			callProtocolEvent(new EntityUpdateEvent(getOwner(), live, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
 			sync = false;
 		}
 	}
