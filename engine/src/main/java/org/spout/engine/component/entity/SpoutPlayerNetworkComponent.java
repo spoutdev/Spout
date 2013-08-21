@@ -43,7 +43,6 @@ import org.spout.api.protocol.event.BlockUpdateEvent;
 import org.spout.api.protocol.event.ChunkDatatableSendEvent;
 import org.spout.api.protocol.event.ChunkFreeEvent;
 import org.spout.api.protocol.event.ChunkSendEvent;
-import org.spout.api.protocol.event.EntitySyncEvent;
 import org.spout.api.protocol.event.EntityUpdateEvent;
 import org.spout.api.protocol.event.WorldChangeProtocolEvent;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
@@ -90,37 +89,25 @@ public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implemen
 
 	@EventHandler
 	public void onUpdateEntity(EntityUpdateEvent event) {
-		event.getMessages().add(new UpdateEntityMessage(event.getEntityId(), event.getTransform(), event.getAction(), event.getRepositionManager()));
-	}
-
-	@ServerOnly
-	@Override
-	public void syncEntity(EntitySyncEvent event) {
-		super.syncEntity(event);
 		final Entity e = event.getEntity();
 		final Transform transform = event.getTransform();
-		final boolean remove = event.shouldRemove();
-		final boolean add = event.shouldAdd();
-		List<Message> messages = new ArrayList<>();
-		if (!e.equals(getOwner())) {
-			if (remove) {
-				messages.add(new UpdateEntityMessage(e.getId(), null, EntityUpdateEvent.UpdateAction.REMOVE, null));
-			} else if (add) {
-				messages.add(new UpdateEntityMessage(e.getId(), transform, EntityUpdateEvent.UpdateAction.ADD, getRepositionManager()));
-			} else {
-				if (e.getPhysics().isTransformDirty()) {
-					messages.add(new UpdateEntityMessage(e.getId(), transform, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()));
+		switch (event.getAction()) {
+			case ADD:
+			case REMOVE:
+				event.getMessages().add(new UpdateEntityMessage(event.getEntityId(), transform, event.getAction(), getRepositionManager()));
+				break;
+			case POSITION:
+			case TRANSFORM:
+				if (!e.equals(getOwner())) {
+					event.getMessages().add(new UpdateEntityMessage(event.getEntityId(), transform, event.getAction(), getRepositionManager()));
 				}
-			}
+				break;
 		}
-		if (!remove && !add) {
+		if (event.getAction().isUpdate() && event.isFullSync()) {
 			if (!e.getData().getDeltaMap().isEmpty()) {
-				messages.add(new EntityDatatableMessage(e.getId(), e.getData().getDeltaMap()));
+				event.getMessages().add(new EntityDatatableMessage(e.getId(), e.getData().getDeltaMap()));
 				e.getData().resetDelta();
 			}
-		}
-		for (Message message : messages) {
-			getSession().send(message);
 		}
 	}
 }

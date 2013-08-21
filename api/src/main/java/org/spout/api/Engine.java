@@ -150,6 +150,16 @@ public interface Engine extends Named {
 	public Entity getEntity(UUID uid);
 
 	/**
+	 * Gets the {@link Entity} with the matching id <br/> <br/> Performs a search on each world and then searches each world respectively for the entity, stopping when it is found, or after all
+	 * the worlds have been searched upon failure.
+	 *
+	 * @param id to search and match
+	 * @return {@link Entity} that matched the id, or null if none was found
+	 */
+	@SnapshotRead
+	public Entity getEntity(int id);
+
+	/**
 	 * Returns all player names that have ever played on this Game, whether they are online or not.
 	 *
 	 * @return all the player names

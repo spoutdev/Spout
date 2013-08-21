@@ -26,6 +26,8 @@
  */
 package org.spout.api.protocol.event;
 
+import org.spout.api.Spout;
+import org.spout.api.entity.Entity;
 import org.spout.api.event.HandlerList;
 import org.spout.api.event.ProtocolEvent;
 import org.spout.api.geo.discrete.Transform;
@@ -33,20 +35,35 @@ import org.spout.api.protocol.reposition.RepositionManager;
 
 public class EntityUpdateEvent extends ProtocolEvent {
 	private static final HandlerList handlers = new HandlerList();
-	private final int entityId;
+	private final Entity entity;
 	private final Transform transform;
 	private final UpdateAction action;
 	private final RepositionManager rm;
+	private final boolean fullSync;
 
-	public EntityUpdateEvent(int entityId, Transform transform, UpdateAction action, RepositionManager rm) {
-		this.entityId = entityId;
+	public EntityUpdateEvent(Entity entity, Transform transform, UpdateAction action, RepositionManager rm) {
+		this(entity, transform, action, rm, action == UpdateAction.ADD || action == UpdateAction.REMOVE);
+	}
+
+	public EntityUpdateEvent(Entity entity, Transform transform, UpdateAction action, RepositionManager rm, boolean fullSync) {
+		this.entity = entity;
 		this.transform = transform;
 		this.action = action;
 		this.rm = rm;
+		this.fullSync = fullSync;
 	}
 
 	public int getEntityId() {
-		return entityId;
+		return entity.getId();
+	}
+
+	/**
+	 * A shortcut method to get the entity that this message refers to
+	 *
+	 * @return
+	 */
+	public Entity getEntity() {
+		return entity;
 	}
 
 	public Transform getTransform() {
@@ -59,6 +76,10 @@ public class EntityUpdateEvent extends ProtocolEvent {
 
 	public RepositionManager getRepositionManager() {
 		return rm;
+	}
+
+	public boolean isFullSync() {
+		return fullSync;
 	}
 
 	public enum UpdateAction {
@@ -82,6 +103,10 @@ public class EntityUpdateEvent extends ProtocolEvent {
 		 * Signals the client to remove the entity. (S -> C)
 		 */
 		REMOVE;
+		
+		public boolean isUpdate() {
+			return this == POSITION || this == TRANSFORM;
+		}
 	}
 
 	@Override

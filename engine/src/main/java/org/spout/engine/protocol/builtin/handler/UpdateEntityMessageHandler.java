@@ -31,13 +31,11 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ServerSession;
+import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.engine.component.entity.MovementValidatorComponent;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.world.SpoutWorld;
-
-import static org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction.ADD;
-import static org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction.TRANSFORM;
 
 public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessage> {
 	@Override
@@ -45,7 +43,7 @@ public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessa
 		RepositionManager rmInverse = session.getPlayer().getNetwork().getRepositionManager().getInverse();
 
 		// Add is a special case because the player is already spawned
-		if (message.getAction() == ADD) {
+		if (message.getAction() == UpdateAction.ADD) {
 			((SpoutWorld) session.getEngine().getDefaultWorld()).createAndSpawnEntity(rmInverse.convert(message.getTransform().getPosition()), LoadOption.NO_LOAD, message.getEntityId());
 		} else {
 			Entity entity;
@@ -75,7 +73,7 @@ public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessa
 	public void handleServer(ServerSession session, UpdateEntityMessage message) {
 		RepositionManager rmInverse = session.getPlayer().getNetwork().getRepositionManager().getInverse();
 
-		if (message.getAction() == TRANSFORM) {
+		if (message.getAction() == UpdateAction.TRANSFORM) {
 			if (message.getEntityId() == session.getPlayer().getId()) {
 				session.getDataMap().put(MovementValidatorComponent.RECEIVED_TRANSFORM, rmInverse.convert(message.getTransform()));
 				return;

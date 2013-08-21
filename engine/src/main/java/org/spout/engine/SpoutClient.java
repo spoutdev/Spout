@@ -374,6 +374,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
+	public Entity getEntity(int id) {
+		return world.get().getEntity(id);
+	}
+
+	@Override
 	public SpoutClientWorld getWorld() {
 		return world.get();
 	}

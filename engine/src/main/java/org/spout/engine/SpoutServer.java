@@ -708,8 +708,19 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public Entity getEntity(UUID uid) {
-		for (World w : loadedWorlds.get().values()) {
+		for (SpoutWorld w : loadedWorlds.get().values()) {
 			Entity e = w.getEntity(uid);
+			if (e != null) {
+				return e;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Entity getEntity(int id) {
+		for (SpoutWorld w : loadedWorlds.get().values()) {
+			Entity e = w.getEntity(id);
 			if (e != null) {
 				return e;
 			}

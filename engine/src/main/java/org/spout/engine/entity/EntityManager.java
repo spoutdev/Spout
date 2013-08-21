@@ -31,15 +31,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.protocol.event.EntitySyncEvent;
+import org.spout.api.protocol.event.EntityUpdateEvent;
+import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
@@ -241,21 +240,19 @@ public class EntityManager {
 			int syncDistance = network.getSyncDistance();
 			/*
 			 * Just because a player can see a chunk doesn't mean the entity is within sync-range, do the math and sync based on the result.
-			 *
-			 * Following variables hold sync status
 			 */
-			boolean add, sync, remove;
-			add = sync = remove = false;
-			//Entity is out of range of the player's view distance, destroy
 			final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) observed.getPhysics();
+			UpdateAction action;
+			//Entity is out of range of the player's view distance, destroy
 			if (forceDestroy || observed.isRemoved() || physics.getTransformLive().getPosition().distanceSquared(player.getPhysics().getPosition()) > syncDistance * syncDistance || player.isInvisible(observed)) {
-				remove = true;
+				action = UpdateAction.REMOVE;
 			} else if (network.hasSpawned(observed)) {
-				sync = true;
+				action = UpdateAction.TRANSFORM;
 			} else {
-				add = true;
+				action = UpdateAction.ADD;
 			}
-			observed.getEngine().getEventManager().callEvent(new EntitySyncEvent(observed, ((SpoutPhysicsComponent) observed.getPhysics()).getTransformLive(), add, sync, remove));
+
+			observed.getEngine().getEventManager().callEvent(new EntityUpdateEvent(observed, ((SpoutPhysicsComponent) observed.getPhysics()).getTransformLive(), action, network.getRepositionManager(), true));
 		}
 	}
 }

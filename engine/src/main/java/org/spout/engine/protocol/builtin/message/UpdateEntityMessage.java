@@ -29,6 +29,7 @@ package org.spout.engine.protocol.builtin.message;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.spout.api.entity.Entity;
 
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
@@ -37,6 +38,8 @@ import org.spout.api.util.SpoutToStringStyle;
 
 public class UpdateEntityMessage extends SpoutMessage {
 	private final int entityId;
+	// May be null
+	private final Entity entity;
 	private final Transform transform;
 	private final UpdateAction action;
 
@@ -44,6 +47,14 @@ public class UpdateEntityMessage extends SpoutMessage {
 	// TODO: possibly combine Entity Datatable message here?
 	public UpdateEntityMessage(int entityId, Transform transform, UpdateAction action, RepositionManager rm) {
 		this.entityId = entityId;
+		this.entity = null;
+		this.transform = transform;
+		this.action = action;
+	}
+
+	public UpdateEntityMessage(Entity entity, Transform transform, UpdateAction action, RepositionManager rm) {
+		this.entityId = entity.getId();
+		this.entity = entity;
 		this.transform = transform;
 		this.action = action;
 	}
