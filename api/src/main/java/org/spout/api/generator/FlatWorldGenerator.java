@@ -35,10 +35,20 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
  * Generates a flat world of a Spout-colored material
  */
 public class FlatWorldGenerator implements WorldGenerator {
+	private final BlockMaterial material;
+
+	public FlatWorldGenerator() {
+		material = BlockMaterial.SOLID_BLUE;
+	}
+
+	public FlatWorldGenerator(BlockMaterial material) {
+		this.material = material;
+	}
+
 	@Override
 	public void generate(CuboidBlockMaterialBuffer blockData, World world) {
 		if (blockData.getBase().getY() < 0) {
-			blockData.flood(BlockMaterial.SOLID_BLUE);
+			blockData.flood(material);
 		}
 	}
 
