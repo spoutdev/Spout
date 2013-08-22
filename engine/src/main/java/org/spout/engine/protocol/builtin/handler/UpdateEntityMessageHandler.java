@@ -33,7 +33,7 @@ import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 import org.spout.api.protocol.reposition.RepositionManager;
-import org.spout.engine.component.entity.MovementValidatorComponent;
+import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.world.SpoutWorld;
 
@@ -75,7 +75,7 @@ public class UpdateEntityMessageHandler extends MessageHandler<UpdateEntityMessa
 
 		if (message.getAction() == UpdateAction.TRANSFORM) {
 			if (message.getEntityId() == session.getPlayer().getId()) {
-				session.getDataMap().put(MovementValidatorComponent.RECEIVED_TRANSFORM, rmInverse.convert(message.getTransform()));
+				((SpoutPhysicsComponent) session.getPlayer().getPhysics()).setTransform(rmInverse.convert(message.getTransform()), false);
 				return;
 			} else {
 				// TODO: protocol - please fix this sequence

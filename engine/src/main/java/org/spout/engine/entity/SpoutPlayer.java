@@ -63,13 +63,12 @@ import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
+
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutServer;
-import org.spout.engine.component.entity.MovementValidatorComponent;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.protocol.SpoutServerSession;
-import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutServerWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
@@ -88,9 +87,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		this.name.set(snapshot.getName());
 		this.displayName.set(snapshot.getName());
 		this.hashcode = name.hashCode();
-		if (Spout.getPlatform() == Platform.SERVER) {
-			add(MovementValidatorComponent.class);
-		}
 		copySnapshot();
 	}
 
@@ -104,9 +100,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		this.name.set(name);
 		this.displayName.set(name);
 		this.hashcode = name.hashCode();
-		if (Spout.getPlatform() == Platform.SERVER) {
-			add(MovementValidatorComponent.class);
-		}
 		copySnapshot();
 	}
 

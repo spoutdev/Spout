@@ -56,7 +56,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.Plugin;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.component.entity.MovementValidatorComponent;
 
 public class CommonCommands {
 	private final SpoutEngine engine;
@@ -256,18 +255,6 @@ public class CommonCommands {
 		}*/
 		player.sendMessage("You were teleported to " + point.getWorld().getName() + ", X: " + point.getX()
 				+ ", Y: " + point.getY() + ", Z: " + point.getZ() + ".");
-	}
-
-	@CommandDescription (aliases = "validate_movement", desc = "Toggle the validating of movement.")
-	@Filter (PlayerFilter.class)
-	public void validateInput(Player player, CommandArguments args) throws CommandException {
-		if (!InputCommands.isPressed(args)) {
-			return;
-		}
-
-		if (engine.getPlatform() == org.spout.api.Platform.SERVER) {
-			player.getData().put(MovementValidatorComponent.VALIDATE_MOVEMENT, !player.getData().get(MovementValidatorComponent.VALIDATE_MOVEMENT));
-		}
 	}
 
 	@CommandDescription (aliases = {"ver", "version"}, desc = "Display the version of Spout this server is running.")
