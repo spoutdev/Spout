@@ -99,6 +99,12 @@ public class BlockMaterial extends Material implements Placeable {
 		this.shape = shape;
 	}
 
+	protected BlockMaterial(String name, String model, CollisionShape shape, Class<? extends BlockComponent>... components) {
+		super(name, model);
+		this.components = ImmutableSet.copyOf(components);
+		this.shape = shape;
+	}
+
 	protected BlockMaterial(String name, CollisionShape shape, Class<? extends BlockComponent>... components) {
 		super(name);
 		this.components = ImmutableSet.copyOf(components);
