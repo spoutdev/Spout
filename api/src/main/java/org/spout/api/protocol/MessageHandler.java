@@ -39,6 +39,9 @@ public abstract class MessageHandler<T extends Message> {
 	 * @param message the message that was received
 	 */
 	public void handle(Session session, T message) {
+		if (message.requiresPlayer() && !session.hasPlayer()) {
+			throw new IllegalStateException("Message sent when session has no player");
+		}
 		if (Spout.getPlatform() == Platform.CLIENT) {
 			handleClient((ClientSession) session, message);
 		} else {

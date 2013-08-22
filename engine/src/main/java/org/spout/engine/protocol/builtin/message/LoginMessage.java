@@ -55,6 +55,11 @@ public class LoginMessage extends SpoutMessage {
 	}
 
 	@Override
+	public boolean requiresPlayer() {
+		return false;
+	}
+
+	@Override
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.append("playerName", playerName)

@@ -28,4 +28,10 @@ package org.spout.engine.protocol.builtin.message;
 
 public class ReadyMessage extends SpoutMessage {
 	public static final ReadyMessage INSTANCE = new ReadyMessage();
+
+	@Override
+	public boolean requiresPlayer() {
+		return false;
+	}
+
 }

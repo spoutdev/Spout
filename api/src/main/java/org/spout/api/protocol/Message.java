@@ -36,20 +36,22 @@ public interface Message {
 	public static final int DEFAULT_CHANNEL = 0;
 
 	@Override
-	public abstract String toString();
+	public String toString();
 
 	@Override
-	public abstract boolean equals(Object other);
+	public boolean equals(Object other);
 
 	@Override
-	public abstract int hashCode();
+	public int hashCode();
 
-	public abstract boolean isAsync();
+	public boolean isAsync();
 
 	/**
 	 * Gets the channel id for this messages.  The ordering of messages with different channel ids by the network library is undefined.<br> Channels are used to allow certain messages that may have
 	 * time-consuming encode or decode methods to be sent on a separate thread, Usually you can just have this return {@link #DEFAULT_CHANNEL}.<br> <br> Channels from 0 to 7 are guaranteed to exist.
 	 * Channels outside this range may be aliased back into this range.
 	 */
-	public abstract int getChannelId();
+	public int getChannelId();
+
+	public boolean requiresPlayer();
 }
