@@ -28,21 +28,11 @@ package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.ServerSession;
 import org.spout.engine.protocol.builtin.message.ClickResponseMessage;
 
 public class ClickResponseMessageHandler extends MessageHandler<ClickResponseMessage> {
 	@Override
-	public void handleServer(ServerSession session, ClickResponseMessage message) {
-		throw new IllegalStateException("Server does not recieve click response messages!");
-	}
-
-	@Override
 	public void handleClient(ClientSession session, ClickResponseMessage message) {
-		if (session.getPlayer() == null) {
-			throw new IllegalStateException("The client session has no player!");
-		}
-
 		System.out.println("Server sent client a click response: " + message);
 	}
 }

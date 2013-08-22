@@ -26,7 +26,6 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
-import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ServerSession;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
@@ -38,16 +37,8 @@ import org.spout.engine.protocol.builtin.message.ClickResponseMessage;
 public class ClickRequestMessageHandler extends MessageHandler<ClickRequestMessage> {
 	@Override
 	public void handleServer(ServerSession session, ClickRequestMessage message) {
-		if (session.getPlayer() == null) {
-			throw new IllegalArgumentException("The session does not have a player!");
-		}
 		System.out.println("Client sent server a click request: " + message);
 		session.send(new ClickResponseMessage(message.getX(), message.getY(), ClickResponseMessage.Response.ALLOW));
 		//TODO ServerWidget framework
-	}
-
-	@Override
-	public void handleClient(ClientSession session, ClickRequestMessage message) {
-		session.disconnect("Client cannot recieve click request from server");
 	}
 }
