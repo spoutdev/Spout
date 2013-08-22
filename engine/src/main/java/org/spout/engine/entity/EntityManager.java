@@ -242,17 +242,26 @@ public class EntityManager {
 			 * Just because a player can see a chunk doesn't mean the entity is within sync-range, do the math and sync based on the result.
 			 */
 			final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) observed.getPhysics();
-			UpdateAction action;
+			boolean hasSpawned = network.hasSpawned(observed);
+			boolean isRemoved = observed.isRemoved();
+			double distance = physics.getTransformLive().getPosition().distanceSquared(player.getPhysics().getPosition());
 			//Entity is out of range of the player's view distance, destroy
-			if (forceDestroy || observed.isRemoved() || physics.getTransformLive().getPosition().distanceSquared(player.getPhysics().getPosition()) > syncDistance * syncDistance || player.isInvisible(observed)) {
-				action = UpdateAction.REMOVE;
-			} else if (network.hasSpawned(observed)) {
-				action = UpdateAction.TRANSFORM;
+			boolean tooFar = distance > syncDistance * syncDistance;
+			boolean isInvisible = player.isInvisible(observed);
+			UpdateAction action;
+			if (hasSpawned) {
+				if (forceDestroy || isRemoved || tooFar || isInvisible) {
+					action = UpdateAction.REMOVE;
+				} else {
+					// TODO use POSITION?
+					action = UpdateAction.TRANSFORM;
+				}
+			} else if (!tooFar && !isInvisible) {
+				action =  UpdateAction.ADD;
 			} else {
-				action = UpdateAction.ADD;
+				continue;
 			}
-
-			observed.getEngine().getEventManager().callEvent(new EntityUpdateEvent(observed, ((SpoutPhysicsComponent) observed.getPhysics()).getTransformLive(), action, network.getRepositionManager(), true));
+			network.callProtocolEvent(new EntityUpdateEvent(observed, ((SpoutPhysicsComponent) observed.getPhysics()).getTransformLive(), action, network.getRepositionManager(), true), player);
 		}
 	}
 }
