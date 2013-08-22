@@ -39,7 +39,6 @@ public abstract class SpoutMessage implements Message {
 		return false;
 	}
 
-	@Override
 	public boolean requiresPlayer() {
 		return true;
 	}
