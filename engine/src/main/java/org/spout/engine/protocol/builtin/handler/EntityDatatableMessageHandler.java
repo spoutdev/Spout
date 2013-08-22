@@ -38,9 +38,6 @@ import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatableMessage> {
 	@Override
 	public void handleClient(ClientSession session, EntityDatatableMessage message) {
-		if (!session.hasPlayer()) {
-			throw new IllegalStateException("Message sent when session has no player");
-		}
 		Entity entity;
 		if (message.getEntityId() == session.getPlayer().getId()) {
 			entity = session.getPlayer();

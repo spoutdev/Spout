@@ -111,10 +111,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		this.engine = engine;
 
 		physics = (SpoutPhysicsComponent) add(PhysicsComponent.class);
-
-		if (!(this instanceof SpoutPlayer)) {
-			network = add(NetworkComponent.class);
-		}
+		physics.setTransform(transform, false);
 
 		if (uid != null) {
 			this.uid = uid;
@@ -122,7 +119,10 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 			this.uid = UUID.randomUUID();
 		}
 
-		physics.setTransform(transform, false);
+		if (!(this instanceof SpoutPlayer)) {
+			network = add(NetworkComponent.class);
+		}
+
 
 		if (components != null && components.length > 0) {
 			initialComponents = components;
