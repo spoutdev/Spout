@@ -331,13 +331,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	}
 
 	@Override
-	public void dispose() {
-		if (SpoutConfiguration.SHOW_CONNECTIONS.getBoolean()) {
-			engine.getLogger().info("Channel disconnected: " + channel + ".");
-		}
-	}
-
-	@Override
 	public void setUncaughtExceptionHandler(UncaughtExceptionHandler handler) {
 		if (handler != null) {
 			exceptionHandler.set(handler);

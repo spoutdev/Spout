@@ -88,9 +88,4 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 		}
 		super.setPlayer(player);
 	}
-
-	@Override
-	public void dispose() {
-		getEngine().stop("Client has been disconnected from the Server");
-	}
 }

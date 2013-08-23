@@ -61,11 +61,6 @@ public interface Session {
 	public <T extends Message> void messageReceivedOnAuxChannel(Channel auxChannel, T message);
 
 	/**
-	 * Disposes of this session by destroying the associated player, if there is one.
-	 */
-	public void dispose();
-
-	/**
 	 * Gets the protocol associated with this session.
 	 *
 	 * @return the protocol

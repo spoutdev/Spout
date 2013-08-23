@@ -109,9 +109,10 @@ public class CommonHandler extends SimpleChannelInboundHandler<Message> {
 				server.getChannelGroup().remove(c);
 				server.getSessionRegistry().remove(session);
 			}
+			engine.getLogger().info("Channel disconnected: " + c + ".");
 
 			if (session.isPrimary(c)) {
-				session.dispose();
+				session.disconnect("Primary channel inactive.");
 			}
 		} catch (Exception ex) {
 			throw new RuntimeException("Exception thrown when disconnecting", ex);
