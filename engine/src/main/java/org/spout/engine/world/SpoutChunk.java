@@ -271,14 +271,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		// loaded chunk
 		selfReference = new WeakReference<>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
-		this.saveMarkedElement = new ChunkSetQueueElement<>(getRegion().saveMarkedQueue, this);
-		this.unloadQueueElement = new ChunkSetQueueElement<>(getRegion().unloadQueue, this);
-		this.populationQueueElement = new ChunkSetQueueElement<>(getRegion().populationQueue, this);
-		this.populationPriorityQueueElement = new ChunkSetQueueElement<>(getRegion().populationPriorityQueue, this);
-		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement<>(getRegion().localPhysicsChunkQueue, this);
-		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<>(getRegion().globalPhysicsChunkQueue, this);
-		this.dirtyChunkQueueElement = new ChunkSetQueueElement<>(getRegion().dirtyChunkQueue, this);
-		this.newChunkQueueElement = new ChunkSetQueueElement<>(getRegion().newChunkQueue, this);
+		this.saveMarkedElement = new ChunkSetQueueElement<>(region.markedSaveQueue, this);
+		this.unloadQueueElement = new ChunkSetQueueElement<>(region.unloadQueue, this);
+		this.populationQueueElement = new ChunkSetQueueElement<>(region.populationQueue, this);
+		this.populationPriorityQueueElement = new ChunkSetQueueElement<>(region.populationPriorityQueue, this);
+		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement<>(region.localPhysicsChunkQueue, this);
+		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<>(region.globalPhysicsChunkQueue, this);
+		this.dirtyChunkQueueElement = new ChunkSetQueueElement<>(region.dirtyChunkQueue, this);
+		this.newChunkQueueElement = new ChunkSetQueueElement<>(region.newChunkQueue, this);
 	}
 
 	@Override
@@ -814,8 +814,8 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		TickStage.checkStage(TickStage.FINALIZE);
 		checkChunkLoaded();
 
-		if (observers.remove(entity) && (entity instanceof SpoutPlayer)) {
-			observingPlayers.remove(entity);
+		if (observers.remove((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
+			observingPlayers.remove((SpoutPlayer) entity);
 		}
 		expiredObserversQueue.add((SpoutEntity) entity);
 		if (!isObserved()) {

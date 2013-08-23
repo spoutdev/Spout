@@ -70,7 +70,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			throw new IllegalArgumentException("Cannot activate physics with a null shape");
 		}
 		if (body != null) {
-			((SpoutRegion) getOwner().getRegion()).removeBody(body);
+			((SpoutRegion) getOwner().getRegion()).destroyBody(body);
 		}
 		this.isGhost = isGhost;
 		this.isMobile = isMobile;
@@ -91,7 +91,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	@Override
 	public void deactivate() {
 		if (getOwner() != null && getOwner().getRegion() != null && body != null) {
-			((SpoutRegion) getOwner().getRegion()).removeBody(body);
+			((SpoutRegion) getOwner().getRegion()).destroyBody(body);
 		}
 		activated = false;
 	}
