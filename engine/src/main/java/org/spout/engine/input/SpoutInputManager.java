@@ -357,7 +357,7 @@ public class SpoutInputManager implements InputManager {
 		}
 		Player player = ((Client) Spout.getEngine()).getPlayer();
 		// TODO: move this to NetworkSynchronizer?
-		if (!physics.equals(old)) {
+		if (!physics.getTransformLive().equals(old)) {
 			player.getNetwork().getSession().send(new UpdateEntityMessage(player.getId(), physics.getTransformLive(), UpdateAction.TRANSFORM, player.getNetwork().getRepositionManager()));
 		}
 		old = physics.getTransformLive().copy();

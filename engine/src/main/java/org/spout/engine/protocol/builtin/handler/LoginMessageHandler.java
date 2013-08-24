@@ -28,10 +28,13 @@ package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.event.player.ClientPlayerConnectedEvent;
 import org.spout.api.event.player.PlayerConnectEvent;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
+import org.spout.api.protocol.event.WorldChangeProtocolEvent;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
@@ -44,6 +47,8 @@ public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 		// This could be nulled with PlayerConnectEvent
 		if (session.hasPlayer()) {
 			session.send(true, new LoginMessage(session.getPlayer().getName(), session.getPlayer().getId()));
+			Point ep = session.getPlayer().getPhysics().getPosition();
+			session.getPlayer().getNetwork().callProtocolEvent(new WorldChangeProtocolEvent(ep.getWorld()), session.getPlayer());
 		}
 	}
 
@@ -53,6 +58,5 @@ public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 		((SpoutClient) session.getEngine()).getPlayer().setName(message.getPlayerName());
 		((SpoutClient) session.getEngine()).getPlayer().setId(message.getExtraInt());
 		session.getEngine().getEventManager().callEvent(new ClientPlayerConnectedEvent(session, message.getExtraInt()));
-		session.send(true, ReadyMessage.INSTANCE);
 	}
 }

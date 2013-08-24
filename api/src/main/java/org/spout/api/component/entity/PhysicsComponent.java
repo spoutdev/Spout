@@ -78,12 +78,23 @@ public abstract class PhysicsComponent extends EntityComponent {
 	/**
 	 * Sets the {@link Transform} for this {@link org.spout.api.entity.Entity}. <p> This function sets the live state of the entity's transform, not the snapshot state. As such, its advised to set the
 	 * transform lastly else retrieving the transform afterwards within the same tick will not return expected values (due to potential other plugin changes as well as {@link #getTransform()) returning
-	 * snapshot state).
+	 * snapshot state). This is equivalent to calling {@link #setTransform(transform, true)}.
 	 *
 	 * @param transform The new live transform state of this entity.
 	 * @return This component, for chaining.
 	 */
 	public abstract PhysicsComponent setTransform(Transform transform);
+
+	/**
+	 * Sets the {@link Transform} for this {@link org.spout.api.entity.Entity}. <p> This function sets the live state of the entity's transform, not the snapshot state. As such, its advised to set the
+	 * transform lastly else retrieving the transform afterwards within the same tick will not return expected values (due to potential other plugin changes as well as {@link #getTransform()) returning
+	 * snapshot state).
+	 *
+	 * @param transform The new live transform state of this entity.
+	 * @param sync Whether or not to sync the changes with the client
+	 * @return This component, for chaining.
+	 */
+	public abstract PhysicsComponent setTransform(Transform transform, boolean sync);
 
 	/**
 	 * Returns whether the live transform and snapshot transform are not equal.
@@ -104,7 +115,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 	/**
 	 * Sets the {@link Point} for this {@link org.spout.api.entity.Entity}. This will directly set both the world space of the Entity as well as physics space. The physics space will be cleared of all
 	 * forces in the process. <p> This function sets the live state of the entity's point, not the snapshot state. As such, its advised to set the point lastly else retrieving the point afterwards within
-	 * the same tick will not return expected values (due to potential other plugin changes as well as {@link #getPosition()) returning snapshot state).
+	 * the same tick will not return expected values (due to potential other plugin changes as well as {@link #getPosition()) returning snapshot state). This method always syncs the change to the client.
 	 *
 	 * @param point The new live position state of this entity.
 	 * @return This component, for chaining.
@@ -130,7 +141,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 	/**
 	 * Sets the {@link Quaternion} for this {@link org.spout.api.entity.Entity}. <p> This functions sets the live state of the entity's quaternion (rotation), not the snapshot state. As such, its advised
 	 * to set the quaternion lastly else retrieving the quaternion afterwards within the same tick will not return expected values (due to potential other plugin changes as well as {@link #getRotation())
-	 * returning snapshot state).
+	 * returning snapshot state). This method always syncs the change to the client.
 	 *
 	 * @param rotation The new live quaternion (rotation) of this entity.
 	 * @return This component, for chaining.
@@ -156,7 +167,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 	/**
 	 * Sets the {@link Vector3} representing the scale of the {@link org.spout.api.entity.Entity}. <p> This functions sets the live state of the entity's scale, not the snapshot state. As such, its
 	 * advised to set the scale lastly else retrieving the scale afterwards within the same tick will not return expected values (due to potential other plugin changes as well as {@link #getScale())
-	 * returning snapshot state).
+	 * returning snapshot state). This method always syncs the change to the client.
 	 *
 	 * @param scale The new live scale of this entity.
 	 * @return This component, for chaining.
@@ -188,7 +199,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 
 	/**
 	 * Translates this {@link org.spout.api.entity.Entity} from its current {@link Point} to the Point that is the addition of the {@link Vector3} provided. <p> For example, if I want to move an Entity
-	 * up one (Up being the y-axis), I would do a translate(new Vector3(0, 1, 0));
+	 * up one (Up being the y-axis), I would do a {@code translate(new Vector3(0, 1, 0));}. This method always syncs the change to the client.
 	 *
 	 * @param translation A Vector3 which will be added to the current Point (position).
 	 * @return This component, so you can chain.
@@ -198,7 +209,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 	/**
 	 * Rotates this {@link org.spout.api.entity.Entity} from its current {@link org.spout.api.math.Quaternion} to the Quaternion that is the addition of the Quaternion provided. <p/> For example, if I
 	 * want to rotate an Entity upwards (which is moving its yaw), I would do a rotate(new Quaternion(0, 1, 0, 0)); <p> Bear in mind, doing a rotate does so without physics and instead the rotation of
-	 * the Entity will be directly set within its physics transform.
+	 * the Entity will be directly set within its physics transform. This method always syncs the change to the client.
 	 *
 	 * @param rotate A Quaternion which will be added to the current Quaternion (rotation).
 	 * @return This component, so you can chain.
@@ -207,7 +218,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 
 	/**
 	 * Scales this {@link org.spout.api.entity.Entity} from its current scale to the {@link Vector3} representing the new scale which is an addition of the Vector3 provided. <p/> For example, if I want
-	 * to scale an Entity to be taller (which is scaling its y-factor), I would do a scale(new Vector3(0, 1, 0));
+	 * to scale an Entity to be taller (which is scaling its y-factor), I would do a {@code scale(new Vector3(0, 1, 0));}. This method always syncs the change to the client.
 	 *
 	 * @param scale A Vector3 which will be added to the current Vector3 (scale).
 	 * @return This component, so you can chain.

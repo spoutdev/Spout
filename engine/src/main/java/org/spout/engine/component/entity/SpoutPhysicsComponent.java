@@ -120,7 +120,11 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		return setTransform(transform, true);
 	}
 
+	@Override
 	public SpoutPhysicsComponent setTransform(Transform transform, boolean sync) {
+		if (transform == null) {
+			throw new IllegalArgumentException("transform cannot be null!");
+		}
 		live.set(transform);
 		if (sync) {
 			sync();
@@ -156,7 +160,11 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public SpoutPhysicsComponent setRotation(Quaternion rotation) {
+		if (rotation == null) {
+			throw new IllegalArgumentException("rotation cannot be null!");
+		}
 		live.setRotation(rotation);
+		sync();
 		return this;
 	}
 
@@ -172,7 +180,11 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public SpoutPhysicsComponent setScale(Vector3 scale) {
+		if (scale == null) {
+			throw new IllegalArgumentException("scale cannot be null!");
+		}
 		live.setScale(scale);
+		sync();
 		return this;
 	}
 
@@ -199,13 +211,21 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public SpoutPhysicsComponent rotate(Quaternion rotate) {
+		if (rotate == null) {
+			throw new IllegalArgumentException("rotate cannot be null!");
+		}
 		live.rotate(rotate);
+		sync();
 		return this;
 	}
 
 	@Override
 	public SpoutPhysicsComponent scale(Vector3 scale) {
+		if (scale == null) {
+			throw new IllegalArgumentException("scale cannot be null!");
+		}
 		live.scale(scale);
+		sync();
 		return this;
 	}
 
