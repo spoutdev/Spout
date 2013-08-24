@@ -88,7 +88,7 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	 * Chunks that have been sent to the client
 	 */
 	private final Set<Point> activeChunks = new LinkedHashSet<>();
-	private volatile boolean worldChanged = true;
+	protected volatile boolean worldChanged = false;
 	/**
 	 * Includes chunks that need to be observed. When observation is successfully attained or no longer wanted, point is removed
 	 */
@@ -233,17 +233,14 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 		// TODO: live values for syncdistance?
 		//final int prevViewDistance = player.getViewDistance();
 		//final int currentViewDistance = ((SpoutPlayer) player).getViewDistanceLive() >> Chunk.BLOCKS.BITS;
-		final Point lastPosition = getOwner().getPhysics().getTransform().getPosition();
 		final Point currentPosition = live.getPosition();
-		if (lastPosition == null || (currentPosition != null && getOwner().getPhysics().isWorldDirty())) {
+		if (getOwner().getPhysics().isWorldDirty()) {
 			clearObservers();
 			worldChanged = true;
 		}
-		if (currentPosition != null) {
-			if (prevSyncDistance != currentSyncDistance || worldChanged || (!currentPosition.equals(lastChunkCheck) && currentPosition.getManhattanDistance(lastChunkCheck) > (Chunk.BLOCKS.SIZE / 2))) {
-				checkChunkUpdates(currentPosition);
-				lastChunkCheck = currentPosition;
-			}
+		if (prevSyncDistance != currentSyncDistance || worldChanged || (!currentPosition.equals(lastChunkCheck) && currentPosition.getManhattanDistance(lastChunkCheck) > (Chunk.BLOCKS.SIZE / 2))) {
+			checkChunkUpdates(currentPosition);
+			lastChunkCheck = currentPosition;
 		}
 		if (!worldChanged) {
 			for (Point p : chunkFreeQueue) {

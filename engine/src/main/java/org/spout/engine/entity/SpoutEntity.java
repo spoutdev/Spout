@@ -76,7 +76,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	//Other
 	private final Engine engine;
 	private final UUID uid;
-	protected boolean justSpawned = true;
 	//For faster access
 	private final SpoutPhysicsComponent physics;
 	protected NetworkComponent network;
@@ -96,10 +95,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	public SpoutEntity(Engine engine, Point point, Class<? extends Component>... components) {
 		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), null, (byte[]) null, components);
-	}
-
-	protected SpoutEntity(Engine engine, Transform transform, UUID uid, SerializableMap dataMap, Class<? extends Component>... components) {
-		this(engine, transform, uid, dataMap.serialize(), components);
 	}
 
 	public SpoutEntity(Engine engine, Transform transform, UUID uid, byte[] dataMap, Class<? extends Component>... components) {
@@ -330,8 +325,6 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	public void copySnapshot() {
 		physics.copySnapshot();
 		snapshotManager.copyAllSnapshots();
-
-		justSpawned = false;
 
 		network.copySnapshot();
 		remove.set(removeLive.get());
