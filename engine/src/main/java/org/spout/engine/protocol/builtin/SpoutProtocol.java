@@ -171,8 +171,9 @@ public class SpoutProtocol extends Protocol {
 				Entity e = Spout.getEngine().getEntity(playerUUID);
 				if (e == null || !(e instanceof Player)) {
 					SyncedMapRegistry.getRegistrationMap().unregisterListener(this);
+					return;
 				}
-				session.send(true, new SyncedMapMessage(event.getAssociatedObject().getId(), SyncedMapEvent.Action.ADD, event.getModifiedElements()));
+				((Player) e).getNetwork().getSession().send(true, new SyncedMapMessage(event.getAssociatedObject().getId(), SyncedMapEvent.Action.ADD, event.getModifiedElements()));
 			}
 		});
 		session.send(true, new SyncedMapMessage(SyncedMapRegistry.REGISTRATION_MAP, SyncedMapEvent.Action.SET, SyncedMapRegistry.getRegistrationMap().getItems()));

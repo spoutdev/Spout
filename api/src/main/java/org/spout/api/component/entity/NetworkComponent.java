@@ -140,6 +140,7 @@ public class NetworkComponent extends EntityComponent {
 		if (observer) {
 			liveObserverIterator.set(null);
 		} else {
+			// TODO: with OutwardIterator change, change 0, 0, 0, 0 to 0, 0, 0, -1
 			liveObserverIterator.set(new WrappedSerizableIterator(new OutwardIterator(0, 0, 0, 0)));
 		}
 	}
