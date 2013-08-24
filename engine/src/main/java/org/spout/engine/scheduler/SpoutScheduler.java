@@ -48,12 +48,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
+import org.spout.api.gui.Screen;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
@@ -441,18 +443,8 @@ public final class SpoutScheduler implements Scheduler {
 			long targetPeriod = 1000 / 40;
 			long lastTick = System.currentTimeMillis();
 			long nextTick = lastTick + targetPeriod;
-			float dt = (float) targetPeriod;
-
-			ScreenStack stack;
-			stack = ((SpoutClient) engine).getScreenStack();
-
+			float dt;
 			while (!shutdown) {
-				try {
-					stack.tick(dt);
-				} catch (Exception ex) {
-					Spout.severe("Error while pulsing: {0}", ex.getMessage());
-					ex.printStackTrace();
-				}
 				long now = System.currentTimeMillis();
 				long sleepFor = nextTick - now;
 				if (sleepFor < 0) {
@@ -464,6 +456,10 @@ public final class SpoutScheduler implements Scheduler {
 					break;
 				}
 				dt = (float) (now - lastTick);
+				ScreenStack stack = ((Client) engine).getScreenStack();
+				stack.tick(dt);
+				Screen in = stack.getInputScreen();
+				Mouse.setGrabbed(in == null || in.grabsMouse());
 				lastTick = now;
 				nextTick += targetPeriod;
 			}
@@ -532,9 +528,10 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	public void startGuiThread() {
-		if (guiThread.isAlive()) {
+		if (!(engine instanceof Client))
+			throw new IllegalStateException("Tried to start the GUI thread in server mode");
+		if (guiThread.isAlive())
 			throw new IllegalStateException("Attempt was made to start the GUI thread twice");
-		}
 		guiThread.start();
 	}
 

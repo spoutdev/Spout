@@ -41,7 +41,6 @@ import org.spout.api.entity.state.PlayerInputState.MouseDirection;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.input.Binding;
@@ -53,7 +52,6 @@ import org.spout.api.math.IntVector2;
 import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
-import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.math.imaginary.Quaternion;
 import org.spout.math.vector.Vector3;
@@ -217,9 +215,9 @@ public class SpoutInputManager implements InputManager {
 		if (key == FOCUS_KEY && pressed) {
 			if (in != null) {
 				if (org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_LSHIFT.getId()) || org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_RSHIFT.getId())) {
-					in.previousFocus(FocusReason.KEYBOARD_TAB);
+					in.previousFocus();
 				} else {
-					in.nextFocus(FocusReason.KEYBOARD_TAB);
+					in.nextFocus();
 				}
 			}
 		}
@@ -228,7 +226,7 @@ public class SpoutInputManager implements InputManager {
 		if (in != null) {
 			Widget w = in.getFocusedWidget();
 			if (w != null) {
-				w.onKey(event);
+				w.key(event);
 			}
 		}
 
@@ -236,9 +234,6 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	private void onMouseClicked(Player player, int button, boolean pressed, int x, int y) {
-		//TODO Just testing - also, check int -> byte
-		player.getNetwork().getSession().send(new ClickRequestMessage((byte) x, (byte) y, ClickRequestMessage.Action.LEFT));
-
 		PlayerClickEvent event = Spout.getEventManager().callEvent(new PlayerClickEvent(player, button, pressed, new IntVector2(x, y)));
 		if (event.isCancelled()) {
 			return;
@@ -254,9 +249,9 @@ public class SpoutInputManager implements InputManager {
 			if (w != null) {
 				Widget fw = s.getFocusedWidget();
 				if (fw != null && !fw.equals(w)) {
-					s.setFocus(w, FocusReason.CLICKED);
+					s.setFocus(w);
 				}
-				w.onClick(event);
+				w.click(event);
 			}
 		}
 
@@ -274,7 +269,7 @@ public class SpoutInputManager implements InputManager {
 			IntVector2 prev = new IntVector2(x - dx, y - dy);
 			IntVector2 pos = new IntVector2(x, y);
 			for (Widget w : screen.getWidgets()) {
-				w.onMouseMoved(prev, pos, w == screen.getWidgetAt(x, y));
+				w.mouseMove(prev, pos, w == screen.getWidgetAt(x, y));
 			}
 		}
 
@@ -349,7 +344,7 @@ public class SpoutInputManager implements InputManager {
 
 	public void execute(float dt) {
 		// TODO: protocol - hacky fix
-		if (((Client) Spout.getEngine()).getWorld().getName().equalsIgnoreCase("NullWorld")) {
+		if (((Client) Spout.getEngine()).getWorld().getName().equalsIgnoreCase("NullWorld")) { // wtf is this for? -- Windy
 			return;
 		}
 		SpoutPhysicsComponent physics = (SpoutPhysicsComponent) ((Client) Spout.getEngine()).getPlayer().getPhysics();

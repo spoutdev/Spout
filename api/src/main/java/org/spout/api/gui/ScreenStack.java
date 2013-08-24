@@ -26,63 +26,110 @@
  */
 package org.spout.api.gui;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
-import org.spout.api.signal.SignalInterface;
-import org.spout.api.signal.SubscriberInterface;
-import org.spout.api.tickable.Tickable;
+import org.spout.api.Client;
+import org.spout.api.ClientOnly;
+import org.spout.api.Spout;
+import org.spout.api.tickable.BasicTickable;
 
 /**
- * Returns the collection of screens on the client.
+ * Represents all screens to be updated and rendered every tick.
  */
-public interface ScreenStack extends Tickable, SubscriberInterface, SignalInterface {
-	/**
-	 * Returns true if the specified screen is opened.
-	 */
-	public boolean isOpened(Screen screen);
+public class ScreenStack extends BasicTickable {
+	private final LinkedList<Screen> screens = new LinkedList<Screen>();
+	private final GuiRenderer renderer;
+	private Screen input;
+
+	@ClientOnly
+	public ScreenStack(GuiRenderer renderer) {
+		if (!(Spout.getEngine() instanceof Client))
+			throw new IllegalStateException("ScreenStack can only be instantiated in client mode.");
+		this.renderer = renderer;
+		updateInput();
+	}
 
 	/**
-	 * Opens the specified screen on the client.
+	 * Returns a {@link List} of opened screens.
+	 *
+	 * @return all opened screens
+	 */
+	public List<Screen> getScreens() {
+		return Collections.unmodifiableList(screens);
+	}
+
+	/**
+	 * Returns the screen that all input is sent to
+	 *
+	 * @return input screen
+	 */
+	public Screen getInputScreen() {
+		return input;
+	}
+
+	/**
+	 * Opens the specified screen.
 	 *
 	 * @param screen to open
 	 */
-	public void openScreen(Screen screen);
+	public void open(Screen screen) {
+		screens.add(screen);
+		updateInput();
+	}
 
 	/**
-	 * Closes the screen on the top of this screen stack.
-	 */
-	public void closeTopScreen();
-
-	/**
-	 * Closes the specified screen.
+	 * Closes the screen.
 	 *
-	 * @param screen to open
+	 * @param screen to close
 	 */
-	public void closeScreen(Screen screen);
+	public void close(Screen screen) {
+		screens.remove(screen);
+		updateInput();
+	}
 
 	/**
-	 * Gets an ordered list of visible screens The first item in the list is the bottom-most fullscreen, the last item in the list is the top-most fullscreen/popupscreen.
+	 * Closes the top screen.
 	 */
-	public LinkedList<Screen> getVisibleScreens();
+	public void closeTop() {
+		screens.removeLast();
+		updateInput();
+	}
 
 	/**
-	 * Gets which screen takes input
-	 *
-	 * @return Screen
+	 * Closes all currently opened screens.
 	 */
-	public Screen getInputScreen();
+	public void closeAll() {
+		screens.clear();
+		updateInput();
+	}
 
-	public Screen getMainScreen();
+	private synchronized void updateInput() {
+		this.input = null;
+		Iterator<Screen> iter = screens.descendingIterator();
+		while (iter.hasNext()) {
+			Screen next = iter.next();
+			if (next.takesInput()) {
+				this.input = next;
+				break;
+			}
+		}
+		((Client) Spout.getEngine()).getInputManager().setRedirected(this.input != null);
+	}
 
-	/**
-	 * Get the debug screen
-	 */
-	public abstract DebugHud getDebugHud();
+	@Override
+	public synchronized void onTick(float dt) {
+		// update screens then render
+		for (Screen screen : screens) {
+			screen.tick(dt);
+		}
+		renderer.render(this);
+	}
 
-	/**
-	 * Return a new widget instance
-	 *
-	 * @return Widget
-	 */
-	public abstract Widget createWidget();
+	@Override
+	public boolean canTick() {
+		return !screens.isEmpty();
+	}
 }

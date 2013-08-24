@@ -27,11 +27,11 @@
 package org.spout.api.event.widget;
 
 import org.spout.api.event.HandlerList;
-import org.spout.api.guix.Widget;
+import org.spout.api.gui.Widget;
 
 /**
- * Called when a {@link Widget} loses focus on it's
- * {@link org.spout.api.guix.Screen}.
+ * Called when a {@link org.spout.api.gui.Widget} loses focus on it's
+ * {@link org.spout.api.gui.Screen}.
  */
 public class WidgetBlurEvent extends WidgetEvent {
 	private static final HandlerList handlers = new HandlerList();

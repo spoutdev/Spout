@@ -66,6 +66,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.CommonChannelInitializer;
+import org.spout.api.gui.ScreenStack;
 import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
@@ -79,8 +80,8 @@ import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.RendererCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
-import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.input.SpoutInputManager;
+import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.world.SpoutClientWorld;
@@ -98,6 +99,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private boolean ccoverride = false;
 	private String stopMessage = null;
 	private SpoutRenderer renderer;
+	private ScreenStack screenStack;
 	private SoundManager soundManager;
 	private SpoutInputManager inputManager;
 
@@ -159,10 +161,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
 		this.renderer = getScheduler().startRenderThread(new Vector2(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f), ccoverride, null);
+		screenStack = new ScreenStack(renderer.getGuiRenderer());
 		getScheduler().startMeshThread();
 		getScheduler().startGuiThread();
 
 		// TODO: Maybe a better way of alerting plugins the client is done?
+		getEventManager().registerEvents(new SpoutClientListener(), this);
 		if (EngineStartEvent.getHandlerList().getRegisteredListeners().length != 0) {
 			getEventManager().callEvent(new EngineStartEvent());
 		}
@@ -441,8 +445,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public SpoutScreenStack getScreenStack() {
-		return renderer.getScreenStack();
+	public ScreenStack getScreenStack() {
+		return screenStack;
 	}
 
 	public SpoutRenderer getRenderer() {

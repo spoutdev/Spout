@@ -28,7 +28,7 @@ package org.spout.api.event.widget;
 
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
-import org.spout.api.guix.Widget;
+import org.spout.api.gui.Widget;
 import org.spout.api.math.IntVector2;
 
 /**

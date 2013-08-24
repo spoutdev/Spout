@@ -58,15 +58,6 @@ import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.component.entity.AnimationComponent;
 import org.spout.api.component.entity.InteractComponent;
 import org.spout.api.component.entity.PlayerNetworkComponent;
-import org.spout.api.component.widget.RenderPartComponent;
-import org.spout.api.component.widget.SliderComponent;
-import org.spout.api.component.widget.SpinnerComponent;
-import org.spout.api.component.widget.TextFieldComponent;
-import org.spout.api.component.widget.button.ButtonComponent;
-import org.spout.api.component.widget.button.CheckBoxComponent;
-import org.spout.api.component.widget.button.RadioComponent;
-import org.spout.api.component.widget.list.ComboBoxComponent;
-import org.spout.api.component.widget.list.ItemListComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
@@ -78,8 +69,6 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.gui.Screen;
-import org.spout.api.gui.Widget;
 import org.spout.api.material.BlockMaterial;
 import org.spout.math.vector.Vector3;
 import org.spout.api.model.Model;
@@ -175,41 +164,6 @@ public class TestCommands {
 				throw new CommandException("Unknown action: " + action);
 			}
 		}
-	}
-
-	@CommandDescription (aliases = "widget", usage = "<button|checkbox|radio|combo|list|label|slider|spinner|textfield|rect>",
-			desc = "Renders a widget on your screen.")
-	@Platforms (Platform.CLIENT)
-	public void widget(CommandSource source, CommandArguments args) throws CommandException {
-		Client client = (Client) engine;
-		Screen screen = new Screen();
-		Widget widget = client.getScreenStack().createWidget();
-		String flag = args.getString("type");
-		args.assertCompletelyParsed();
-
-		if (flag.equalsIgnoreCase("button")) {
-			widget.add(ButtonComponent.class);
-		} else if (flag.equalsIgnoreCase("checkbox")) {
-			widget.add(CheckBoxComponent.class);
-		} else if (flag.equalsIgnoreCase("radio")) {
-			widget.add(RadioComponent.class);
-		} else if (flag.equalsIgnoreCase("combo")) {
-			widget.add(ComboBoxComponent.class);
-		} else if (flag.equalsIgnoreCase("list")) {
-			widget.add(ItemListComponent.class);
-		} else if (flag.equalsIgnoreCase("slider")) {
-			widget.add(SliderComponent.class);
-		} else if (flag.equalsIgnoreCase("spinner")) {
-			widget.add(SpinnerComponent.class);
-		} else if (flag.equalsIgnoreCase("textfield")) {
-			widget.add(TextFieldComponent.class);
-		} else if (flag.equalsIgnoreCase("rect")) {
-			widget.add(RenderPartComponent.class);
-		} else {
-			throw new CommandException("Component not found.");
-		}
-		screen.attachWidget(engine.getPluginManager().getMetaPlugin(), widget);
-		client.getScreenStack().openScreen(screen);
 	}
 
 	@CommandDescription (aliases = "break", desc = "Debug command to break a block")

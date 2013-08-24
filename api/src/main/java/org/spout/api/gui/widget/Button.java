@@ -24,28 +24,42 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.widget;
+package org.spout.api.gui.widget;
 
-import org.spout.api.event.HandlerList;
+import org.spout.api.Spout;
+import org.spout.api.event.player.input.PlayerClickEvent;
+import org.spout.api.event.widget.WidgetClickEvent;
+import org.spout.api.event.widget.button.ButtonPressEvent;
+import org.spout.api.event.widget.button.ButtonReleaseEvent;
 import org.spout.api.gui.Widget;
 
 /**
- * Called when a {@link Widget} gains focus on it's
- * {@link org.spout.api.gui.Screen}.
+ * Represents any {@link Widget} that can be pressed and released.
  */
-public class WidgetFocusEvent extends WidgetEvent {
-	private static final HandlerList handlers = new HandlerList();
-
-	public WidgetFocusEvent(Widget widget) {
-		super(widget);
-	}
+public class Button extends Widget {
+	private boolean pressed;
 
 	@Override
-	public HandlerList getHandlers() {
-		return handlers;
+	public final void onClick(WidgetClickEvent event) {
+		PlayerClickEvent cevent = event.getClickEvent();
+		if (cevent.isPressed()) {
+			ButtonPressEvent pevent = Spout.getEventManager().callEvent(new ButtonPressEvent(this));
+			if (!pevent.isCancelled()) {
+				pressed = true;
+				onPress();
+			}
+		} else if (pressed) {
+			ButtonReleaseEvent revent = Spout.getEventManager().callEvent(new ButtonReleaseEvent(this));
+			if (!revent.isCancelled()) {
+				pressed = false;
+				onRelease();
+			}
+		}
 	}
 
-	public static HandlerList getHandlerList() {
-		return handlers;
+	public void onPress() {
+	}
+
+	public void onRelease() {
 	}
 }

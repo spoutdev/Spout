@@ -27,7 +27,7 @@
 package org.spout.api.event.widget;
 
 import org.spout.api.event.Event;
-import org.spout.api.guix.Widget;
+import org.spout.api.gui.Widget;
 
 /**
  * An event that happens to a {@link Widget}.

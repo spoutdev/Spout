@@ -24,28 +24,18 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.widget;
+package org.spout.engine.listener;
 
-import org.spout.api.event.HandlerList;
-import org.spout.api.gui.Widget;
+import org.spout.api.Client;
+import org.spout.api.Spout;
+import org.spout.api.event.EventHandler;
+import org.spout.api.event.Listener;
+import org.spout.api.event.engine.EngineStartEvent;
+import org.spout.engine.gui.DebugScreen;
 
-/**
- * Called when a {@link Widget} gains focus on it's
- * {@link org.spout.api.gui.Screen}.
- */
-public class WidgetFocusEvent extends WidgetEvent {
-	private static final HandlerList handlers = new HandlerList();
-
-	public WidgetFocusEvent(Widget widget) {
-		super(widget);
-	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
+public class SpoutClientListener implements Listener {
+	@EventHandler
+	public void onClientStart(EngineStartEvent event) {
+		((Client) Spout.getEngine()).getScreenStack().open(new DebugScreen());
 	}
 }

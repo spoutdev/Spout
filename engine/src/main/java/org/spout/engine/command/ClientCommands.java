@@ -59,12 +59,6 @@ public class ClientCommands extends CommonCommands {
 		getEngine().getPlayer().sendMessage(message);
 	}
 
-	@CommandDescription (aliases = {"clear"}, usage = "[message]", desc = "Clear the client's console")
-	public void consoleClear(CommandSource source, CommandArguments args) throws ArgumentParseException {
-		args.assertCompletelyParsed();
-		getEngine().getScreenStack().getConsole().clearConsole();
-	}
-
 	@CommandDescription (aliases = {"emulate", "e"}, usage = "emulate <command>", desc = "Causes the command to be emulated as if the player sent it")
 	public void emulate(CommandSource source, CommandArguments args) throws ArgumentParseException, CommandException {
 		String command = args.popString("command");

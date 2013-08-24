@@ -31,14 +31,10 @@ import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.Executor;
-import org.spout.api.command.annotated.Binding;
-import org.spout.api.command.annotated.CommandDescription;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
-import org.spout.api.gui.Screen;
-import org.spout.api.input.Keyboard;
 import org.spout.engine.SpoutClient;
 
 /**
@@ -53,47 +49,6 @@ public class InputCommands {
 
 	public static boolean isPressed(CommandArguments args) throws ArgumentParseException {
 		return args.success("pressed", args.currentArgument("pressed").equalsIgnoreCase("+"));
-	}
-
-	@CommandDescription (aliases = "dev_console", desc = "Toggle display of debugging info.")
-	@Binding (value = Keyboard.KEY_F2, async = true)
-	public void devConsole(CommandSource source, CommandArguments args) throws CommandException {
-		if (!isPressed(args)) {
-			return;
-		}
-		args.assertCompletelyParsed();
-		final Screen consoleScreen = client.getScreenStack().getConsole();
-		client.getScheduler().enqueueRenderTask(new Runnable() {
-			@Override
-			public void run() {
-				if (client.getScreenStack().isOpened(consoleScreen)) {
-					client.getScreenStack().closeScreen(consoleScreen);
-				} else {
-					client.getScreenStack().openScreen(consoleScreen);
-				}
-			}
-		});
-	}
-
-	@CommandDescription (aliases = "debug_info", desc = "Toggle display of debugging info.")
-	@Binding (value = Keyboard.KEY_F3, async = true)
-	public void debugInfo(CommandSource source, CommandArguments args) throws CommandException {
-		if (!isPressed(args)) {
-			return;
-		}
-		args.assertCompletelyParsed();
-
-		final Screen debugScreen = (Screen) client.getScreenStack().getDebugHud();
-		client.getScheduler().enqueueRenderTask(new Runnable() {
-			@Override
-			public void run() {
-				if (client.getScreenStack().isOpened(debugScreen)) {
-					client.getScreenStack().closeScreen(debugScreen);
-				} else {
-					client.getScreenStack().openScreen(debugScreen);
-				}
-			}
-		});
 	}
 
 	public static void setupInputCommands(Engine engine) {

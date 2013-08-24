@@ -24,28 +24,9 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.widget;
+package org.spout.api.gui.widget;
 
-import org.spout.api.event.HandlerList;
 import org.spout.api.gui.Widget;
 
-/**
- * Called when a {@link Widget} gains focus on it's
- * {@link org.spout.api.gui.Screen}.
- */
-public class WidgetFocusEvent extends WidgetEvent {
-	private static final HandlerList handlers = new HandlerList();
-
-	public WidgetFocusEvent(Widget widget) {
-		super(widget);
-	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+public class ScrollBar extends Widget {
 }

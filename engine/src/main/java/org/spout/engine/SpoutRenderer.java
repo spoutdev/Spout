@@ -27,12 +27,10 @@
 package org.spout.engine;
 
 import java.awt.Canvas;
-import java.util.HashMap;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -46,26 +44,13 @@ import org.lwjgl.opengl.Util;
 
 import org.spout.api.Spout;
 import org.spout.api.component.world.SkydomeComponent;
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.gui.FullScreen;
-import org.spout.api.gui.Screen;
-import org.spout.api.gui.Widget;
-import org.spout.api.gui.render.RenderPart;
-import org.spout.api.gui.render.RenderPartPack;
-import org.spout.api.math.Rectangle;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
-import org.spout.api.render.shader.Shader;
-
-import org.spout.engine.batcher.SpriteBatch;
-import org.spout.engine.filesystem.resource.ClientRenderMaterial;
 import org.spout.engine.filesystem.resource.ClientRenderTexture;
-import org.spout.engine.gui.DebugScreen;
-import org.spout.engine.gui.SpoutScreenStack;
-import org.spout.engine.gui.SpoutWidget;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.EntityRenderer;
+import org.spout.engine.renderer.SpoutGuiRenderer;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.util.MacOSXUtils;
 import org.spout.math.matrix.Matrix4;
@@ -78,43 +63,30 @@ import static org.lwjgl.opengl.GL11.glClear;
 public class SpoutRenderer {
 	private static final TIntObjectHashMap<String> GL_TYPE_NAMES = new TIntObjectHashMap<>();
 	private final SpoutClient client;
-	private DebugScreen debugScreen;
-	private SpoutScreenStack screenStack;
-	private boolean showDebugInfos = true;
-	//private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<>();
 	private boolean ccoverride = false;
 	private Vector2 resolution;
 	private float aspectRatio;
 	private EntityRenderer entityRenderer;
 	private WorldRenderer worldRenderer;
+	private SpoutGuiRenderer guiRenderer;
 	private boolean wireframe = false;
-	// Screen texture
-	private SpriteBatch screenBatcher;
-	private ClientRenderTexture t;
-	private ClientRenderMaterial mat;
 	// Reflected world FBO
 	// This will need the stencil buffer
 	private boolean useReflexion = false; // Set this to true to experiment
 	private ClientRenderTexture reflected;
-	private SpriteBatch reflectedDebugBatch; // Debug
-	private ClientRenderMaterial reflectedDebugMat; //Debug
 
 	public SpoutRenderer(SpoutClient client, Vector2 resolution, boolean ccoverride) {
 		this.client = client;
 		this.resolution = resolution;
 		this.aspectRatio = resolution.getX() / resolution.getY();
-
-		// Building the screenStack
-		FullScreen mainScreen = new FullScreen();
-		mainScreen.setTakesInput(false);
-		this.screenStack = new SpoutScreenStack(mainScreen);
-		this.debugScreen = (DebugScreen) screenStack.getDebugHud();
-
 		this.entityRenderer = new EntityRenderer();
-
 		this.ccoverride = ccoverride;
-
 		worldRenderer = new WorldRenderer();
+		guiRenderer = new SpoutGuiRenderer();
+	}
+
+	public SpoutGuiRenderer getGuiRenderer() {
+		return guiRenderer;
 	}
 
 	public void initRenderer(Canvas parent) {
@@ -160,41 +132,14 @@ public class SpoutRenderer {
 		if (useReflexion) {
 			reflected = new ClientRenderTexture(true, false, true);
 			reflected.writeGPU();
-			// Test
-			reflectedDebugBatch = new SpriteBatch();
-			Shader s1 = client.getFileSystem().getResource("shader://Spout/shaders/diffuse.ssf");
-			HashMap<String, Object> map1 = new HashMap<>();
-			map1.put("Diffuse", reflected);
-			reflectedDebugMat = new ClientRenderMaterial(s1, map1);
-			RenderPart screenPart1 = new RenderPart();
-			screenPart1.setSprite(new Rectangle(-1, -1, 0.5f, 0.5f));
-			screenPart1.setSource(new Rectangle(0, 1, 1, -1));
-			RenderPartPack pack1 = new RenderPartPack(reflectedDebugMat);
-			pack1.add(screenPart1);
-			reflectedDebugBatch.flush(pack1);
-			// Test end
 		}
-
-		screenBatcher = new SpriteBatch();
-		t = new ClientRenderTexture(true, false, true);
-		t.writeGPU();
-		Shader s = client.getFileSystem().getResource("shader://Spout/shaders/diffuse.ssf");
-		HashMap<String, Object> map = new HashMap<>();
-		map.put("Diffuse", t);
-		mat = new ClientRenderMaterial(s, map);
-		RenderPart screenPart = new RenderPart();
-		screenPart.setSprite(new Rectangle(-1, -1, 2, 2));
-		screenPart.setSource(new Rectangle(0, 1, 1, -1));
-		RenderPartPack pack = new RenderPartPack(mat);
-		pack.add(screenPart);
-		screenBatcher.flush(pack);
 	}
 
 	public void updateRender(long limit) {
 		worldRenderer.update(limit);
 	}
 
-	long guiTime, worldTime, entityTime;
+	long worldTime, entityTime;
 
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -230,7 +175,6 @@ public class SpoutRenderer {
 		}
 
 		// Render normal world
-		t.activate();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (camera != null) {
@@ -254,63 +198,6 @@ public class SpoutRenderer {
 		start = System.nanoTime();
 		entityRenderer.render(dt);
 		entityTime = System.nanoTime() - start;
-		start = System.nanoTime();
-
-		t.release();
-
-		// Render gui
-		if (wireframe) {
-			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-		}
-
-		screenBatcher.render(Matrix4.IDENTITY);
-		if (useReflexion) {
-			reflectedDebugBatch.render(Matrix4.IDENTITY);
-		}
-
-		//GUI -> Render all widgets
-		for (Screen screen : screenStack.getVisibleScreens()) {
-			for (Widget widget : screen.getWidgets()) {
-				((SpoutWidget) widget).render();
-			}
-		}
-
-		//GUI -> Give the main screen the mouse if no input screen is set
-		final Screen input = screenStack.getInputScreen();
-		if (input == null) {
-			Mouse.setGrabbed(true);
-		} else {
-			Mouse.setGrabbed(input.grabsMouse());
-		}
-
-		//GUI -> Update debug info
-		if (showDebugInfos) {
-			int id = 0;
-			Point position = client.getPlayer().getPhysics().getPosition();
-			debugScreen.spoutUpdate(id++, "Spout client! Logged as " + client.getPlayer().getDisplayName() + " in world: " + client.getWorld().getName());
-			debugScreen.spoutUpdate(id++, "x: " + position.getX() + "y: " + position.getY() + "z: " + position.getZ());
-			debugScreen.spoutUpdate(id++, "FPS: " + client.getScheduler().getFps() + " (" + (client.getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal") + ")");
-			debugScreen.spoutUpdate(id++, "Chunks Loaded: " + client.getWorld().getNumLoadedChunks());
-			debugScreen.spoutUpdate(id++, "Total ChunkMeshBatchAggregators in Renderer: " + worldRenderer.getTotalChunks() + "");
-			debugScreen.spoutUpdate(id++, "Chunks Drawn: " + ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")");
-			debugScreen.spoutUpdate(id++, "Occluded Chunks: " + (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")");
-			debugScreen.spoutUpdate(id++, "Cull Chunks: " + (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getCulledChunks() + ")");
-			debugScreen.spoutUpdate(id++, "Entities: " + entityRenderer.getRenderedEntities());
-			debugScreen.spoutUpdate(id++, "Buffer: " + worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch);
-			debugScreen.spoutUpdate(id++, "Mesh batch queue size: " + ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer().getBatchWaiting());
-		}
-
-		for (Screen screen : screenStack.getVisibleScreens()) {
-			for (Widget widget : screen.getWidgets()) {
-				((SpoutWidget) widget).render();
-			}
-		}
-
-		guiTime = System.nanoTime() - start;
-
-		if (wireframe) {
-			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-		}
 	}
 
 	public WorldRenderer getWorldRenderer() {
@@ -319,10 +206,6 @@ public class SpoutRenderer {
 
 	public EntityRenderer getEntityRenderer() {
 		return entityRenderer;
-	}
-
-	public SpoutScreenStack getScreenStack() {
-		return screenStack;
 	}
 
 	public Vector2 getResolution() {

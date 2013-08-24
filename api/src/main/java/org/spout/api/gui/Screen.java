@@ -28,32 +28,40 @@ package org.spout.api.gui;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.component.widget.ControlComponent;
+import org.spout.api.exception.SpoutRuntimeException;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
-import org.spout.api.plugin.Plugin;
 import org.spout.api.tickable.BasicTickable;
 import org.spout.math.vector.Vector2;
 
-public class Screen extends BasicTickable implements Container {
-	private final HashMap<Widget, Plugin> widgets = new LinkedHashMap<>();
-	private Widget focusedWidget = null;
-	private boolean takesInput = true;
-	private boolean grabsMouse = true;
+/**
+ * Represents a layer on the GUI and a collection of {@link Widget}s.
+ */
+public class Screen extends BasicTickable {
+	private final List<Widget> widgets = new ArrayList<Widget>();
+	private int focusIndex = 0;
+	private boolean takesInput = true, visible = true, grabsMouse = true;
 
-	@Override
+	/**
+	 * Returns all widgets attached to this screen.
+	 *
+	 * @return widgets
+	 */
 	public List<Widget> getWidgets() {
-		return Collections.unmodifiableList(new ArrayList<>(widgets.keySet()));
+		return Collections.unmodifiableList(widgets);
 	}
 
-	@Override
+	/**
+	 * Returns the widget at the specified position.
+	 *
+	 * @param x position
+	 * @param y position
+	 * @return widget
+	 */
 	public Widget getWidgetAt(int x, int y) {
 		for (Widget w : getWidgets()) {
 			Rectangle bounds = w.getBounds();
@@ -69,7 +77,12 @@ public class Screen extends BasicTickable implements Container {
 		return null;
 	}
 
-	@Override
+	/**
+	 * Returns the widget at the specified position.
+	 *
+	 * @param pos position
+	 * @return widget
+	 */
 	public Widget getWidgetAt(IntVector2 pos) {
 		return getWidgetAt(pos.getX(), pos.getY());
 	}
@@ -82,210 +95,175 @@ public class Screen extends BasicTickable implements Container {
 		return (int) (pcent * ((Client) Spout.getEngine()).getResolution().getY());
 	}
 
-	@Override
-	public void attachWidget(Plugin plugin, Widget widget) {
-		widget.setScreen(this);
-		synchronized (widgets) {
-			focusedWidget = widget; // newly attached widgets gets the focus
-			widgets.put(widget, plugin);
-		}
-	}
-
-	@Override
-	public void removeWidget(Widget widget) {
-		synchronized (widgets) {
-			widgets.remove(widget);
-		}
-		cleanupWidget(widget);
-	}
-
-	@Override
-	public void removeWidgets(Widget... widgets) {
-		for (Widget widget : widgets) {
-			removeWidget(widget);
-		}
-	}
-
-	@Override
-	public void removeWidgets() {
-		synchronized (widgets) {
-			Iterator<Widget> i = widgets.keySet().iterator();
-			while (i.hasNext()) {
-				cleanupWidget(i.next());
-				i.remove();
-			}
-		}
-	}
-
-	private void cleanupWidget(Widget widget) {
-		widget.setScreen(null);
-		if (widget == focusedWidget) {
-			focusedWidget = null;
-			widget.onBlur();
-		}
-	}
-
-	@Override
-	public void removeWidgets(Plugin plugin) {
-		Iterator<Widget> i = getWidgets().iterator();
-		while (i.hasNext()) {
-			Widget widget = i.next();
-			synchronized (widgets) {
-				if (widgets.get(widget).equals(plugin)) {
-					i.remove();
-					cleanupWidget(widget);
-				}
-			}
-		}
-	}
-
-	@Override
-	public void onTick(float dt) {
-		synchronized (widgets) {
-			for (Widget w : widgets.keySet()) {
-				w.tick(dt);
-			}
-		}
-	}
-
-	@Override
-	public boolean canTick() {
-		return true;
+	/**
+	 * Attaches a widget to this screen.
+	 *
+	 * @param widget to attach
+	 */
+	public void attach(Widget widget) {
+		if (widget.screen != null)
+			throw new IllegalArgumentException("This widget is already attached to a screen.");
+		widget.screen = this;
+		widgets.add(widget);
 	}
 
 	/**
-	 * Returns the current widget that has focus.
+	 * Detaches the specified widget from this screen.
 	 *
-	 * @return widget with focus
+	 * @param widget to detach
+	 */
+	public void detach(Widget widget) {
+		dispose(widget);
+		widgets.add(widget);
+	}
+
+	/**
+	 * Detaches all widgets from the screen.
+	 */
+	public void detachAll() {
+		for (Widget widget : widgets) {
+			dispose(widget);
+		}
+		widgets.clear();
+	}
+
+	private void dispose(Widget widget) {
+		if (!equals(widget))
+			throw new IllegalArgumentException("This widget is not attached to this screen");
+		widget.screen = null;
+	}
+
+	/**
+	 * Returns the index of focus.
+	 *
+	 * @return focus index
+	 */
+	public int getFocusIndex() {
+		return focusIndex;
+	}
+
+	/**
+	 * Returns the focused widget.
+	 *
+	 * @return widget
 	 */
 	public Widget getFocusedWidget() {
-		return focusedWidget;
+		if (focusIndex >= widgets.size() || focusIndex < 0)
+			throw new IllegalStateException("Focus index points to non-existent widget. (" + focusIndex + ")");
+		return widgets.get(focusIndex);
 	}
 
 	/**
-	 * Sets the focus of the screen.
+	 * Sets the focus on the screen.
 	 *
-	 * @param newFocus widget to focus
+	 * @param widget to focus
 	 */
-	public void setFocus(Widget newFocus) {
-		setFocus(newFocus, FocusReason.PROGRAMMED);
+	public void setFocus(Widget widget) {
+		setFocus(widgets.indexOf(widget));
 	}
 
 	/**
-	 * Sets the focus of the screen.
+	 * Sets the focus index.
 	 *
-	 * @param newFocus focus to set
-	 * @param reason for focusing
+	 * @param index of focus.
 	 */
-	public void setFocus(Widget newFocus, FocusReason reason) {
-		if (newFocus == null) {
-			throw new IllegalArgumentException("You cannot set the focus to null.");
-		}
-
-		final boolean containsFocussedWidget;
-		synchronized (widgets) {
-			containsFocussedWidget = widgets.containsKey(newFocus);
-		}
-
-		if (containsFocussedWidget && newFocus.canFocus()) {
-			if (focusedWidget != newFocus) {
-				Widget oldFocus = focusedWidget;
-				focusedWidget = newFocus;
-				if (oldFocus != null) {
-					oldFocus.onBlur();
-				}
-				newFocus.onFocus(reason);
-			}
-		}
+	public void setFocus(int index) {
+		if (index >= widgets.size() || index < 0)
+			throw new IllegalArgumentException("Specified index is not within the bounds of attached widgets.");
+		widgets.get(this.focusIndex).blur();
+		this.focusIndex = index;
+		widgets.get(index).focus();
 	}
 
 	/**
-	 * Shifts the focus to the next element.
-	 *
-	 * @param reason for shift
+	 * Shifts the focus to the next widget.
 	 */
-	public void nextFocus(FocusReason reason) {
-		int current = 0;
-		if (getFocusedWidget() != null) {
-			current = getFocusedWidget().get(ControlComponent.class).getTabIndex();
+	public void nextFocus() {
+		if (focusIndex == widgets.size() - 1) {
+			setFocus(0);
+			return;
 		}
-
-		Widget lowest = null;
-		int lowestTab = Integer.MAX_VALUE;
-		synchronized (widgets) {
-			for (Widget w : widgets.keySet()) {
-				if (w.get(ControlComponent.class) != null) {
-					int ti = w.get(ControlComponent.class).getTabIndex();
-					if (ti < lowestTab && ti > current) {
-						lowest = w;
-						lowestTab = ti;
-					}
-				}
-			}
-		}
-		setFocus(lowest, reason);
+		setFocus(focusIndex + 1);
 	}
 
 	/**
-	 * Shifts the focus to the previous element.
-	 *
-	 * @param reason for shift
+	 * Shifts the focus to the previous focus.
 	 */
-	public void previousFocus(FocusReason reason) {
-		int current = 0;
-		if (getFocusedWidget() != null) {
-			current = getFocusedWidget().get(ControlComponent.class).getTabIndex();
+	public void previousFocus() {
+		if (focusIndex == 0) {
+			setFocus(widgets.size() - 1);
+			return;
 		}
-
-		Widget highest = null;
-		int highestTab = Integer.MIN_VALUE;
-		synchronized (widgets) {
-			for (Widget w : widgets.keySet()) {
-				if (w.get(ControlComponent.class) != null) {
-					int ti = w.get(ControlComponent.class).getTabIndex();
-					if (ti > highestTab && ti < current) {
-						highest = w;
-						highestTab = ti;
-					}
-				}
-			}
-		}
-		setFocus(highest, reason);
+		setFocus(focusIndex - 1);
 	}
 
 	/**
-	 * Returns true if this screen grabs the mouse when it's on the top.
+	 * Returns true if input should be passed to this screen.
 	 *
-	 * @return if screen should grab the mouse
-	 */
-	public boolean grabsMouse() {
-		return grabsMouse;
-	}
-
-	/**
-	 * Sets if the mouse should be grabbed when this screen is on top.
-	 *
-	 * @param grabsMouse true if should grab mouse.
-	 */
-	public void setGrabsMouse(boolean grabsMouse) {
-		this.grabsMouse = grabsMouse;
-	}
-
-	/**
-	 * Returns true if this screen receives input.
-	 *
-	 * @return if this screen should receive mouse and keyboard input. Default is true
+	 * @return true if takes input
 	 */
 	public boolean takesInput() {
 		return takesInput;
 	}
 
 	/**
-	 * Sets if this screen should receive input.
+	 * Sets if input should be passed to this screen.
 	 *
-	 * @param takesInput receives input
+	 * @param takesInput if should take input
 	 */
 	public void setTakesInput(boolean takesInput) {
 		this.takesInput = takesInput;
+	}
+
+	/**
+	 * Returns true if this screen should be rendered.
+	 *
+	 * @return true if visible
+	 */
+	public boolean isVisible() {
+		return visible;
+	}
+
+	/**
+	 * Sets if this screen is visible
+	 *
+	 * @param visible true if should render
+	 */
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
+	/**
+	 * Returns true if this screen should grab the mouse.
+	 *
+	 * @return true if should grab mouse
+	 */
+	public boolean grabsMouse() {
+		return grabsMouse;
+	}
+
+	/**
+	 * Sets if this screen should grab the mouse.
+	 *
+	 * @param grabsMouse true if should grab mouse
+	 */
+	public void setGrabsMouse(boolean grabsMouse) {
+		this.grabsMouse = grabsMouse;
+	}
+
+	@Override
+	public synchronized void onTick(float dt) {
+		for (Widget widget : widgets) {
+			try {
+				widget.tick(dt);
+			} catch (Exception e) {
+				throw new SpoutRuntimeException("Error updating Widget on Screen on the ScreenStack.", e);
+			}
+		}
+	}
+
+	@Override
+	public boolean canTick() {
+		return !widgets.isEmpty();
 	}
 }
