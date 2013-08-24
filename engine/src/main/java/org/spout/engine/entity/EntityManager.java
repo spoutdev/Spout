@@ -186,7 +186,7 @@ public class EntityManager {
 		snapshotManager.copyAllSnapshots();
 
 		// We want one more tick with for the removed Entities
-		// The next tick works with the snapshotted values which contains has all removed entities with idRemoved true
+		// The next tick works with the snapshotted values which contains has all removed entities with isRemoved true
 		for (SpoutEntity e : entities.get().values()) {
 			if (e.isRemoved()) {
 				removeEntity(e);
