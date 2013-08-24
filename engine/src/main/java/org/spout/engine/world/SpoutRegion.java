@@ -246,7 +246,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		if (Spout.getPlatform() == Platform.CLIENT && (loadopt.loadIfNeeded() || loadopt.generateIfNeeded())) {
 			short[] blocks = new short[16 * 16 * 16];
 			Arrays.fill(blocks, BlockMaterial.UNGENERATED.getId());
-			SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getChunkX() + x, getChunkY() + y, getChunkZ() + z, SpoutChunk.PopulationState.UNTOUCHED, blocks, null, null, true);
+			SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getChunkX() + x, getChunkY() + y, getChunkZ() + z, SpoutChunk.PopulationState.UNTOUCHED, blocks, null, null);
 			chunks[x][y][z].set(newChunk);
 			return newChunk;
 		}
@@ -1425,7 +1425,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		final int regionChunkZ = chunkZ & CHUNKS.MASK;
 		SpoutChunk chunk = chunks[regionChunkX][regionChunkY][regionChunkZ].get();
 		if (chunk == null) {
-			chunk = new SpoutChunk(getWorld(), this, chunkX, chunkY, chunkZ, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, new ManagedHashMap(), true);
+			chunk = new SpoutChunk(getWorld(), this, chunkX, chunkY, chunkZ, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, new ManagedHashMap());
 			setChunk(chunk, regionChunkX, regionChunkY, regionChunkZ, null, false);
 		} else {
 			chunk.rawSetBlockStore(blockIds, blockData);
