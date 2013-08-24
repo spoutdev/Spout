@@ -74,7 +74,6 @@ import org.spout.engine.world.SpoutServerWorld;
 public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicReference<String> displayName = new AtomicReference<>();
 	private final AtomicReference<String> name = new AtomicReference<>();
-	private final AtomicBoolean onlineLive = new AtomicBoolean(true);
 	private boolean online = true;
 	private final int hashcode;
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
@@ -131,19 +130,14 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		return online;
 	}
 
-	public boolean isOnlineLive() {
-		return onlineLive.get();
-	}
-
 	@DelayedWrite
 	public boolean disconnect(boolean async) {
 		if (Spout.getPlatform() == Platform.SERVER) {
 			((SpoutServerWorld) getWorld()).removePlayer(this);
 			//save player data on disconnect, probably should do this periodically as well...
 			PlayerFiles.savePlayerData(this, async);
-			remove();
 		}
-		onlineLive.set(false);
+		online = false;
 		return true;
 	}
 
@@ -318,7 +312,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void finalizeRun() {
-		if (getEngine().getPlatform() == Platform.SERVER && !this.isOnlineLive()) {
+		if (getEngine().getPlatform() == Platform.SERVER && !this.isOnline()) {
 			remove();
 		}
 
@@ -336,13 +330,12 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (isRemoved()) {
 			return;
 		}
-		this.getNetwork().preSnapshot(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
+		this.getNetwork().preSnapshotRun(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
 	}
 
 	@Override
 	public void copySnapshot() {
 		super.copySnapshot();
-		online = onlineLive.get();
 	}
 
 	@Override
