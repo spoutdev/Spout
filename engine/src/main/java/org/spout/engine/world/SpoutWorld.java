@@ -998,7 +998,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	}
 
 	private static String toString(String name, UUID uid) {
-		return "SpoutWorld{ " + name + " UUID: " + uid + "}";
+		return "SpoutWorld{Name: " + name + " UUID: " + uid + "}";
 	}
 
 	@Override

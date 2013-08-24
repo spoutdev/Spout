@@ -228,22 +228,31 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] block, short[] data, ManagedHashMap map) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, block, data, map, false);
-	}
-
+	/**
+	 * Chunk generation
+	 */
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, AtomicBlockStore blockStore, ManagedHashMap extraData) {
 		this(world, region, x, y, z, PopulationState.UNTOUCHED, extraData, blockStore);
 	}
 
+	// TODO: investigate "storeState" in the following two new AtomicPaletteBlockStore...
+	/**
+	 * Chunk loading
+	 */
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, ManagedHashMap extraData, boolean lightStable) {
 		this(world, region, x, y, z, popState, extraData, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, palette, blockArrayWidth, variableWidthBlockArray));
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, ManagedHashMap extraData, boolean lightStable) {
+	/**
+	 * Chunk sending to client and client LOAD_GEN 
+	 */
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, ManagedHashMap extraData) {
 		this(world, region, x, y, z, popState, extraData, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, false, 10, blocks, data));
 	}
 
+	/**
+	 * Common logic constructor
+	 */
 	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, AtomicBlockStore blockStore) {
 		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
 		parentRegion = region;
