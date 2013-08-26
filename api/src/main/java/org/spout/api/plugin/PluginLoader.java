@@ -108,7 +108,7 @@ public class PluginLoader {
 			}
 
 			try {
-				plugin.enabled = true;
+				plugin.enabled = false;
 				plugin.onDisable();
 			} catch (Throwable t) {
 				engine.getLogger().log(Level.SEVERE, "An error occurred when disabling plugin '" + plugin.getDescription().getFullName() + "' : " + t.getMessage(), t);
