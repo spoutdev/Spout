@@ -39,42 +39,42 @@ public interface Widget extends Tickable, ComponentOwner, Focusable, RenderPartC
 	/**
 	 * Invokes a render update in the next frame
 	 */
-	public abstract void update();
+	public void update();
 
 	/**
 	 * Returns the screen the widget is on.
 	 *
 	 * @return screen widget is on
 	 */
-	public abstract Screen getScreen();
+	public Screen getScreen();
 
 	/**
 	 * Sets the screen
 	 *
 	 * @param screen to set
 	 */
-	public abstract void setScreen(Screen screen);
+	public void setScreen(Screen screen);
 
 	/**
 	 * Returns the geometry of this widget.
 	 *
 	 * @return transform of widget
 	 */
-	public abstract Transform2D getTransform();
+	public Transform2D getTransform();
 
 	/**
 	 * Returns the bounding box of this widget.
 	 *
 	 * @return bounding box
 	 */
-	public abstract Rectangle getBounds();
+	public Rectangle getBounds();
 
 	/**
 	 * Sets the bounding box of this widget
 	 *
 	 * @param bounds of widget
 	 */
-	public abstract void setBounds(Rectangle bounds);
+	public void setBounds(Rectangle bounds);
 
 	/**
 	 * Gets the {@link ManagedMap} which a Widget always has.
