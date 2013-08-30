@@ -151,7 +151,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 			return component;
 		} else if (NetworkComponent.class.isAssignableFrom(type) && get(type) == null) {
 			//Detach old NetworkComponent
-			super.detach(NetworkComponent.class);
+			super.detach(NetworkComponent.class, true);
 			//Attach new one
 			this.network = (NetworkComponent) super.add(type, attach);
 			return (T) network;

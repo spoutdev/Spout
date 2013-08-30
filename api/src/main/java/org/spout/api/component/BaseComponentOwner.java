@@ -37,6 +37,7 @@ import com.google.common.collect.HashBiMap;
 
 import org.spout.api.Spout;
 import org.spout.api.datatable.ManagedHashMap;
+import org.spout.api.event.Listener;
 
 public class BaseComponentOwner implements ComponentOwner {
 	/**
@@ -155,6 +156,9 @@ public class BaseComponentOwner implements ComponentOwner {
 				components.inverse().remove(component);
 				try {
 					component.onDetached();
+					if (component instanceof Listener) {
+						Spout.getEventManager().unRegisterEvents((Listener) component);
+					}
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Error detaching component " + type + " from holder: ", e);
 				}

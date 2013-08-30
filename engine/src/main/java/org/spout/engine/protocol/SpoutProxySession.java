@@ -76,11 +76,11 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 	 * For proxy, the main channel is downstream and the auxChannel is upstream.
 	 */
 	@Override
-	public void send(boolean force, Message message) {
+	public void send(SendType type, Message message) {
 		if (message instanceof ConnectionInfoMessage) {
 			updateConnectionInfo(false, (ConnectionInfoMessage) message);
 		}
-		super.send(force, message);
+		super.send(type, message);
 	}
 
 	public void sendOutbound(Message message) {

@@ -206,16 +206,16 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	@Override
 	public void send(Message message) {
-		send(false, message);
+		send(SendType.QUEUE, message);
 	}
 
 	@Override
-	public void send(boolean force, Message message) {
+	public void send(SendType type, Message message) {
 		if (message == null) {
 			return;
 		}
 		try {
-			if (force || this.state == State.GAME) {
+			if (type == SendType.FORCE || this.state == State.GAME) {
 				if (channel.isActive()) {
 					NetworkSendThread sendThread = networkSendThread.get();
 					if (sendThread == null) {
@@ -224,7 +224,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 						sendThread.send(this, channel, message);
 					}
 				}
-			} else {
+			} else if (type == SendType.QUEUE) {
 				sendQueue.add(message);
 			}
 		} catch (Exception e) {
@@ -235,13 +235,13 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	@Override
 	public void sendAll(Message... messages) {
-		sendAll(false, messages);
+		sendAll(SendType.QUEUE, messages);
 	}
 
 	@Override
-	public void sendAll(boolean force, Message... messages) {
+	public void sendAll(SendType type, Message... messages) {
 		for (Message msg : messages) {
-			send(force, msg);
+			send(type, msg);
 		}
 	}
 

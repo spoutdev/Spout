@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.ClientOnly;
 import org.spout.api.Platform;
 import org.spout.api.ServerOnly;
 import org.spout.api.Spout;
@@ -1434,6 +1435,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return chunk;
 	}
 
+	@ClientOnly
 	public void removeChunk(int chunkX, int chunkY, int chunkZ) {
 		final int regionChunkX = chunkX & CHUNKS.MASK;
 		final int regionChunkY = chunkY & CHUNKS.MASK;

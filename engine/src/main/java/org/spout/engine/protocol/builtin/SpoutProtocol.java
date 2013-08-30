@@ -30,6 +30,7 @@ import java.net.InetSocketAddress;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+
 import java.util.UUID;
 
 import org.spout.api.Spout;
@@ -39,17 +40,17 @@ import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.object.EventableListener;
-import org.spout.api.map.DefaultedKey;
-import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.ServerSession;
+import org.spout.api.protocol.Session;
 import org.spout.api.protocol.replayable.ReplayableException;
 import org.spout.api.util.SyncedMapEvent;
 import org.spout.api.util.SyncedMapRegistry;
 import org.spout.api.util.SyncedStringMap;
+
 import org.spout.engine.component.entity.SpoutPlayerNetworkComponent;
 import org.spout.engine.protocol.builtin.codec.BlockUpdateCodec;
 import org.spout.engine.protocol.builtin.codec.ChunkDataCodec;
@@ -173,12 +174,12 @@ public class SpoutProtocol extends Protocol {
 					SyncedMapRegistry.getRegistrationMap().unregisterListener(this);
 					return;
 				}
-				((Player) e).getNetwork().getSession().send(true, new SyncedMapMessage(event.getAssociatedObject().getId(), SyncedMapEvent.Action.ADD, event.getModifiedElements()));
+				((Player) e).getNetwork().getSession().send(Session.SendType.FORCE, new SyncedMapMessage(event.getAssociatedObject().getId(), SyncedMapEvent.Action.ADD, event.getModifiedElements()));
 			}
 		});
-		session.send(true, new SyncedMapMessage(SyncedMapRegistry.REGISTRATION_MAP, SyncedMapEvent.Action.SET, SyncedMapRegistry.getRegistrationMap().getItems()));
+		session.send(Session.SendType.FORCE, new SyncedMapMessage(SyncedMapRegistry.REGISTRATION_MAP, SyncedMapEvent.Action.SET, SyncedMapRegistry.getRegistrationMap().getItems()));
 		for (SyncedStringMap map : SyncedMapRegistry.getAll()) {
-			session.send(true, new SyncedMapMessage(map.getId(), SyncedMapEvent.Action.SET, map.getItems()));
+			session.send(Session.SendType.FORCE, new SyncedMapMessage(map.getId(), SyncedMapEvent.Action.SET, map.getItems()));
 		}
 	}
 

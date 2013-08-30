@@ -82,22 +82,39 @@ public interface Session {
 	public void setState(State state);
 
 	/**
-	 * Sends a message to the client.
+	 * Specifies send behavior
+	 */
+	public enum SendType {
+		/**
+		 * Messages sent with a SendType of GAME_ONLY will only send if State is GAME. Messages will not be queued.
+		 */
+		GAME_ONLY,
+		/**
+		 * Messages sent with a SendType of QUEUE will wait until State is GAME to send. Messages may be queued.
+		 */
+		QUEUE,
+		/**
+		 * Messages sent with a SendType of FORCE will send as soon as possible regardless of State.
+		 */
+		FORCE;
+	}
+	/**
+	 * Sends a message across the network. This is equivalent to calling {@code send(SendType.QUEUE, message)}.
 	 *
 	 * @param message The message.
 	 */
 	public void send(Message message);
 
 	/**
-	 * Sends a message to the client.
+	 * Sends a message across the network.
 	 *
-	 * @param force if this message is used in the identification stages of communication
+	 * @param type send behavior
 	 * @param message The message.
 	 */
-	public void send(boolean force, Message message);
+	public void send(SendType type, Message message);
 
 	/**
-	 * Sends any amount of messages to the client
+	 * Sends any amount of messages to the client. This is equivalent to calling {@code sendAll(SendType.QUEUE, messages)}.
 	 *
 	 * @param messages the messages to send to the client
 	 */
@@ -106,10 +123,10 @@ public interface Session {
 	/**
 	 * Sends any amount of messages to the client.
 	 *
-	 * @param force if the messages are used in the identification stages of communication
+	 * @param type send behavior
 	 * @param messages the messages to send to the client
 	 */
-	public void sendAll(boolean force, Message... messages);
+	public void sendAll(SendType type, Message... messages);
 
 	/**
 	 * Disconnects the player as a kick.
