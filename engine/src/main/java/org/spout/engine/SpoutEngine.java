@@ -146,7 +146,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		}
 
 		// Must register protocol on init or client session can't happen
-		Protocol.registerProtocol(new SpoutProtocol());
+		Protocol.registerProtocol(SpoutProtocol.INSTANCE);
 		if (Protocol.getProtocol("Spout") == null) {
 			throw new IllegalStateException("SpoutProtocol was not successfully registered!");
 		}

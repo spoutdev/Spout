@@ -26,10 +26,6 @@
  */
 package org.spout.engine.component.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.spout.api.ServerOnly;
 import org.spout.api.Spout;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Entity;
@@ -37,7 +33,6 @@ import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.event.BlockUpdateEvent;
 import org.spout.api.protocol.event.ChunkDatatableSendEvent;
@@ -73,7 +68,7 @@ public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implemen
 	@EventHandler
 	public void onWorldChange(WorldChangeProtocolEvent event) {
 		event.getMessages().add(new WorldChangeMessage(event.getWorld(), getOwner().getPhysics().getTransform(), event.getWorld().getData()));
-		event.setForced(true);
+		event.setSendType(Session.SendType.FORCE);
 		getSession().setState(Session.State.WAITING);
 	}
 

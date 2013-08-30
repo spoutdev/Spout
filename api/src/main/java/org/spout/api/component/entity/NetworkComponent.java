@@ -218,7 +218,7 @@ public class NetworkComponent extends EntityComponent {
 				continue;
 			}
 			for (final Message message : messages) {
-				player.getNetwork().getSession().send(event.isForced(), message);
+				player.getNetwork().getSession().send(event.getSendType(), message);
 			}
 		}
 	}
@@ -233,7 +233,7 @@ public class NetworkComponent extends EntityComponent {
 		final List<Message> messages = getEngine().getEventManager().callEvent(event).getMessages();
 		for (final Player player : players) {
 			for (final Message message : messages) {
-				player.getNetwork().getSession().send(event.isForced(), message);
+				player.getNetwork().getSession().send(event.getSendType(), message);
 			}
 		}
 	}
@@ -252,7 +252,7 @@ public class NetworkComponent extends EntityComponent {
 				continue;
 			}
 			for (final Message message : messages) {
-				((Player) entity).getNetwork().getSession().send(event.isForced(), message);
+				((Player) entity).getNetwork().getSession().send(event.getSendType(), message);
 			}
 		}
 	}
@@ -292,16 +292,17 @@ public class NetworkComponent extends EntityComponent {
 
 	@Override
 	public void onDetached() {
+		System.out.println("Detaching NetworkComponent with " + observingChunks.size() + " chunks.");
+		int called = 0;
 		for (Chunk chunk : observingChunks) {
 			// TODO: it shouldn't matter if the chunk is loaded?
 			if (chunk.isLoaded()) {
+				called++;
 				chunk.removeObserver(getOwner());
 			}
 		}
+		System.out.println("Removed observer status from " + called + " chunks");
 		observingChunks.clear();
-		if (this instanceof Listener) {
-			Spout.getEventManager().unRegisterEvents((Listener) this);
-		}
 	}
 
 	@ServerOnly

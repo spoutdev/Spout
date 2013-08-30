@@ -29,11 +29,12 @@ package org.spout.api.event;
 import java.util.List;
 
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.Session.SendType;
 import org.spout.api.util.list.concurrent.ConcurrentList;
 
 public abstract class ProtocolEvent extends Event {
 	private List<Message> messages = new ConcurrentList<>();
-	private boolean forced = false;
+	private SendType sendType = SendType.QUEUE;
 
 	public ProtocolEvent() {
 	}
@@ -47,11 +48,11 @@ public abstract class ProtocolEvent extends Event {
 		return messages;
 	}
 
-	public boolean isForced() {
-		return forced;
+	public SendType getSendType() {
+		return sendType;
 	}
 
-	public void setForced(boolean forced) {
-		this.forced = forced;
+	public void setSendType(SendType sendType) {
+		this.sendType = sendType;
 	}
 }

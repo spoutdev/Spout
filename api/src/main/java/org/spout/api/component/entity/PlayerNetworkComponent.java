@@ -343,8 +343,6 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 
 	private void sendPositionUpdates(Transform live) {
 		if (getOwner().getPhysics().isTransformDirty() && sync) {
-			//TODO: Live needs to be sent here but kills the client. Fix kitskub
-			//callProtocolEvent(new EntityUpdateEvent(getOwner().getId(), new Transform(getOwner().getPhysics().getPosition(), getOwner().getPhysics().getRotation(), Vector3.ONE), EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
 			callProtocolEvent(new EntityUpdateEvent(getOwner(), live, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
 			sync = false;
 		}

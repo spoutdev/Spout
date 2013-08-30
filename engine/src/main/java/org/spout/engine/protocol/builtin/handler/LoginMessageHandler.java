@@ -46,7 +46,7 @@ public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 		session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName(), (SpoutConfiguration.VIEW_DISTANCE.getInt())));
 		// This could be nulled with PlayerConnectEvent
 		if (session.hasPlayer()) {
-			session.send(true, new LoginMessage(session.getPlayer().getName(), session.getPlayer().getId()));
+			session.send(Session.SendType.FORCE, new LoginMessage(session.getPlayer().getName(), session.getPlayer().getId()));
 			Point ep = session.getPlayer().getPhysics().getPosition();
 			session.getPlayer().getNetwork().callProtocolEvent(new WorldChangeProtocolEvent(ep.getWorld()), session.getPlayer());
 		}

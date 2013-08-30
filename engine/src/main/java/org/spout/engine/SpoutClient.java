@@ -75,6 +75,7 @@ import org.spout.api.protocol.CommonChannelInitializer;
 import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.Session;
 import org.spout.api.render.RenderMode;
 import org.spout.api.resource.FileSystem;
 import org.spout.engine.audio.AudioConfiguration;
@@ -176,7 +177,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		// Send handshake message first
 		SpoutClientSession get = (SpoutClientSession) player.get().getNetwork().getSession();
-		get.send(true, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().remoteAddress()));
+		get.send(Session.SendType.FORCE, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().remoteAddress()));
 	}
 
 	private boolean connnect() {
