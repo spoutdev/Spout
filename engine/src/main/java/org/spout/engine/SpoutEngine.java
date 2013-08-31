@@ -80,7 +80,6 @@ import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.input.SpoutInputConfiguration;
-import org.spout.engine.listener.SpoutListener;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
@@ -147,7 +146,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		}
 
 		// Must register protocol on init or client session can't happen
-		Protocol.registerProtocol(new SpoutProtocol());
+		Protocol.registerProtocol(SpoutProtocol.INSTANCE);
 		if (Protocol.getProtocol("Spout") == null) {
 			throw new IllegalStateException("SpoutProtocol was not successfully registered!");
 		}
@@ -161,7 +160,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	public void start() {
 		Spout.info("Spout is starting in {0}-only mode.", getPlatform().name().toLowerCase());
-		Spout.info("This server is running Spout #{0}.", Spout.getAPIVersion().replace("dev b", ""));
+		Spout.info("This {0}'s version is {1}.", getPlatform().name().toLowerCase(), Spout.getAPIVersion().replace("dev b", ""));
 		Spout.info("This software is currently in alpha status so components may");
 		Spout.info("have bugs or not work at all. Please report any issues to");
 		Spout.info("http://issues.spout.org");
@@ -183,7 +182,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		Object exe;
 		switch (getPlatform()) {
 			case CLIENT:
-				exe = new ClientCommands(this);
+				exe = new ClientCommands((SpoutClient) this);
 				break;
 			case SERVER:
 				exe = new ServerCommands(this);
@@ -203,8 +202,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			AnnotatedCommandExecutorFactory.create(new AnnotatedCommandExecutorTest.RootExecutor());
 			AnnotatedCommandExecutorFactory.create(new AnnotatedCommandExecutorTest.ChildExecutor(), cmdManager.getCommand("root"));
 		}
-
-		getEventManager().registerEvents(new SpoutListener(), this);
 
 		// Start loading plugins
 		setupBindings(config);
@@ -418,11 +415,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	@Override
 	public String getLogFile() {
 		return logFile;
-	}
-
-	public EntityManager getExpectedEntityManager(Point point) {
-		Region region = point.getWorld().getRegionFromBlock(point);
-		return ((SpoutRegion) region).getEntityManager();
 	}
 
 	@Override

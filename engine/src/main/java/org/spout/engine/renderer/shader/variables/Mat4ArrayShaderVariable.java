@@ -51,7 +51,7 @@ public class Mat4ArrayShaderVariable extends ShaderVariable {
 		FloatBuffer buff = BufferUtils.createFloatBuffer(16 * value.length);
 
 		for (int i = 0; i < value.length; i++) {
-			buff.put(value[i].toArray());
+			buff.put(value[i].toArray(true));
 		}
 		buff.flip();
 

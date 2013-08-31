@@ -29,8 +29,6 @@ package org.spout.api.lighting;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.spout.api.Platform.CLIENT;
-import static org.spout.api.Platform.SERVER;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.io.store.simple.BinaryFileStore;

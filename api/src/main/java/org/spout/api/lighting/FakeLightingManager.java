@@ -26,9 +26,9 @@
  */
 package org.spout.api.lighting;
 
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
@@ -44,7 +44,7 @@ public class FakeLightingManager extends LightingManager {
 		super("FAKE_" + id);
 		this.id = id;
 	}
-	
+
 	public static FakeLightingManager get(short id) {
 		FakeLightingManager get = instances.get(id);
 		if (get == null) {

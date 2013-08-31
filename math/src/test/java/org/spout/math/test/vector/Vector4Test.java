@@ -38,9 +38,15 @@ import org.spout.math.vector.VectorN;
 
 public class Vector4Test {
 	@Test
+	public void testEmptyConstructor() {
+		Vector4 vector = new Vector4();
+		TestUtil.assertEquals(vector, 0, 0, 0, 0);
+	}
+
+	@Test
 	public void testCopyVector2DefaultZWConstructor() {
-		Vector4 vector = new Vector4(new Vector2(0, 1), 1, 2);
-		TestUtil.assertEquals(vector, 0, 1, 1, 2);
+		Vector4 vector = new Vector4(new Vector2(0, 1));
+		TestUtil.assertEquals(vector, 0, 1, 0, 0);
 	}
 
 	@Test
@@ -351,6 +357,30 @@ public class Vector4Test {
 		TestUtil.assertEquals(v1, (float) TrigMath.HALF_SQRT_OF_TWO, (float) TrigMath.HALF_SQRT_OF_TWO, 0, 0);
 		Vector4 v2 = new Vector4(0, 1, 0, 1).normalize();
 		TestUtil.assertEquals(v2, 0, (float) TrigMath.HALF_SQRT_OF_TWO, 0, (float) TrigMath.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testGetMinAxis() {
+		Vector4 vector1 = new Vector4(1, 2, 3, 4);
+		TestUtil.assertEquals(vector1.getMinAxis(), 0);
+		Vector4 vector2 = new Vector4(2, 1, 3, 4);
+		TestUtil.assertEquals(vector2.getMinAxis(), 1);
+		Vector4 vector3 = new Vector4(3, 2, 1, 4);
+		TestUtil.assertEquals(vector3.getMinAxis(), 2);
+		Vector4 vector4 = new Vector4(4, 2, 3, 1);
+		TestUtil.assertEquals(vector4.getMinAxis(), 3);
+	}
+
+	@Test
+	public void testGetMaxAxis() {
+		Vector4 vector1 = new Vector4(4, 2, 3, 1);
+		TestUtil.assertEquals(vector1.getMaxAxis(), 0);
+		Vector4 vector2 = new Vector4(1, 4, 3, 2);
+		TestUtil.assertEquals(vector2.getMaxAxis(), 1);
+		Vector4 vector3 = new Vector4(1, 2, 4, 3);
+		TestUtil.assertEquals(vector3.getMaxAxis(), 2);
+		Vector4 vector4 = new Vector4(1, 2, 3, 4);
+		TestUtil.assertEquals(vector4.getMaxAxis(), 3);
 	}
 
 	@Test

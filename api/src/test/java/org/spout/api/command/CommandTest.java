@@ -116,10 +116,6 @@ public class CommandTest {
 		}
 
 		@Override
-		public void sendCommand(String command, String... args) {
-		}
-
-		@Override
 		public void processCommand(String command, String... args) {
 			Command cmd = cm.getCommand(command, false);
 			if (cmd == null) {

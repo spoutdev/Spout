@@ -768,25 +768,29 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 		viewers = new HashSet<>();
 	}
 
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 67 * hash + Objects.hashCode(this.viewers);
-        hash = 67 * hash + Arrays.deepHashCode(this.contents);
-        return hash;
-    }
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 67 * hash + Objects.hashCode(this.viewers);
+		hash = 67 * hash + Arrays.deepHashCode(this.contents);
+		return hash;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final Inventory other = (Inventory) obj;
-        if (!Objects.equals(this.viewers, other.viewers))
-            return false;
-        if (!Arrays.deepEquals(this.contents, other.contents))
-            return false;
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Inventory other = (Inventory) obj;
+		if (!Objects.equals(this.viewers, other.viewers)) {
+			return false;
+		}
+		if (!Arrays.deepEquals(this.contents, other.contents)) {
+			return false;
+		}
+		return true;
+	}
 }

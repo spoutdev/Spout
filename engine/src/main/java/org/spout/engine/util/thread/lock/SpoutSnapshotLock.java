@@ -198,9 +198,9 @@ public class SpoutSnapshotLock implements SnapshotLock {
 				long held = System.currentTimeMillis() - oldLockInfo.oldestLock;
 				if (held > target) {
 					if (plugin instanceof Named) {
-						Spout.getLogger().info("Snapshot lock held for " + held + "ms by " + ((Named) plugin).getName());
+					//	Spout.getLogger().info("Snapshot lock held for " + held + "ms by " + ((Named) plugin).getName());
 					} else {
-						Spout.getLogger().info("Snapshot lock held for " + held + "ms by " + plugin.getClass().getSimpleName());
+					//	Spout.getLogger().info("Snapshot lock held for " + held + "ms by " + plugin.getClass().getSimpleName());
 					}
 				}
 			}

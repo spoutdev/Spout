@@ -26,7 +26,7 @@
  */
 package org.spout.api.protocol.builder;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 
 public interface MessageField {
 	/**
@@ -44,77 +44,77 @@ public interface MessageField {
 	/**
 	 * Gets the length of the field without moving the read pointer
 	 */
-	public int getLength(ChannelBuffer buffer);
+	public int getLength(ByteBuf buffer);
 
 	/**
 	 * Gets the length of the field and moves the read pointer to the start of the next field. This method will throw an out of bounds exception if the entire field is not present
 	 *
 	 * @return the length of the field
 	 */
-	public abstract int skip(ChannelBuffer buffer);
+	public abstract int skip(ByteBuf buffer);
 
 	/**
 	 * Reads a field from the buffer and moves the read pointer to the start of the next field
 	 */
-	public abstract Object read(ChannelBuffer buffer);
+	public abstract Object read(ByteBuf buffer);
 
 	/**
 	 * Reads a long field from the buffer and moves the read pointer to the start of the next field
 	 */
-	public long readLong(ChannelBuffer buffer);
+	public long readLong(ByteBuf buffer);
 
 	/**
 	 * Reads am int field from the buffer and moves the read pointer to the start of the next field
 	 */
-	public int readInt(ChannelBuffer buffer);
+	public int readInt(ByteBuf buffer);
 
 	/**
 	 * Reads a short field from the buffer and moves the read pointer to the start of the next field
 	 */
-	public short readShort(ChannelBuffer buffer);
+	public short readShort(ByteBuf buffer);
 
 	/**
 	 * Reads a byte field from the buffer and moves the read pointer to the start of the next field
 	 */
-	public byte readByte(ChannelBuffer buffer);
+	public byte readByte(ByteBuf buffer);
 
 	/**
 	 * Reads am unsigned byte field from the buffer and moves the read pointer to the start of the next field
 	 */
-	public short readUnsignedByte(ChannelBuffer buffer);
+	public short readUnsignedByte(ByteBuf buffer);
 
 	/**
 	 * Writes a field to the buffer
 	 */
-	public abstract void write(ChannelBuffer buffer, Object value);
+	public abstract void write(ByteBuf buffer, Object value);
 
 	/**
 	 * Writes a long field to the buffer
 	 */
-	public abstract void writeLong(ChannelBuffer buffer, long value);
+	public abstract void writeLong(ByteBuf buffer, long value);
 
 	/**
 	 * Writes an int field to the buffer
 	 */
-	public abstract void writeInt(ChannelBuffer buffer, int value);
+	public abstract void writeInt(ByteBuf buffer, int value);
 
 	/**
 	 * Writes a short field to the buffer
 	 */
-	public abstract void writeShort(ChannelBuffer buffer, short value);
+	public abstract void writeShort(ByteBuf buffer, short value);
 
 	/**
 	 * Writes a byte field to the buffer
 	 */
-	public abstract void writeByte(ChannelBuffer buffer, byte value);
+	public abstract void writeByte(ByteBuf buffer, byte value);
 
 	/**
 	 * Writes an unsigned byte field to the buffer
 	 */
-	public abstract void writeUnsignedByte(ChannelBuffer buffer, short value);
+	public abstract void writeUnsignedByte(ByteBuf buffer, short value);
 
 	/**
 	 * Reads an object from the source buffer and writes it to the target buffer doing minimal decoding
 	 */
-	public abstract void transfer(ChannelBuffer sourceBuffer, ChannelBuffer targetBuffer);
+	public abstract void transfer(ByteBuf sourceBuffer, ByteBuf targetBuffer);
 }

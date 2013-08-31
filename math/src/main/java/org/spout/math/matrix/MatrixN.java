@@ -52,14 +52,14 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 	}
 
 	public MatrixN(Matrix2 m) {
-		mat = new float[][] {
+		mat = new float[][]{
 				{m.get(0, 0), m.get(0, 1)},
 				{m.get(1, 0), m.get(1, 1)}
 		};
 	}
 
 	public MatrixN(Matrix3 m) {
-		mat = new float[][] {
+		mat = new float[][]{
 				{m.get(0, 0), m.get(0, 1), m.get(0, 2)},
 				{m.get(1, 0), m.get(1, 1), m.get(1, 2)},
 				{m.get(2, 0), m.get(2, 1), m.get(2, 2)}
@@ -67,7 +67,7 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 	}
 
 	public MatrixN(Matrix4 m) {
-		mat = new float[][] {
+		mat = new float[][]{
 				{m.get(0, 0), m.get(0, 1), m.get(0, 2), m.get(0, 3)},
 				{m.get(1, 0), m.get(1, 1), m.get(1, 2), m.get(1, 3)},
 				{m.get(2, 0), m.get(2, 1), m.get(2, 2), m.get(2, 3)},
@@ -104,6 +104,26 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 	@Override
 	public float get(int row, int col) {
 		return mat[row][col];
+	}
+
+	@Override
+	public VectorN getRow(int row) {
+		final int size = size();
+		final VectorN d = new VectorN(size);
+		for (int col = 0; col < size; col++) {
+			d.set(col, get(row, col));
+		}
+		return d;
+	}
+
+	@Override
+	public VectorN getColumn(int col) {
+		final int size = size();
+		final VectorN d = new VectorN(size);
+		for (int row = 0; row < size; row++) {
+			d.set(row, get(row, col));
+		}
+		return d;
 	}
 
 	public void set(int row, int col, double val) {
@@ -600,6 +620,7 @@ public class MatrixN implements Matrix, Serializable, Cloneable {
 		perspective.set(2, 2, (far + near) / (near - far));
 		perspective.set(2, 3, 2 * far * near / (near - far));
 		perspective.set(3, 2, -1);
+		perspective.set(3, 3, 0);
 		return perspective;
 	}
 

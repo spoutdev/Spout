@@ -31,12 +31,14 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.geo.World;
-import org.spout.math.vector.Vector3;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.concurrent.SpinLock;
 import org.spout.api.util.thread.annotation.Threadsafe;
+
 import org.spout.math.imaginary.Quaternion;
 import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector3;
 
 @Threadsafe
 public final class Transform implements Serializable {
@@ -282,10 +284,10 @@ public final class Transform implements Serializable {
 	/**
 	 * Returns the 4x4 matrix that represents this transform object
 	 */
-	public Matrix3 toMatrix() {
-		Matrix3 translate = Matrix3.createTranslation(getPosition().toVector2());
-		Matrix3 rotate = Matrix3.createRotation(getRotation());
-		Matrix3 scale = Matrix3.createScaling(getScale());
+	public Matrix4 toMatrix() {
+		Matrix4 translate = Matrix4.createTranslation(getPosition());
+		Matrix4 rotate = Matrix4.createRotation(getRotation());
+		Matrix4 scale = Matrix4.createScaling(getScale().toVector4(1));
 		return scale.mul(rotate).mul(translate);
 	}
 

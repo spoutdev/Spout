@@ -24,23 +24,14 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.listener;
+package org.spout.engine.protocol.builtin.message;
 
-import org.spout.api.entity.Entity;
-import org.spout.api.event.EventHandler;
-import org.spout.api.event.Listener;
-import org.spout.api.event.Order;
-import org.spout.api.event.entity.EntitySpawnEvent;
-import org.spout.engine.component.entity.SpoutPhysicsComponent;
-import org.spout.engine.world.SpoutRegion;
+public class ReadyMessage extends SpoutMessage {
+	public static final ReadyMessage INSTANCE = new ReadyMessage();
 
-public class SpoutListener implements Listener {
-	@EventHandler (order = Order.EARLIEST)
-	public void onEntitySpawn(EntitySpawnEvent event) {
-		final Entity entity = event.getEntity();
-		if (entity.getPhysics().isActivated()) {
-			final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) entity.getPhysics();
-			((SpoutRegion) entity.getRegion()).addBody(physics.getTransformLive(), physics.getMass(), physics.getShape(), physics.isGhost(), physics.isMobile());
-		}
+	@Override
+	public boolean requiresPlayer() {
+		return false;
 	}
+
 }

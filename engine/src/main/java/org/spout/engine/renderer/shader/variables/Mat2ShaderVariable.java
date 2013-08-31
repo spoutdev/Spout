@@ -45,7 +45,7 @@ public class Mat2ShaderVariable extends ShaderVariable {
 	@Override
 	public void assign() {
 		buffer.position(0);
-		buffer.put(value.toArray());
+		buffer.put(value.toArray(true));
 		buffer.flip();
 
 		GL20.glUniformMatrix2(location, false, buffer);

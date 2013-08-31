@@ -50,9 +50,8 @@ public class Mat3ShaderVariable extends ShaderVariable {
 	@Override
 	public void assign() {
 		buffer.position(0);
-		buffer.put(value.toArray());
+		buffer.put(value.toArray(true));
 		buffer.flip();
-
 		GL20.glUniformMatrix3(location, false, buffer);
 		SpoutRenderer.checkGLError();
 	}

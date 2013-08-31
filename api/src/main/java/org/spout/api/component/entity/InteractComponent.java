@@ -56,8 +56,7 @@ public class InteractComponent extends EntityComponent {
 	 */
 	public Block getTargetBlock(boolean invisible) {
 		BlockIterator blockIt = getAlignedBlocks();
-		Block block = blockIt.getTarget(invisible);
-		return block;
+		return blockIt.getTarget(invisible);
 	}
 
 	public Block getTargetBlock() {

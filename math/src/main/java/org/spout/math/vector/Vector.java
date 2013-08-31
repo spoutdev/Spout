@@ -49,5 +49,9 @@ public interface Vector {
 
 	public Vector normalize();
 
+	public int getMinAxis();
+
+	public int getMaxAxis();
+
 	public float[] toArray();
 }

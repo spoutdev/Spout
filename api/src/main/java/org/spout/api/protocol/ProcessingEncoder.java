@@ -29,51 +29,30 @@ package org.spout.api.protocol;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.ChannelEvent;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOutboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
+import io.netty.handler.codec.MessageToMessageEncoder;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.jboss.netty.channel.Channels.write;
-
-public abstract class PostprocessEncoder extends OneToOneEncoder implements ProcessorHandler {
+/**
+ * This class provides a layer of processing after encode but before the message is passed outbound.
+ *
+ */
+public abstract class ProcessingEncoder extends MessageToMessageEncoder<Object> implements ProcessorHandler {
 	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<>();
 	private final AtomicBoolean locked = new AtomicBoolean(false);
 
 	@Override
-	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent evt) throws Exception {
-
+	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
 		if (locked.get()) {
 			throw new IllegalStateException("Encode attempted when channel was locked");
 		}
-
-		ChannelProcessor processor = this.processor.get();
-		if (processor == null) {
-			super.handleDownstream(ctx, evt);
-			if (evt instanceof MessageEvent) {
-				checkForSetupMessage(((MessageEvent) evt).getMessage());
-			}
-		} else if (!(evt instanceof MessageEvent)) {
-			super.handleDownstream(ctx, evt);
-		} else {
-			MessageEvent e = (MessageEvent) evt;
-			Object originalMessage = e.getMessage();
-			Object encodedMessage = encode(ctx, e.getChannel(), originalMessage);
-			if (originalMessage == encodedMessage) {
-				ctx.sendDownstream(evt);
-			} else if (encodedMessage != null) {
-				if (encodedMessage instanceof ChannelBuffer) {
-					synchronized (this) {
-						encodedMessage = processor.write(ctx, (ChannelBuffer) encodedMessage);
-						write(ctx, e.getFuture(), encodedMessage, e.getRemoteAddress());
-					}
-				} else {
-					write(ctx, e.getFuture(), encodedMessage, e.getRemoteAddress());
-				}
-			}
-			checkForSetupMessage(originalMessage);
-		}
+		super.write(ctx, msg, promise);
 	}
 
 	private void checkForSetupMessage(Object e) {
@@ -101,4 +80,25 @@ public abstract class PostprocessEncoder extends OneToOneEncoder implements Proc
 		}
 		locked.set(false);
 	}
+
+	@Override
+	protected void encode(ChannelHandlerContext ctx, final Object msg, List<Object> out) throws Exception {
+		List<Object> newOut = new ArrayList<>();
+		encodePreProcess(ctx, msg, newOut);
+		final ChannelProcessor processor = this.processor.get();
+		for (final Object encoded : newOut) {
+			Object toAdd = encoded;
+			if (processor != null && encoded instanceof ByteBuf) {
+				synchronized (this) {
+					// Gotta release the old
+					toAdd = processor.write(ctx, (ByteBuf) encoded);
+					((ByteBuf) encoded).release();
+				}
+			}
+			out.add(toAdd);
+		}
+		checkForSetupMessage(msg);
+	}
+
+	protected abstract void encodePreProcess(ChannelHandlerContext ctx, Object msg, List<Object> out) throws Exception;
 }

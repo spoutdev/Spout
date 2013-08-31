@@ -52,7 +52,7 @@ public class CircleSpawnArrangement extends GenericSpawnArrangement {
 		Point[] points = new Point[number];
 		for (int i = 0; i < number; i++) {
 			points[i] = center.add(offset);
-			offset = Matrix3.createRotation(Quaternion.fromRotationMatrix(rotate)).transform(offset);
+			offset = rotate.transform(offset);
 		}
 		return points;
 	}

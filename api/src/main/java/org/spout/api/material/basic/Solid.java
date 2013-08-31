@@ -28,6 +28,7 @@ package org.spout.api.material.basic;
 
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.resource.SpoutModels;
+
 import org.spout.physics.collision.shape.BoxShape;
 import org.spout.physics.math.Vector3;
 

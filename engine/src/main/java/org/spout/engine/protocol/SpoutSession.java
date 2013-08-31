@@ -34,19 +34,13 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
 
-import org.spout.api.Server;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
-import org.spout.api.protocol.ClientNullNetworkSynchronizer;
-import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.ServerNullNetworkSynchronizer;
-import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
@@ -57,46 +51,33 @@ import org.spout.engine.entity.SpoutPlayer;
  */
 public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	/**
-	 * The number of ticks which are elapsed before a client is disconnected due to a timeout.
-	 */
-	@SuppressWarnings ("unused")
-	private static final int TIMEOUT_TICKS = 20 * 60;
-	/**
-	 * The server this session belongs to.
+	 * The engine this session belongs to.
 	 */
 	private final T engine;
 	/**
 	 * The Random for this session
 	 */
-	protected final Random random = new Random();
+	private final Random random = new Random();
 	/**
 	 * The channel associated with this session.
 	 */
-	protected final Channel channel;
+	private final Channel channel;
+	/**
+	 * Network send thread
+	 */
+	private final AtomicReference<NetworkSendThread> networkSendThread = new AtomicReference<>();
 	/**
 	 * A queue of incoming and unprocessed messages
 	 */
 	private final Queue<Message> messageQueue = new ArrayDeque<>();
 	/**
-	 * A queue of incoming and unprocessed messages from a client
-	 */
-	//private final Queue<Message> fromDownMessageQueue = new ArrayDeque<Message>();
-	/**
-	 * A queue of incoming and unprocessed messages from a server
-	 */
-	//private final Queue<Message> fromUpMessageQueue = new ArrayDeque<Message>();
-	/**
 	 * A queue of outgoing messages that will be sent after the client finishes identification
 	 */
-	protected final Queue<Message> sendQueue = new ConcurrentLinkedQueue<>();
-	/**
-	 * The current state.
-	 */
-	private State state = State.EXCHANGE_HANDSHAKE;
+	private final Queue<Message> sendQueue = new ConcurrentLinkedQueue<>();
 	/**
 	 * The player associated with this session (if there is one).
 	 */
-	protected final AtomicReference<SpoutPlayer> player = new AtomicReference<>();
+	private final AtomicReference<SpoutPlayer> player = new AtomicReference<>();
 	/**
 	 * The random long used for client-server handshake
 	 */
@@ -106,21 +87,13 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	private final AtomicReference<Protocol> protocol;
 	/**
-	 * Stores if this is Connected TODO: Probably add to SpoutAPI
+	 * The current state.
 	 */
-	protected boolean isConnected = false;
+	private State state = State.EXCHANGE_HANDSHAKE;
 	/**
-	 * A network synchronizer that doesn't do anything, used until a real synchronizer is set.
+	 * Stores if this Session has had disconnect called
 	 */
-	private final NetworkSynchronizer nullSynchronizer;
-	/**
-	 * The NetworkSynchronizer being used for this session
-	 */
-	private final AtomicReference<NetworkSynchronizer> synchronizer;
-	/**
-	 *
-	 */
-	private final AtomicReference<NetworkSendThread> networkSendThread = new AtomicReference<>();
+	protected boolean isDisconnected = false;
 	/**
 	 * Default uncaught exception handler
 	 */
@@ -136,15 +109,8 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	public SpoutSession(T engine, Channel channel, Protocol bootstrapProtocol) {
 		this.engine = engine;
 		this.channel = channel;
-		protocol = new AtomicReference<>(bootstrapProtocol);
-		isConnected = true;
+		this.protocol = new AtomicReference<>(bootstrapProtocol);
 		this.exceptionHandler = new AtomicReference<UncaughtExceptionHandler>(new DefaultUncaughtExceptionHandler(this));
-		if (engine instanceof Server) {
-			nullSynchronizer = new ServerNullNetworkSynchronizer((ServerSession) this);
-		} else {
-			nullSynchronizer = new ClientNullNetworkSynchronizer((ClientSession) this);
-		}
-		synchronizer = new AtomicReference<>(nullSynchronizer);
 	}
 
 	/**
@@ -190,10 +156,10 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	public void setPlayer(SpoutPlayer player) {
 		if (!this.player.compareAndSet(null, player)) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("Not allowed to set the player of a session twice");
 		}
 		if (!this.networkSendThread.compareAndSet(null, NetworkSendThreadPool.getNetworkThread(player.getId()))) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("Not allowed to set the network thread for a player twice");
 		}
 	}
 
@@ -201,10 +167,8 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	private final static float spikeChance = SpoutConfiguration.RECV_SPIKE_CHANCE.getFloat() / 20.0F;
 	private final boolean fakeLatency = spikeChance > 0F;
 	private long spikeEnd = 0;
-	private final Random r = new Random();
 
 	public void pulse() {
-
 		Message message;
 
 		if (state == State.GAME) {
@@ -218,8 +182,8 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			if (currentTime < spikeEnd) {
 				return;
 			}
-			if (r.nextFloat() < spikeChance) {
-				long spike = (long) (spikeLatency * r.nextFloat());
+			if (random.nextFloat() < spikeChance) {
+				long spike = (long) (spikeLatency * random.nextFloat());
 				spikeEnd = currentTime + spike;
 			}
 		}
@@ -242,42 +206,42 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	@Override
 	public void send(Message message) {
-		send(false, message);
+		send(SendType.QUEUE, message);
 	}
 
 	@Override
-	public void send(boolean force, Message message) {
+	public void send(SendType type, Message message) {
 		if (message == null) {
 			return;
 		}
 		try {
-			if (force || this.state == State.GAME) {
-				if (channel.isOpen()) {
+			if (type == SendType.FORCE || this.state == State.GAME) {
+				if (channel.isActive()) {
 					NetworkSendThread sendThread = networkSendThread.get();
 					if (sendThread == null) {
-						channel.write(message);
+						channel.writeAndFlush(message);
 					} else {
 						sendThread.send(this, channel, message);
 					}
 				}
-			} else {
+			} else if (type == SendType.QUEUE) {
 				sendQueue.add(message);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			disconnect(false, "Socket Error!");
+			disconnect("Socket Error!");
 		}
 	}
 
 	@Override
 	public void sendAll(Message... messages) {
-		sendAll(false, messages);
+		sendAll(SendType.QUEUE, messages);
 	}
 
 	@Override
-	public void sendAll(boolean force, Message... messages) {
+	public void sendAll(SendType type, Message... messages) {
 		for (Message msg : messages) {
-			send(force, msg);
+			send(type, msg);
 		}
 	}
 
@@ -288,7 +252,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	@Override
 	public InetSocketAddress getAddress() {
-		SocketAddress addr = channel.getRemoteAddress();
+		SocketAddress addr = channel.remoteAddress();
 		if (!(addr instanceof InetSocketAddress)) {
 			return null;
 		}
@@ -298,7 +262,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	@Override
 	public String toString() {
-		return SpoutSession.class.getName() + " [address=" + channel.getRemoteAddress() + "]";
+		return SpoutSession.class.getName() + " [address=" + channel.remoteAddress() + "]";
 	}
 
 	/**
@@ -326,14 +290,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		return sessionId;
 	}
 
-	/*public BlockPlacementMessage getPreviousPlacement() {
-		return previousPlacement;
-	}
-
-	public void setPreviousPlacement(BlockPlacementMessage message) {
-		previousPlacement = message;
-	}*/
-
 	@Override
 	public Protocol getProtocol() {
 		return this.protocol.get();
@@ -345,19 +301,13 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	}
 
 	@Override
-	public boolean isConnected() {
-		return channel.isOpen();
+	public boolean isActive() {
+		return channel.isActive();
 	}
 
-	protected void setNetworkSynchronizer(NetworkSynchronizer synchronizer) {
-		if (synchronizer == null && player == null) {
-			this.synchronizer.set(nullSynchronizer);
-		} else if (!this.synchronizer.compareAndSet(nullSynchronizer, synchronizer)) {
-			throw new IllegalArgumentException("Network synchronizer may only be set once for a given player login");
-		} else if (synchronizer != null) {
-			synchronizer.setProtocol(protocol.get());
-			this.synchronizer.set(synchronizer);
-		}
+	@Override
+	public boolean isDisconnected() {
+		return isDisconnected;
 	}
 
 	@Override
@@ -376,20 +326,8 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	}
 
 	@Override
-	public NetworkSynchronizer getNetworkSynchronizer() {
-		return synchronizer.get();
-	}
-
-	@Override
 	public UncaughtExceptionHandler getUncaughtExceptionHandler() {
 		return exceptionHandler.get();
-	}
-
-	@Override
-	public void dispose() {
-		if (SpoutConfiguration.SHOW_CONNECTIONS.getBoolean()) {
-			engine.getLogger().info("Channel disconnected: " + channel + ".");
-		}
 	}
 
 	@Override
@@ -404,8 +342,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	public Channel getChannel() {
 		return channel;
 	}
-
-	public abstract boolean disconnect(boolean kick, boolean stop, String reason);
 
 	@Override
 	public SerializableMap getDataMap() {

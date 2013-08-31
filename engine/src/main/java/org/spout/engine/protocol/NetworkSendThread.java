@@ -30,10 +30,11 @@ import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
 
 import org.spout.api.Spout;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.ServerSession;
 import org.spout.engine.SpoutConfiguration;
 
 public class NetworkSendThread {
@@ -41,9 +42,9 @@ public class NetworkSendThread {
 	private final static long minimumLatency = SpoutConfiguration.SEND_LATENCY.getLong();
 	private final static long spikeLatency = SpoutConfiguration.SEND_SPIKE_LATENCY.getLong();
 	private final static float spikeChance = SpoutConfiguration.SEND_SPIKE_CHANCE.getFloat() / 10.0F;
-	private final int poolIndex;
-	private final AtomicReference<ChannelQueueThread[]> channelQueues = new AtomicReference<>();
 	private final AtomicReference<ChannelQueueThread[]> interruptedQueues = new AtomicReference<>();
+	private final AtomicReference<ChannelQueueThread[]> channelQueues = new AtomicReference<>();
+	private final int poolIndex;
 
 	public NetworkSendThread(int poolIndex) {
 		this.poolIndex = poolIndex;
@@ -164,11 +165,11 @@ public class NetworkSendThread {
 			Channel channel = node.getChannel();
 			try {
 				if (channel.isOpen()) {
-					channel.write(node.getMessage());
+					channel.writeAndFlush(node.getMessage());
 				}
 			} catch (Exception e) {
 				try {
-					node.getSession().disconnect(false, "Socket Error!");
+					node.getSession().disconnect("Socket Error!");
 				} catch (Exception e2) {
 					try {
 						Spout.getLogger().info("Unable to cleanly close session for " + node.getSession().getPlayer().getName());

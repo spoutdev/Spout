@@ -109,7 +109,7 @@ public class PluginDescriptionFile {
 					f.setAccessible(true);
 					try {
 						properties.add((ConfigurationProperty<?>) f.get(this));
-					} catch (			IllegalArgumentException | IllegalAccessException e) {
+					} catch (IllegalArgumentException | IllegalAccessException e) {
 						throw new RuntimeException(e);
 					}
 				}

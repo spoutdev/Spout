@@ -29,8 +29,9 @@ package org.spout.engine.component.entity;
 import org.spout.api.component.entity.ModelComponent;
 import org.spout.api.model.Model;
 import org.spout.api.render.effect.SnapshotEntity;
+
 import org.spout.engine.mesh.BaseMesh;
-import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
 
 public class SpoutModelComponent extends ModelComponent {
 	private SpoutAnimationComponent animationComponent;
@@ -59,7 +60,7 @@ public class SpoutModelComponent extends ModelComponent {
 	}
 
 	public void draw(Model model) {
-		Matrix3 modelMatrix = getOwner().getPhysics().getTransformRender().toMatrix();
+		Matrix4 modelMatrix = getOwner().getPhysics().getTransformRender().toMatrix();
 
 		model.getRenderMaterial().getShader().setUniform("Model", modelMatrix);
 

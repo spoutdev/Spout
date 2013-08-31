@@ -28,12 +28,12 @@ package org.spout.api.protocol;
 
 import java.io.IOException;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 
 public abstract class MessageCodec<T extends Message> {
 	private final Class<T> clazz;
-	private int opcode;
 	private boolean dynamic;
+	private int opcode;
 
 	public MessageCodec(Class<T> clazz, int opcode) {
 		this.clazz = clazz;
@@ -60,35 +60,35 @@ public abstract class MessageCodec<T extends Message> {
 		this.dynamic = dynamic;
 	}
 
-	public final ChannelBuffer encode(boolean onClient, T message) throws IOException {
+	public final ByteBuf encode(boolean onClient, T message) throws IOException {
 		return onClient ? encodeToServer(message) : encodeToClient(message);
 	}
 
-	public ChannelBuffer encode(T message) throws IOException {
+	public ByteBuf encode(T message) throws IOException {
 		return null;
 	}
 
-	public ChannelBuffer encodeToClient(T message) throws IOException {
+	public ByteBuf encodeToClient(T message) throws IOException {
 		return encode(message);
 	}
 
-	public ChannelBuffer encodeToServer(T message) throws IOException {
+	public ByteBuf encodeToServer(T message) throws IOException {
 		return encode(message);
 	}
 
-	public final T decode(boolean onClient, ChannelBuffer buffer) throws IOException {
+	public final T decode(boolean onClient, ByteBuf buffer) throws IOException {
 		return onClient ? decodeFromServer(buffer) : decodeFromClient(buffer);
 	}
 
-	public T decode(ChannelBuffer buffer) throws IOException {
+	public T decode(ByteBuf buffer) throws IOException {
 		return null;
 	}
 
-	public T decodeFromClient(ChannelBuffer buffer) throws IOException {
+	public T decodeFromClient(ByteBuf buffer) throws IOException {
 		return decode(buffer);
 	}
 
-	public T decodeFromServer(ChannelBuffer buffer) throws IOException {
+	public T decodeFromServer(ByteBuf buffer) throws IOException {
 		return decode(buffer);
 	}
 }

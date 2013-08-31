@@ -39,7 +39,7 @@ public class ChunkSendEvent extends ProtocolEvent {
 		this.chunk = chunk;
 		this.forced = forced;
 	}
-	
+
 	public ChunkSendEvent(Chunk chunk) {
 		this(chunk, false);
 	}

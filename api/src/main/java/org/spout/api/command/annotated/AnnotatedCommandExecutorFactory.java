@@ -102,8 +102,8 @@ public final class AnnotatedCommandExecutorFactory {
 				command.setShouldParseFlags(a.parseFlags());
 
 				// check the platform
-				if (method.isAnnotationPresent(Platform.class)) {
-					Platform pa = method.getAnnotation(Platform.class);
+				if (method.isAnnotationPresent(Platforms.class)) {
+					Platforms pa = method.getAnnotation(Platforms.class);
 					org.spout.api.Platform actual = Spout.getPlatform();
 					boolean success = false;
 					for (org.spout.api.Platform platform : pa.value()) {

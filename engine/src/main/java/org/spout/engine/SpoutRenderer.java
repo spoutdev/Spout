@@ -30,6 +30,7 @@ import java.awt.Canvas;
 import java.util.HashMap;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
@@ -55,6 +56,7 @@ import org.spout.api.math.Rectangle;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.shader.Shader;
+
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.filesystem.resource.ClientRenderMaterial;
 import org.spout.engine.filesystem.resource.ClientRenderTexture;
@@ -66,7 +68,7 @@ import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.EntityRenderer;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.util.MacOSXUtils;
-import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
 import org.spout.math.vector.Vector2;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
@@ -86,7 +88,7 @@ public class SpoutRenderer {
 	private EntityRenderer entityRenderer;
 	private WorldRenderer worldRenderer;
 	private boolean wireframe = false;
-	private Matrix3 ident = Matrix3.IDENTITY;
+	private Matrix4 ident = Matrix4.IDENTITY;
 	// Screen texture
 	private SpriteBatch screenBatcher;
 	private ClientRenderTexture t;

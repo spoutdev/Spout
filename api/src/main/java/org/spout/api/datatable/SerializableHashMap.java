@@ -115,6 +115,9 @@ public class SerializableHashMap implements SerializableMap {
 		}
 
 		if (value == null || NILTYPE.equals(value)) {
+			if (defaultValue == null) {
+				return null;
+			}
 			Serializable old = putIfAbsent(keyString, (Serializable) defaultValue);
 			if (old != null) {
 				return (T) old;
@@ -486,7 +489,6 @@ public class SerializableHashMap implements SerializableMap {
 	}
 
 	public static class PluginClassResolverObjectInputStream extends ObjectInputStream {
-
 		public PluginClassResolverObjectInputStream(InputStream in) throws IOException {
 			super(in);
 		}
@@ -499,7 +501,6 @@ public class SerializableHashMap implements SerializableMap {
 				return PluginClassLoader.findPluginClass(desc.getName());
 			}
 		}
-
 	}
 
 	@Override

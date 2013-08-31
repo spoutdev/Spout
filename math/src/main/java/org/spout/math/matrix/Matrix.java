@@ -26,8 +26,14 @@
  */
 package org.spout.math.matrix;
 
+import org.spout.math.vector.Vector;
+
 public interface Matrix {
 	public float get(int row, int col);
+
+	public Vector getRow(int row);
+
+	public Vector getColumn(int col);
 
 	public Matrix mul(float a);
 

@@ -11,7 +11,7 @@ varying vec2 uvcoord;
 
 uniform mat4 Projection;
 uniform mat4 View;
-uniform mat3 Model;
+uniform mat4 Model;
 
 void main() {
 	mat4 model = mat4(Model);

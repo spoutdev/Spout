@@ -27,20 +27,19 @@
 package org.spout.api.protocol;
 
 import java.io.IOException;
+import java.util.List;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
 
 /**
- * A {@link OneToOneEncoder} which encodes Minecraft {@link Message}s into {@link ChannelBuffer}s.
+ * A {@link MessageToMessageEncoder} which encodes into {@link ByteBuf}s.
  */
-public class CommonEncoder extends PostprocessEncoder {
+public class CommonEncoder extends ProcessingEncoder {
 	private volatile Protocol protocol = null;
 	private final boolean onClient;
 
@@ -50,30 +49,25 @@ public class CommonEncoder extends PostprocessEncoder {
 
 	@SuppressWarnings ("unchecked")
 	@Override
-	protected Object encode(ChannelHandlerContext ctx, Channel c, Object msg) throws Exception {
+	protected void encodePreProcess(ChannelHandlerContext ctx, final Object msg, List<Object> out) throws IOException {
 		if (msg instanceof Message) {
 			if (protocol == null) {
 				if (onClient) {
 					protocol = ((Client) Spout.getEngine()).getAddress().getProtocol();
 				} else {
-					protocol = Spout.getEngine().getProtocol(c.getLocalAddress());
+					protocol = Spout.getEngine().getProtocol(ctx.channel().localAddress());
 				}
 			}
-			Message message = (Message) msg;
-
-			Class<? extends Message> clazz = message.getClass();
-			MessageCodec<Message> codec;
-
-			codec = (MessageCodec<Message>) protocol.getCodecLookupService().find(clazz);
+			final Message message = (Message) msg;
+			final Class<? extends Message> clazz = message.getClass();
+			final MessageCodec<Message> codec = (MessageCodec<Message>) protocol.getCodecLookupService().find(clazz);
 			if (codec == null) {
 				throw new IOException("Unknown message type: " + clazz + ".");
 			}
-
-			ChannelBuffer messageBuf = codec.encode(onClient, message);
-			ChannelBuffer headerBuf = protocol.writeHeader(codec, messageBuf);
-			return ChannelBuffers.wrappedBuffer(headerBuf, messageBuf);
+			final ByteBuf messageBuf = codec.encode(onClient, message);
+			final ByteBuf headerBuf = protocol.writeHeader(codec, messageBuf);
+			out.add(Unpooled.wrappedBuffer(headerBuf, messageBuf));
 		}
-		return msg;
 	}
 
 	void setProtocol(Protocol protocol) {

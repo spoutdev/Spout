@@ -28,8 +28,8 @@ package org.spout.api.protocol.builder;
 
 import java.io.IOException;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
@@ -37,7 +37,7 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 
 public abstract class GenericMessage<T extends Message> extends MessageCodec<T> implements Message {
-	protected ChannelBuffer buffer;
+	protected ByteBuf buffer;
 
 	public GenericMessage(Class<T> clazz, int opcode) {
 		super(clazz, opcode);
@@ -116,19 +116,19 @@ public abstract class GenericMessage<T extends Message> extends MessageCodec<T> 
 	}
 
 	@Override
-	public ChannelBuffer encode(T message) throws IOException {
+	public ByteBuf encode(T message) throws IOException {
 		return this.buffer;
 	}
 
 	@Override
 	@SuppressWarnings ("unchecked")
-	public T decode(ChannelBuffer b) throws IOException {
+	public T decode(ByteBuf b) throws IOException {
 		CompoundMessageField root = Spout.getPlatform() == Platform.CLIENT ? getToClientFieldRoot() : getToServerFieldRoot();
 		int start = b.readerIndex();
 		int fieldCount = root.getSubFieldCount();
 		int[] indexArray = new int[fieldCount];
 		int length = root.skip(b, indexArray);
-		this.buffer = ChannelBuffers.buffer(length);
+		this.buffer = Unpooled.buffer(length);
 		b.getBytes(start, this.buffer, 0, length);
 		return (T) this;
 	}

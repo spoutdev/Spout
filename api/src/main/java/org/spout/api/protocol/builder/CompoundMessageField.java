@@ -29,7 +29,7 @@ package org.spout.api.protocol.builder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 
 public class CompoundMessageField extends MessageFieldImpl {
 	private final MessageField[] fields;
@@ -68,7 +68,7 @@ public class CompoundMessageField extends MessageFieldImpl {
 	}
 
 	@Override
-	public int skip(ChannelBuffer buffer) {
+	public int skip(ByteBuf buffer) {
 		int length = 0;
 		for (int i = 0; i < fieldsCompressed.length; i++) {
 			length += fieldsCompressed[i].skip(buffer);
@@ -76,7 +76,7 @@ public class CompoundMessageField extends MessageFieldImpl {
 		return length;
 	}
 
-	public int skip(ChannelBuffer buffer, int[] indexArray) {
+	public int skip(ByteBuf buffer, int[] indexArray) {
 		int length = 0;
 		int j = 0;
 		for (int i = 0; i < fields.length; i++) {
@@ -87,7 +87,7 @@ public class CompoundMessageField extends MessageFieldImpl {
 	}
 
 	@Override
-	public int getLength(ChannelBuffer buffer) {
+	public int getLength(ByteBuf buffer) {
 		int startPosition = buffer.readerIndex();
 		int length = skip(buffer);
 		buffer.readerIndex(startPosition);
@@ -95,7 +95,7 @@ public class CompoundMessageField extends MessageFieldImpl {
 	}
 
 	@Override
-	public Object[] read(ChannelBuffer buffer) {
+	public Object[] read(ByteBuf buffer) {
 		Object[] array = new Object[fields.length];
 		for (int i = 0; i < fields.length; i++) {
 			array[i] = fields[i].read(buffer);
@@ -104,7 +104,7 @@ public class CompoundMessageField extends MessageFieldImpl {
 	}
 
 	@Override
-	public void write(ChannelBuffer buffer, Object value) {
+	public void write(ByteBuf buffer, Object value) {
 		Object[] array = (Object[]) value;
 		if (array.length != fields.length) {
 			throw new IllegalArgumentException("Number of elements in the value array does not match the number of fields");
@@ -115,7 +115,7 @@ public class CompoundMessageField extends MessageFieldImpl {
 	}
 
 	@Override
-	public void transfer(ChannelBuffer sourceBuffer, ChannelBuffer targetBuffer) {
+	public void transfer(ByteBuf sourceBuffer, ByteBuf targetBuffer) {
 		getLength(sourceBuffer);
 		for (int i = 0; i < fieldsCompressed.length; i++) {
 			fields[i].transfer(sourceBuffer, targetBuffer);

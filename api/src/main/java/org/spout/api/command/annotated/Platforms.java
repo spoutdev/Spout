@@ -24,25 +24,25 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.protocol.builtin;
+package org.spout.api.command.annotated;
 
-import org.spout.api.entity.Entity;
-import org.spout.api.protocol.ClientNetworkSynchronizer;
-import org.spout.api.protocol.EntityProtocol;
-import org.spout.api.protocol.Session;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class SpoutClientNetworkSynchronizer extends ClientNetworkSynchronizer {
-	public SpoutClientNetworkSynchronizer(Session session) {
-		super(session);
-	}
+import org.spout.api.Platform;
 
-	// TODO what is this for?
-	public EntityProtocol getEntityProtocol(Entity entity) {
-		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
-		if (protocol == null) {
-			entity.getNetwork().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
-			protocol = SpoutEntityProtocol.INSTANCE;
-		}
-		return protocol;
-	}
+/**
+ * Designates a command method as only to be registered on the specified platforms.
+ */
+@Target (ElementType.METHOD)
+@Retention (RetentionPolicy.RUNTIME)
+public @interface Platforms {
+	/**
+	 * Returns the platforms to register the plugin.
+	 *
+	 * @return platforms
+	 */
+	public Platform[] value();
 }

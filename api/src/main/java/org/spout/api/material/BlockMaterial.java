@@ -98,6 +98,12 @@ public class BlockMaterial extends Material implements Placeable {
 		this.shape = shape;
 	}
 
+	protected BlockMaterial(String name, String model, CollisionShape shape, Class<? extends BlockComponent>... components) {
+		super(name, model);
+		this.components = ImmutableSet.copyOf(components);
+		this.shape = shape;
+	}
+
 	protected BlockMaterial(String name, CollisionShape shape, Class<? extends BlockComponent>... components) {
 		super(name);
 		this.components = ImmutableSet.copyOf(components);
@@ -440,7 +446,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Checks the block to see if it can be created at that position<br> Orientation-specific checks are performed in the {@link canPlace} method<br> Use this method to see if creation is possible at a
+	 * Checks the block to see if it can be created at that position<br> Orientation-specific checks are performed in the {@link #canPlace(org.spout.api.geo.cuboid.Block, short, org.spout.api.material.block.BlockFace, org.spout.math.vector.Vector3, boolean, org.spout.api.event.Cause)} method<br> Use this method to see if creation is possible at a
 	 * given position when not placed
 	 *
 	 * @param block this Block Material should be created in
@@ -453,7 +459,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Creates this Block Material at a block in the world<br> Orientation-specific changes are performed in the {@link onPlacement} method<br> Use this method to create the block at a given position
+	 * Creates this Block Material at a block in the world<br> Orientation-specific changes are performed in the {@link #onPlacement(org.spout.api.geo.cuboid.Block, short, org.spout.api.material.block.BlockFace, org.spout.math.vector.Vector3, boolean, org.spout.api.event.Cause)} method<br> Use this method to create the block at a given position
 	 * when not placed
 	 *
 	 * @param block to create this Block Material in
@@ -543,7 +549,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 *
 	 * Same as using new MaterialCause(material, block)
 	 *
-	 * @param block location of the event
+	 * @param p location of the event
 	 * @return cause
 	 */
 	public Cause<BlockMaterial> toCause(Point p) {
@@ -564,14 +570,9 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Sets if this BlockMaterial should be a detector "ghost" material.
-	 * <p>
-	 * This means any collisions with this BlockMaterial will not incur adjustments for the {@link Entity} which collided: instead callbacks will be alerted and the Entity will be able to move freely
-	 * through this BlockMaterial (by default).
-	 * <p>
-	 * If this BlockMaterial has a null {@link CollisionShape}, this setting will have no effect until a reference is set.
-	 *
-	 * @param isGhost
+	 * Sets if this BlockMaterial should be a detector "ghost" material. <p> This means any collisions with this BlockMaterial will not incur adjustments for the {@link Entity} which collided: instead
+	 * callbacks will be alerted and the Entity will be able to move freely through this BlockMaterial (by default). <p> If this BlockMaterial has a null {@link CollisionShape}, this setting will have no
+	 * effect until a reference is set.
 	 */
 	public void setGhost(final boolean isGhost) {
 		this.isGhost = isGhost;

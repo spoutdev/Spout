@@ -24,26 +24,46 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.component.entity;
+package org.spout.api.protocol.event;
 
-/**
- * Component that represents the an entity that observes a radius of chunks
- */
-public class ObserverComponent extends EntityComponent {
-	public static final int CHUNK_VIEW_DISTANCE = 4;
+import org.spout.api.event.HandlerList;
+import org.spout.api.event.ProtocolEvent;
+import org.spout.api.geo.cuboid.Chunk;
 
-	public ObserverComponent() {
+public class BlockUpdateEvent extends ProtocolEvent {
+	private static final HandlerList handlers = new HandlerList();
+	private final Chunk chunk;
+	private final int x, y, z;
+
+	public BlockUpdateEvent(Chunk chunk, int x, int y, int z) {
+		this.chunk = chunk;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+
+	public Chunk getChunk() {
+		return chunk;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getZ() {
+		return z;
 	}
 
 	@Override
-	public void onAttached() {
-		getOwner().setObserver(true);
-		getOwner().setSavable(false);
-		getOwner().setViewDistance(CHUNK_VIEW_DISTANCE);
+	public HandlerList getHandlers() {
+		return handlers;
 	}
 
-	@Override
-	public boolean canTick() {
-		return false;
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

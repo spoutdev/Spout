@@ -40,6 +40,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.spout.api.Client;
+import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
@@ -51,10 +52,11 @@ import org.spout.api.command.annotated.CommandDescription;
 import org.spout.api.command.annotated.Filter;
 import org.spout.api.command.annotated.Flag;
 import org.spout.api.command.annotated.Permissible;
-import org.spout.api.command.annotated.Platform;
+import org.spout.api.command.annotated.Platforms;
 import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.component.entity.AnimationComponent;
 import org.spout.api.component.entity.InteractComponent;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.component.widget.RenderPartComponent;
 import org.spout.api.component.widget.SliderComponent;
 import org.spout.api.component.widget.SpinnerComponent;
@@ -83,7 +85,6 @@ import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.plugin.Plugin;
-import org.spout.api.protocol.ServerNetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.event.ChunkSendEvent;
 import org.spout.engine.SpoutClient;
@@ -93,7 +94,6 @@ import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.math.imaginary.Quaternion;
-import org.spout.math.matrix.Matrix3;
 
 public class TestCommands {
 	private final SpoutEngine engine;
@@ -178,7 +178,7 @@ public class TestCommands {
 
 	@CommandDescription (aliases = "widget", usage = "<button|checkbox|radio|combo|list|label|slider|spinner|textfield|rect>",
 			desc = "Renders a widget on your screen.")
-	@Platform (org.spout.api.Platform.CLIENT)
+	@Platforms (Platform.CLIENT)
 	public void widget(CommandSource source, CommandArguments args) throws CommandException {
 		Client client = (Client) engine;
 		Screen screen = new Screen();
@@ -212,7 +212,7 @@ public class TestCommands {
 	}
 
 	@CommandDescription (aliases = "break", desc = "Debug command to break a block")
-	@Platform (org.spout.api.Platform.CLIENT)
+	@Platforms (Platform.CLIENT)
 	@Filter (PlayerFilter.class)
 	public void debugBreak(Player player, CommandArguments args) throws CommandException {
 		Block block = player.get(InteractComponent.class).getTargetBlock();
@@ -467,7 +467,7 @@ public class TestCommands {
 			int count = 0;
 			outer:
 			for (Player player : ((Server) engine).getOnlinePlayers()) {
-				ServerNetworkSynchronizer network = (ServerNetworkSynchronizer) player.getNetworkSynchronizer();
+				PlayerNetworkComponent network = player.getNetwork();
 				Set<Chunk> chunks = network.getActiveChunks();
 				for (Chunk c : chunks) {
 					count++;
@@ -491,8 +491,8 @@ public class TestCommands {
 		args.assertCompletelyParsed();
 		switch (engine.getPlatform()) {
 			case CLIENT:
-				Session session = ((SpoutClient) engine).getSession();
-				if (session.isConnected()) {
+				Session session = ((SpoutClient) engine).getPlayer().getNetwork().getSession();
+				if (session.isActive()) {
 					source.sendMessage("Network is open and connected");
 				} else {
 					source.sendMessage("Network is down. Stopping.");
@@ -501,18 +501,18 @@ public class TestCommands {
 				break;
 			case SERVER:
 				for (Player player : ((Server) engine).getOnlinePlayers()) {
-					player.getSession().send(new CommandMessage(Spout.getCommandManager().getCommand("say"), "Network Works"));
+					player.getNetwork().getSession().send(new CommandMessage(Spout.getCommandManager().getCommand("say"), "Network Works"));
 				}
 				break;
 		}
 	}
 
 	@CommandDescription (aliases = "respawn", usage = "", desc = "Forces the client to respawn")
-	@Platform (org.spout.api.Platform.SERVER)
+	@Platforms (Platform.SERVER)
 	@Filter (PlayerFilter.class)
 	public void respawn(Player player, CommandArguments args) throws CommandException {
 		args.assertCompletelyParsed();
-		((ServerNetworkSynchronizer) player.getNetworkSynchronizer()).forceRespawn();
+		player.getNetwork().forceRespawn();
 	}
 
 	/**

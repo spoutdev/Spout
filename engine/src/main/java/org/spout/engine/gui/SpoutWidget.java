@@ -87,7 +87,7 @@ public class SpoutWidget extends BaseComponentOwner implements Widget {
 			dirty = false;
 		}
 
-		batcher.render(transform.toMatrix());
+		batcher.render(transform.toMatrix().toMatrix4());
 	}
 
 	@Override

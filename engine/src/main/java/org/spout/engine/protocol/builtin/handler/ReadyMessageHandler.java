@@ -24,23 +24,20 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.command.annotated;
+package org.spout.engine.protocol.builtin.handler;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.spout.api.Spout;
+import org.spout.api.protocol.MessageHandler;
+import org.spout.api.protocol.ServerSession;
+import org.spout.api.protocol.Session;
+import org.spout.engine.protocol.builtin.message.ReadyMessage;
 
-/**
- * Designates a command method as only to be registered on the specified platforms.
- */
-@Target (ElementType.METHOD)
-@Retention (RetentionPolicy.RUNTIME)
-public @interface Platform {
-	/**
-	 * Returns the platforms to register the plugin.
-	 *
-	 * @return platforms
-	 */
-	public org.spout.api.Platform[] value();
+public class ReadyMessageHandler extends MessageHandler<ReadyMessage> {
+	@Override
+	public void handleServer(ServerSession session, ReadyMessage message) {
+		session.setState(Session.State.GAME);
+		if (Spout.debugMode()) {
+			System.out.println("Packets: " + session.getProtocol().getDynamicallyRegisteredPackets());
+		}
+	}
 }

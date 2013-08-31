@@ -26,6 +26,8 @@
  */
 package org.spout.api.util.cuboid;
 
+import org.spout.api.geo.cuboid.Chunk;
+
 import org.spout.math.vector.Vector3;
 
 /**
@@ -55,6 +57,7 @@ public abstract class CuboidBuffer {
 	 * Note: These values are not actually within the cuboid The cuboid goes
 	 * from baseX to baseX + sizeX - 1 top = base + size
 	 */
+	protected final Vector3 top;
 	protected final int topX;
 	protected final int topY;
 	protected final int topZ;
@@ -75,9 +78,11 @@ public abstract class CuboidBuffer {
 
 		this.base = new Vector3(baseX, baseY, baseZ);
 
-		topX = baseX + sizeX;
-		topY = baseY + sizeY;
-		topZ = baseZ + sizeZ;
+		this.topX = baseX + sizeX;
+		this.topY = baseY + sizeY;
+		this.topZ = baseZ + sizeZ;
+
+		this.top = new Vector3(this.topX, this.topY, this.topZ);
 
 		Yinc = sizeZ * (Zinc = sizeX * (Xinc = 1));
 	}
@@ -98,6 +103,33 @@ public abstract class CuboidBuffer {
 	}
 
 	/**
+	 * Gets the X-coordinate of the chunk the base of this CuboidBuffer is in
+	 *
+	 * @return base chunk X-coordinate
+	 */
+	public int getBaseChunkX() {
+		return baseX >> Chunk.BLOCKS.BITS;
+	}
+
+	/**
+	 * Gets the Y-coordinate of the chunk the base of this CuboidBuffer is in
+	 *
+	 * @return base chunk Y-coordinate
+	 */
+	public int getBaseChunkY() {
+		return baseY >> Chunk.BLOCKS.BITS;
+	}
+
+	/**
+	 * Gets the Z-coordinate of the chunk the base of this CuboidBuffer is in
+	 *
+	 * @return base chunk Z-coordinate
+	 */
+	public int getBaseChunkZ() {
+		return baseZ >> Chunk.BLOCKS.BITS;
+	}
+
+	/**
 	 * Gets the size of the CuboidBuffer
 	 */
 	public Vector3 getSize() {
@@ -115,7 +147,7 @@ public abstract class CuboidBuffer {
 	 * Gets the top-coordinates of the CuboidBuffer, these are outside this buffer<br> These coordinates are an addition of base and size
 	 */
 	public Vector3 getTop() {
-		return new Vector3(topX, topY, topZ);
+		return top;
 	}
 
 	/**

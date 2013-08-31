@@ -33,7 +33,6 @@ import org.spout.api.geo.World;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
-import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutClientWorld;
 
 public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
@@ -59,7 +58,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			BiomeManager manager;
 			try {
 				manager = managerClass.getConstructor(int.class, int.class).newInstance(message.getX(), message.getZ());
-			} catch (	InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 				throw new RuntimeException(e);
 			}
 			manager.deserialize(message.getBiomeData());

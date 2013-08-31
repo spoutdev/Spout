@@ -48,6 +48,10 @@ public class Vector3 implements Vector, Comparable<Vector3>, Serializable, Clone
 	private transient volatile boolean hashed = false;
 	private transient volatile int hashCode = 0;
 
+	public Vector3() {
+		this(0, 0, 0);
+	}
+
 	public Vector3(Vector2 v) {
 		this(v, 0);
 	}
@@ -292,6 +296,26 @@ public class Vector3 implements Vector, Comparable<Vector3>, Serializable, Clone
 		return new Vector3(x / length, y / length, z / length);
 	}
 
+	/**
+	 * Returns the axis with the minimal value.
+	 *
+	 * @return {@link int} axis with minimal value
+	 */
+	@Override
+	public int getMinAxis() {
+		return x < y ? (x < z ? 0 : 2) : (y < z ? 1 : 2);
+	}
+
+	/**
+	 * Returns the axis with the maximum value.
+	 *
+	 * @return {@link int} axis with maximum value
+	 */
+	@Override
+	public int getMaxAxis() {
+		return x < y ? (y < z ? 2 : 1) : (x < z ? 2 : 0);
+	}
+
 	public Vector2 toVector2() {
 		return new Vector2(this);
 	}
@@ -318,7 +342,7 @@ public class Vector3 implements Vector, Comparable<Vector3>, Serializable, Clone
 
 	@Override
 	public float[] toArray() {
-		return new float[] {x, y, z};
+		return new float[]{x, y, z};
 	}
 
 	@Override

@@ -26,8 +26,8 @@
  */
 package org.spout.engine.protocol.builtin.codec;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
@@ -38,8 +38,8 @@ public class ClickRequestCodec extends MessageCodec<ClickRequestMessage> {
 	}
 
 	@Override
-	public ChannelBuffer encode(ClickRequestMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(3);
+	public ByteBuf encode(ClickRequestMessage message) {
+		ByteBuf buffer = Unpooled.buffer(3);
 		buffer.writeByte(message.getX());
 		buffer.writeByte(message.getY());
 		buffer.writeByte(message.getClickType().ordinal());
@@ -47,7 +47,7 @@ public class ClickRequestCodec extends MessageCodec<ClickRequestMessage> {
 	}
 
 	@Override
-	public ClickRequestMessage decode(ChannelBuffer buffer) {
+	public ClickRequestMessage decode(ByteBuf buffer) {
 		final byte x = buffer.readByte();
 		final byte y = buffer.readByte();
 		final byte action = buffer.readByte();

@@ -41,14 +41,6 @@ public interface CommandSource extends PermissionsSubject {
 	public void sendMessage(String message);
 
 	/**
-	 * Sends a command to be processed on the client.
-	 *
-	 * @param command to send
-	 * @param args to send
-	 */
-	public void sendCommand(String command, String... args);
-
-	/**
 	 * Executes the specified command on the current platform. This command has come from either the client or a local command source.
 	 *
 	 * @param command to execute

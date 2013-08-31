@@ -37,13 +37,14 @@ import com.google.common.collect.HashBiMap;
 
 import org.spout.api.Spout;
 import org.spout.api.datatable.ManagedHashMap;
+import org.spout.api.event.Listener;
 
 public class BaseComponentOwner implements ComponentOwner {
 	/**
 	 * Map of class name, component
 	 */
-	protected final BiMap<Class<? extends Component>, Component> components = HashBiMap.create();
-	protected final ManagedHashMap data;
+	private final BiMap<Class<? extends Component>, Component> components = HashBiMap.create();
+	private final ManagedHashMap data;
 
 	public BaseComponentOwner() {
 		data = new ManagedHashMap();
@@ -109,7 +110,7 @@ public class BaseComponentOwner implements ComponentOwner {
 
 			try {
 				component = (T) type.newInstance();
-			} catch (	InstantiationException | IllegalAccessException e) {
+			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 
@@ -140,17 +141,24 @@ public class BaseComponentOwner implements ComponentOwner {
 		}
 	}
 
-	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends Component> T detach(Class<? extends Component> type) {
+		return detach(type, false);
+	}
+
+	@SuppressWarnings ("unchecked")
+	protected <T extends Component> T detach(Class<? extends Component> type, boolean force) {
 		Preconditions.checkNotNull(type);
 		synchronized (components) {
 			T component = (T) get(type);
 
-			if (component != null && component.isDetachable()) {
+			if (component != null && (component.isDetachable() || force)) {
 				components.inverse().remove(component);
 				try {
 					component.onDetached();
+					if (component instanceof Listener) {
+						Spout.getEventManager().unRegisterEvents((Listener) component);
+					}
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Error detaching component " + type + " from holder: ", e);
 				}

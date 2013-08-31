@@ -34,8 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.util.CharsetUtil;
+import io.netty.buffer.ByteBuf;
+import io.netty.util.CharsetUtil;
 
 import org.spout.api.Client;
 import org.spout.api.Platform;
@@ -56,9 +56,9 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 
 /**
- * Contains several {@link ChannelBuffer}-related utility methods.
+ * Contains several {@link ByteBuf}-related utility methods.
  */
-public final class ChannelBufferUtils {
+public final class ByteBufUtils {
 	public static final int VECTOR3_SIZE = 12;
 	public static final int UUID_SIZE = 16;
 	public static final int POINT_SIZE = VECTOR3_SIZE + UUID_SIZE;
@@ -72,7 +72,7 @@ public final class ChannelBufferUtils {
 	 * @param parameters The parameters.
 	 */
 	@SuppressWarnings ("unchecked")
-	public static void writeParameters(ChannelBuffer buf, List<Parameter<?>> parameters) {
+	public static void writeParameters(ByteBuf buf, List<Parameter<?>> parameters) {
 		for (Parameter<?> parameter : parameters) {
 			int type = parameter.getType();
 			int index = parameter.getIndex();
@@ -116,7 +116,7 @@ public final class ChannelBufferUtils {
 	 * @param buf The buffer.
 	 * @return The parameters.
 	 */
-	public static List<Parameter<?>> readParameters(ChannelBuffer buf) throws IOException {
+	public static List<Parameter<?>> readParameters(ByteBuf buf) throws IOException {
 		List<Parameter<?>> parameters = new ArrayList<>();
 
 		for (int b = buf.readUnsignedByte(); b != 127; b = buf.readUnsignedByte()) {
@@ -159,7 +159,7 @@ public final class ChannelBufferUtils {
 	 * @param str The string.
 	 * @throws IllegalArgumentException if the string is too long <em>after</em> it is encoded.
 	 */
-	public static void writeUtf8String(ChannelBuffer buf, String str) {
+	public static void writeUtf8String(ByteBuf buf, String str) {
 		byte[] bytes = str.getBytes(CharsetUtil.UTF_8);
 		if (bytes.length >= 65536) {
 			throw new IllegalArgumentException("Encoded UTF-8 string too long.");
@@ -175,7 +175,7 @@ public final class ChannelBufferUtils {
 	 * @param buf The buffer.
 	 * @return The string.
 	 */
-	public static String readUtf8String(ChannelBuffer buf) {
+	public static String readUtf8String(ByteBuf buf) {
 		int len = buf.readUnsignedShort();
 
 		byte[] bytes = new byte[len];
@@ -184,7 +184,7 @@ public final class ChannelBufferUtils {
 		return new String(bytes, CharsetUtil.UTF_8);
 	}
 
-	public static CompoundMap readCompound(ChannelBuffer buf) {
+	public static CompoundMap readCompound(ByteBuf buf) {
 		int len = buf.readShort();
 		if (len > 0) {
 			byte[] bytes = new byte[len];
@@ -209,7 +209,7 @@ public final class ChannelBufferUtils {
 		return null;
 	}
 
-	public static void writeCompound(ChannelBuffer buf, CompoundMap data) {
+	public static void writeCompound(ByteBuf buf, CompoundMap data) {
 		if (data == null) {
 			buf.writeShort(-1);
 			return;
@@ -256,77 +256,77 @@ public final class ChannelBufferUtils {
 		return 256;
 	}
 
-	public static Vector2 readVector2(ChannelBuffer buf) {
+	public static Vector2 readVector2(ByteBuf buf) {
 		float x = buf.readFloat();
 		float z = buf.readFloat();
 		return new Vector2(x, z);
 	}
 
-	public static void writeVector2(ChannelBuffer buf, Vector2 vec) {
+	public static void writeVector2(ByteBuf buf, Vector2 vec) {
 		buf.writeFloat(vec.getX());
 		buf.writeFloat(vec.getY());
 	}
 
-	public static Color readColor(ChannelBuffer buf) {
+	public static Color readColor(ByteBuf buf) {
 		int argb = buf.readInt();
 		return new Color(argb);
 	}
 
-	public static void writeColor(Color color, ChannelBuffer buf) {
+	public static void writeColor(Color color, ByteBuf buf) {
 		buf.writeInt(color.getRGB());
 	}
 
-	public static String readString(ChannelBuffer buffer) {
+	public static String readString(ByteBuf buffer) {
 		int length = buffer.readInt();
 		byte[] stringBytes = new byte[length];
 		buffer.readBytes(stringBytes);
 		return new String(stringBytes, CharsetUtil.UTF_8);
 	}
 
-	public static void writeString(ChannelBuffer buffer, String str) {
+	public static void writeString(ByteBuf buffer, String str) {
 		byte[] stringBytes = str.getBytes(CharsetUtil.UTF_8);
 		buffer.writeInt(stringBytes.length);
 		buffer.writeBytes(stringBytes);
 	}
 
-	public static UUID readUUID(ChannelBuffer buffer) {
+	public static UUID readUUID(ByteBuf buffer) {
 		final long lsb = buffer.readLong();
 		final long msb = buffer.readLong();
 		return new UUID(msb, lsb);
 	}
 
-	public static void writeUUID(ChannelBuffer buffer, UUID uuid) {
+	public static void writeUUID(ByteBuf buffer, UUID uuid) {
 		buffer.writeLong(uuid.getLeastSignificantBits());
 		buffer.writeLong(uuid.getMostSignificantBits());
 	}
 
-	public static Transform readTransform(ChannelBuffer buffer) {
+	public static Transform readTransform(ByteBuf buffer) {
 		Point position = readPoint(buffer);
 		Quaternion rotation = readQuaternion(buffer);
 		Vector3 scale = readVector3(buffer);
 		return new Transform(position, rotation, scale);
 	}
 
-	public static void writeTransform(ChannelBuffer buffer, Transform transform) {
+	public static void writeTransform(ByteBuf buffer, Transform transform) {
 		writePoint(buffer, transform.getPosition());
 		writeQuaternion(buffer, transform.getRotation());
 		writeVector3(buffer, transform.getScale());
 	}
 
-	public static Vector3 readVector3(ChannelBuffer buffer) {
+	public static Vector3 readVector3(ByteBuf buffer) {
 		final float x = buffer.readFloat();
 		final float y = buffer.readFloat();
 		final float z = buffer.readFloat();
 		return new Vector3(x, y, z);
 	}
 
-	public static void writeVector3(ChannelBuffer buffer, Vector3 vec) {
+	public static void writeVector3(ByteBuf buffer, Vector3 vec) {
 		buffer.writeFloat(vec.getX());
 		buffer.writeFloat(vec.getY());
 		buffer.writeFloat(vec.getZ());
 	}
 
-	public static Point readPoint(ChannelBuffer buffer) {
+	public static Point readPoint(ByteBuf buffer) {
 		UUID uuid = readUUID(buffer);
 		World world = null;
 		if (Spout.getPlatform() == Platform.SERVER) {
@@ -349,14 +349,14 @@ public final class ChannelBufferUtils {
 		return new Point(world, x, y, z);
 	}
 
-	public static void writePoint(ChannelBuffer buffer, Point vec) {
+	public static void writePoint(ByteBuf buffer, Point vec) {
 		writeUUID(buffer, vec.getWorld().getUID());
 		buffer.writeFloat(vec.getX());
 		buffer.writeFloat(vec.getY());
 		buffer.writeFloat(vec.getZ());
 	}
 
-	public static Quaternion readQuaternion(ChannelBuffer buffer) {
+	public static Quaternion readQuaternion(ByteBuf buffer) {
 		final float x = buffer.readFloat();
 		final float y = buffer.readFloat();
 		final float z = buffer.readFloat();
@@ -364,14 +364,14 @@ public final class ChannelBufferUtils {
 		return new Quaternion(x, y, z, w);
 	}
 
-	public static void writeQuaternion(ChannelBuffer buffer, Quaternion quaternion) {
+	public static void writeQuaternion(ByteBuf buffer, Quaternion quaternion) {
 		buffer.writeFloat(quaternion.getX());
 		buffer.writeFloat(quaternion.getY());
 		buffer.writeFloat(quaternion.getZ());
 		buffer.writeFloat(quaternion.getW());
 	}
 
-	public static String[] readStringArray(ChannelBuffer buffer) {
+	public static String[] readStringArray(ByteBuf buffer) {
 		int len = buffer.readShort();
 		String[] args = new String[len];
 		for (int i = 0; i < args.length; i++) {
@@ -380,7 +380,7 @@ public final class ChannelBufferUtils {
 		return args;
 	}
 
-	public static void writeStringArray(ChannelBuffer buffer, String... arguments) {
+	public static void writeStringArray(ByteBuf buffer, String... arguments) {
 		buffer.writeShort(arguments.length);
 		for (String arg : arguments) {
 			writeString(buffer, arg);
@@ -390,6 +390,6 @@ public final class ChannelBufferUtils {
 	/**
 	 * Default private constructor to prevent instantiation.
 	 */
-	private ChannelBufferUtils() {
+	private ByteBufUtils() {
 	}
 }

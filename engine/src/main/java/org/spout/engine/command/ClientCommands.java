@@ -34,10 +34,9 @@ import org.spout.api.exception.CommandException;
 import org.spout.api.input.Binding;
 import org.spout.api.input.Keyboard;
 import org.spout.engine.SpoutClient;
-import org.spout.engine.SpoutEngine;
 
 public class ClientCommands extends CommonCommands {
-	public ClientCommands(SpoutEngine engine) {
+	public ClientCommands(SpoutClient engine) {
 		super(engine);
 	}
 
@@ -57,12 +56,23 @@ public class ClientCommands extends CommonCommands {
 	@CommandDescription (aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!")
 	public void clientSay(CommandSource source, CommandArguments args) throws CommandException {
 		String message = args.popRemainingStrings("message");
-		getEngine().getCommandSource().sendMessage(message);
+		getEngine().getPlayer().sendMessage(message);
 	}
 
 	@CommandDescription (aliases = {"clear"}, usage = "[message]", desc = "Clear the client's console")
 	public void consoleClear(CommandSource source, CommandArguments args) throws ArgumentParseException {
 		args.assertCompletelyParsed();
 		getEngine().getScreenStack().getConsole().clearConsole();
+	}
+
+	@CommandDescription (aliases = {"emulate", "e"}, usage = "emulate <command>", desc = "Causes the command to be emulated as if the player sent it")
+	public void emulate(CommandSource source, CommandArguments args) throws ArgumentParseException, CommandException {
+		String command = args.popString("command");
+		String[] ourgs = args.get().toArray(new String[0]);
+		try {
+			getEngine().getPlayer().sendCommand(command, ourgs);
+		} catch (Exception e) {
+			source.sendMessage("Could not send command. It may not exist.");
+		}
 	}
 }

@@ -30,7 +30,6 @@ import java.io.Serializable;
 
 import org.spout.math.GenericMath;
 import org.spout.math.TrigMath;
-import org.spout.math.matrix.Matrix3;
 import org.spout.math.vector.Vector2;
 
 /**
@@ -361,17 +360,6 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 	public Complex normalize() {
 		final float length = length();
 		return new Complex(x / length, y / length);
-	}
-
-	/**
-	 * Converts this Complex into a {@link Matrix3}
-	 *
-	 * @return The {@link Matrix3}
-	 */
-	public Matrix3 toMatrix() {
-		return new Matrix3(x, -y, 0,
-						   y, x, 0,
-						   0, 0, 1);
 	}
 
 	@Override

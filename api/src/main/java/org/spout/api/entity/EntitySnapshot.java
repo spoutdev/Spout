@@ -87,20 +87,6 @@ public interface EntitySnapshot {
 	public SerializableMap getDataMap();
 
 	/**
-	 * Get the view distance of the entity at the time of this snapshot
-	 *
-	 * @return view distance
-	 */
-	public int getViewDistance();
-
-	/**
-	 * Gets the observer state of the entity at the time of this snapshot
-	 *
-	 * @return observer
-	 */
-	public boolean isObserver();
-
-	/**
 	 * Gets the savable flag for the entity at the time of the snapshot
 	 *
 	 * @return savable

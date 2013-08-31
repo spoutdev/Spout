@@ -28,11 +28,11 @@ package org.spout.engine.protocol.builtin.codec;
 
 import java.util.UUID;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.util.ChannelBufferUtils;
+import org.spout.api.util.ByteBufUtils;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 
 /**
@@ -44,8 +44,8 @@ public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessag
 	}
 
 	@Override
-	public ChannelBuffer encode(CuboidBlockUpdateMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(4 * 6 + message.getBlockTypes().length * 2 + message.getBlockData().length * 2 + message.getBlockLight().length + message.getSkyLight().length + ChannelBufferUtils.UUID_SIZE);
+	public ByteBuf encode(CuboidBlockUpdateMessage message) {
+		ByteBuf buffer = Unpooled.buffer(4 * 6 + message.getBlockTypes().length * 2 + message.getBlockData().length * 2 + message.getBlockLight().length + message.getSkyLight().length + ByteBufUtils.UUID_SIZE);
 		buffer.writeInt(message.getMinX());
 		buffer.writeInt(message.getMinY());
 		buffer.writeInt(message.getMinZ());
@@ -61,12 +61,12 @@ public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessag
 		}
 		buffer.writeBytes(message.getBlockLight());
 		buffer.writeBytes(message.getSkyLight());
-		ChannelBufferUtils.writeUUID(buffer, message.getWorldUUID());
+		ByteBufUtils.writeUUID(buffer, message.getWorldUUID());
 		return buffer;
 	}
 
 	@Override
-	public CuboidBlockUpdateMessage decode(ChannelBuffer buffer) {
+	public CuboidBlockUpdateMessage decode(ByteBuf buffer) {
 		final int minX = buffer.readInt();
 		final int minY = buffer.readInt();
 		final int minZ = buffer.readInt();
@@ -92,7 +92,7 @@ public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessag
 
 		buffer.readBytes(blockLight);
 		buffer.readBytes(skyLight);
-		final UUID world = ChannelBufferUtils.readUUID(buffer);
+		final UUID world = ByteBufUtils.readUUID(buffer);
 
 		return new CuboidBlockUpdateMessage(world, minX, minY, minZ, sizeX, sizeY, sizeZ, blockTypes, blockData, blockLight, skyLight);
 	}

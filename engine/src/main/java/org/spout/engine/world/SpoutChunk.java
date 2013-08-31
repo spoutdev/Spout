@@ -36,6 +36,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -49,18 +50,20 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import com.google.common.collect.Sets;
+
 import gnu.trove.map.TShortObjectMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.procedure.TShortObjectProcedure;
-import java.util.Map;
 
-import org.spout.api.Engine;
+import org.spout.api.ClientOnly;
 import org.spout.api.Platform;
+import org.spout.api.ServerOnly;
 import org.spout.api.Spout;
 import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.block.BlockComponent;
+import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cause;
@@ -94,7 +97,8 @@ import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.block.BlockSnapshot;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.IntVector3;
-import org.spout.math.vector.Vector3;
+import org.spout.api.protocol.event.BlockUpdateEvent;
+import org.spout.api.protocol.event.ChunkSendEvent;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.bytebit.ByteBitSet;
@@ -105,7 +109,7 @@ import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
-import org.spout.engine.SpoutClient;
+
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
@@ -114,6 +118,7 @@ import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 import org.spout.math.GenericMath;
+import org.spout.math.vector.Vector3;
 
 public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<>(null);
@@ -123,6 +128,9 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	private final Set<SpoutEntity> unmodifiableObservers = Collections.unmodifiableSet(observers);
 	private final Set<SpoutPlayer> observingPlayers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutPlayer, Boolean>());
 	private final Set<SpoutPlayer> unmodifiableObservingPlayers = Collections.unmodifiableSet(observingPlayers);
+	/**
+	 * An entity may still exist but no longer be an observer. As such, we need to remove all entities that it was observing. The following three variables deal with this.
+	 */
 	private final ConcurrentLinkedQueue<SpoutEntity> expiredObserversQueue = new ConcurrentLinkedQueue<>();
 	private final LinkedHashSet<SpoutEntity> expiredObservers = new LinkedHashSet<>();
 	private final Set<SpoutEntity> unmodifiableExpiredObservers = Collections.unmodifiableSet(expiredObservers);
@@ -153,23 +161,15 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	 */
 	private final AtomicReference<PopulationState> populationState;
 	/**
-	 * The mask that should be applied to the x, y and z coords
+	 * The {@link SpoutColumn} that this chunk exists in.
 	 */
 	protected final SpoutColumn column;
 	protected final AtomicBoolean columnRegistered = new AtomicBoolean(true);
 	protected final AtomicLong lastUnloadCheck = new AtomicLong();
 	/**
-	 * This indicates that light for this chunk was stable when loaded from disk
-	 */
-	protected final boolean lightStableOnLoad;
-	/**
 	 * True if this chunk should be resent due to light calculations
 	 */
 	protected final AtomicBoolean lightDirty = new AtomicBoolean(false);
-	/**
-	 * True if this chunk mesh needs to be recalculated
-	 */
-	protected final AtomicBoolean renderDirty = new AtomicBoolean(false);
 	/**
 	 * Data map and Datatable associated with it
 	 */
@@ -201,52 +201,24 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	 */
 	private final AtomicReference<CuboidLightBuffer[]> lightBuffers = new AtomicReference<>(new CuboidLightBuffer[0]);
 	private final static CuboidLightBuffer[] lightBufferExample = new CuboidLightBuffer[0];
+	/**
+	 * This field is used to store a "fake" observer for force queuing population.
+	 */
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
 	private final ChunkSetQueueElement<SpoutChunk> unloadQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> populationQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> populationPriorityQueueElement;
-	private final ChunkSetQueueElement<SpoutChunk> chunkObserversDirtyQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> localPhysicsChunkQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> globalPhysicsChunkQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> dirtyChunkQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> newChunkQueueElement;
-	// TODO: reimplement these?
-	private boolean wasInViewDistance = false;
-	private boolean isInViewDistance = true;
 	// TODO: remove this and replace with above;
 	private boolean firstRender = true;
-	private final boolean isBlank;
 	// Rendering
 	private final AtomicInteger renderSequence = new AtomicInteger(0);
 	private SpoutChunkSnapshot renderSnapshotCache;
 	private int generationIndex = -1;
-
-	protected void setIsInViewDistance(boolean value) {
-		if (value && isBlockUniform() && getBlockMaterial(0, 0, 0) == BlockMaterial.AIR) {
-			return;
-		}
-		isInViewDistance = value;
-		if (wasInViewDistance != isInViewDistance) {
-			setRenderDirty(true);
-		}
-	}
-
-	public boolean enteredViewDistance() {
-		return (!wasInViewDistance) && isInViewDistance;
-	}
-
-	public boolean isInViewDistance() {
-		return isInViewDistance;
-	}
-
-	public boolean leftViewDistance() {
-		return wasInViewDistance && (!isInViewDistance);
-	}
-
-	public void viewDistanceCopy() {
-		wasInViewDistance = isInViewDistance;
-	}
 
 	static {
 		for (int i = 0; i < shiftCache.length; i++) {
@@ -258,27 +230,32 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] block, short[] data, ManagedHashMap map) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, block, data, map, false, false);
-	}
-
+	/**
+	 * Chunk generation
+	 */
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, AtomicBlockStore blockStore, ManagedHashMap extraData) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, extraData, false, blockStore, false);
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, extraData, blockStore);
 	}
 
+	// TODO: investigate "storeState" in the following two new AtomicPaletteBlockStore...
+	/**
+	 * Chunk loading
+	 */
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, ManagedHashMap extraData, boolean lightStable) {
-		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, palette, blockArrayWidth, variableWidthBlockArray), false);
+		this(world, region, x, y, z, popState, extraData, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, palette, blockArrayWidth, variableWidthBlockArray));
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, ManagedHashMap extraData, boolean lightStable) {
-		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, false, 10, blocks, data), false);
+	/**
+	 * Chunk sending to client and client LOAD_GEN 
+	 */
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, ManagedHashMap extraData) {
+		this(world, region, x, y, z, popState, extraData, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, false, 10, blocks, data));
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, ManagedHashMap extraData, boolean lightStable, boolean isBlank) {
-		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, false, 10, blocks, data), isBlank);
-	}
-
-	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, boolean lightStable, AtomicBlockStore blockStore, boolean isBlank) {
+	/**
+	 * Common logic constructor
+	 */
+	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, AtomicBlockStore blockStore) {
 		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
 		parentRegion = region;
 		this.populationState = new AtomicReference<>(popState);
@@ -305,18 +282,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		// loaded chunk
 		selfReference = new WeakReference<>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
-		this.lightStableOnLoad = lightStable;
 		this.saveMarkedElement = new ChunkSetQueueElement<>(getRegion().saveMarkedQueue, this);
 		this.unloadQueueElement = new ChunkSetQueueElement<>(getRegion().unloadQueue, this);
 		this.populationQueueElement = new ChunkSetQueueElement<>(getRegion().populationQueue, this);
 		this.populationPriorityQueueElement = new ChunkSetQueueElement<>(getRegion().populationPriorityQueue, this);
-		this.chunkObserversDirtyQueueElement = new ChunkSetQueueElement<>(getRegion().chunkObserversDirtyQueue, this, true);
 		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement<>(getRegion().localPhysicsChunkQueue, this);
 		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<>(getRegion().globalPhysicsChunkQueue, this);
 		this.dirtyChunkQueueElement = new ChunkSetQueueElement<>(getRegion().dirtyChunkQueue, this);
 		this.newChunkQueueElement = new ChunkSetQueueElement<>(getRegion().newChunkQueue, this);
-
-		this.isBlank = isBlank;
 	}
 
 	@Override
@@ -819,26 +792,20 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		return future;
 	}
 
-	private void addToRegionUnloadQueue() {
-		this.unloadQueueElement.add();
-	}
-
 	@Override
 	public boolean refreshObserver(Entity entity) {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Cannot refresh observers when not in server mode!");
+		}
 		TickStage.checkStage(TickStage.FINALIZE);
-
 		checkChunkLoaded();
-		chunkObserversDirtyQueueElement.add();
+
 		if (!isPopulated()) {
 			queueForPopulation(false);
 		}
 		boolean wasEmpty = observers.isEmpty();
 		if (observers.add((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.add((SpoutPlayer) entity);
-			Engine engine = Spout.getEngine();
-			if (engine.getPlatform() == Platform.CLIENT && ((SpoutClient) engine).getPlayer() == entity) {
-				setIsInViewDistance(true);
-			}
 			if (wasEmpty) {
 				RegionGenerator generator = getRegion().getRegionGenerator();
 				if (generator != null) {
@@ -852,30 +819,29 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	@Override
 	public boolean removeObserver(Entity entity) {
-		checkChunkLoaded();
-		chunkObserversDirtyQueueElement.add();
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Cannot remove observers when not in server mode!");
+		}
 		TickStage.checkStage(TickStage.FINALIZE);
+		checkChunkLoaded();
 
 		if (observers.remove(entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.remove(entity);
-
-			Engine engine = Spout.getEngine();
-			if (engine.getPlatform() == Platform.CLIENT && ((SpoutClient) engine).getPlayer() == entity) {
-				setIsInViewDistance(false);
-			}
 		}
 		expiredObserversQueue.add((SpoutEntity) entity);
 		if (!isObserved()) {
-			addToRegionUnloadQueue();
+			this.unloadQueueElement.add();
 		}
 		return true;
 	}
 
+	@ServerOnly
 	public boolean isObserved() {
-		return getNumObservers() > 0;
+		return !observers.isEmpty();
 	}
 
 	@Override
+	@ServerOnly
 	public int getNumObservers() {
 		return observers.size();
 	}
@@ -921,37 +887,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	protected boolean compressRaw() {
 		blockStore.compress();
 		return true;
-	}
-
-	public void setNeighbourRenderDirty(boolean dirty) {
-		SpoutRegion parent = getRegion();
-		for (int x = -1; x < 2; x++) {
-			for (int y = -1; y < 2; y++) {
-				for (int z = -1; z < 2; z++) {
-					if (x == 0 || y == 0 || z == 0) {
-						SpoutChunk c = parent.getLocalChunk(this, x, y, z, LoadOption.NO_LOAD);
-						if (c != null) {
-							c.setRenderDirty(dirty);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public void setRenderDirty(boolean dirty) {
-		renderDirty.set(dirty);
-		if (dirty) {
-			queueDirty();
-		}
-	}
-
-	public boolean isRenderDirty() {
-		return renderDirty.get() || isDirty();
-	}
-
-	public boolean wasLightStableOnLoad() {
-		return lightStableOnLoad;
 	}
 
 	public void setLightDirty(boolean dirty) {
@@ -1298,7 +1233,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				this.queueForPopulation(priority);
 			}
 		} else {
-			populate();
+			populate(observe);
 		}
 	}
 
@@ -1459,7 +1394,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	@Override
 	public List<Entity> getEntities() {
 		ArrayList<Entity> entities = new ArrayList<>();
-		for (Entity e : parentRegion.getAll()) {
+		for (Entity e : parentRegion.getEntityManager().getAll()) {
 			if (e.getChunk() == this) {
 				entities.add(e);
 			}
@@ -2020,16 +1955,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		return blockStore.isBlockUniform();
 	}
 
-	private boolean rendered = false;
-
-	public void setRendered(boolean rendered) {
-		this.rendered = rendered;
-	}
-
-	public boolean isRendered() {
-		return rendered;
-	}
-
 	public void addLightingBufferData(List<LightingManager<?>> lightManagers, List<byte[]> lightData) {
 		for (int i = 0; i < lightData.size(); i++) {
 			LightingManager<?> manager = lightManagers.get(i);
@@ -2177,7 +2102,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public void touchNeighborRender(BlockFaces neigbourstoUpdate) {
 		for (BlockFace face : neigbourstoUpdate) {
 			SpoutChunk chunk = getWorld().getChunk(getX() + face.getOffset().getFloorX(), getY() + face.getOffset().getFloorY(), getZ() + face.getOffset().getFloorZ(), LoadOption.NO_LOAD);
-			if (chunk != null && !chunk.isBlank) {
+			if (chunk != null) {
 				chunk.render(BlockFaces.NONE);
 			}
 		}
@@ -2243,8 +2168,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				}
 			}
 		}
-		setRendered(true);
-		setRenderDirty(false);
 		SpoutChunkSnapshotModel model = new SpoutChunkSnapshotModel(getWorld(), getX(), getY(), getZ(), chunks, 1, updatedRenderMaterials, first, System.currentTimeMillis());
 		SpoutScheduler.addToQueue(model);
 
@@ -2253,6 +2176,39 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {
 		BlockMaterial material = MaterialRegistry.get(blockState);
+		if (material == null) {
+			return;
+		}
 		set.add(material.getModel().getRenderMaterial());
+	}
+
+	@Override
+	public void sync(NetworkComponent network) {
+		if (!isDirtyOverflow() && !isLightDirty()) {
+			for (int i = 0; true; i++) {
+				Vector3 block = getDirtyBlock(i);
+				if (block == null) {
+					break;
+				}
+
+				try {
+					network.callProtocolEvent(new BlockUpdateEvent(this, block.getFloorX(), block.getFloorY(), block.getFloorZ()));
+				} catch (Exception e) {
+					Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update");
+				}
+			}
+		} else {
+			network.callProtocolEvent(new ChunkSendEvent(this));
+		}
+	}
+
+	@ClientOnly
+	public void rawSetBlockStore(short[] blocks, short[] data) {
+		if (Spout.getPlatform() != Platform.CLIENT) {
+			throw new UnsupportedOperationException("Cannot raw set the block store unless in client mode.");
+		}
+		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, false, false, 10, blocks, data);
+		// Basically a new chunk, we want to rerender everything
+		firstRender = true;
 	}
 }

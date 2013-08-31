@@ -26,27 +26,29 @@
  */
 package org.spout.api.protocol;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.CompositeChannelBuffer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.frame.FrameDecoder;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
 
-import org.spout.api.protocol.replayable.ReplayableChannelBuffer;
-import org.spout.api.protocol.replayable.ReplayableError;
+import org.spout.api.protocol.replayable.ReplayableByteBuf;
+import org.spout.api.protocol.replayable.ReplayableException;
 
-public abstract class PreprocessReplayingDecoder extends FrameDecoder implements ProcessorHandler {
-	private final int capacity;
-	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<>();
+/**
+ * This class is both a {@link ByteToMessageDecoder} but also allows processing pre-decode via {@code decodeProcessed}.
+ *
+ */
+public abstract class PreprocessReplayingDecoder extends ByteToMessageDecoder implements ProcessorHandler {
+	private final AtomicReference<ChannelProcessor> processor = new AtomicReference<>(null);
+	private final ReplayableByteBuf replayableBuffer = new ReplayableByteBuf();
 	private final AtomicBoolean locked = new AtomicBoolean(false);
-	private final ReplayableChannelBuffer replayableBuffer = new ReplayableChannelBuffer();
-	private ChannelBuffer processedBuffer = null;
-	private List<Object> frames = new LinkedList<>();
+	private final int capacity;
+	private ByteBuf processedBuffer = null;
 
 	/**
 	 * Constructs a new replaying decoder.<br> <br> The internal buffer is dynamically sized, but if it grows larger than the given capacity, it will be resized downwards when possible.  This allows
@@ -55,14 +57,14 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder implements
 	 * @param capacity the default capacity of the internal buffer.
 	 */
 	public PreprocessReplayingDecoder(int capacity) {
-		super(true);
 		this.capacity = capacity;
 	}
 
 	@Override
-	protected final Object decode(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf) throws Exception {
+	protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> frames) throws Exception {
+		Channel c = ctx.channel();
 
-		if (!buf.readable()) {
+		if (!buf.isReadable()) {
 			throw new IllegalStateException("Empty buffer sent to decode()");
 		}
 
@@ -70,20 +72,18 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder implements
 			throw new IllegalStateException("Decode attempted when channel was locked");
 		}
 
-		frames.clear();
 		Object lastFrame = null;
 		Object newFrame = null;
 
 		ChannelProcessor processor = this.processor.get();
-
-		ChannelBuffer liveBuffer;
+		ByteBuf liveBuffer;
 		do {
 			if (processor == null) {
 				liveBuffer = buf;
 			} else {
 				if (processedBuffer == null) {
 					processedBuffer = processor.write(ctx, buf);
-				} else if (buf.readable()) {
+				} else if (buf.isReadable()) {
 					processedBuffer = processor.write(ctx, buf, processedBuffer);
 				}
 				liveBuffer = processedBuffer;
@@ -91,7 +91,7 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder implements
 			int readPointer = liveBuffer.readerIndex();
 			try {
 				newFrame = decodeProcessed(ctx, c, replayableBuffer.setBuffer(liveBuffer));
-			} catch (ReplayableError e) {
+			} catch (ReplayableException e) {
 				// roll back liveBuffer read to state prior to calling decodeProcessed
 				liveBuffer.readerIndex(readPointer);
 				// No frame returned
@@ -123,23 +123,22 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder implements
 		} while (newFrame != null && !locked.get());
 
 		if (processedBuffer != null) {
-			if (processedBuffer instanceof CompositeChannelBuffer || (processedBuffer.capacity() > capacity && processedBuffer.writable())) {
-				ChannelBuffer newBuffer = getNewBuffer(ctx, Math.max(capacity, processedBuffer.readableBytes()));
-				if (processedBuffer.readable()) {
+			if (processedBuffer instanceof CompositeByteBuf || (processedBuffer.capacity() > capacity && processedBuffer.isWritable())) {
+				ByteBuf newBuffer = getNewBuffer(ctx, Math.max(capacity, processedBuffer.readableBytes()));
+				if (processedBuffer.isReadable()) {
 					// This method transfers the data in processedBuffer to the newBuffer.
 					// However, for some reason, if processedBuffer is zero length, it causes an exception.
 					newBuffer.writeBytes(processedBuffer);
 				}
+				ByteBuf old = processedBuffer;
 				processedBuffer = newBuffer;
+				old.release();
 			}
 			processedBuffer.discardReadBytes();
 		}
 
-		if (frames.size() > 0) {
+		if (lastFrame != null) {
 			frames.add(lastFrame);
-			return frames;
-		} else {
-			return lastFrame;
 		}
 	}
 
@@ -154,16 +153,16 @@ public abstract class PreprocessReplayingDecoder extends FrameDecoder implements
 	}
 
 	/**
-	 * This method is the equivalent of the decode method for the standard ReplayingDecoder<br> The method call is repeated if decoding causes the ChannelBuffer to run out of bytes<br>
+	 * This method is the equivalent of the decode method for the standard ReplayingDecoder<br> The method call is repeated if decoding causes the ByteBuf to run out of bytes<br>
 	 *
 	 * @param ctx the channel handler context
 	 * @param channel the channel
 	 * @param buffer the channel buffer
 	 * @return the message to pass to the next stage
 	 */
-	protected abstract Object decodeProcessed(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception;
+	protected abstract Object decodeProcessed(ChannelHandlerContext ctx, Channel channel, ByteBuf buffer) throws Exception;
 
-	private static ChannelBuffer getNewBuffer(ChannelHandlerContext ctx, int capacity) {
-		return ctx.getChannel().getConfig().getBufferFactory().getBuffer(capacity);
+	private static ByteBuf getNewBuffer(ChannelHandlerContext ctx, int capacity) {
+		return ctx.channel().config().getAllocator().buffer(capacity);
 	}
 }

@@ -26,7 +26,6 @@
  */
 package org.spout.api.render;
 
-import org.spout.math.matrix.Matrix3;
 import org.spout.math.matrix.Matrix4;
 
 /**
@@ -60,5 +59,5 @@ public interface Camera {
 	 */
 	public ViewFrustum getFrustum();
 
-	public Matrix3 getRotation();
+	public Matrix4 getRotation();
 }

@@ -26,22 +26,18 @@
  */
 package org.spout.api.protocol;
 
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.socket.SocketChannel;
 
-import org.spout.api.Engine;
+import org.spout.api.Spout;
 import org.spout.api.protocol.dynamicid.DynamicMessageDecoder;
 import org.spout.api.protocol.dynamicid.DynamicMessageEncoder;
 
 /**
  * A common {@link ChannelPipelineFactory}
  */
-public final class CommonPipelineFactory implements ChannelPipelineFactory {
-	/**
-	 * The server.
-	 */
-	private final Engine engine;
+public final class CommonChannelInitializer extends ChannelInitializer<SocketChannel> {
 	/**
 	 * Indicates if the channel is an upstream channel
 	 */
@@ -52,8 +48,8 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 	 *
 	 * @param engine The engine
 	 */
-	public CommonPipelineFactory(Engine engine) {
-		switch (engine.getPlatform()) {
+	public CommonChannelInitializer() {
+		switch (Spout.getPlatform()) {
 			case CLIENT:
 				this.onClient = true;
 				break;
@@ -64,16 +60,17 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 			default:
 				throw new IllegalStateException("Unknown platform!");
 		}
-		this.engine = engine;
 	}
 
 	@Override
-	public ChannelPipeline getPipeline() throws Exception {
+	protected void initChannel(SocketChannel c) throws Exception {
+		// Up for encoding/sending/outbound; Down for decoding/receiving/inbound
 		CommonEncoder encoder = new CommonEncoder(onClient);
 		CommonDecoder decoder = new CommonDecoder(onClient);
-		CommonHandler handler = new CommonHandler(engine, encoder, decoder);
 		DynamicMessageDecoder dynamicDecoder = new DynamicMessageDecoder();
 		DynamicMessageEncoder dynamicEncoder = new DynamicMessageEncoder();
-		return Channels.pipeline(decoder, encoder, dynamicDecoder, dynamicEncoder, handler);
+		CommonHandler handler = new CommonHandler(encoder, decoder);
+
+		c.pipeline().addLast(decoder, encoder, dynamicDecoder, dynamicEncoder, handler);
 	}
 }

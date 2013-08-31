@@ -26,7 +26,7 @@
  */
 package org.spout.api.protocol.builder;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 
 public abstract class MessageFieldImpl implements MessageField {
 	@Override
@@ -35,52 +35,52 @@ public abstract class MessageFieldImpl implements MessageField {
 	}
 
 	@Override
-	public long readLong(ChannelBuffer buffer) {
+	public long readLong(ByteBuf buffer) {
 		throw new UnsupportedOperationException("This field does not support long read");
 	}
 
 	@Override
-	public int readInt(ChannelBuffer buffer) {
+	public int readInt(ByteBuf buffer) {
 		throw new UnsupportedOperationException("This field does not support int read");
 	}
 
 	@Override
-	public short readShort(ChannelBuffer buffer) {
+	public short readShort(ByteBuf buffer) {
 		throw new UnsupportedOperationException("This field does not support short read");
 	}
 
 	@Override
-	public byte readByte(ChannelBuffer buffer) {
+	public byte readByte(ByteBuf buffer) {
 		throw new UnsupportedOperationException("This field does not support byte read");
 	}
 
 	@Override
-	public short readUnsignedByte(ChannelBuffer buffer) {
+	public short readUnsignedByte(ByteBuf buffer) {
 		throw new UnsupportedOperationException("This field does not support unsigned byte read");
 	}
 
 	@Override
-	public void writeLong(ChannelBuffer buffer, long value) {
+	public void writeLong(ByteBuf buffer, long value) {
 		throw new UnsupportedOperationException("This field does not support long write");
 	}
 
 	@Override
-	public void writeInt(ChannelBuffer buffer, int value) {
+	public void writeInt(ByteBuf buffer, int value) {
 		throw new UnsupportedOperationException("This field does not support int write");
 	}
 
 	@Override
-	public void writeShort(ChannelBuffer buffer, short value) {
+	public void writeShort(ByteBuf buffer, short value) {
 		throw new UnsupportedOperationException("This field does not support short write");
 	}
 
 	@Override
-	public void writeByte(ChannelBuffer buffer, byte value) {
+	public void writeByte(ByteBuf buffer, byte value) {
 		throw new UnsupportedOperationException("This field does not support byte write");
 	}
 
 	@Override
-	public void writeUnsignedByte(ChannelBuffer buffer, short value) {
+	public void writeUnsignedByte(ByteBuf buffer, short value) {
 		throw new UnsupportedOperationException("This field does not support unsigned byte write");
 	}
 }

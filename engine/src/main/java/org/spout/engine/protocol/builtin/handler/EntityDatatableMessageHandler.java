@@ -38,9 +38,6 @@ import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatableMessage> {
 	@Override
 	public void handleClient(ClientSession session, EntityDatatableMessage message) {
-		if (!session.hasPlayer()) {
-			throw new IllegalStateException("Message sent when session has no player");
-		}
 		Entity entity;
 		if (message.getEntityId() == session.getPlayer().getId()) {
 			entity = session.getPlayer();
@@ -50,7 +47,6 @@ public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatabl
 		// TODO: why doesn't this work!?
 		//Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
 		try {
-			System.out.println("Received datatable message for " + entity.toString());
 			switch (message.getType()) {
 				case REPLACE:
 					entity.getData().deserialize(message.getCompressedData(), true);

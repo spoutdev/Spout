@@ -34,10 +34,11 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.ReactConverter;
-import org.spout.math.vector.Vector3;
-import org.spout.api.protocol.ServerNetworkSynchronizer;
+
+import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 import org.spout.physics.body.MobileRigidBody;
 import org.spout.physics.body.RigidBody;
 import org.spout.physics.body.RigidBodyMaterial;
@@ -76,9 +77,8 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		this.isMobile = isMobile;
 		this.mass = mass;
 		this.shape = shape;
-		if (getOwner().isSpawned()) {
-			activate((SpoutRegion) getOwner().getRegion());
-		}
+		activated = true;
+		activate((SpoutRegion) getOwner().getRegion());
 
 		return this;
 	}
@@ -87,7 +87,6 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		body = region.addBody(live, mass, shape, isGhost, isMobile);
 		body.setMaterial(material);
 		body.setUserPointer(getOwner());
-		activated = true;
 	}
 
 	@Override
@@ -122,7 +121,11 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		return setTransform(transform, true);
 	}
 
+	@Override
 	public SpoutPhysicsComponent setTransform(Transform transform, boolean sync) {
+		if (transform == null) {
+			throw new IllegalArgumentException("transform cannot be null!");
+		}
 		live.set(transform);
 		if (sync) {
 			sync();
@@ -158,7 +161,11 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public SpoutPhysicsComponent setRotation(Quaternion rotation) {
+		if (rotation == null) {
+			throw new IllegalArgumentException("rotation cannot be null!");
+		}
 		live.setRotation(rotation);
+		sync();
 		return this;
 	}
 
@@ -174,7 +181,11 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public SpoutPhysicsComponent setScale(Vector3 scale) {
+		if (scale == null) {
+			throw new IllegalArgumentException("scale cannot be null!");
+		}
 		live.setScale(scale);
+		sync();
 		return this;
 	}
 
@@ -201,13 +212,21 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public SpoutPhysicsComponent rotate(Quaternion rotate) {
+		if (rotate == null) {
+			throw new IllegalArgumentException("rotate cannot be null!");
+		}
 		live.rotate(rotate);
+		sync();
 		return this;
 	}
 
 	@Override
 	public SpoutPhysicsComponent scale(Vector3 scale) {
+		if (scale == null) {
+			throw new IllegalArgumentException("scale cannot be null!");
+		}
 		live.scale(scale);
+		sync();
 		return this;
 	}
 
@@ -276,8 +295,8 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		if (!(body instanceof MobileRigidBody)) {
 			throw new IllegalStateException("Only mobile entities can change mass");
 		}
-		if (mass < 1f) {
-			throw new IllegalArgumentException("Cannot set a mass less than 1f");
+		if (mass < 0f) {
+			throw new IllegalArgumentException("Cannot set a mass less than 0f");
 		}
 		this.mass = mass;
 		((MobileRigidBody) body).setMass(mass);
@@ -367,6 +386,11 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		return isGhost;
 	}
 
+	@Override
+	public String toString() {
+		return "snapshot= {" + snapshot + "}, live= {" + live + "}, render= " + render + "}, body= {" + body + "}";
+	}
+
 	/**
 	 * Called before the simulation is polled for an update. <p> This aligns the body's transform with Spout's if someone moves without physics. </p>
 	 */
@@ -382,54 +406,60 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	 * Called after the simulation was polled for an update. <p> This updates Spout's live with the transform of the body. The render transform is updated with interpolation from the body </p>
 	 */
 	public void onPostPhysicsTick(float dt) {
-		if (body != null) {
-			setPosition(new Point(ReactConverter.toSpoutVector3(body.getTransform().getPosition()), getWorld()));
-			//TODO: Set rotation from physics tick on live?
-		}
 		interpolateAndSetRender(dt);
-		sync();
 	}
 
 	/**
 	 * Interpolates the live transform and sets the output to the render transform. <p/> This is necessary for smooth rendering.
 	 */
 	public void interpolateAndSetRender(float dt) {
-		//Only interpolate if same world
-		if (render.getPosition().getWorld() != getOwner().getWorld()) {
-			return;
-		}
-
-		//Step 2 - Calculate step, grab live values
-		final float step = dt * (100f / 20f);
-
-		final Point position = live.getPosition();
-		final Quaternion rotation = live.getRotation();
-		final Vector3 scale = live.getScale();
-
-		//Step 3 - Interpolate position, rotation, and scale
-		//Spout Interpolation (Position)
+		//TODO: Untangle Camera position/rotation from render transform
+		//Spout Interpolation
 		if (body == null) {
+			if (render.isEmpty()) {
+				render.set(snapshot);
+			}
+			if (isWorldDirty()) {
+				render.set(live);
+			}
+			final float step = dt * (60f / 20f);
+
+			final Point position = live.getPosition();
+			final Quaternion rotation = live.getRotation();
+			final Vector3 scale = live.getScale();
+
 			render.setPosition(render.getPosition().mul(1 - step).add(position.mul(dt)));
+
+			final Quaternion renderRot = render.getRotation();
+			render.setRotation(new Quaternion(
+					renderRot.getX() * (1 - step) + rotation.getX() * step,
+					renderRot.getY() * (1 - step) + rotation.getY() * step,
+					renderRot.getZ() * (1 - step) + rotation.getZ() * step,
+					renderRot.getW() * (1 - step) + rotation.getW() * step));
+
+			render.setScale(render.getScale().mul(1 - step).add(scale.mul(step)));
 		} else {
-			render.setPosition(new Point(ReactConverter.toSpoutVector3(body.getInterpolatedTransform().getPosition()), getWorld()));
+			final Transform physicsLive = ReactConverter.toSpoutTransform(body.getTransform(), live.getPosition().getWorld(), live.getScale());
+			if (!live.equals(physicsLive)) {
+				live.set(physicsLive);
+				sync();
+			}
+			final Transform physicsRender = ReactConverter.toSpoutTransform(body.getInterpolatedTransform(), live.getPosition().getWorld(), live.getScale());
+			if (!render.equals(physicsRender)) {
+				render.set(physicsRender);
+			}
 		}
-		final Quaternion renderRot = render.getRotation();
-		render.setRotation(new Quaternion(renderRot.getX() * (1 - step) + rotation.getX() * step,
-				renderRot.getY() * (1 - step) + rotation.getY() * step,
-				renderRot.getZ() * (1 - step) + rotation.getZ() * step,
-				renderRot.getW() * (1 - step) + rotation.getW() * step)
-		);
-		render.setScale(render.getScale().mul(1 - step).add(scale.mul(step)));
 	}
 
 	public void copySnapshot() {
+		if (getOwner() instanceof SpoutPlayer) System.out.println("Snapshot: (" + snapshot.getPosition().getX() + ", " + snapshot.getPosition().getY() + ", " + snapshot.getPosition().getZ() + ") Live: (" + live.getPosition().getX() + ", " + live.getPosition().getY() + ", " + live.getPosition().getZ() + ")");
 		snapshot.set(live);
 		render.set(snapshot);
 	}
 
 	private void sync() {
 		if (getOwner() instanceof Player && Spout.getPlatform() == Platform.SERVER) {
-			((ServerNetworkSynchronizer) ((Player) getOwner()).getNetworkSynchronizer()).forceSync();
+			((Player) getOwner()).getNetwork().forceSync();
 		}
 	}
 }

@@ -26,29 +26,26 @@
  */
 package org.spout.api.entity;
 
-import java.net.InetAddress;
 import java.util.List;
 
+import org.spout.api.ServerOnly;
 import org.spout.api.command.CommandSource;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.state.PlayerInputState;
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
-import org.spout.api.protocol.NetworkSynchronizer;
-import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface Player extends CommandSource, Entity {
 	/**
-	 * Gets the player's name. This method is thread-safe.
+	 * Gets the player's name.
 	 *
 	 * @return the player's name
 	 */
-	@Override
 	@Threadsafe
+	@Override
 	public String getName();
 
 	/**
-	 * Gets the player's display name. This method is thread-safe.
+	 * Gets the player's display name.
 	 *
 	 * @return the player's display name
 	 */
@@ -56,26 +53,12 @@ public interface Player extends CommandSource, Entity {
 	public String getDisplayName();
 
 	/**
-	 * Sets the player's display name. This method is thread-safe.
+	 * Sets the player's display name.
 	 *
 	 * @param name the player's new display name
 	 */
 	@Threadsafe
 	public void setDisplayName(String name);
-
-	/**
-	 * Gets the ServerNetworkSynchronizer associated with this player.<br>
-	 *
-	 * @return the synchronizer
-	 */
-	public NetworkSynchronizer getNetworkSynchronizer();
-
-	/**
-	 * Gets the session associated with the Player.
-	 *
-	 * @return the session, or null if the player is offline
-	 */
-	public Session getSession();
 
 	/**
 	 * Gets if the player is online
@@ -85,15 +68,9 @@ public interface Player extends CommandSource, Entity {
 	public boolean isOnline();
 
 	/**
-	 * Gets the sessions address This is equivalent to getSession().getAddress().getAddress();
-	 *
-	 * @return The session's address
-	 */
-	public InetAddress getAddress();
-
-	/**
 	 * Kicks the player without giving a reason, or forcing it.
 	 */
+	@ServerOnly
 	public void kick();
 
 	/**
@@ -101,11 +78,13 @@ public interface Player extends CommandSource, Entity {
 	 *
 	 * @param reason the message to send to the player.
 	 */
+	@ServerOnly
 	public void kick(String reason);
 
 	/**
 	 * Bans the player without giving a reason.
 	 */
+	@ServerOnly
 	public void ban();
 
 	/**
@@ -113,6 +92,7 @@ public interface Player extends CommandSource, Entity {
 	 *
 	 * @param kick whether to kick or not
 	 */
+	@ServerOnly
 	public void ban(boolean kick);
 
 	/**
@@ -121,6 +101,7 @@ public interface Player extends CommandSource, Entity {
 	 * @param kick whether to kick or not
 	 * @param reason for ban
 	 */
+	@ServerOnly
 	public void ban(boolean kick, String reason);
 
 	/**
@@ -131,20 +112,6 @@ public interface Player extends CommandSource, Entity {
 	public PlayerInputState input();
 
 	/**
-	 * Teleports the player to the given location and inform's the player's client
-	 *
-	 * @param loc the new location
-	 */
-	public void teleport(Point loc);
-
-	/**
-	 * Teleports the player to the given position and direction and inform's the player's client
-	 *
-	 * @param loc the new location
-	 */
-	public void teleport(Transform transform);
-
-	/**
 	 * Immediately saves the players state to disk
 	 *
 	 * @return true if successful
@@ -152,14 +119,38 @@ public interface Player extends CommandSource, Entity {
 	public boolean save();
 
 	/**
+	 * Gets the {@link PlayerNetworkComponent} of the player
+	 *
+	 * @return The {@link PlayerNetworkComponent}
+	 */
+	@Override
+	public PlayerNetworkComponent getNetwork();
+
+	/**
 	 * If an entity is set as invisible, it will not be sent to the client.
 	 */
 	public void setVisible(Entity entity, boolean visible);
 
+	/**
+	 * Retrieves a list of all invisible {@link Entity}'s to the player
+	 *
+	 * @return {@link List<{@link Entity}>} of invisible {@link Entity}'s
+	 */
 	public List<Entity> getInvisibleEntities();
 
+	/**
+	 * Returns true if the {@link Entity} provided is invisible this this {@link Player}
+	 *
+	 * @param entity Entity to check if invisible to the {@link Player}
+	 * @return true if the {@link Entity} is invisible
+	 */
 	public boolean isInvisible(Entity entity);
 
+	/**
+	 * Processes the input of this player
+	 *
+	 * @param state The {@link Player}'s input state
+	 */
 	public void processInput(PlayerInputState state);
 
 	/**
@@ -169,4 +160,13 @@ public interface Player extends CommandSource, Entity {
 	 */
 	@Override
 	public PlayerSnapshot snapshot();
+
+	/**
+	 * Sends a command to be processed on the opposite Platform. This is basically a shortcut method to prevent the need to register a command locally with a {@link Command.NetworkSendType} of {@code
+	 * SEND}.
+	 *
+	 * @param command to send
+	 * @param args to send
+	 */
+	public void sendCommand(String command, String... args);
 }

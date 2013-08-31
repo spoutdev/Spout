@@ -48,29 +48,21 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
-import org.spout.math.vector.Vector3;
-import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.map.WeakValueHashMap;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.versioned.WorldFiles;
-import org.spout.engine.scheduler.SpoutScheduler;
-import org.spout.engine.scheduler.SpoutTaskManager;
-import org.spout.engine.util.thread.AsyncManager;
-import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
-public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
+public class SpoutServerWorld extends SpoutWorld {
 	/**
 	 * The spawn position.
 	 */
 	private final Transform spawnLocation = new Transform();
-	/**
-	 * The current world age.
-	 */
-	private SnapshotableLong age;
 	/**
 	 * String item map, used to convert local id's to the server id
 	 */
@@ -91,16 +83,10 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 	 * RegionFile manager for the world
 	 */
 	private final RegionFileManager regionFileManager;
-	protected final SpoutTaskManager taskManager;
-	/**
-	 * The execution thread for this world
-	 */
-	private Thread executionThread;
 	/*
 	 * A WeakReference to this world
 	 */
 	private final WeakReference<SpoutServerWorld> selfReference;
-	public static final WeakReference<SpoutServerWorld> NULL_WEAK_REFERENCE = new WeakReference<>(null);
 	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<>();
 
 	// TODO set up number of stages ?
@@ -115,18 +101,8 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 
 		regionFileManager = new RegionFileManager(worldDirectory);
 
-		this.age = new SnapshotableLong(snapshotManager, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 20, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<>(this);
-
-		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);
-
-		getEngine().getScheduler().addAsyncManager(this);
-	}
-
-	@Override
-	public long getAge() {
-		return age.get();
 	}
 
 	@Override
@@ -168,7 +144,7 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 		int cx = x >> Region.CHUNKS.BITS;
 		int cz = z >> Region.CHUNKS.BITS;
 
-		BAAWrapper baa = null;
+		BAAWrapper baa;
 
 		baa = heightMapBAAs.get(cx, cz);
 
@@ -269,11 +245,6 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 	}
 
 	@Override
-	public TaskManager getTaskManager() {
-		return taskManager;
-	}
-
-	@Override
 	public void copySnapshotRun() {
 		synchronized (regionColumnDirtyQueueMap) {
 			// This performs copy snapshot and also clears the column dirty queues
@@ -293,72 +264,11 @@ public class SpoutServerWorld extends SpoutWorld implements AsyncManager {
 	}
 
 	@Override
-	public void startTickRun(int stage, long delta) {
-		switch (stage) {
-			case 0: {
-				age.set(age.get() + delta);
-				parallelTaskManager.heartbeat(delta);
-				taskManager.heartbeat(delta);
-				for (Component component : values()) {
-					component.tick(delta);
-				}
-				break;
-			}
-			default: {
-				throw new IllegalStateException("Number of states exceeded limit for SpoutWorld");
-			}
-		}
-	}
-
-	@Override
-	public int getMaxStage() {
-		return 0;
-	}
-
-	@Override
 	public void finalizeRun() {
 		synchronized (columnSet) {
 			for (SpoutColumn c : columnSet) {
 				c.onFinalize();
 			}
 		}
-	}
-
-	@Override
-	public void preSnapshotRun() {
-
-	}
-
-	// Worlds don't do any of these
-	@Override
-	public void runPhysics(int sequence) {
-	}
-
-	@Override
-	public void runLighting(int sequence) {
-	}
-
-	@Override
-	public long getFirstDynamicUpdateTime() {
-		return SpoutScheduler.END_OF_THE_WORLD;
-	}
-
-	@Override
-	public void runDynamicUpdates(long time, int sequence) {
-	}
-
-	@Override
-	public int getSequence() {
-		return 0;
-	}
-
-	@Override
-	public Thread getExecutionThread() {
-		return executionThread;
-	}
-
-	@Override
-	public void setExecutionThread(Thread t) {
-		this.executionThread = t;
 	}
 }

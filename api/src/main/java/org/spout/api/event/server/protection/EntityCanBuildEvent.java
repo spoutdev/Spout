@@ -34,8 +34,8 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 
 /**
- * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can place the given block at the current {@link Point}. Protection plugins should utilize this event to
- * deny entities building in specific locations.
+ * This {@link org.spout.api.event.entity.AbstractEntityEvent} is designed to be fired by plugins that wish to check if an entity can place the given block at the current {@link Point}. Protection
+ * plugins should utilize this event to deny entities building in specific locations.
  */
 public class EntityCanBuildEvent extends AbstractEntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

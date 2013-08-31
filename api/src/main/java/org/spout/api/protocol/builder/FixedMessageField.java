@@ -26,7 +26,7 @@
  */
 package org.spout.api.protocol.builder;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 
 public class FixedMessageField extends MessageFieldImpl {
 	protected final int length;
@@ -41,7 +41,7 @@ public class FixedMessageField extends MessageFieldImpl {
 	}
 
 	@Override
-	public int getLength(ChannelBuffer buffer) {
+	public int getLength(ByteBuf buffer) {
 		return length;
 	}
 
@@ -51,23 +51,23 @@ public class FixedMessageField extends MessageFieldImpl {
 	}
 
 	@Override
-	public int skip(ChannelBuffer buffer) {
+	public int skip(ByteBuf buffer) {
 		buffer.skipBytes(length);
 		return length;
 	}
 
 	@Override
-	public Object read(ChannelBuffer buffer) {
+	public Object read(ByteBuf buffer) {
 		throw new UnsupportedOperationException("The raw fixed length field class cannot decode byte arrays");
 	}
 
 	@Override
-	public void write(ChannelBuffer buffer, Object value) {
+	public void write(ByteBuf buffer, Object value) {
 		throw new UnsupportedOperationException("The raw fixed length field class cannot encode byte arrays");
 	}
 
 	@Override
-	public void transfer(ChannelBuffer sourceBuffer, ChannelBuffer targetBuffer) {
+	public void transfer(ByteBuf sourceBuffer, ByteBuf targetBuffer) {
 		sourceBuffer.readBytes(targetBuffer, length);
 	}
 }

@@ -50,11 +50,13 @@ import org.spout.api.input.InputManager;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
-import org.spout.math.vector.Vector3;
+import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
+
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
 public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
@@ -235,7 +237,7 @@ public class SpoutInputManager implements InputManager {
 
 	private void onMouseClicked(Player player, int button, boolean pressed, int x, int y) {
 		//TODO Just testing - also, check int -> byte
-		player.getSession().send(new ClickRequestMessage((byte) x, (byte) y, ClickRequestMessage.Action.LEFT));
+		player.getNetwork().getSession().send(new ClickRequestMessage((byte) x, (byte) y, ClickRequestMessage.Action.LEFT));
 
 		PlayerClickEvent event = Spout.getEventManager().callEvent(new PlayerClickEvent(player, button, pressed, new IntVector2(x, y)));
 		if (event.isCancelled()) {
@@ -343,6 +345,8 @@ public class SpoutInputManager implements InputManager {
 		return ((Client) engine).getScreenStack().getInputScreen();
 	}
 
+	private Transform old;
+
 	public void execute(float dt) {
 		// TODO: protocol - hacky fix
 		if (((Client) Spout.getEngine()).getWorld().getName().equalsIgnoreCase("NullWorld")) {
@@ -354,7 +358,10 @@ public class SpoutInputManager implements InputManager {
 		}
 		Player player = ((Client) Spout.getEngine()).getPlayer();
 		// TODO: move this to NetworkSynchronizer?
-		player.getSession().send(new UpdateEntityMessage(player.getId(), physics.getTransformLive(), UpdateEntityMessage.UpdateAction.TRANSFORM, player.getSession().getNetworkSynchronizer().getRepositionManager()));
+		if (!physics.getTransformLive().equals(old)) {
+			player.getNetwork().getSession().send(new UpdateEntityMessage(player.getId(), physics.getTransformLive(), UpdateAction.TRANSFORM, player.getNetwork().getRepositionManager()));
+		}
+		old = physics.getTransformLive().copy();
 	}
 
 	@Override

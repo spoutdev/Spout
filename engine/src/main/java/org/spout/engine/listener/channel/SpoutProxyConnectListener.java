@@ -28,27 +28,28 @@ package org.spout.engine.listener.channel;
 
 import java.net.InetSocketAddress;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelPipeline;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelPipeline;
 
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.Session;
-import org.spout.engine.protocol.SpoutSession;
+import org.spout.api.protocol.ServerSession;
+
+import org.spout.engine.protocol.SpoutServerSession;
 
 public class SpoutProxyConnectListener implements ChannelFutureListener {
 	private final Engine engine;
-	private final SpoutSession<?> session;
+	private final SpoutServerSession<?> session;
 	private final String playerName;
 
-	public SpoutProxyConnectListener(Engine engine, String playerName, Session session) {
+	public SpoutProxyConnectListener(Engine engine, String playerName, ServerSession session) {
 		this.engine = engine;
-		this.session = (SpoutSession<?>) session;
+		this.session = (SpoutServerSession<?>) session;
 		this.playerName = playerName;
 	}
 
@@ -66,11 +67,11 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 		if (!future.isDone()) {
 			throw new IllegalStateException("Connect operation was not done when listener was triggered");
 		} else {
-			Channel c = future.getChannel();
+			Channel c = future.channel();
 			if (future.isSuccess()) {
-				Spout.getLogger().info("Connect to server successful " + c.getRemoteAddress() + ", " + playerName);
+				Spout.getLogger().info("Connect to server successful " + c.remoteAddress() + ", " + playerName);
 				session.bindAuxChannel(c);
-				ChannelPipeline pipeline = c.getPipeline();
+				ChannelPipeline pipeline = c.pipeline();
 				if (pipeline != null) {
 					CommonHandler d = pipeline.get(CommonHandler.class);
 					if (d != null) {
@@ -78,14 +79,14 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 					}
 					Protocol protocol = session.getProtocol();
 					if (protocol != null) {
-						Message intro = protocol.getIntroductionMessage(playerName, (InetSocketAddress) c.getRemoteAddress());
-						c.write(intro);
+						Message intro = protocol.getIntroductionMessage(playerName, (InetSocketAddress) c.remoteAddress());
+						c.writeAndFlush(intro);
 						return;
 					}
 				}
 				session.disconnect("Login failed for backend server");
 			} else {
-				Spout.getLogger().info("Failed to connect to server " + c.getRemoteAddress() + ", " + playerName);
+				Spout.getLogger().info("Failed to connect to server " + c.remoteAddress() + ", " + playerName);
 				session.disconnect("Unable to connect to backend server");
 			}
 		}

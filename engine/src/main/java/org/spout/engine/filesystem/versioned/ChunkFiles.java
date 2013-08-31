@@ -41,7 +41,6 @@ import org.spout.api.component.BlockComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.geo.cuboid.ChunkSnapshot.BlockComponentSnapshot;
-import org.spout.api.lighting.FakeLightingManager;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.material.block.BlockFullState;

@@ -38,9 +38,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import org.spout.api.Spout;
-import org.spout.math.vector.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Texture;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutRenderer;
@@ -61,6 +61,7 @@ import org.spout.math.matrix.Matrix2;
 import org.spout.math.matrix.Matrix3;
 import org.spout.math.matrix.Matrix4;
 import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
 import org.spout.math.vector.Vector4;
 
 /**

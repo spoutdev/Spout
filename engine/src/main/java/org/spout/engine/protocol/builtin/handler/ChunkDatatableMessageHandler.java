@@ -38,12 +38,8 @@ import org.spout.engine.world.SpoutChunk;
 public class ChunkDatatableMessageHandler extends MessageHandler<ChunkDatatableMessage> {
 	@Override
 	public void handleClient(ClientSession session, ChunkDatatableMessage message) {
-		if (!session.hasPlayer()) {
-			throw new IllegalStateException("Message sent when session has no player");
-		}
 		SpoutChunk c = (SpoutChunk) message.getChunk();
 		try {
-			System.out.println("Received chunk datatable message for " + c.toString());
 			switch (message.getType()) {
 				case REPLACE:
 					c.getDataMap().deserialize(message.getCompressedData(), true);

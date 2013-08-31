@@ -28,28 +28,35 @@ package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.event.player.ClientPlayerConnectedEvent;
 import org.spout.api.event.player.PlayerConnectEvent;
-import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.ServerSession;
 import org.spout.api.protocol.Session;
+import org.spout.api.protocol.event.WorldChangeProtocolEvent;
+
+import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
+import org.spout.engine.protocol.builtin.message.ReadyMessage;
 
 public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 	@Override
 	public void handleServer(ServerSession session, LoginMessage message) {
-		session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName(), (SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE)));
-		session.setState(Session.State.GAME);
+		session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName(), (SpoutConfiguration.VIEW_DISTANCE.getInt())));
+		// This could be nulled with PlayerConnectEvent
 		if (session.hasPlayer()) {
-			session.send(new LoginMessage("", session.getPlayer().getId()));
+			session.send(Session.SendType.FORCE, new LoginMessage(session.getPlayer().getName(), session.getPlayer().getId()));
+			Point ep = session.getPlayer().getPhysics().getPosition();
+			session.getPlayer().getNetwork().callProtocolEvent(new WorldChangeProtocolEvent(ep.getWorld()), session.getPlayer());
 		}
 	}
 
 	@Override
 	public void handleClient(ClientSession session, LoginMessage message) {
-		System.out.println("Player ID Received: " + message.getExtraInt());
 		session.setState(Session.State.GAME);
+		((SpoutClient) session.getEngine()).getPlayer().setName(message.getPlayerName());
+		((SpoutClient) session.getEngine()).getPlayer().setId(message.getExtraInt());
 		session.getEngine().getEventManager().callEvent(new ClientPlayerConnectedEvent(session, message.getExtraInt()));
 	}
 }

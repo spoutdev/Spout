@@ -35,5 +35,5 @@ import org.spout.api.protocol.Protocol;
  * A Message that wraps a Message with a dynamically-allocated ID
  */
 public interface DynamicWrapperMessage extends Message {
-	public Message unwrap(boolean upstream, Protocol activeProtocol) throws IOException;
+	public Message unwrap(Protocol activeProtocol) throws IOException;
 }

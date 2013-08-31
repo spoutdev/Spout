@@ -11,7 +11,7 @@ out vec2 uvcoord;
 
 uniform mat4 Projection;
 uniform mat4 View;
-uniform mat3 Model;
+uniform mat4 Model;
 
 void main() {
 	mat4 model = mat4(Model);
@@ -21,7 +21,7 @@ void main() {
 	model[2][0] = 0.0;
 	model[2][1] = 0.0;
 	model[2][2] = 1.0;
-	gl_Position = Projection * View * mat4(model) * vPosition;
+	gl_Position = Projection * View * model * vPosition;
 	
 	uvcoord = vTexCoord;
 	color = vColor;

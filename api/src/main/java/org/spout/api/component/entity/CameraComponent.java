@@ -29,7 +29,7 @@ package org.spout.api.component.entity;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.render.Camera;
 import org.spout.api.render.ViewFrustum;
-import org.spout.math.matrix.Matrix3;
+
 import org.spout.math.matrix.Matrix4;
 
 public class CameraComponent extends EntityComponent implements Camera {
@@ -39,7 +39,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 	private float fieldOfView = 75f;
 
 	public CameraComponent() {
-
+		this.frustum = new ViewFrustum();
 	}
 
 	public CameraComponent(Matrix4 createPerspective, Matrix4 createLookAt) {
@@ -98,8 +98,8 @@ public class CameraComponent extends EntityComponent implements Camera {
 	}
 
 	@Override
-	public Matrix3 getRotation() {
+	public Matrix4 getRotation() {
 		Transform transform = getOwner().getPhysics().getTransformRender();
-		return Matrix3.createRotation(transform.getRotation());
+		return Matrix4.createRotation(transform.getRotation());
 	}
 }

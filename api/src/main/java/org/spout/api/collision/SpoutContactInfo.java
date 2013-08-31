@@ -27,6 +27,7 @@
 package org.spout.api.collision;
 
 import org.spout.api.math.ReactConverter;
+
 import org.spout.math.vector.Vector3;
 import org.spout.physics.collision.ContactInfo;
 

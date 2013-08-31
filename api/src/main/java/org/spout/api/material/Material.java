@@ -103,6 +103,9 @@ public abstract class Material extends MaterialRegistry {
 		this((short) 0, name);
 	}
 
+	public Material(String name, String model) {
+		this((short) 0, name, model);
+	}
 	/**
 	 * Creates and registers a material
 	 *

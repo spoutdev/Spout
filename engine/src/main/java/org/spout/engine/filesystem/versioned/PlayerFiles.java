@@ -42,7 +42,6 @@ import org.spout.api.Spout;
 import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.event.storage.PlayerSaveEvent;
-import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.SpoutPlayerSnapshot;
 import org.spout.nbt.CompoundTag;
@@ -122,11 +121,11 @@ public class PlayerFiles {
 	 *
 	 * @return player, or null if it could not be loaded
 	 */
-	public static SpoutPlayer loadPlayerData(String name) {
+	public static SpoutPlayerSnapshot loadPlayerData(String name) {
 		PlayerLoadEvent event = new PlayerLoadEvent(name);
 		Spout.getEngine().getEventManager().callEvent(event);
 		if (event.getSnapshot() != null) {
-			return new SpoutPlayerSnapshot(event.getSnapshot()).toEntity((SpoutEngine) Spout.getEngine());
+			return new SpoutPlayerSnapshot(event.getSnapshot());
 		}
 
 		File playerDir = new File(Spout.getEngine().getDataFolder().toString(), "players");
@@ -137,7 +136,7 @@ public class PlayerFiles {
 			try {
 				is = new NBTInputStream(new DataInputStream(new FileInputStream(playerData)), false);
 				CompoundTag dataTag = (CompoundTag) is.readTag();
-				return (SpoutPlayer) EntityFiles.loadPlayerEntity(dataTag, name);
+				return EntityFiles.loadPlayerEntity(dataTag, name);
 			} catch (Exception e) {
 				Spout.getLogger().log(Level.SEVERE, "Error loading player data for " + name, e);
 

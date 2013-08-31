@@ -28,29 +28,29 @@ package org.spout.engine.protocol.builtin.codec;
 
 import java.util.UUID;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.math.vector.Vector3;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.util.ChannelBufferUtils;
+import org.spout.api.util.ByteBufUtils;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 import org.spout.math.imaginary.Quaternion;
 
 public class WorldChangeCodec extends MessageCodec<WorldChangeMessage> {
-	public WorldChangeCodec() {
-		super(WorldChangeMessage.class, 0x02);
+	public WorldChangeCodec(int opcode) {
+		super(WorldChangeMessage.class, opcode);
 	}
 
 	@Override
-	public ChannelBuffer encode(WorldChangeMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-		ChannelBufferUtils.writeString(buffer, message.getWorldName());
-		ChannelBufferUtils.writeUUID(buffer, message.getWorldUUID());
-		ChannelBufferUtils.writeVector3(buffer, message.getPosition());
-		ChannelBufferUtils.writeQuaternion(buffer, message.getRotation());
-		ChannelBufferUtils.writeVector3(buffer, message.getScale());
+	public ByteBuf encode(WorldChangeMessage message) {
+		ByteBuf buffer = Unpooled.buffer();
+		ByteBufUtils.writeString(buffer, message.getWorldName());
+		ByteBufUtils.writeUUID(buffer, message.getWorldUUID());
+		ByteBufUtils.writeVector3(buffer, message.getPosition());
+		ByteBufUtils.writeQuaternion(buffer, message.getRotation());
+		ByteBufUtils.writeVector3(buffer, message.getScale());
 		buffer.writeInt(message.getCompressedData().length);
 		buffer.writeBytes(message.getCompressedData());
 		buffer.writeByte(message.getType().ordinal());
@@ -58,12 +58,12 @@ public class WorldChangeCodec extends MessageCodec<WorldChangeMessage> {
 	}
 
 	@Override
-	public WorldChangeMessage decode(ChannelBuffer buffer) {
-		final String worldName = ChannelBufferUtils.readString(buffer);
-		final UUID worldUUID = ChannelBufferUtils.readUUID(buffer);
-		final Vector3 position = ChannelBufferUtils.readVector3(buffer);
-		final Quaternion rotation = ChannelBufferUtils.readQuaternion(buffer);
-		final Vector3 scale = ChannelBufferUtils.readVector3(buffer);
+	public WorldChangeMessage decode(ByteBuf buffer) {
+		final String worldName = ByteBufUtils.readString(buffer);
+		final UUID worldUUID = ByteBufUtils.readUUID(buffer);
+		final Vector3 position = ByteBufUtils.readVector3(buffer);
+		final Quaternion rotation = ByteBufUtils.readQuaternion(buffer);
+		final Vector3 scale = ByteBufUtils.readVector3(buffer);
 		final byte[] compressedData = new byte[buffer.readInt()];
 		buffer.readBytes(compressedData);
 		final DeltaMap.DeltaType type = DeltaMap.DeltaType.values()[buffer.readByte()];

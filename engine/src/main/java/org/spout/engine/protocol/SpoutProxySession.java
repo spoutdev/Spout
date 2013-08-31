@@ -30,8 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 
 import org.spout.api.Spout;
 import org.spout.api.protocol.Message;
@@ -76,14 +76,14 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 	 * For proxy, the main channel is downstream and the auxChannel is upstream.
 	 */
 	@Override
-	public void send(boolean force, Message message) {
+	public void send(SendType type, Message message) {
 		if (message instanceof ConnectionInfoMessage) {
 			updateConnectionInfo(false, (ConnectionInfoMessage) message);
 		}
-		super.send(force, message);
+		super.send(type, message);
 	}
 
-	public void sendUpstream(Message message) {
+	public void sendOutbound(Message message) {
 		if (message instanceof ConnectionInfoMessage) {
 			updateConnectionInfo(true, (ConnectionInfoMessage) message);
 		}
@@ -92,7 +92,7 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 			Spout.getLogger().warning("Attempt made to send data to an unconnected channel");
 			return;
 		}
-		auxChannel.write(message);
+		auxChannel.writeAndFlush(message);
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 			if (message instanceof TransformableMessage) {
 				message = ((TransformableMessage) message).transform(true, connects.get(), channelInfo.get(), auxChannelInfo.get());
 			}
-			sendUpstream(message);
+			sendOutbound(message);
 			return;
 		}
 		super.messageReceived(message);
@@ -139,8 +139,8 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 	}
 
 	@Override
-	public boolean disconnect(boolean kick, String reason) {
-		boolean result = super.disconnect(kick, reason);
+	public boolean disconnect(String reason) {
+		boolean result = super.disconnect(reason);
 		closeAuxChannel(false, reason);
 		return result;
 	}
@@ -175,7 +175,7 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 				kickMessage = p.getKickMessage(message);
 			}
 			if (kickMessage != null) {
-				c.write(kickMessage).addListener(ChannelFutureListener.CLOSE);
+				c.writeAndFlush(kickMessage).addListener(ChannelFutureListener.CLOSE);
 			} else {
 				c.close();
 			}

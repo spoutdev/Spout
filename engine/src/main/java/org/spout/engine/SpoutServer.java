@@ -26,6 +26,8 @@
  */
 package org.spout.engine;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -40,12 +42,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
 
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.ChannelGroupFuture;
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang3.Validate;
 import org.fourthline.cling.UpnpService;
@@ -54,18 +62,12 @@ import org.fourthline.cling.controlpoint.ControlPoint;
 import org.fourthline.cling.support.igd.PortMappingListener;
 import org.fourthline.cling.support.model.PortMapping;
 import org.fourthline.cling.transport.spi.InitializationException;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Listener;
@@ -79,35 +81,34 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.math.vector.Vector3;
 import org.spout.api.permissions.PermissionsSubject;
-import org.spout.api.protocol.CommonPipelineFactory;
+import org.spout.api.protocol.CommonChannelInitializer;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.resource.FileSystem;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
+
 import org.spout.cereal.config.ConfigurationException;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.entity.SpoutPlayerSnapshot;
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.listener.SpoutServerListener;
 import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.PortBindings;
-import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutServerSession;
 import org.spout.engine.protocol.SpoutSessionRegistry;
 import org.spout.engine.util.access.SpoutAccessManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
-import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutServerWorld;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	/**
@@ -127,7 +128,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 */
 	private UpnpService upnpService;
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
-	protected final ChannelGroup group = new DefaultChannelGroup();
+	protected final ChannelGroup group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+	protected final EventLoopGroup bossGroup = new NioEventLoopGroup();
+	protected final EventLoopGroup workerGroup = new NioEventLoopGroup();
 	/**
 	 * The {@link AccessManager} for the Server.
 	 */
@@ -203,19 +206,16 @@ public class SpoutServer extends SpoutEngine implements Server {
 		}
 	}
 
+	
 	@Override
 	public void init(SpoutApplication args) {
 		super.init(args);
-		// Note: All threads are daemons, cleanup of the executors is handled by bootstrap.getFactory().releaseExternalResources(); in stop(...).
-		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
-		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
-		ChannelFactory factory = new SpoutNioServerSocketChannel(executorBoss, executorWorker);
-		bootstrap.setFactory(factory);
-		bootstrap.setOption("tcpNoDelay", true);
-		bootstrap.setOption("keepAlive", true);
-
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
-		bootstrap.setPipelineFactory(pipelineFactory);
+		bootstrap
+			.group(bossGroup, workerGroup)
+			.channel(NioServerSocketChannel.class)
+			.childHandler(new CommonChannelInitializer())
+			.childOption(ChannelOption.TCP_NODELAY, true)
+			.childOption(ChannelOption.SO_KEEPALIVE, true);
 
 		accessManager.load();
 		accessManager.setWhitelistEnabled(SpoutConfiguration.WHITELIST_ENABLED.getBoolean());
@@ -262,7 +262,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 				WorldSavingThread.finish();
 				WorldSavingThread.staticJoin();
 
-				bootstrap.getFactory().releaseExternalResources();
+				bossGroup.shutdownGracefully();
+				workerGroup.shutdownGracefully();
 				boundProtocols.clear();
 			}
 		};
@@ -285,8 +286,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 		}
 		boundProtocols.put(binding.getAddress(), binding.getProtocol());
 		try {
-			getChannelGroup().add(bootstrap.bind(binding.getAddress()));
-		} catch (org.jboss.netty.channel.ChannelException ex) {
+			getChannelGroup().add(bootstrap.bind(binding.getAddress()).awaitUninterruptibly().channel());
+		} catch (io.netty.channel.ChannelException ex) {
 			Spout.severe("Failed to bind to address " + binding.getAddress() + ". Is there already another server running on this address?", ex);
 			return false;
 		}
@@ -352,8 +353,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public Session newSession(Channel channel) {
-		Protocol protocol = getProtocol(channel.getLocalAddress());
+	public SpoutServerSession newSession(Channel channel) {
+		Protocol protocol = getProtocol(channel.localAddress());
 		if (SpoutConfiguration.SHOW_CONNECTIONS.getBoolean()) {
 			getLogger().info("Downstream channel connected: " + channel + ".");
 		}
@@ -496,14 +497,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public void copySnapshotRun() {
-		super.copySnapshotRun();
-		for (Player player : players.get().values()) {
-			((SpoutPlayer) player).copySnapshot();
-		}
-	}
-
-	@Override
 	public AccessManager getAccessManager() {
 		return accessManager;
 	}
@@ -562,7 +555,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 				break;
 		}
 	}
-	
+
 	@Override
 	public Collection<World> matchWorld(String name) {
 		return StringUtil.matchName(getWorlds(), name);
@@ -619,7 +612,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 			return loadedWorlds.getLive().get(name);
 		}
 
-		// TODO: Should include generator (and non-zero seed)
 		if (generator == null) {
 			generator = defaultGenerator;
 		}
@@ -716,7 +708,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public Entity getEntity(UUID uid) {
-		for (World w : loadedWorlds.get().values()) {
+		for (SpoutWorld w : loadedWorlds.get().values()) {
 			Entity e = w.getEntity(uid);
 			if (e != null) {
 				return e;
@@ -725,41 +717,53 @@ public class SpoutServer extends SpoutEngine implements Server {
 		return null;
 	}
 
-	// Players should use weak map?
-	public Player addPlayer(String playerName, SpoutServerSession<?> session, int viewDistance) {
-		SpoutPlayer player = PlayerFiles.loadPlayerData(playerName);
-		boolean created = false;
-		if (player == null) {
-			getLogger().info("First login for " + playerName + ", creating new player data");
-			player = new SpoutPlayer(this, playerName, getDefaultWorld().getSpawnPoint(), viewDistance);
-			created = true;
+	@Override
+	public Entity getEntity(int id) {
+		for (SpoutWorld w : loadedWorlds.get().values()) {
+			Entity e = w.getEntity(id);
+			if (e != null) {
+				return e;
+			}
 		}
+		return null;
+	}
+
+	// Players should use weak map?
+	public Player addPlayer(String playerName, SpoutServerSession<?> session, int syncDistance) {
+		Class<? extends PlayerNetworkComponent> network = session.getProtocol().getServerNetworkComponent(session);
+		SpoutPlayerSnapshot snapshot = PlayerFiles.loadPlayerData(playerName);
+		SpoutPlayer player;
+		if (snapshot == null) {
+			getLogger().info("First login for " + playerName + ", creating new player data");
+			player = new SpoutPlayer(this, network, playerName, getDefaultWorld().getSpawnPoint());
+		} else {
+			player = new SpoutPlayer(this, network, snapshot);
+		}
+		session.setPlayer(player);
+		player.getNetwork().setSession(session);
+		//Set the player's sync distance
+		player.getNetwork().setSyncDistance(syncDistance);
+
 		SpoutPlayer oldPlayer = players.put(playerName, player);
 
 		if (reclamation != null) {
 			reclamation.addPlayer();
 		}
 
-		if (oldPlayer != null && oldPlayer.getSession() != null) {
+		if (oldPlayer != null && oldPlayer.getNetwork().getSession() != null) {
 			oldPlayer.kick("Login occured from another client");
 		}
 
-		final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) player.getPhysics();
-
-		// Test for valid old position
-		created |= physics.getTransformLive().getPosition().getWorld() == null;
-
-		// Connect the player and set their transform to the default world's spawn.
-		player.connect(session, created ? ((SpoutServerWorld) getDefaultWorld()).getSpawnPoint() : physics.getTransformLive());
-
 		// Spawn the player in the world
+		final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) player.getPhysics();
 		World world = physics.getTransformLive().getPosition().getWorld();
 		world.spawnEntity(player);
 		((SpoutServerWorld) world).addPlayer(player);
 
 		// Initialize the session
 		session.getProtocol().initializeServerSession(session);
-		session.getNetworkSynchronizer().forceSync();
+
+		player.getNetwork().forceSync();
 		return player;
 	}
 

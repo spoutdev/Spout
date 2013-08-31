@@ -24,23 +24,26 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.protocol;
+package org.spout.engine.protocol.builtin.codec;
 
-import java.util.Collections;
-import java.util.Set;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
-import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.protocol.MessageCodec;
+import org.spout.engine.protocol.builtin.message.ReadyMessage;
 
-/**
- * An implementation of ServerNetworkSynchronizer that doesn't do anything used for when a ServerNetworkSynchronizer has not been set
- */
-public class ServerNullNetworkSynchronizer extends ServerNetworkSynchronizer {
-	public ServerNullNetworkSynchronizer(Session session) {
-		super(session, 0);
+public class ReadyCodec extends MessageCodec<ReadyMessage> {
+	public ReadyCodec() {
+		super(ReadyMessage.class, 0x02);
 	}
 
 	@Override
-	public Set<Chunk> getActiveChunks() {
-		return Collections.EMPTY_SET;
+	public ByteBuf encode(ReadyMessage message) {
+		return Unpooled.buffer(0);
+	}
+
+	@Override
+	public ReadyMessage decode(ByteBuf buffer) {
+		return ReadyMessage.INSTANCE;
 	}
 }

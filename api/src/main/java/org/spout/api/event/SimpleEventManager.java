@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,6 +77,20 @@ public class SimpleEventManager implements EventManager {
 			event.setHasBeenCalled(true);
 		}
 		return event;
+	}
+
+	@Override
+	public void unRegisterEvents(Listener listener) {
+		for (Map.Entry<Class<? extends Event>, Set<ListenerRegistration>> entry : createRegisteredListeners(listener, null).entrySet()) {
+			Class<? extends Event> delegatedClass = getRegistrationClass(entry.getKey());
+			if (!entry.getKey().equals(delegatedClass)) {
+				LOGGER.severe("Plugin attempted to register delegated event class " + entry.getKey() + ". It should be using " + delegatedClass + "!");
+				continue;
+			}
+			for (ListenerRegistration r : entry.getValue()) {
+				getEventListeners(delegatedClass).unregister(r);
+			}
+		}
 	}
 
 	@Override
@@ -162,26 +177,68 @@ public class SimpleEventManager implements EventManager {
 				eventSet = new HashSet<>();
 				ret.put(eventClass, eventSet);
 			}
-			eventSet.add(new ListenerRegistration(new EventExecutor() {
-				@Override
-				public void execute(Event event) throws EventException {
-					try {
-						if (!checkClass.isAssignableFrom(event.getClass())) {
-							throw new EventException("Wrong event type passed to registered method");
-						}
-						method.invoke(listener, event);
-					} catch (InvocationTargetException e) {
-						if (e.getCause() instanceof EventException) {
-							throw (EventException) e.getCause();
-						}
-
-						throw new EventException(e.getCause());
-					} catch (Throwable t) {
-						throw new EventException(t);
-					}
-				}
-			}, eh.order(), plugin));
+			eventSet.add(new ListenerRegistration(new MethodEventExecutor(checkClass, listener, method, eh), eh.order(), plugin));
 		}
 		return ret;
+	}
+
+	private static class MethodEventExecutor implements EventExecutor {
+		private final Class<?> clazz;
+		private final Listener listener;
+		private final Method method;
+
+		public MethodEventExecutor(Class<?> clazz, Listener listener, Method method, EventHandler eh) {
+			this.clazz = clazz;
+			this.listener = listener;
+			this.method = method;
+		}
+
+		@Override
+		public void execute(Event event) throws EventException {
+			try {
+				if (!clazz.isAssignableFrom(event.getClass())) {
+					throw new EventException("Wrong event type passed to registered method");
+				}
+				method.invoke(listener, event);
+			} catch (InvocationTargetException e) {
+				if (e.getCause() instanceof EventException) {
+					throw (EventException) e.getCause();
+				}
+
+				throw new EventException(e.getCause());
+			} catch (Throwable t) {
+				throw new EventException(t);
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			int hash = 5;
+			hash = 97 * hash + Objects.hashCode(this.clazz);
+			hash = 97 * hash + Objects.hashCode(this.listener);
+			hash = 97 * hash + Objects.hashCode(this.method);
+			return hash;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			final MethodEventExecutor other = (MethodEventExecutor) obj;
+			if (!Objects.equals(this.clazz, other.clazz)) {
+				return false;
+			}
+			if (!Objects.equals(this.listener, other.listener)) {
+				return false;
+			}
+			if (!Objects.equals(this.method, other.method)) {
+				return false;
+			}
+			return true;
+		}
 	}
 }

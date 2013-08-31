@@ -33,7 +33,6 @@ import java.util.List;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
@@ -47,9 +46,9 @@ public class LayeredWorldGenerator implements WorldGenerator {
 	private short floorid = 0, floordata = 0;
 
 	@Override
-	public void generate(CuboidBlockMaterialBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
-		final int startY = chunkY << Chunk.BLOCKS.BITS;
-		final int endY = startY + Region.BLOCKS.SIZE;
+	public void generate(CuboidBlockMaterialBuffer blockData, World world) {
+		final int startY = blockData.getBase().getFloorY();
+		final int endY = blockData.getTop().getFloorY();
 		int y, height;
 		for (Layer layer : this.layers) {
 			if (layer.getTop() > startY && layer.getY() < endY) {

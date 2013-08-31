@@ -152,7 +152,7 @@ public class ServerCommands extends CommonCommands {
 	@Permissible ("spout.command.banip")
 	public void banIp(CommandSource source, CommandArguments args) throws CommandException {
 		if (source instanceof Player) {
-			getEngine().getLogger().info(((Player) source).getAddress().getHostAddress());
+			getEngine().getLogger().info(((Player) source).getNetwork().getAddress().getHostAddress());
 			getEngine().getLogger().info("Args: " + args.length());
 		}
 
@@ -215,7 +215,7 @@ public class ServerCommands extends CommonCommands {
 		String message = args.popRemainingStrings("message", "Oops!");
 
 		if (source instanceof Player) {
-			((Player) source).getSession().disconnect(false, message);
+			((Player) source).getNetwork().getSession().disconnect(message);
 		}
 	}
 

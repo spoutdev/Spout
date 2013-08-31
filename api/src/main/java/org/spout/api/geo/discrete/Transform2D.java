@@ -90,9 +90,9 @@ public class Transform2D {
 	}
 
 	public Matrix3 toMatrix() {
-		Matrix3 rotation = this.rotation.toMatrix();
+		Matrix3 rotation = Matrix3.createRotation(this.rotation);
 		Matrix3 translation = Matrix3.createTranslation(position);
-		Matrix3 scale = Matrix3.createScaling(this.scale.toVector3());
+		Matrix3 scale = Matrix3.createScaling(this.scale.toVector3(1));
 		return scale.mul(rotation).mul(translation);
 	}
 }

@@ -29,11 +29,16 @@ package org.spout.api.protocol;
 import java.net.InetSocketAddress;
 import java.util.logging.Level;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
+import java.util.UUID;
 
 import org.spout.api.Engine;
+import static org.spout.api.Platform.CLIENT;
+import static org.spout.api.Platform.PROXY;
+import static org.spout.api.Platform.SERVER;
 import org.spout.api.Spout;
 import org.spout.api.datatable.SerializableMap;
+import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 
 /**
@@ -54,11 +59,6 @@ public interface Session {
 	 * @param message message to be processed
 	 */
 	public <T extends Message> void messageReceivedOnAuxChannel(Channel auxChannel, T message);
-
-	/**
-	 * Disposes of this session by destroying the associated player, if there is one.
-	 */
-	public void dispose();
 
 	/**
 	 * Gets the protocol associated with this session.
@@ -82,22 +82,39 @@ public interface Session {
 	public void setState(State state);
 
 	/**
-	 * Sends a message to the client.
+	 * Specifies send behavior
+	 */
+	public enum SendType {
+		/**
+		 * Messages sent with a SendType of GAME_ONLY will only send if State is GAME. Messages will not be queued.
+		 */
+		GAME_ONLY,
+		/**
+		 * Messages sent with a SendType of QUEUE will wait until State is GAME to send. Messages may be queued.
+		 */
+		QUEUE,
+		/**
+		 * Messages sent with a SendType of FORCE will send as soon as possible regardless of State.
+		 */
+		FORCE;
+	}
+	/**
+	 * Sends a message across the network. This is equivalent to calling {@code send(SendType.QUEUE, message)}.
 	 *
 	 * @param message The message.
 	 */
 	public void send(Message message);
 
 	/**
-	 * Sends a message to the client.
+	 * Sends a message across the network.
 	 *
-	 * @param force if this message is used in the identification stages of communication
+	 * @param type send behavior
 	 * @param message The message.
 	 */
-	public void send(boolean force, Message message);
+	public void send(SendType type, Message message);
 
 	/**
-	 * Sends any amount of messages to the client
+	 * Sends any amount of messages to the client. This is equivalent to calling {@code sendAll(SendType.QUEUE, messages)}.
 	 *
 	 * @param messages the messages to send to the client
 	 */
@@ -106,27 +123,18 @@ public interface Session {
 	/**
 	 * Sends any amount of messages to the client.
 	 *
-	 * @param force if the messages are used in the identification stages of communication
+	 * @param type send behavior
 	 * @param messages the messages to send to the client
 	 */
-	public void sendAll(boolean force, Message... messages);
+	public void sendAll(SendType type, Message... messages);
 
 	/**
-	 * Disconnects the player as a kick. This is equivalent to calling disconnect(reason, true)
+	 * Disconnects the player as a kick.
 	 *
 	 * @param reason The reason for disconnection
 	 * @return Whether the player was actually disconnected
 	 */
 	public boolean disconnect(String reason);
-
-	/**
-	 * Disconnects the session with the specified reason. When the kick packet has been delivered, the channel is closed.
-	 *
-	 * @param reason The reason for disconnection.
-	 * @param kick Whether this disconnection is caused by the player being kicked or the player quitting Disconnects are only cancellable when the disconnection is a kick
-	 * @return Whether the player was actually disconnected. This can be false if the kick event is cancelled or errors occur
-	 */
-	public boolean disconnect(boolean kick, String reason);
 
 	/**
 	 * Returns the address of this session.
@@ -173,13 +181,6 @@ public interface Session {
 	 */
 	public boolean isPrimary(Channel c);
 
-	/**
-	 * Gets the ServerNetworkSynchronizer associated with this player.<br>
-	 *
-	 * @return the synchronizer
-	 */
-	public <T extends NetworkSynchronizer> T getNetworkSynchronizer();
-
 	public enum State {
 		/**
 		 * In the exchange handshake state, the server is waiting for the client to send its initial handshake packet.
@@ -194,6 +195,10 @@ public interface Session {
 		 */
 		EXCHANGE_ENCRYPTION,
 		/**
+		 * This state is when a critical message has been sent that must be waited for.
+		 */
+		WAITING,
+		/**
 		 * In the game state the session has an associated player.
 		 */
 		GAME
@@ -204,9 +209,15 @@ public interface Session {
 	/**
 	 * True if this session is open and connected. If the session is closed, all packets will be silently ignored.
 	 *
-	 * @return is connected
+	 * @return is active
 	 */
-	public boolean isConnected();
+	public boolean isActive();
+
+	/**
+	 * True if disconnect has been called on this session.
+	 * @return if disconnect has been called
+	 */
+	public boolean isDisconnected();
 
 	public interface UncaughtExceptionHandler {
 		/**
@@ -246,7 +257,7 @@ public interface Session {
 		public void uncaughtException(Message message, MessageHandler<?> handle, Exception ex) {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (session.getPlayer() != null ? session.getPlayer().getName() : "null"));
 			ex.printStackTrace();
-			session.disconnect(false, "Message handler exception for " + message.getClass().getSimpleName());
+			session.disconnect("Message handler exception for " + message.getClass().getSimpleName());
 		}
 	}
 

@@ -87,9 +87,6 @@ public class DebugScreen extends Screen implements DebugHud {
 
 	/**
 	 * Spout can display more than one line
-	 *
-	 * @param id
-	 * @param arg
 	 */
 	public void spoutUpdate(int id, String arg) {
 		if (spoutMessages.containsKey(id)) {

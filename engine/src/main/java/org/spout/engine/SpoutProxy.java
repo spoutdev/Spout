@@ -27,34 +27,29 @@
 package org.spout.engine;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 
 import org.spout.api.Platform;
+import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Player;
-import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.Session;
+import org.spout.api.protocol.ServerSession;
+
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.listener.SpoutProxyListener;
 import org.spout.engine.listener.channel.SpoutProxyConnectListener;
 import org.spout.engine.protocol.SpoutProxySession;
 import org.spout.engine.protocol.SpoutServerSession;
-import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutProxy extends SpoutServer {
 	/**
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
-	private final ClientBootstrap clientBootstrap = new ClientBootstrap();
+	private final Bootstrap bootstrap = new Bootstrap();
 
 	@Override
 	public void start() {
@@ -68,41 +63,25 @@ public class SpoutProxy extends SpoutServer {
 
 	@Override
 	public Player addPlayer(String playerName, SpoutServerSession<?> session, int viewDistance) {
-		SpoutPlayer player = new SpoutPlayer(this, playerName, null, -1);
+		SpoutPlayer player = new SpoutPlayer(this, PlayerNetworkComponent.class, playerName, null);
 		players.putIfAbsent(playerName, player);
 		session.setPlayer(player);
 		return player;
 	}
 
-	public void connect(String playerName, Session session) {
+	public void connect(String playerName, ServerSession session) {
 		connect("localhost", 25565, playerName, session);
 	}
 
-	public void connect(String hostname, int port, String playerName, Session session) {
+	public void connect(String hostname, int port, String playerName, ServerSession session) {
 		ChannelFutureListener listener = new SpoutProxyConnectListener(this, playerName, session);
 		InetSocketAddress addr = new InetSocketAddress(hostname, port);
-		clientBootstrap.connect(addr).addListener(listener);
+		bootstrap.connect(addr).addListener(listener);
 	}
 
 	@Override
-	public void init(SpoutApplication args) {
-		super.init(args);
-		//Note: All threads are daemons, cleanup of the executors is handled by clientBootstrap.getFactory().releaseExternalResources(); in stop(...).
-		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
-		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
-		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
-		clientBootstrap.setFactory(factory);
-
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
-		clientBootstrap.setPipelineFactory(pipelineFactory);
-
-		clientBootstrap.setOption("tcpNoDelay", true);
-		clientBootstrap.setOption("keepAlive", true);
-	}
-
-	@Override
-	public Session newSession(Channel channel) {
-		Protocol protocol = getProtocol(channel.getLocalAddress());
+	public SpoutProxySession newSession(Channel channel) {
+		Protocol protocol = getProtocol(channel.localAddress());
 		return new SpoutProxySession(this, channel, protocol);
 	}
 
@@ -114,7 +93,7 @@ public class SpoutProxy extends SpoutServer {
 		Runnable finalTask = new Runnable() {
 			@Override
 			public void run() {
-				clientBootstrap.getFactory().releaseExternalResources();
+				bootstrap.group().shutdownGracefully();
 			}
 		};
 		getScheduler().submitFinalTask(finalTask, true);

@@ -27,15 +27,19 @@
 package org.spout.api.component.entity;
 
 import org.spout.api.map.DefaultedKey;
-import org.spout.math.vector.Vector3;
+import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.render.Font;
 import org.spout.api.render.SpoutRenderMaterials;
 
+import org.spout.math.vector.Vector3;
+
 public class TextModelComponent extends EntityComponent {
-	protected float size = 1;
-	protected Vector3 translation = Vector3.ZERO;
-	protected boolean dirty = true;
-	protected boolean lookCamera = true;
+	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKeyImpl<>("entity-text", "(your text here)");
+	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKeyImpl<>("font", SpoutRenderMaterials.DEFAULT_FONT);
+	private Vector3 translation = Vector3.ZERO;
+	private boolean lookCamera = true;
+	private boolean dirty = true;
+	private float size = 1;
 
 	public String getText() {
 		return getData().get(KEY_TEXT);
@@ -53,6 +57,14 @@ public class TextModelComponent extends EntityComponent {
 	public void setFont(Font font) {
 		getData().put(KEY_FONT, font);
 		dirty = true;
+	}
+
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
 	}
 
 	public float getSize() {
@@ -80,29 +92,4 @@ public class TextModelComponent extends EntityComponent {
 	public void setShouldLookCamera(boolean yes) {
 		this.lookCamera = yes;
 	}
-
-	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKey<String>() {
-		private final String DEFAULT_VALUE = "(your text here)";
-
-		@Override
-		public String getDefaultValue() {
-			return DEFAULT_VALUE;
-		}
-
-		@Override
-		public String getKeyString() {
-			return "entity-text";
-		}
-	};
-	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKey<Font>() {
-		@Override
-		public Font getDefaultValue() {
-			return SpoutRenderMaterials.DEFAULT_FONT;
-		}
-
-		@Override
-		public String getKeyString() {
-			return "font";
-		}
-	};
 }

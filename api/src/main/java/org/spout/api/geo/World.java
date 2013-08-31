@@ -515,7 +515,6 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 *
 	 * @return all players on this world
 	 */
-	@ServerOnly
 	public List<Player> getPlayers();
 
 	/**

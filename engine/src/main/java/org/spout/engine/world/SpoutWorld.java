@@ -43,7 +43,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.spout.math.vector.Vector3;
+import org.spout.api.Client;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentOwner;
@@ -85,15 +85,20 @@ import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
+import org.spout.engine.scheduler.SpoutScheduler;
+import org.spout.engine.scheduler.SpoutTaskManager;
+import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 import org.spout.math.GenericMath;
+import org.spout.math.vector.Vector3;
 
-public abstract class SpoutWorld extends BaseComponentOwner implements World {
+public abstract class SpoutWorld extends BaseComponentOwner implements AsyncManager, World {
 	protected SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * The server of this world.
@@ -155,6 +160,8 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	private final WeakReference<SpoutWorld> selfReference;
 	public static final WeakReference<SpoutWorld> NULL_WEAK_REFERENCE = new WeakReference<>(null);
 	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<>();
+	private final SpoutTaskManager taskManager;
+	private Thread executionThread;
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid) {
@@ -179,6 +186,8 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 		}
 
 		parallelTaskManager = new SpoutParallelTaskManager(engine.getScheduler(), this);
+
+		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);
 
 		lightingManagers = new UnprotectedCopyOnUpdateArray<>(LightingManager.class, true);
 
@@ -478,30 +487,12 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 
 	@Override
 	public Entity createEntity(Point point, Class<? extends Component>... classes) {
-		SpoutEntity entity;
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			entity = new SpoutEntity(getEngine(), point, false);
-		} else {
-			entity = new SpoutEntity(getEngine(), point);
-		}
-		for (Class<? extends Component> clazz : classes) {
-			entity.add(clazz);
-		}
-		return entity;
+		return new SpoutEntity(getEngine(), point, classes);
 	}
 
 	@Override
 	public Entity createEntity(Point point, EntityPrefab prefab) {
-		SpoutEntity entity;
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			entity = new SpoutEntity(getEngine(), point, false);
-		} else {
-			entity = new SpoutEntity(getEngine(), point);
-		}
-		for (Class<? extends Component> clazz : prefab.getComponents()) {
-			entity.add(clazz);
-		}
-		return entity;
+		return createEntity(point, prefab.getComponents().toArray(new Class[prefab.getComponents().size()]));
 	}
 
 	/**
@@ -516,7 +507,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	 * Spawns an entity into the world. Fires off a cancellable EntitySpawnEvent
 	 */
 	public void spawnEntity(Entity e, int entityID) {
-		if (e.isSpawned()) {
+		if (e.isSpawned() && !(engine instanceof Client)) {
 			throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
 		}
 
@@ -524,33 +515,33 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 		if (region == null) {
 			throw new IllegalStateException("Cannot spawn an entity that has a null region!");
 		}
-		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
-			if (entityID != SpoutEntity.NOTSPAWNEDID) {
-				if (getEngine().getPlatform() == Platform.CLIENT) {
-					((SpoutEntity) e).setId(entityID);
-				} else {
-					throw new IllegalArgumentException("Can not set entity id's manually");
-				}
-			}
-			EntitySpawnEvent event = getEngine().getEventManager().callEvent(new EntitySpawnEvent(e, e.getPhysics().getPosition()));
-			if (event.isCancelled()) {
-				return;
-			}
-			region.getEntityManager().addEntity((SpoutEntity) e);
-			//Alert world components that an entity entered
-			for (Component component : values()) {
-				if (component instanceof WorldComponent) {
-					((WorldComponent) component).onSpawn(event);
-				}
-			}
-			//Alert entity components that their owner spawned
-			for (Component component : e.values()) {
-				if (component instanceof EntityComponent) {
-					((EntityComponent) component).onSpawned(event);
-				}
-			}
-		} else {
+		if (!region.getEntityManager().isSpawnable((SpoutEntity) e)) {
 			throw new IllegalStateException("Cannot spawn an entity that already has an id!");
+		}
+
+		if (entityID != SpoutEntity.NOTSPAWNEDID) {
+			if (getEngine().getPlatform() == Platform.CLIENT) {
+				((SpoutEntity) e).setId(entityID);
+			} else {
+				throw new IllegalArgumentException("Can not set entity id's manually");
+			}
+		}
+		EntitySpawnEvent event = getEngine().getEventManager().callEvent(new EntitySpawnEvent(e, e.getPhysics().getPosition()));
+		if (event.isCancelled()) {
+			return;
+		}
+		region.getEntityManager().addEntity((SpoutEntity) e);
+		//Alert world components that an entity entered
+		for (Component component : values()) {
+			if (component instanceof WorldComponent) {
+				((WorldComponent) component).onSpawn(event);
+			}
+		}
+		//Alert entity components that their owner spawned
+		for (Component component : e.values()) {
+			if (component instanceof EntityComponent) {
+				((EntityComponent) component).onSpawned(event);
+			}
 		}
 	}
 
@@ -581,6 +572,13 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	@Override
 	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, LoadOption option, Class<? extends Component>... classes) {
 		return createAndSpawnEntity(arrangement.getArrangement(), option, classes);
+	}
+
+	public Entity createAndSpawnEntity(Point point, LoadOption option, int id) {
+		getRegionFromBlock(point, option);
+		Entity e = createEntity(point);
+		spawnEntity(e, id);
+		return e;
 	}
 
 	@Override
@@ -1001,7 +999,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 	}
 
 	private static String toString(String name, UUID uid) {
-		return "SpoutWorld{ " + name + " UUID: " + uid + "}";
+		return "SpoutWorld{Name: " + name + " UUID: " + uid + "}";
 	}
 
 	@Override
@@ -1170,7 +1168,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 							}
 							observed.add(p);
 							byte[] empty = new byte[chunks.length * subArray1.length * subArray2.length];
-							p.getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
+							p.getNetwork().getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
 						}
 						subArray2[dz].setCuboid(x, y, z, buffer, cause);
 					}
@@ -1200,7 +1198,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 							}
 							observed.add(p);
 							byte[] empty = new byte[chunks.length * subArray1.length * subArray2.length];
-							p.getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
+							p.getNetwork().getSession().send(new CuboidBlockUpdateMessage(getUID(), buffer, empty, empty));
 						}
 						subArray2[dz].setCuboid(x, y, z, buffer, cause);
 					}
@@ -1345,5 +1343,70 @@ public abstract class SpoutWorld extends BaseComponentOwner implements World {
 			return null;
 		}
 		return c.getLightBuffer(manager);
+	}
+
+	@Override
+	public void startTickRun(int stage, long delta) {
+		switch (stage) {
+			case 0: {
+				age.set(age.get() + delta);
+				parallelTaskManager.heartbeat(delta);
+				taskManager.heartbeat(delta);
+				for (Component component : values()) {
+					component.tick(delta);
+				}
+				break;
+			}
+			default: {
+				throw new IllegalStateException("Number of states exceeded limit for SpoutWorld");
+			}
+		}
+	}
+
+	@Override
+	public TaskManager getTaskManager() {
+		return taskManager;
+	}
+
+	@Override
+	public Thread getExecutionThread() {
+		return executionThread;
+	}
+
+	@Override
+	public void setExecutionThread(Thread t) {
+		this.executionThread = t;
+	}
+
+	@Override
+	public long getFirstDynamicUpdateTime() {
+		return SpoutScheduler.END_OF_THE_WORLD;
+	}
+
+	@Override
+	public int getSequence() {
+		return 0;
+	}
+
+	@Override
+	public void preSnapshotRun() {
+	}
+
+	// Worlds don't do any of these
+	@Override
+	public void runPhysics(int sequence) {
+	}
+
+	@Override
+	public void runLighting(int sequence) {
+	}
+
+	@Override
+	public void runDynamicUpdates(long time, int sequence) {
+	}
+
+	@Override
+	public int getMaxStage() {
+		return 0;
 	}
 }

@@ -33,12 +33,12 @@ public interface Cancellable {
 	/**
 	 * If an event stops propagating (ie, is cancelled) partway through an even slot, that slot will not cease execution, but future even slots will not be called.
 	 *
-	 * @param cancelled True to set event canceled, False to uncancel event.
+	 * @param cancelled True to set event as cancelled, false to set as not cancelled.
 	 */
 	public void setCancelled(boolean cancelled);
 
 	/**
-	 * Get event canceled state.
+	 * Get event cancelled state.
 	 *
 	 * @return whether event is cancelled
 	 */

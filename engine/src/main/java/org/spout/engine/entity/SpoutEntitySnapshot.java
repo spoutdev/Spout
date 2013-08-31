@@ -40,7 +40,6 @@ import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.engine.SpoutEngine;
 
 public class SpoutEntitySnapshot implements EntitySnapshot {
 	private final WeakReference<Entity> entity;
@@ -50,8 +49,6 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 	private final String worldName;
 	private final UUID worldId;
 	private final SerializableMap dataMap;
-	private final int viewDistance;
-	private final boolean observer;
 	private final boolean savable;
 	private final List<Class<? extends Component>> components;
 	private final long time = System.currentTimeMillis();
@@ -67,8 +64,6 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 		this.location = e.getPhysics().getTransform();
 		this.worldName = e.getWorld().getName();
 		this.worldId = e.getWorld().getUID();
-		this.viewDistance = e.getViewDistance();
-		this.observer = e.isObserver();
 		this.savable = e.isSavable();
 		if (e.getData().size() > 0) {
 			this.dataMap = e.getData().deepCopy();
@@ -83,15 +78,13 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 		}
 	}
 
-	public SpoutEntitySnapshot(UUID id, Transform t, UUID worldId, int view, boolean observer, byte[] dataMap, List<Class<? extends Component>> types) {
+	public SpoutEntitySnapshot(UUID id, Transform t, UUID worldId, byte[] dataMap, List<Class<? extends Component>> types) {
 		this.entity = new WeakReference<>(null);
 		this.entityId = -1;
 		this.uniqueId = id;
 		this.location = t;
 		this.worldName = null;
 		this.worldId = worldId;
-		this.viewDistance = view;
-		this.observer = observer;
 		this.savable = true;
 		this.dataMap = new ManagedHashMap();
 		if (dataMap != null) {
@@ -140,16 +133,6 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 	}
 
 	@Override
-	public int getViewDistance() {
-		return viewDistance;
-	}
-
-	@Override
-	public boolean isObserver() {
-		return observer;
-	}
-
-	@Override
 	public boolean isSavable() {
 		return savable;
 	}
@@ -157,11 +140,6 @@ public class SpoutEntitySnapshot implements EntitySnapshot {
 	@Override
 	public List<Class<? extends Component>> getComponents() {
 		return components;
-	}
-
-	@SuppressWarnings ("unchecked")
-	public SpoutEntity toEntity(SpoutEngine engine) {
-		return new SpoutEntity(engine, location, viewDistance, uniqueId, false, dataMap, components.toArray(new Class[components.size()]));
 	}
 
 	@Override

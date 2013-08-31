@@ -28,10 +28,9 @@ package org.spout.engine.protocol;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
 
 import org.spout.api.geo.World;
-import org.spout.api.protocol.ClientNetworkSynchronizer;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
@@ -57,41 +56,23 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 	}
 
 	@Override
-	public void dispose() {
-		activeWorld.set(null);
-		SpoutPlayer player = this.player.get();
-		if (player != null) {
-			player.disconnect(false);
-		}
-		getEngine().disconnected();
-	}
-
-	public World getActiveWorld() {
-		return activeWorld.get();
-	}
-
-	@Override
 	public boolean disconnect(String reason) {
-		return disconnect(true, reason);
-	}
-
-	@Override
-	public boolean disconnect(boolean kick, String reason) {
-		return disconnect(kick, false, reason);
-	}
-
-	@Override
-	public boolean disconnect(boolean kick, boolean stop, String reason) {
-		SpoutPlayer player = getPlayer();
-		if (player != null) {
-			player.sendCommand("disconnect", reason);
-			return true;
+		if (isDisconnected()) {
+			throw new IllegalStateException("Tried to disconnect a session that has already been disconnected!");
 		}
-		return false;
+		isDisconnected = true;
+		activeWorld.set(null);
+		SpoutPlayer player = getPlayer();
+		if (player == null) {
+			throw new IllegalStateException("Tried to disconnect a session with a null player!");
+		}
+		player.disconnect(false);
+		getEngine().stop(reason);
+		return true;
 	}
 
 	public PortBinding getActiveAddress() {
-		return new PortBindingImpl(getProtocol(), channel.getRemoteAddress());
+		return new PortBindingImpl(getProtocol(), getChannel().remoteAddress());
 	}
 
 	@Override
@@ -106,15 +87,5 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> implements Cli
 			throw new IllegalArgumentException("Player in SpoutClientSession MUST be a SpoutClientPlayer");
 		}
 		super.setPlayer(player);
-	}
-
-	@Override
-	public void setNetworkSynchronizer(ClientNetworkSynchronizer synchronizer) {
-		super.setNetworkSynchronizer(synchronizer);
-	}
-
-	@Override
-	public ClientNetworkSynchronizer getNetworkSynchronizer() {
-		return (ClientNetworkSynchronizer) super.getNetworkSynchronizer();
 	}
 }

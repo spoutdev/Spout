@@ -29,12 +29,12 @@ package org.spout.engine.protocol.builtin.message;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import org.spout.api.geo.cuboid.ChunkSnapshot;
-import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.util.SpoutToStringStyle;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 

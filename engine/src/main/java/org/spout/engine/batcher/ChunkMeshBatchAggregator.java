@@ -32,12 +32,13 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
-import org.spout.math.vector.Vector3;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
+
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
-import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector3;
 
 /**
  * Represents a group of chunk meshes to be rendered.
@@ -51,7 +52,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	public final static int COUNT = SIZE_X * SIZE_Y * SIZE_Z;
 	private int count = 0;
 	private BatchVertexRenderer renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-	public final static Matrix3 model = Matrix3.IDENTITY;
+	public final static Matrix4 model = Matrix4.IDENTITY;
 	private final RenderMaterial material;
 	private boolean dataSent = false;
 	private boolean ready = false;

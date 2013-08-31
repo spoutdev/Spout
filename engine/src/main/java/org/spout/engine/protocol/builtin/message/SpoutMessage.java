@@ -38,4 +38,8 @@ public abstract class SpoutMessage implements Message {
 	public boolean isAsync() {
 		return false;
 	}
+
+	public boolean requiresPlayer() {
+		return true;
+	}
 }

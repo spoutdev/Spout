@@ -61,18 +61,14 @@ public final class AnnotatedCommandExecutor implements Executor {
 				} else {
 					method.invoke(instance, args, source);
 				}
-			} catch (IllegalAccessException e) {
-				throw new WrappedCommandException(e);
 			} catch (InvocationTargetException e) {
 				Throwable cause = e.getCause();
-				if (cause == null) {
-					throw new WrappedCommandException(e);
-				}
-
 				if (cause instanceof CommandException) {
 					throw (CommandException) cause;
 				}
 
+				throw new WrappedCommandException(e);
+			} catch (Exception e) {
 				throw new WrappedCommandException(e);
 			}
 		}

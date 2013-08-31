@@ -26,21 +26,17 @@
  */
 package org.spout.api.protocol;
 
-import java.net.SocketAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelEvent;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.UpstreamMessageEvent;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import org.junit.Test;
 
+import org.spout.api.protocol.fake.ChannelHandlerContextFaker;
 import org.spout.api.protocol.fake.FakeChannelHandlerContext;
 
 import static org.junit.Assert.assertTrue;
@@ -54,21 +50,16 @@ public class PreprocessReplayingDecoderTest {
 
 		Preprocessor p = new Preprocessor(512, BREAK, LENGTH);
 
-		List<ChannelEvent> outputList = new LinkedList<>();
 
-		ChannelHandlerContext fake = new FakeChannelHandlerContext(outputList);
+		FakeChannelHandlerContext fake = ChannelHandlerContextFaker.setup();
+		fake.setList(new LinkedList<byte[]>());
 
 		Random r = new Random();
 
 		byte[] input = new byte[LENGTH];
+		r.nextBytes(input);
 
 		int i = 0;
-
-		for (i = 0; i < LENGTH; i++) {
-			input[i] = (byte) r.nextInt();
-		}
-
-		i = 0;
 		while (i < input.length) {
 			int burstSize = r.nextInt(512);
 			if (r.nextInt(10) == 0) {
@@ -79,40 +70,18 @@ public class PreprocessReplayingDecoderTest {
 				burstSize = input.length - i;
 			}
 
-			final ChannelBuffer buf = ChannelBuffers.buffer(burstSize);
+			final ByteBuf buf = Unpooled.buffer(burstSize);
 			buf.writeBytes(input, i, burstSize);
 			i += burstSize;
 
-			MessageEvent e = new MessageEvent() {
-				@Override
-				public Channel getChannel() {
-					return null;
-				}
-
-				@Override
-				public ChannelFuture getFuture() {
-					return null;
-				}
-
-				@Override
-				public Object getMessage() {
-					return buf;
-				}
-
-				@Override
-				public SocketAddress getRemoteAddress() {
-					return null;
-				}
-			};
-
-			p.messageReceived(fake, e);
+			p.channelRead(fake, buf);
 		}
+		List<byte[]> outputList = fake.getList();
 
 		byte[] output = new byte[LENGTH];
 
 		i = 0;
-		for (ChannelEvent e : outputList) {
-			byte[] array = (byte[]) ((UpstreamMessageEvent) e).getMessage();
+		for (byte[] array : outputList) {
 			for (int j = 0; j < array.length; j++) {
 				output[i++] = array[j];
 			}
@@ -148,7 +117,7 @@ public class PreprocessReplayingDecoderTest {
 		}
 
 		@Override
-		public Object decodeProcessed(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception {
+		public Object decodeProcessed(ChannelHandlerContext ctx, Channel channel, ByteBuf buffer) throws Exception {
 
 			int packetSize = r.nextInt(128) + 1;
 			if (r.nextInt(10) == 0) {

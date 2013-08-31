@@ -38,12 +38,13 @@ import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.Camera;
 import org.spout.api.render.Font;
+
 import org.spout.engine.mesh.BaseMesh;
-import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
 
 public class ClientTextModelComponent extends TextModelComponent {
 	private BaseMesh mesh;
-	private static Matrix3 id3 = new Matrix3();// TODO: ClientTextModelComponent shouldn't use gui shader
+	private static Matrix4 id4 = new Matrix4();// TODO: ClientTextModelComponent shouldn't use gui shader
 
 	public void updateMesh() {
 		ArrayList<MeshFace> faces = new ArrayList<>();
@@ -51,7 +52,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 		Font font = getFont();
 		Color color = Color.black;
 
-		float ratio = 30f / size;
+		float ratio = 30f / getSize();
 
 		float w = font.getWidth();
 		float h = font.getHeight();
@@ -73,7 +74,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 				part.setSprite(new Rectangle(xCursor, yCursor, (float) r.width / ratio, h / ratio));
 				part.setSource(new Rectangle(r.x / w, 0f, r.width / w, 1f));
 
-				xCursor += (float) font.getAdvance(c) / ratio;
+				xCursor += font.getAdvance(c) / ratio;
 
 				List<Vertex> v = part.getVertices();
 
@@ -82,26 +83,26 @@ public class ClientTextModelComponent extends TextModelComponent {
 			}
 		}
 
-		translation = translation.sub(xCursor / 2.f, 0, 0);
+		setTranslation(getTranslation().sub(xCursor / 2.f, 0, 0));
 
 		mesh = new BaseMesh(faces, false, true, true, false);
 		mesh.batch();
 	}
 
 	public void render(Camera camera) {
-		if (dirty) {
-			dirty = false;
+		if (isDirty()) {
+			setDirty(false);
 			updateMesh();
 		}
 
 		Transform mt = getOwner().getPhysics().getTransform();
-		mt.setPosition(mt.getPosition().add(translation));
+		mt.setPosition(mt.getPosition().add(getTranslation()));
 
 		//TODO: Implements lookCamera, basicaly its the inverse of the camera's rotation
 
 		getFont().getMaterial().getShader().setUniform("View", camera.getView());
 		getFont().getMaterial().getShader().setUniform("Projection", camera.getProjection());
-		getFont().getMaterial().getShader().setUniform("Model", id3);
+		getFont().getMaterial().getShader().setUniform("Model", id4);
 
 		mesh.render(getFont().getMaterial());
 	}

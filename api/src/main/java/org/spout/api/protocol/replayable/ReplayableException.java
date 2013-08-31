@@ -24,10 +24,12 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.protocol;
+package org.spout.api.protocol.replayable;
 
-public abstract class ClientNetworkSynchronizer extends NetworkSynchronizer {
-	public ClientNetworkSynchronizer(Session session) {
-		super(session);
+public class ReplayableException extends RuntimeException {
+	private static final long serialVersionUID = 13424275234247532L;
+
+	public ReplayableException(String message) {
+		super(message);
 	}
 }

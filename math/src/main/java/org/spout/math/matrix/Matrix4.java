@@ -214,6 +214,16 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 						(col < 0 || col > 2 ? "col must be greater than zero and smaller than 3." : ""));
 	}
 
+	@Override
+	public Vector4 getRow(int row) {
+		return new Vector4(get(row, 0), get(row, 1), get(row, 2), get(row, 3));
+	}
+
+	@Override
+	public Vector4 getColumn(int col) {
+		return new Vector4(get(0, col), get(1, col), get(2, col), get(3, col));
+	}
+
 	public Matrix4 add(Matrix4 m) {
 		return new Matrix4(
 				m00 + m.m00, m01 + m.m01, m02 + m.m02, m03 + m.m03,
@@ -446,14 +456,14 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 	@Override
 	public float[] toArray(boolean columnMajor) {
 		if (columnMajor) {
-			return new float[] {
+			return new float[]{
 					m00, m10, m20, m30,
 					m01, m11, m21, m31,
 					m02, m12, m22, m32,
 					m03, m13, m23, m33
 			};
 		} else {
-			return new float[] {
+			return new float[]{
 					m00, m01, m02, m03,
 					m10, m11, m12, m13,
 					m20, m21, m22, m23,
@@ -656,7 +666,7 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 				scale / aspect, 0, 0, 0,
 				0, scale, 0, 0,
 				0, 0, (far + near) / (near - far), 2 * far * near / (near - far),
-				0, 0, -1, 1);
+				0, 0, -1, 0);
 	}
 
 	// TODO: add double overload

@@ -77,13 +77,17 @@ public class WorldFiles {
 
 		File itemMapFile = new File(worldDir, "materials.dat");
 		BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
-		if (itemMapFile.exists()) itemStore.load();
+		if (itemMapFile.exists()) {
+			itemStore.load();
+		}
 
 		StringToUniqueIntegerMap itemMap = new StringToUniqueIntegerMap(engine.getEngineItemMap(), itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
 
 		File lightingMapFile = new File(worldDir, "lighting.dat");
 		BinaryFileStore lightingStore = new BinaryFileStore(lightingMapFile);
-		if (lightingMapFile.exists()) lightingStore.load();
+		if (lightingMapFile.exists()) {
+			lightingStore.load();
+		}
 
 		StringToUniqueIntegerMap lightingMap = new StringToUniqueIntegerMap(engine.getEngineLightingMap(), lightingStore, 0, Short.MAX_VALUE, name + "LightingMap");
 

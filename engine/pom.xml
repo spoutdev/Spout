@@ -4,20 +4,21 @@
 	<!-- Project information -->
 	<name>Spout Engine</name>
 	<artifactId>spout</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<url>http://www.spout.org</url>
+	<inceptionYear>2011</inceptionYear>
 	<description>Open source, multithreaded, voxel game engine and platform, written in Java.</description>
 
 	<!-- Parent information -->
 	<parent>
 		<groupId>org.spout</groupId>
 		<artifactId>spout-parent</artifactId>
-		<version>1</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
 	<!-- Build properties -->
 	<properties>
+		<project.root>..</project.root>
 		<mainClass>${project.groupId}.engine.SpoutApplication</mainClass>
 	</properties>
 
@@ -31,21 +32,9 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.grahamedgecombe.jterminal</groupId>
-			<artifactId>jterminal</artifactId>
-			<version>1.0.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>jline</groupId>
 			<artifactId>jline</artifactId>
 			<version>2.11</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.fusesource.jansi</groupId>
-			<artifactId>jansi</artifactId>
-			<version>1.11</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -82,19 +71,6 @@
 
 	<!-- Build configuration -->
 	<build>
-		<!-- Resources to include -->
-		<resources>
-			<!-- Static resources -->
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/resources</directory>
-				<targetPath>.</targetPath>
-				<includes>
-					<include>**/*</include>
-				</includes>
-			</resource>
-		</resources>
-
 		<!-- Build plugins -->
 		<plugins>
 			<!-- JAR creation plugin -->
@@ -107,12 +83,11 @@
 						<manifestEntries>
 							<Main-Class>${mainClass}</Main-Class>
 							<Implementation-Title>${project.name}</Implementation-Title>
-							<Implementation-Version>${project.version}-b${buildNumber}</Implementation-Version>
+							<Implementation-Version>${project.version}+${ciSystem}-b${buildNumber}.git-${commit}</Implementation-Version>
 							<Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-							<Specification-Title>${project.name}API</Specification-Title>
-							<Specification-Version>${project.version}-b${buildNumber}</Specification-Version>
+							<Specification-Title>${project.name} API</Specification-Title>
+							<Specification-Version>${project.version}+${ciSystem}-b${buildNumber}.git-${commit}</Specification-Version>
 							<Specification-Vendor>${project.organization.name}</Specification-Vendor>
-							<Sealed>true</Sealed>
 						</manifestEntries>
 						<manifestSections>
 							<manifestSection>

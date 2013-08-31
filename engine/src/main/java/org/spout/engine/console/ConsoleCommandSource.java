@@ -26,7 +26,6 @@
  */
 package org.spout.engine.console;
 
-import org.spout.api.Client;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
@@ -37,8 +36,6 @@ import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.lang.Locale;
-import org.spout.api.protocol.Message;
-import org.spout.api.protocol.Session;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 
@@ -59,10 +56,6 @@ public class ConsoleCommandSource implements CommandSource {
 	}
 
 	@Override
-	public void sendCommand(String cmd, String... args) {
-	}
-
-	@Override
 	public void processCommand(String cmd, String... args) {
 		// call the event
 		PreCommandEvent event = engine.getEventManager().callEvent(new PreCommandEvent(this, cmd, args));
@@ -78,24 +71,11 @@ public class ConsoleCommandSource implements CommandSource {
 			sendMessage("Unknown command: " + cmd);
 			return;
 		}
-		switch (Spout.getPlatform()) {
-			case SERVER:
-			case PROXY:
-				// execute and send any exceptions
-				try {
-					command.process(this, arguments);
-				} catch (CommandException e) {
-					sendMessage(e.getMessage());
-				}
-				break;
-			case CLIENT:
-				Session session = ((Client) Spout.getEngine()).getPlayer().getSession();
-				Message msg = session.getProtocol().getCommandMessage(command, new CommandArguments(command.getName(), args));
-				if (msg == null) {
-					return;
-				}
-				session.send(msg);
-				break;
+		// execute and send any exceptions
+		try {
+			command.process(this, arguments);
+		} catch (CommandException e) {
+			sendMessage(e.getMessage());
 		}
 	}
 

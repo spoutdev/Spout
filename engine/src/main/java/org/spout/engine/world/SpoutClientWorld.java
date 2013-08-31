@@ -27,6 +27,7 @@
 package org.spout.engine.world;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,10 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.spout.api.component.Component;
+import org.spout.api.component.entity.EntityComponent;
+import org.spout.api.component.world.WorldComponent;
 import org.spout.api.entity.Player;
+import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -45,6 +49,7 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.math.vector.Vector3;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.engine.SpoutClient;
+import org.spout.engine.entity.SpoutClientPlayer;
 
 public class SpoutClientWorld extends SpoutWorld {
 	/**
@@ -199,7 +204,7 @@ public class SpoutClientWorld extends SpoutWorld {
 
 	@Override
 	public List<Player> getPlayers() {
-		throw new UnsupportedOperationException("Client worlds do not hold players");
+		return Arrays.asList((Player) ((SpoutClient) engine).getPlayer());
 	}
 
 	@Override
@@ -215,5 +220,31 @@ public class SpoutClientWorld extends SpoutWorld {
 	@Override
 	public TaskManager getTaskManager() {
 		throw new UnsupportedOperationException("Client does not run world tasks");
+	}
+
+	@Override
+	public void finalizeRun() {
+	}
+
+	@Override
+	public void copySnapshotRun() {
+		snapshotManager.copyAllSnapshots();
+	}
+
+	public void addLocalPlayer(final SpoutClientPlayer player) {
+		final SpoutRegion region = (SpoutRegion) player.getRegion();
+		EntitySpawnEvent event = getEngine().getEventManager().callEvent(new EntitySpawnEvent(player, player.getPhysics().getPosition()));
+		//Alert world components that an entity entered
+		for (Component component : values()) {
+			if (component instanceof WorldComponent) {
+				((WorldComponent) component).onSpawn(event);
+			}
+		}
+		//Alert entity components that their owner spawned
+		for (Component component : player.values()) {
+			if (component instanceof EntityComponent) {
+				((EntityComponent) component).onSpawned(event);
+			}
+		}
 	}
 }

@@ -28,24 +28,30 @@ package org.spout.engine.protocol.builtin;
 
 import java.net.InetSocketAddress;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
+import java.util.UUID;
 
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
-import org.spout.api.component.entity.NetworkComponent;
+import org.spout.api.component.entity.PlayerNetworkComponent;
+import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.object.EventableListener;
-import org.spout.api.map.DefaultedKey;
-import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.ServerSession;
+import org.spout.api.protocol.Session;
+import org.spout.api.protocol.replayable.ReplayableException;
 import org.spout.api.util.SyncedMapEvent;
 import org.spout.api.util.SyncedMapRegistry;
 import org.spout.api.util.SyncedStringMap;
+
+import org.spout.engine.component.entity.SpoutPlayerNetworkComponent;
 import org.spout.engine.protocol.builtin.codec.BlockUpdateCodec;
 import org.spout.engine.protocol.builtin.codec.ChunkDataCodec;
 import org.spout.engine.protocol.builtin.codec.ChunkDatatableCodec;
@@ -55,6 +61,7 @@ import org.spout.engine.protocol.builtin.codec.CommandCodec;
 import org.spout.engine.protocol.builtin.codec.CuboidBlockUpdateCodec;
 import org.spout.engine.protocol.builtin.codec.EntityDatatableCodec;
 import org.spout.engine.protocol.builtin.codec.LoginCodec;
+import org.spout.engine.protocol.builtin.codec.ReadyCodec;
 import org.spout.engine.protocol.builtin.codec.SyncedMapCodec;
 import org.spout.engine.protocol.builtin.codec.UpdateEntityCodec;
 import org.spout.engine.protocol.builtin.codec.WorldChangeCodec;
@@ -67,6 +74,7 @@ import org.spout.engine.protocol.builtin.handler.CommandMessageHandler;
 import org.spout.engine.protocol.builtin.handler.CuboidBlockUpdateMessageHandler;
 import org.spout.engine.protocol.builtin.handler.EntityDatatableMessageHandler;
 import org.spout.engine.protocol.builtin.handler.LoginMessageHandler;
+import org.spout.engine.protocol.builtin.handler.ReadyMessageHandler;
 import org.spout.engine.protocol.builtin.handler.SyncedMapMessageHandler;
 import org.spout.engine.protocol.builtin.handler.UpdateEntityMessageHandler;
 import org.spout.engine.protocol.builtin.handler.WorldChangeMessageHandler;
@@ -78,14 +86,15 @@ import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
  * The protocol used in SpoutClient
  */
 public class SpoutProtocol extends Protocol {
-	public static final int ENTITY_PROTOCOL_ID = NetworkComponent.getProtocolId(SpoutProtocol.class.getName());
 	public static final SpoutProtocol INSTANCE = new SpoutProtocol();
-	public static final DefaultedKey<Integer> PLAYER_ENTITY_ID = new DefaultedKeyImpl<>("playerEntityId", -1);
 	public static final int PROTOCOL_VERSION = 0;
 	public static final int DEFAULT_PORT = 13756;
 
 	public SpoutProtocol() {
 		super("Spout", DEFAULT_PORT, 256);
+		registerPacket(SyncedMapCodec.class, new SyncedMapMessageHandler());
+		registerPacket(LoginCodec.class, new LoginMessageHandler());
+		registerPacket(ReadyCodec.class, new ReadyMessageHandler());
 		registerPacket(BlockUpdateCodec.class, new BlockUpdateMessageHandler());
 		registerPacket(ChunkDataCodec.class, new ChunkDataMessageHandler());
 		registerPacket(ChunkDatatableCodec.class, new ChunkDatatableMessageHandler());
@@ -94,31 +103,32 @@ public class SpoutProtocol extends Protocol {
 		registerPacket(CommandCodec.class, new CommandMessageHandler());
 		registerPacket(CuboidBlockUpdateCodec.class, new CuboidBlockUpdateMessageHandler());
 		registerPacket(EntityDatatableCodec.class, new EntityDatatableMessageHandler());
-		registerPacket(LoginCodec.class, new LoginMessageHandler());
-		registerPacket(SyncedMapCodec.class, new SyncedMapMessageHandler());
 		registerPacket(UpdateEntityCodec.class, new UpdateEntityMessageHandler());
 		registerPacket(WorldChangeCodec.class, new WorldChangeMessageHandler());
 	}
 
-	// TODO: protocol - implement a BlockDatatable message
-
 	@Override
-	public MessageCodec<?> readHeader(ChannelBuffer buf) {
+	public MessageCodec<?> readHeader(ByteBuf buf) {
 		int id = buf.readUnsignedShort();
+		//if (Spout.debugMode()) System.out.println("Reading codec header: " + id);
 		int length = buf.readInt();
 		MessageCodec<?> codec = getCodecLookupService().find(id);
 		if (codec == null) {
+			Spout.getLogger().warning("Could not find codec with id " + id);
 			buf.skipBytes(length);
 			return null;
+		} else if (buf.readableBytes() < length) {
+			throw new ReplayableException("There was not enough information received for a packet with codec id of " + id + ". This may just be a frame issue.");
 		} else {
 			return codec;
 		}
 	}
 
 	@Override
-	public ChannelBuffer writeHeader(MessageCodec<?> codec, ChannelBuffer data) {
-		ChannelBuffer buf = ChannelBuffers.buffer(6);
+	public ByteBuf writeHeader(MessageCodec<?> codec, ByteBuf data) {
+		ByteBuf buf = Unpooled.buffer(4);
 		buf.writeShort(codec.getOpcode());
+		//if (Spout.debugMode()) System.out.println("Writing codec header: " + codec.getOpcode());
 		buf.writeInt(data.writerIndex());
 		return buf;
 	}
@@ -143,23 +153,37 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	@Override
+	public Class<? extends PlayerNetworkComponent> getServerNetworkComponent(ServerSession session) {
+		return SpoutPlayerNetworkComponent.class;
+	}
+
+	@Override
+	public Class<? extends PlayerNetworkComponent> getClientNetworkComponent(ClientSession session) {
+		return SpoutPlayerNetworkComponent.class;
+	}
+
+	@Override
 	public void initializeServerSession(final ServerSession session) {
-		session.setNetworkSynchronizer(new SpoutServerNetworkSynchronizer(session));
 		//TODO Ensure this is right, very important
+		final UUID playerUUID = session.getPlayer().getUID();
 		SyncedMapRegistry.getRegistrationMap().registerListener(new EventableListener<SyncedMapEvent>() {
 			@Override
 			public void onEvent(SyncedMapEvent event) {
-				session.send(new SyncedMapMessage(event.getAssociatedObject().getId(), SyncedMapEvent.Action.ADD, event.getModifiedElements()));
+				Entity e = Spout.getEngine().getEntity(playerUUID);
+				if (e == null || !(e instanceof Player)) {
+					SyncedMapRegistry.getRegistrationMap().unregisterListener(this);
+					return;
+				}
+				((Player) e).getNetwork().getSession().send(Session.SendType.FORCE, new SyncedMapMessage(event.getAssociatedObject().getId(), SyncedMapEvent.Action.ADD, event.getModifiedElements()));
 			}
 		});
-		session.send(new SyncedMapMessage(SyncedMapRegistry.REGISTRATION_MAP, SyncedMapEvent.Action.SET, SyncedMapRegistry.getRegistrationMap().getItems()));
+		session.send(Session.SendType.FORCE, new SyncedMapMessage(SyncedMapRegistry.REGISTRATION_MAP, SyncedMapEvent.Action.SET, SyncedMapRegistry.getRegistrationMap().getItems()));
 		for (SyncedStringMap map : SyncedMapRegistry.getAll()) {
-			session.send(new SyncedMapMessage(map.getId(), SyncedMapEvent.Action.SET, map.getItems()));
+			session.send(Session.SendType.FORCE, new SyncedMapMessage(map.getId(), SyncedMapEvent.Action.SET, map.getItems()));
 		}
 	}
 
 	@Override
 	public void initializeClientSession(final ClientSession session) {
-		session.setNetworkSynchronizer(new SpoutClientNetworkSynchronizer(session));
 	}
 }

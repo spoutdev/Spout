@@ -26,12 +26,13 @@
  */
 package org.spout.api.map;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * An extension of the default Java.util Map interface, that allows a default value to be returned when keys are not present in the map.
  */
-public interface DefaultedMap<V> extends Map<String, V> {
+public interface DefaultedMap<V extends Serializable> extends Map<String, V> {
 	/**
 	 * Returns the value to which the specified key is mapped, or the default value if this map contains no mapping for the key.
 	 *
