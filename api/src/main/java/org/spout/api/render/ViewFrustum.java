@@ -27,6 +27,7 @@
 package org.spout.api.render;
 
 import org.spout.api.geo.cuboid.Cuboid;
+
 import org.spout.math.matrix.Matrix4;
 import org.spout.math.vector.Vector3;
 
@@ -41,7 +42,7 @@ public class ViewFrustum {
 		position = paramPosition;
 
 		// http://www.crownandcutlass.com/features/technicaldetails/frustum.html
-		float[] clip = view.mul(projection).toArray(true);
+		float[] clip = projection.mul(view).toArray(true);
 
 		/* Extract the numbers for the RIGHT plane */
 		frustum[0][0] = clip[3] - clip[0];
@@ -89,7 +90,7 @@ public class ViewFrustum {
 		 * using bounding spheres at all this will save a few expensive
 		 * calculations per frame, but those probably won't be an issue on
 		 * most systems.*/
-		
+
 		/*for (int i=0 ; i<6 ; i++) {
 			double t = sqrt(frustum[i][0] * frustum[i][0] + frustum[i][1] * frustum[i][1] + frustum[i][2] * frustum[i][2]);
 			frustum[i][0] /= t;
