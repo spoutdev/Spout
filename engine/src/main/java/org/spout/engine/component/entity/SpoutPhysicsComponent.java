@@ -35,7 +35,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.ReactConverter;
 
-import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.math.imaginary.Quaternion;
 import org.spout.math.vector.Vector3;
@@ -452,7 +451,6 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	public void copySnapshot() {
-		if (getOwner() instanceof SpoutPlayer) System.out.println("Snapshot: (" + snapshot.getPosition().getX() + ", " + snapshot.getPosition().getY() + ", " + snapshot.getPosition().getZ() + ") Live: (" + live.getPosition().getX() + ", " + live.getPosition().getY() + ", " + live.getPosition().getZ() + ")");
 		snapshot.set(live);
 		render.set(snapshot);
 	}

@@ -291,16 +291,12 @@ public class NetworkComponent extends EntityComponent {
 
 	@Override
 	public void onDetached() {
-		System.out.println("Detaching NetworkComponent with " + observingChunks.size() + " chunks.");
-		int called = 0;
 		for (Chunk chunk : observingChunks) {
 			// TODO: it shouldn't matter if the chunk is loaded?
 			if (chunk.isLoaded()) {
-				called++;
 				chunk.removeObserver(getOwner());
 			}
 		}
-		System.out.println("Removed observer status from " + called + " chunks");
 		observingChunks.clear();
 	}
 

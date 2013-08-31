@@ -244,7 +244,7 @@ public class EntityManager {
 			final SpoutPhysicsComponent physics = (SpoutPhysicsComponent) observed.getPhysics();
 			boolean hasSpawned = network.hasSpawned(observed);
 			boolean isRemoved = observed.isRemoved();
-			double distance = physics.getTransformLive().getPosition().distanceSquared(player.getPhysics().getPosition());
+			double distance = physics.getTransformLive().getPosition().distanceSquared(((SpoutPhysicsComponent) player.getPhysics()).getTransformLive().getPosition());
 			//Entity is out of range of the player's view distance, destroy
 			boolean tooFar = distance > syncDistance * syncDistance;
 			boolean isInvisible = player.isInvisible(observed);
