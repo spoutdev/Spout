@@ -57,6 +57,7 @@ import org.spout.engine.renderer.shader.variables.Vec2ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec3ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec4ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vector3ArrayShaderVariable;
+import org.spout.math.matrix.Matrix;
 import org.spout.math.matrix.Matrix2;
 import org.spout.math.matrix.Matrix3;
 import org.spout.math.matrix.Matrix4;
@@ -68,7 +69,6 @@ import org.spout.math.vector.Vector4;
  * Represents a Shader Object in OpenGL
  */
 public class ClientShader implements SpoutShader {
-
 	public class ShaderCompilationTask implements Runnable {
 		private final ClientShader shader;
 		private final String vsource, fsource;
@@ -213,10 +213,12 @@ public class ClientShader implements SpoutShader {
 	}
 
 	public ClientShader(String vshaderSource, String vshaderUrl, String fshaderSource, String fshaderUrl, boolean override) {
+		shaderName = "Shader " + vshaderUrl + " " + fshaderUrl;
 		doCompileShader(vshaderSource, vshaderUrl, fshaderSource, fshaderUrl);
 	}
 
 	public ClientShader(String vertexShader, String fragmentShader) {
+		shaderName = "Shader " + vertexShader + " " + fragmentShader;
 
 		System.out.println("Compiling " + vertexShader + " and " + fragmentShader);
 
@@ -329,6 +331,17 @@ public class ClientShader implements SpoutShader {
 		variables.put(name, new Mat4ShaderVariable(program, name, value));
 		if (assigned == this) {
 			dirtyVariables.add(name);
+		}
+	}
+
+	@Override
+	public void setUniform(String name, Matrix value) {
+		if (value instanceof Matrix2) {
+			setUniform(name, (Matrix2) value);
+		} else if (value instanceof Matrix3) {
+			setUniform(name, (Matrix3) value);
+		} else if (value instanceof Matrix4) {
+			setUniform(name, (Matrix4) value);
 		}
 	}
 
@@ -498,5 +511,9 @@ public class ClientShader implements SpoutShader {
 		for (AttrUniInfo i : uniforms.values()) {
 			System.out.println("\t" + i);
 		}
+	}
+
+	public String getShaderName() {
+		return shaderName;
 	}
 }

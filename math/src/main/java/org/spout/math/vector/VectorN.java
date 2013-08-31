@@ -32,6 +32,9 @@ import java.util.Arrays;
 import org.spout.math.GenericMath;
 
 public class VectorN implements Vector, Comparable<VectorN>, Serializable, Cloneable {
+	public static VectorN ZERO_2 = new ImmutableZeroVectorN(0, 0);
+	public static VectorN ZERO_3 = new ImmutableZeroVectorN(0, 0, 0);
+	public static VectorN ZERO_4 = new ImmutableZeroVectorN(0, 0, 0, 0);
 	private static final long serialVersionUID = 1;
 	private final float[] vec;
 

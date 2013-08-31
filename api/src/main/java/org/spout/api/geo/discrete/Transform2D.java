@@ -78,7 +78,7 @@ public class Transform2D {
 	}
 
 	public void setRotation(float angle) {
-		this.rotation = new Complex(angle);
+		this.rotation = Complex.fromAngleDeg(angle);
 	}
 
 	public void setRotation(Complex rotation) {

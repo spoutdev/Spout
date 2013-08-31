@@ -31,6 +31,7 @@ import org.spout.api.inventory.ItemStack;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.material.BlockMaterial;
+
 import org.spout.math.vector.Vector3;
 
 /**
@@ -41,5 +42,5 @@ public interface Data {
 	public static final DefaultedKey<ItemStack> HELD_ITEM = new ItemStackDefaultedKey("held_item", BlockMaterial.AIR, 1);
 	public static final DefaultedKey<String> HELD_MATERIAL_NAME = new DefaultedKeyImpl<>("held_material_name", BlockMaterial.AIR.getName());
 	public static final DefaultedKey<String> NAME = new DefaultedKeyImpl<>("name", "");
-	public static final DefaultedKey<Vector3> VELOCITY = new DefaultedKeyImpl<>("velocity", Vector3.FORWARD);
+	public static final DefaultedKey<Vector3> VELOCITY = new DefaultedKeyImpl<>("velocity", new Vector3(1, 1, 1));
 }

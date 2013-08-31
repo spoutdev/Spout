@@ -36,7 +36,6 @@ import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
 
-import org.spout.math.vector.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.EntityEffect;
@@ -46,12 +45,14 @@ import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.render.shader.Shader;
+
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.shader.SpoutShader;
 import org.spout.math.matrix.Matrix2;
 import org.spout.math.matrix.Matrix3;
 import org.spout.math.matrix.Matrix4;
 import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
 import org.spout.math.vector.Vector4;
 
 public class ClientRenderMaterial extends RenderMaterial {

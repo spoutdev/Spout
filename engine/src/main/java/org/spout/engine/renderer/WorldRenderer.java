@@ -43,15 +43,17 @@ import com.google.common.collect.TreeMultimap;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
-import org.spout.math.vector.Vector3;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotRender;
+import org.spout.api.render.shader.Shader;
 import org.spout.api.util.map.TInt21TripleObjectHashMapOfMaps;
+
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.world.SpoutClientWorld;
+import org.spout.math.vector.Vector3;
 
 public class WorldRenderer {
 	public static final long TIME_LIMIT = 2;
@@ -136,9 +138,10 @@ public class WorldRenderer {
 			material.preRender(snapshotRender);
 			final Client client = (Client) Spout.getEngine();
 			final Camera camera = client.getPlayer().getType(Camera.class);
-			material.getShader().setUniform("View", camera.getView());
-			material.getShader().setUniform("Projection", camera.getProjection());
-			material.getShader().setUniform("Model", ChunkMeshBatchAggregator.model);
+			final Shader shader = material.getShader();
+			shader.setUniform("View", camera.getView());
+			shader.setUniform("Projection", camera.getProjection());
+			shader.setUniform("Model", ChunkMeshBatchAggregator.model);
 			totalChunks += entry.getValue().size();
 
 			Iterator<ChunkMeshBatchAggregator> it = entry.getValue().iterator();
@@ -153,7 +156,7 @@ public class WorldRenderer {
 
 				// It's hard to look right
 				// at the world baby
-				// But here's my frustrum
+				// But here's my frustum
 				// so cull me maybe?
 
 				if (camera.getFrustum().intersects(renderer)) {

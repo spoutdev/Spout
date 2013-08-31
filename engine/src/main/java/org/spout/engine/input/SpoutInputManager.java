@@ -412,12 +412,12 @@ public class SpoutInputManager implements InputManager {
 			} else if (state.getCrouch()) {
 				motion = playerTransform.upVector().mul(speed * -dt);
 			} else {
-				playerTransform.setRotation(Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getRoll()));
+				playerTransform.setRotation(Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
 				client.getPlayer().getPhysics().setTransform(playerTransform);
 				return;
 			}
 
-			playerTransform.translateAndSetRotation(motion, Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getRoll()));
+			playerTransform.translateAndSetRotation(motion, Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
 			client.getPlayer().getPhysics().setTransform(playerTransform);
 		}
 	}

@@ -53,11 +53,6 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 		this(1, 0);
 	}
 
-	public Complex(float angle) {
-		this.x = (float) Math.cos(Math.toRadians(angle));
-		this.y = (float) Math.sin(Math.toRadians(angle));
-	}
-
 	/**
 	 * Constructs a new complex from the double components.
 	 *

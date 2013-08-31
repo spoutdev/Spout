@@ -40,11 +40,11 @@ import org.spout.api.render.Camera;
 import org.spout.api.render.Font;
 
 import org.spout.engine.mesh.BaseMesh;
-import org.spout.math.matrix.Matrix4;
+import org.spout.math.matrix.Matrix3;
 
 public class ClientTextModelComponent extends TextModelComponent {
 	private BaseMesh mesh;
-	private static Matrix4 id4 = new Matrix4();// TODO: ClientTextModelComponent shouldn't use gui shader
+	private static Matrix3 id3 = new Matrix3();// TODO: ClientTextModelComponent shouldn't use gui shader
 
 	public void updateMesh() {
 		ArrayList<MeshFace> faces = new ArrayList<>();
@@ -102,7 +102,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 
 		getFont().getMaterial().getShader().setUniform("View", camera.getView());
 		getFont().getMaterial().getShader().setUniform("Projection", camera.getProjection());
-		getFont().getMaterial().getShader().setUniform("Model", id4);
+		getFont().getMaterial().getShader().setUniform("Model", id3);
 
 		mesh.render(getFont().getMaterial());
 	}

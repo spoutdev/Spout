@@ -102,7 +102,7 @@ public class IntVector3 extends IntVector2 {
 	}
 
 	public Vector3 toVector3() {
-		return new Vector3((float) getX(), (float) getY(), (float) getZ());
+		return new Vector3(getX(), getY(), getZ());
 	}
 
 	@Override

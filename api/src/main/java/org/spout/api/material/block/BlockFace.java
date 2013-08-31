@@ -31,20 +31,21 @@ import java.io.Serializable;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import org.spout.api.math.IntVector3;
-import org.spout.math.vector.Vector3;
 import org.spout.api.util.bytebit.ByteBitMask;
+
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
 /**
  * Indicates the facing of a Block
  */
 public enum BlockFace implements ByteBitMask, Serializable {
-	TOP(0x1, 0, 1, 0, new Quaternion(-90, 1, 0, 0)),
-	BOTTOM(0x2, 0, -1, 0, new Quaternion(90, 1, 0, 0), TOP),
-	NORTH(0x4, -1, 0, 0, new Quaternion(-90, 0, 1, 0)),
-	SOUTH(0x8, 1, 0, 0, new Quaternion(90, 0, 1, 0), NORTH),
-	EAST(0x10, 0, 0, -1, new Quaternion(180, 0, 1, 0)),
-	WEST(0x20, 0, 0, 1, new Quaternion(0, 0, 1, 0), EAST),
+	TOP(0x1, 0, 1, 0, Quaternion.fromAngleDegAxis(-90, 1, 0, 0)),
+	BOTTOM(0x2, 0, -1, 0, Quaternion.fromAngleDegAxis(90, 1, 0, 0), TOP),
+	NORTH(0x4, -1, 0, 0, Quaternion.fromAngleDegAxis(-90, 0, 1, 0)),
+	SOUTH(0x8, 1, 0, 0, Quaternion.fromAngleDegAxis(90, 0, 1, 0), NORTH),
+	EAST(0x10, 0, 0, -1, Quaternion.fromAngleDegAxis(180, 0, 1, 0)),
+	WEST(0x20, 0, 0, 1, Quaternion.fromAngleDegAxis(0, 0, 1, 0), EAST),
 	THIS(0x40, 0, 0, 0, Quaternion.IDENTITY);
 	private final byte mask;
 	private final Vector3 offset;

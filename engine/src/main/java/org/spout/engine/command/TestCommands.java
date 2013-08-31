@@ -347,7 +347,7 @@ public class TestCommands {
 		if (e == null) {
 			throw new CommandException("Unknown entity " + id + " in world " + world + "!");
 		}
-		e.getPhysics().setRotation(e.getPhysics().getRotation().mul(Quaternion.fromAngleDegAxis(0, rot)));
+		e.getPhysics().setRotation(e.getPhysics().getRotation().mul(Quaternion.fromRotationTo(Vector3.FORWARD, rot)));
 
 		engine.getLogger().info("Entity " + id + " rotate to " + rot.getX() + " " + rot.getY() + " " + rot.getZ());
 	}

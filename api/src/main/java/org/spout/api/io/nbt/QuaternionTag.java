@@ -76,6 +76,6 @@ public class QuaternionTag extends ListTag<FloatTag> {
 		if (x == null || y == null || z == null || w == null) {
 			return null;
 		}
-		return Quaternion.fromAngleDegAxis(w, x, y, z);
+		return new Quaternion(x, y, z, w);
 	}
 }

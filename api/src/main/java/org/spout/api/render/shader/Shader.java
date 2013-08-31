@@ -28,12 +28,14 @@ package org.spout.api.render.shader;
 
 import java.awt.Color;
 
-import org.spout.math.vector.Vector3;
 import org.spout.api.render.Texture;
+
+import org.spout.math.matrix.Matrix;
 import org.spout.math.matrix.Matrix2;
 import org.spout.math.matrix.Matrix3;
 import org.spout.math.matrix.Matrix4;
 import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
 import org.spout.math.vector.Vector4;
 
 public interface Shader {
@@ -54,6 +56,8 @@ public interface Shader {
 	public void setUniform(String name, Matrix4 value);
 
 	public void setUniform(String name, Matrix4[] value);
+
+	public void setUniform(String name, Matrix value);
 
 	public void setUniform(String name, Color value);
 

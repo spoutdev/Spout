@@ -41,6 +41,7 @@ import org.spout.api.render.effect.SnapshotRender;
 
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
+import org.spout.math.matrix.Matrix;
 import org.spout.math.matrix.Matrix4;
 
 public class SpriteBatch {
@@ -167,7 +168,7 @@ public class SpriteBatch {
 		renderer.flush(true);
 	}
 
-	public void render(Matrix4 model) {
+	public void render(Matrix model) {
 		if (renderer == null) {
 			return;
 		}

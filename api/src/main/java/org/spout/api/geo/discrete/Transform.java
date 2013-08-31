@@ -49,7 +49,7 @@ public final class Transform implements Serializable {
 	private Vector3 scale;
 
 	public Transform() {
-		this(Point.invalid, Quaternion.IDENTITY, Vector3.ZERO);
+		this(Point.invalid, Quaternion.IDENTITY, new Vector3(1, 1, 1));
 	}
 
 	public Transform(Transform transform) {
@@ -98,7 +98,7 @@ public final class Transform implements Serializable {
 	public Transform rotate(Quaternion offset) {
 		try {
 			lock.lock();
-			this.rotation = Quaternion.fromAngleRadAxis(offset.getW(), offset.getX(), offset.getY(), offset.getZ());
+			this.rotation = offset.mul(rotation);
 		} finally {
 			lock.unlock();
 		}
@@ -245,7 +245,7 @@ public final class Transform implements Serializable {
 
 	/**
 	 * Gets a String representation of this transform
-	 *
+	 * <p/>
 	 * Note: unsafe, could return torn values
 	 *
 	 * @return the string
