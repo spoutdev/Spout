@@ -32,11 +32,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import org.spout.api.datatable.delta.DeltaMap;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.util.ByteBufUtils;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
+import org.spout.math.imaginary.Quaternion;
 
 public class WorldChangeCodec extends MessageCodec<WorldChangeMessage> {
 	public WorldChangeCodec(int opcode) {

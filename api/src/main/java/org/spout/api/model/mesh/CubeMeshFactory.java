@@ -31,8 +31,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
 
 public class CubeMeshFactory {
 	public static OrientedMesh generateCubeMesh(Vector2[][] uvs) {

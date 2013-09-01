@@ -46,7 +46,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.BitSize;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;

@@ -26,19 +26,20 @@
  */
 package org.spout.api.protocol;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import java.util.LinkedList;
-import java.util.List;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
 import org.spout.api.protocol.fake.ChannelHandlerContextFaker;
 import org.spout.api.protocol.fake.FakeChannelHandlerContext;
+
+import static org.junit.Assert.assertTrue;
 
 public class PreprocessReplayingDecoderTest {
 	private final int LENGTH = 65536;

@@ -31,14 +31,14 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.geo.World;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.MatrixMath;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
-import org.spout.api.math.VectorMath;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.concurrent.SpinLock;
 import org.spout.api.util.thread.annotation.Threadsafe;
+
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector3;
 
 @Threadsafe
 public final class Transform implements Serializable {
@@ -49,7 +49,7 @@ public final class Transform implements Serializable {
 	private Vector3 scale;
 
 	public Transform() {
-		this(Point.invalid, Quaternion.IDENTITY, Vector3.ONE);
+		this(Point.invalid, Quaternion.IDENTITY, new Vector3(1, 1, 1));
 	}
 
 	public Transform(Transform transform) {
@@ -98,7 +98,7 @@ public final class Transform implements Serializable {
 	public Transform rotate(Quaternion offset) {
 		try {
 			lock.lock();
-			this.rotation = rotation.rotate(offset.getW(), offset.getX(), offset.getY(), offset.getZ());
+			this.rotation = offset.mul(rotation);
 		} finally {
 			lock.unlock();
 		}
@@ -245,7 +245,7 @@ public final class Transform implements Serializable {
 
 	/**
 	 * Gets a String representation of this transform
-	 *
+	 * <p/>
 	 * Note: unsafe, could return torn values
 	 *
 	 * @return the string
@@ -284,32 +284,32 @@ public final class Transform implements Serializable {
 	/**
 	 * Returns the 4x4 matrix that represents this transform object
 	 */
-	public Matrix toMatrix() {
-		Matrix translate = MatrixMath.createTranslated(getPosition());
-		Matrix rotate = MatrixMath.createRotated(getRotation());
-		Matrix scale = MatrixMath.createScaled(getScale());
-		return scale.multiply(rotate).multiply(translate);
+	public Matrix4 toMatrix() {
+		Matrix4 translate = Matrix4.createTranslation(getPosition());
+		Matrix4 rotate = Matrix4.createRotation(getRotation());
+		Matrix4 scale = Matrix4.createScaling(getScale().toVector4(1));
+		return scale.mul(rotate).mul(translate);
 	}
 
 	/**
 	 * Returns a unit vector that points in the forward direction of this transform
 	 */
 	public Vector3 forwardVector() {
-		return VectorMath.transform(Vector3.FORWARD, getRotation());
+		return Matrix3.createRotation(getRotation()).transform(Vector3.FORWARD);
 	}
 
 	/**
 	 * Returns a unit vector that points right in relation to this transform
 	 */
 	public Vector3 rightVector() {
-		return VectorMath.transform(Vector3.RIGHT, getRotation());
+		return Matrix3.createRotation(getRotation()).transform(Vector3.RIGHT);
 	}
 
 	/**
 	 * Returns a unit vector that points up in relation to this transform
 	 */
 	public Vector3 upVector() {
-		return VectorMath.transform(Vector3.UP, getRotation());
+		return Matrix3.createRotation(getRotation()).transform(Vector3.UP);
 	}
 
 	/**

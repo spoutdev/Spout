@@ -31,11 +31,11 @@ import java.util.Random;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
 
 import org.spout.api.protocol.fake.ChannelHandlerContextFaker;
+
+import static org.junit.Assert.assertTrue;
 
 public class ByteBufferChannelProcessorTest {
 	private final int LENGTH = 65536;
@@ -101,6 +101,8 @@ public class ByteBufferChannelProcessorTest {
 				readPointer += toRead;
 				outputBuffer.discardReadBytes();
 			}
+
+			outputBuffer.release();
 		}
 
 		for (int i = 0; i < input.length; i++) {

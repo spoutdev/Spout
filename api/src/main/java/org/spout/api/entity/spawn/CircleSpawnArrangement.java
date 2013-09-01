@@ -27,9 +27,9 @@
 package org.spout.api.entity.spawn;
 
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.MatrixMath;
-import org.spout.api.math.Vector3;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.vector.Vector3;
 
 public class CircleSpawnArrangement extends GenericSpawnArrangement {
 	private final boolean halfRotate;
@@ -43,16 +43,16 @@ public class CircleSpawnArrangement extends GenericSpawnArrangement {
 
 	@Override
 	protected Point[] generatePoints(Point center, int number) {
-		Vector3 offset = Point.FORWARD.multiply(radius);
+		Vector3 offset = Point.FORWARD.mul(radius);
 		int angle = number == 0 ? 0 : (360 / number);
-		Matrix rotate = MatrixMath.createRotatedY(angle);
+		Matrix3 rotate = Matrix3.createRotation(Quaternion.fromAngleDegAxis(angle, 0, 1, 0));
 		if (halfRotate) {
-			offset = offset.transform(MatrixMath.createRotatedY(angle / 2));
+			offset = Matrix3.createRotation(Quaternion.fromAngleDegAxis(angle * 0.5f, 0, 1, 0)).transform(offset);
 		}
 		Point[] points = new Point[number];
 		for (int i = 0; i < number; i++) {
 			points[i] = center.add(offset);
-			offset = offset.transform(rotate);
+			offset = rotate.transform(offset);
 		}
 		return points;
 	}

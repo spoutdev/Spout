@@ -52,13 +52,11 @@ import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.gui.render.RenderPartPack;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Rectangle;
-import org.spout.api.math.Vector2;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.shader.Shader;
+
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.filesystem.resource.ClientRenderMaterial;
 import org.spout.engine.filesystem.resource.ClientRenderTexture;
@@ -70,6 +68,8 @@ import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.EntityRenderer;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.util.MacOSXUtils;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector2;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
@@ -88,7 +88,6 @@ public class SpoutRenderer {
 	private EntityRenderer entityRenderer;
 	private WorldRenderer worldRenderer;
 	private boolean wireframe = false;
-	private Matrix ident = MatrixMath.createIdentity();
 	// Screen texture
 	private SpriteBatch screenBatcher;
 	private ClientRenderTexture t;
@@ -214,7 +213,7 @@ public class SpoutRenderer {
 				if (skydome != null && skydome.getModel() != null) {
 					skydome.getModel().getRenderMaterial().getShader().setUniform("View", camera.getRotation());
 					skydome.getModel().getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
-					skydome.getModel().getRenderMaterial().getShader().setUniform("Model", ident);
+					skydome.getModel().getRenderMaterial().getShader().setUniform("Model", Matrix4.IDENTITY);
 					BaseMesh reflectedSkydomeMesh = (BaseMesh) skydome.getModel().getMesh();
 					if (!reflectedSkydomeMesh.isBatched()) {
 						reflectedSkydomeMesh.batch();
@@ -240,7 +239,7 @@ public class SpoutRenderer {
 			if (skydome != null && skydome.getModel() != null) {
 				skydome.getModel().getRenderMaterial().getShader().setUniform("View", camera.getRotation());
 				skydome.getModel().getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
-				skydome.getModel().getRenderMaterial().getShader().setUniform("Model", ident);
+				skydome.getModel().getRenderMaterial().getShader().setUniform("Model", Matrix4.IDENTITY);
 				BaseMesh skydomeMesh = (BaseMesh) skydome.getModel().getMesh();
 				if (!skydomeMesh.isBatched()) {
 					skydomeMesh.batch();
@@ -264,9 +263,9 @@ public class SpoutRenderer {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
 
-		screenBatcher.render(ident);
+		screenBatcher.render(Matrix4.IDENTITY);
 		if (useReflexion) {
-			reflectedDebugBatch.render(ident);
+			reflectedDebugBatch.render(Matrix4.IDENTITY);
 		}
 
 		//GUI -> Render all widgets

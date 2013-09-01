@@ -26,7 +26,6 @@
  */
 package org.spout.api.protocol;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;

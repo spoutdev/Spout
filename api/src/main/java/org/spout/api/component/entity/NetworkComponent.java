@@ -42,7 +42,6 @@ import org.spout.api.ServerOnly;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.event.Listener;
 import org.spout.api.event.ProtocolEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -52,11 +51,10 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.math.IntVector3;
-import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
-import org.spout.api.protocol.reposition.NullRepositionManager;
-import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.api.util.OutwardIterator;
+
+import org.spout.math.vector.Vector3;
 
 /**
  * The networking behind {@link org.spout.api.entity.Entity}s.
@@ -214,7 +212,8 @@ public class NetworkComponent extends EntityComponent {
 			}
 			final Point otherPosition = player.getPhysics().getPosition();
 			//TODO: Verify this math
-			if (position.subtract(otherPosition).fastLength() > player.getNetwork().getSyncDistance()) {
+			final int syncDistance = player.getNetwork().getSyncDistance();
+			if (position.sub(otherPosition).lengthSquared() > syncDistance * syncDistance) {
 				continue;
 			}
 			for (final Message message : messages) {
@@ -239,7 +238,7 @@ public class NetworkComponent extends EntityComponent {
 	}
 
 	/**
-	 * Calls a {@link ProtocolEvent} for all the given {@link Enitity}s. For every {@link Entity} that is a {@link Player}, any messages from the event will be sent to that Player's session. Any
+	 * Calls a {@link ProtocolEvent} for all the given {@link org.spout.api.entity.Entity}s. For every {@link Entity} that is a {@link Player}, any messages from the event will be sent to that Player's session. Any
 	 * non-player entities can use the event for custom handling.
 	 *
 	 * @param event to send
@@ -326,7 +325,7 @@ public class NetworkComponent extends EntityComponent {
 				chunk.refreshObserver(getOwner());
 				observing.add(chunk);
 			} else {
-				ungenerated.add(new Vector3(v));
+				ungenerated.add(v.toVector3());
 				observeChunksFailed = true;
 			}
 		}

@@ -37,9 +37,7 @@ import java.util.regex.Pattern;
 import org.yaml.snakeyaml.Yaml;
 
 import org.spout.api.Spout;
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector4;
+import org.spout.math.vector.Vector3;
 import org.spout.api.plugin.PluginClassLoader;
 import org.spout.api.render.Texture;
 import org.spout.api.render.effect.RenderEffect;
@@ -47,6 +45,8 @@ import org.spout.api.render.shader.Shader;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
 import org.spout.engine.filesystem.resource.ClientRenderMaterial;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector4;
 
 public class RenderMaterialLoader extends ResourceLoader {
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);

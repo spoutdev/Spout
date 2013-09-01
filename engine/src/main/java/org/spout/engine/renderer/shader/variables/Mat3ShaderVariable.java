@@ -31,28 +31,27 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
-import org.spout.api.math.Matrix;
 import org.spout.engine.SpoutRenderer;
+import org.spout.math.matrix.Matrix3;
 
 public class Mat3ShaderVariable extends ShaderVariable {
 	public static final FloatBuffer buffer = BufferUtils.createFloatBuffer(9);
-	Matrix value;
+	Matrix3 value;
 
-	public Mat3ShaderVariable(int program, String name, Matrix value) {
+	public Mat3ShaderVariable(int program, String name, Matrix3 value) {
 		super(program, name);
 		this.value = value;
 	}
 
-	public Matrix get() {
+	public Matrix3 get() {
 		return value;
 	}
 
 	@Override
 	public void assign() {
 		buffer.position(0);
-		buffer.put(value.getData());
+		buffer.put(value.toArray(true));
 		buffer.flip();
-
 		GL20.glUniformMatrix3(location, false, buffer);
 		SpoutRenderer.checkGLError();
 	}

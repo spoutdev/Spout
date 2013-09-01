@@ -37,6 +37,7 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 	public static final Vector4 UNIT_Y = new Vector4(0, 1, 0, 0);
 	public static final Vector4 UNIT_Z = new Vector4(0, 0, 1, 0);
 	public static final Vector4 UNIT_W = new Vector4(0, 0, 0, 1);
+	public static final Vector4 ONE = new Vector4(1, 1, 1, 1);
 	private final float x;
 	private final float y;
 	private final float z;

@@ -48,14 +48,15 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
 import org.spout.api.util.StringToUniqueIntegerMap;
 import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.map.WeakValueHashMap;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.versioned.WorldFiles;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
 public class SpoutServerWorld extends SpoutWorld {
 	/**

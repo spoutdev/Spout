@@ -31,7 +31,7 @@ import java.util.List;
 import org.spout.api.ServerOnly;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.lighting.LightingManager;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;

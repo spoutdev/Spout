@@ -31,18 +31,18 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
-import org.spout.api.math.Matrix;
 import org.spout.engine.SpoutRenderer;
+import org.spout.math.matrix.Matrix4;
 
 public class Mat4ArrayShaderVariable extends ShaderVariable {
-	Matrix[] value;
+	Matrix4[] value;
 
-	public Mat4ArrayShaderVariable(int program, String name, Matrix[] value) {
+	public Mat4ArrayShaderVariable(int program, String name, Matrix4[] value) {
 		super(program, name);
 		this.value = value;
 	}
 
-	public Matrix[] get() {
+	public Matrix4[] get() {
 		return value;
 	}
 
@@ -51,7 +51,7 @@ public class Mat4ArrayShaderVariable extends ShaderVariable {
 		FloatBuffer buff = BufferUtils.createFloatBuffer(16 * value.length);
 
 		for (int i = 0; i < value.length; i++) {
-			buff.put(value[i].getData());
+			buff.put(value[i].toArray(true));
 		}
 		buff.flip();
 

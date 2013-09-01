@@ -30,7 +30,7 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.IntVector3;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 /**
  * This store stores block data for each chunk. Each block can either store a short id, or a short id, a short data value and a reference to a &lt;T&gt; object.

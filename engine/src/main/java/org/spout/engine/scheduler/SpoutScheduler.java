@@ -54,7 +54,6 @@ import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.gui.ScreenStack;
-import org.spout.api.math.Vector2;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.Task;
@@ -84,6 +83,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.world.RegionGenerator;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
+import org.spout.math.vector.Vector2;
 
 import static org.spout.engine.world.SpoutChunk.meshesGenerated;
 

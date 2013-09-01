@@ -33,7 +33,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.IntVector3;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 
 public class AtomicPaletteBlockStore implements AtomicBlockStore {

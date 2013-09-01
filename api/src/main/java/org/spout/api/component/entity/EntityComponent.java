@@ -35,7 +35,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.entity.EntityCollideEvent;
 import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
-import org.spout.api.math.GenericMath;
+import org.spout.math.GenericMath;
 
 /**
  * Represents a component who shapes the logic behind an {@link Entity}.

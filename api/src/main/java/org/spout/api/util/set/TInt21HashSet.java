@@ -158,7 +158,7 @@ public class TInt21HashSet {
 	 * @param z an <code>int</code> value
 	 * @return the most significant and the twenty least significant of each int packed into a <code>long</code>
 	 */
-	protected static final long key(int x, int y, int z) {
+	protected static long key(int x, int y, int z) {
 		return ((long) ((x >> 11) & 0x100000 | x & 0xFFFFF)) << 42 | ((long) ((y >> 11) & 0x100000 | y & 0xFFFFF)) << 21 | ((z >> 11) & 0x100000 | z & 0xFFFFF);
 	}
 }

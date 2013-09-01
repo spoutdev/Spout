@@ -31,7 +31,7 @@ import java.util.Random;
 import net.royawesome.jlibnoise.module.Module;
 
 import org.spout.api.geo.World;
-import org.spout.api.math.GenericMath;
+import org.spout.math.GenericMath;
 
 /**
  * Utilities for World generation

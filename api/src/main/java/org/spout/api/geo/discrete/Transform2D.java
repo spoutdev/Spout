@@ -26,10 +26,9 @@
  */
 package org.spout.api.geo.discrete;
 
-import org.spout.api.math.Complex;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.MatrixMath;
-import org.spout.api.math.Vector2;
+import org.spout.math.imaginary.Complex;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.vector.Vector2;
 
 public class Transform2D {
 	private Vector2 position;
@@ -79,7 +78,7 @@ public class Transform2D {
 	}
 
 	public void setRotation(float angle) {
-		this.rotation = new Complex(angle);
+		this.rotation = Complex.fromAngleDeg(angle);
 	}
 
 	public void setRotation(Complex rotation) {
@@ -90,11 +89,10 @@ public class Transform2D {
 		return rotation;
 	}
 
-	public Matrix toMatrix() {
-		Matrix rot = this.rotation.toMatrix();
-		Matrix tra = MatrixMath.createTranslatedMat3(this.position);
-		Matrix sca = MatrixMath.createScaledMat3(this.scale);
-
-		return sca.multiply(rot).multiply(tra);
+	public Matrix3 toMatrix() {
+		Matrix3 rotation = Matrix3.createRotation(this.rotation);
+		Matrix3 translation = Matrix3.createTranslation(position);
+		Matrix3 scale = Matrix3.createScaling(this.scale.toVector3(1));
+		return scale.mul(rotation).mul(translation);
 	}
 }

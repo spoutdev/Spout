@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 /**
  * Represents a Triangle for a model face
@@ -72,8 +72,8 @@ public class OrientedMeshFace extends MeshFace {
 
 		// Calculate two vectors from the three points
 
-		Vector3 vector1 = verts[0].position.subtract(verts[1].position);
-		Vector3 vector2 = verts[1].position.subtract(verts[2].position);
+		Vector3 vector1 = verts[0].position.sub(verts[1].position);
+		Vector3 vector2 = verts[1].position.sub(verts[2].position);
 
 		// Take the cross product of the two vectors to get
 		// the normal vector which will be stored in out

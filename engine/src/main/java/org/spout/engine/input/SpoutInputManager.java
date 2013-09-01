@@ -50,12 +50,13 @@ import org.spout.api.input.InputManager;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
-import org.spout.api.math.QuaternionMath;
-import org.spout.api.math.Vector3;
 import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
+
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
 public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
@@ -399,24 +400,24 @@ public class SpoutInputManager implements InputManager {
 			final float speed = 50f;
 			final Vector3 motion;
 			if (state.getForward()) {
-				motion = playerTransform.forwardVector().multiply(speed * -dt);
+				motion = playerTransform.forwardVector().mul(speed * -dt);
 			} else if (state.getBackward()) {
-				motion = playerTransform.forwardVector().multiply(speed * dt);
+				motion = playerTransform.forwardVector().mul(speed * dt);
 			} else if (state.getLeft()) {
-				motion = playerTransform.rightVector().multiply(speed * -dt); //TODO getLeftVector
+				motion = playerTransform.rightVector().mul(speed * -dt); //TODO getLeftVector
 			} else if (state.getRight()) {
-				motion = playerTransform.rightVector().multiply(speed * dt);
+				motion = playerTransform.rightVector().mul(speed * dt);
 			} else if (state.getJump()) {
-				motion = playerTransform.upVector().multiply(speed * dt);
+				motion = playerTransform.upVector().mul(speed * dt);
 			} else if (state.getCrouch()) {
-				motion = playerTransform.upVector().multiply(speed * -dt);
+				motion = playerTransform.upVector().mul(speed * -dt);
 			} else {
-				playerTransform.setRotation(QuaternionMath.rotation(state.pitch(), state.yaw(), playerTransform.getRotation().getRoll()));
+				playerTransform.setRotation(Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
 				client.getPlayer().getPhysics().setTransform(playerTransform);
 				return;
 			}
 
-			playerTransform.translateAndSetRotation(motion, QuaternionMath.rotation(state.pitch(), state.yaw(), playerTransform.getRotation().getRoll()));
+			playerTransform.translateAndSetRotation(motion, Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
 			client.getPlayer().getPhysics().setTransform(playerTransform);
 		}
 	}

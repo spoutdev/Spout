@@ -28,7 +28,7 @@ package org.spout.api.protocol.reposition;
 
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 public interface RepositionManager {
 	/**

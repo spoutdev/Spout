@@ -27,65 +27,63 @@
 package org.spout.api.component.entity;
 
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.MatrixMath;
-import org.spout.api.math.Vector3;
 import org.spout.api.render.Camera;
 import org.spout.api.render.ViewFrustum;
 
+import org.spout.math.matrix.Matrix4;
+
 public class CameraComponent extends EntityComponent implements Camera {
-	private ViewFrustum frustum;
-	private Matrix projection;
-	private Matrix view;
+	private Matrix4 projection;
+	private Matrix4 view;
+	private ViewFrustum frustum = new ViewFrustum();
 	private float fieldOfView = 75f;
 
 	public CameraComponent() {
 		this.frustum = new ViewFrustum();
 	}
 
-	public CameraComponent(Matrix createPerspective, Matrix createLookAt) {
-		this();
-		this.projection = createPerspective;
-		this.view = createLookAt;
+	public CameraComponent(Matrix4 createPerspective, Matrix4 createLookAt) {
+		projection = createPerspective;
+		view = createLookAt;
 	}
 
-	public void setScale(float scale) {
-		this.projection = MatrixMath.createPerspective(fieldOfView * scale, 4.0f / 3.0f, .001f * scale, 1000f * scale);
+	public void setScale(float scale) { //1/2
+		projection = Matrix4.createPerspective(fieldOfView * scale, 4.0f / 3.0f, .001f * scale, 1000f * scale);
 		updateView();
 	}
 
 	@Override
 	public void onAttached() {
-		// TODO: Get FOV
-		this.projection = MatrixMath.createPerspective(fieldOfView, 4.0f / 3.0f, .001f, 1000f);
+		// TODO Get FOV
+		projection = Matrix4.createPerspective(fieldOfView, 4.0f / 3.0f, .001f, 1000f);
 		updateView();
 	}
 
 	@Override
-	public Matrix getProjection() {
+	public Matrix4 getProjection() {
 		return projection;
 	}
 
 	@Override
-	public Matrix getView() {
+	public Matrix4 getView() {
 		return view;
 	}
 
 	@Override
 	public void updateView() {
-		Transform transform = getOwner().getPhysics().getTransform().copy().translate(0, 2, 0);
-		Matrix pos = MatrixMath.createTranslated(transform.getPosition().multiply(-1));
-		Matrix rot = MatrixMath.createRotated(transform.getRotation());
-		view = pos.multiply(rot);
+		Transform transform = getOwner().getPhysics().getTransformRender();
+		Matrix4 pos = Matrix4.createTranslation(transform.getPosition().mul(-1));
+		Matrix4 rot = Matrix4.createRotation(transform.getRotation());
+		view = pos.mul(rot);
 		frustum.update(projection, view, transform.getPosition());
 	}
 
 	@Override
 	public void updateReflectedView() {
-		Transform transform = getOwner().getPhysics().getTransform().copy().translate(0, 2, 0);
-		Matrix pos = MatrixMath.createTranslated(transform.getPosition().multiply(-1, 1, -1));
-		Matrix rot = MatrixMath.createRotated(transform.getRotation());
-		view = MatrixMath.createScaled(new Vector3(1, -1, 1)).multiply(pos).multiply(rot);
+		Transform transform = getOwner().getPhysics().getTransformRender();
+		Matrix4 pos = Matrix4.createTranslation(transform.getPosition().mul(-1, 1, -1));
+		Matrix4 rot = Matrix4.createRotation(transform.getRotation());
+		view = Matrix4.createScaling(1, -1, 1, 1).mul(pos).mul(rot);
 		frustum.update(projection, view, transform.getPosition());
 	}
 
@@ -100,8 +98,8 @@ public class CameraComponent extends EntityComponent implements Camera {
 	}
 
 	@Override
-	public Matrix getRotation() {
-		Transform transform = getOwner().getPhysics().getTransform().copy().translate(0, 2, 0);
-		return MatrixMath.createRotated(transform.getRotation());
+	public Matrix4 getRotation() {
+		Transform transform = getOwner().getPhysics().getTransformRender();
+		return Matrix4.createRotation(transform.getRotation());
 	}
 }

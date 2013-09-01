@@ -26,6 +26,8 @@
  */
 package org.spout.engine;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -41,17 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
 
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.lang3.Validate;
-import org.fourthline.cling.UpnpService;
-import org.fourthline.cling.UpnpServiceImpl;
-import org.fourthline.cling.controlpoint.ControlPoint;
-import org.fourthline.cling.support.igd.PortMappingListener;
-import org.fourthline.cling.support.model.PortMapping;
-import org.fourthline.cling.transport.spi.InitializationException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -62,6 +54,14 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.lang3.Validate;
+import org.fourthline.cling.UpnpService;
+import org.fourthline.cling.UpnpServiceImpl;
+import org.fourthline.cling.controlpoint.ControlPoint;
+import org.fourthline.cling.support.igd.PortMappingListener;
+import org.fourthline.cling.support.model.PortMapping;
+import org.fourthline.cling.transport.spi.InitializationException;
 
 import org.spout.api.Platform;
 import org.spout.api.Server;
@@ -81,17 +81,15 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.protocol.CommonChannelInitializer;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.resource.FileSystem;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
+
 import org.spout.cereal.config.ConfigurationException;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.SpoutPlayer;
@@ -109,6 +107,8 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.engine.world.SpoutServerWorld;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	/**

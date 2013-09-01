@@ -772,4 +772,21 @@ public class GenericMath {
 	public static boolean isPowerOfTwo(int num) {
 		return num > 0 && ((num & (num - 1)) == 0);
 	}
+
+	/**
+	 * Converts a multiplication into a shift.
+	 *
+	 * @param x the multiplicand
+	 * @return the left shift required to multiply by the multiplicand
+	 */
+	public static int multiplyToShift(int x) {
+		if (x < 1) {
+			throw new IllegalArgumentException("Multiplicand must be at least 1");
+		}
+		int shift = 31 - Integer.numberOfLeadingZeros(x);
+		if ((1 << shift) != x) {
+			throw new IllegalArgumentException("Multiplicand must be a power of 2");
+		}
+		return shift;
+	}
 }

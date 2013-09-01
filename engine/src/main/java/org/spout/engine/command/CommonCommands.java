@@ -40,10 +40,8 @@ import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandBatch;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.CommandDescription;
-import org.spout.api.command.annotated.Filter;
 import org.spout.api.command.annotated.Permissible;
 import org.spout.api.command.annotated.Platforms;
-import org.spout.api.command.filter.PlayerFilter;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
@@ -51,11 +49,12 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.Plugin;
+
 import org.spout.engine.SpoutEngine;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
 public class CommonCommands {
 	private final SpoutEngine engine;

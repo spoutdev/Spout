@@ -36,10 +36,6 @@ import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
 
-import org.spout.api.math.Matrix;
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.EntityEffect;
@@ -49,8 +45,15 @@ import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.render.shader.Shader;
+
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.shader.SpoutShader;
+import org.spout.math.matrix.Matrix2;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector4;
 
 public class ClientRenderMaterial extends RenderMaterial {
 	SpoutShader shader;
@@ -98,8 +101,12 @@ public class ClientRenderMaterial extends RenderMaterial {
 					shader.setUniform(entry.getKey(), (Vector4) entry.getValue());
 				} else if (entry.getValue() instanceof Color) {
 					shader.setUniform(entry.getKey(), (Color) entry.getValue());
-				} else if (entry.getValue() instanceof Matrix) {
-					shader.setUniform(entry.getKey(), (Matrix) entry.getValue());
+				} else if (entry.getValue() instanceof Matrix2) {
+					shader.setUniform(entry.getKey(), (Matrix2) entry.getValue());
+				} else if (entry.getValue() instanceof Matrix3) {
+					shader.setUniform(entry.getKey(), (Matrix3) entry.getValue());
+				} else if (entry.getValue() instanceof Matrix4) {
+					shader.setUniform(entry.getKey(), (Matrix4) entry.getValue());
 				}
 			}
 			shader.setMaterialAssigned(this);

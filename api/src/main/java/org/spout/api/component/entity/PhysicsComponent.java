@@ -29,11 +29,10 @@ package org.spout.api.component.entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
-
+import org.spout.math.imaginary.Quaternion;
 import org.spout.physics.collision.shape.CollisionShape;
 
 /**
@@ -207,7 +206,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract PhysicsComponent translate(Vector3 translation);
 
 	/**
-	 * Rotates this {@link org.spout.api.entity.Entity} from its current {@link org.spout.api.math.Quaternion} to the Quaternion that is the addition of the Quaternion provided. <p/> For example, if I
+	 * Rotates this {@link org.spout.api.entity.Entity} from its current {@link org.spout.math.imaginary.Quaternion} to the Quaternion that is the addition of the Quaternion provided. <p/> For example, if I
 	 * want to rotate an Entity upwards (which is moving its yaw), I would do a rotate(new Quaternion(0, 1, 0, 0)); <p> Bear in mind, doing a rotate does so without physics and instead the rotation of
 	 * the Entity will be directly set within its physics transform. This method always syncs the change to the client.
 	 *

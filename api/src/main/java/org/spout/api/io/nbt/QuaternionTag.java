@@ -29,7 +29,7 @@ package org.spout.api.io.nbt;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spout.api.math.Quaternion;
+import org.spout.math.imaginary.Quaternion;
 import org.spout.nbt.FloatTag;
 import org.spout.nbt.ListTag;
 import org.spout.nbt.Tag;
@@ -76,6 +76,6 @@ public class QuaternionTag extends ListTag<FloatTag> {
 		if (x == null || y == null || z == null || w == null) {
 			return null;
 		}
-		return new Quaternion(x, y, z, w, true);
+		return new Quaternion(x, y, z, w);
 	}
 }

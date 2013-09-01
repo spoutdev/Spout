@@ -38,6 +38,7 @@ public class Vector3 implements Vector, Comparable<Vector3>, Serializable, Clone
 	public static final Vector3 UNIT_X = new Vector3(1, 0, 0);
 	public static final Vector3 UNIT_Y = new Vector3(0, 1, 0);
 	public static final Vector3 UNIT_Z = new Vector3(0, 0, 1);
+	public static final Vector3 ONE = new Vector3(1, 1, 1);
 	public static final Vector3 RIGHT = UNIT_X;
 	public static final Vector3 UP = UNIT_Y;
 	public static final Vector3 FORWARD = UNIT_Z;
@@ -317,6 +318,10 @@ public class Vector3 implements Vector, Comparable<Vector3>, Serializable, Clone
 
 	public Vector2 toVector2() {
 		return new Vector2(this);
+	}
+
+	public Vector2 toVector2(boolean useZ) {
+		return new Vector2(x, useZ ? z : y);
 	}
 
 	public Vector4 toVector4() {

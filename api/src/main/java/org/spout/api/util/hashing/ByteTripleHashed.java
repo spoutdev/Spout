@@ -35,7 +35,7 @@ public class ByteTripleHashed {
 	 * @param z an <code>byte</code> value
 	 * @return The first 8 most significant bits of each byte packed into an <code>int</code>
 	 */
-	public static final int key(int x, int y, int z) {
+	public static int key(int x, int y, int z) {
 		return (x & 0xFF) << 16 | (z & 0xFF) << 8 | y & 0xFF;
 	}
 
@@ -45,7 +45,7 @@ public class ByteTripleHashed {
 	 * @param key to get from
 	 * @return the first 8-bit integer value in the key
 	 */
-	public static final byte key1(int key) {
+	public static byte key1(int key) {
 		return (byte) (key >> 16 & 0xFF);
 	}
 
@@ -55,7 +55,7 @@ public class ByteTripleHashed {
 	 * @param key to get from
 	 * @return the second 8-bit integer value in the key
 	 */
-	public static final byte key2(int key) {
+	public static byte key2(int key) {
 		return (byte) (key & 0xFF);
 	}
 
@@ -65,7 +65,7 @@ public class ByteTripleHashed {
 	 * @param key to get from
 	 * @return the third 8-bit integer value in the key
 	 */
-	public static final byte key3(int key) {
+	public static byte key3(int key) {
 		return (byte) (key >> 8 & 0xFF);
 	}
 }

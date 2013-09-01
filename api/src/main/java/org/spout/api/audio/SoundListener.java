@@ -27,7 +27,7 @@
 package org.spout.api.audio;
 
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 /**
  * Listens for Sounds.

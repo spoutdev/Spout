@@ -44,12 +44,11 @@ import org.spout.api.material.basic.Solid;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.math.GenericMath;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 import org.spout.api.resource.SpoutModels;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.flag.Flag;
-
+import org.spout.math.GenericMath;
 import org.spout.physics.ReactDefaults;
 import org.spout.physics.collision.shape.CollisionShape;
 
@@ -447,7 +446,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Checks the block to see if it can be created at that position<br> Orientation-specific checks are performed in the {@link canPlace} method<br> Use this method to see if creation is possible at a
+	 * Checks the block to see if it can be created at that position<br> Orientation-specific checks are performed in the {@link #canPlace(org.spout.api.geo.cuboid.Block, short, org.spout.api.material.block.BlockFace, org.spout.math.vector.Vector3, boolean, org.spout.api.event.Cause)} method<br> Use this method to see if creation is possible at a
 	 * given position when not placed
 	 *
 	 * @param block this Block Material should be created in
@@ -460,7 +459,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Creates this Block Material at a block in the world<br> Orientation-specific changes are performed in the {@link onPlacement} method<br> Use this method to create the block at a given position
+	 * Creates this Block Material at a block in the world<br> Orientation-specific changes are performed in the {@link #onPlacement(org.spout.api.geo.cuboid.Block, short, org.spout.api.material.block.BlockFace, org.spout.math.vector.Vector3, boolean, org.spout.api.event.Cause)} method<br> Use this method to create the block at a given position
 	 * when not placed
 	 *
 	 * @param block to create this Block Material in
@@ -550,7 +549,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 *
 	 * Same as using new MaterialCause(material, block)
 	 *
-	 * @param block location of the event
+	 * @param p location of the event
 	 * @return cause
 	 */
 	public Cause<BlockMaterial> toCause(Point p) {

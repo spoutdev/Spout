@@ -36,22 +36,23 @@ import org.lwjgl.opengl.GL11;
 
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.gui.render.RenderPartPack;
-import org.spout.api.math.Matrix;
-import org.spout.api.math.MatrixMath;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.effect.SnapshotRender;
+
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
+import org.spout.math.matrix.Matrix;
+import org.spout.math.matrix.Matrix4;
 
 public class SpriteBatch {
 	private BatchVertexRenderer renderer;
 	private final ArrayList<RenderPartPack> sprites = new ArrayList<>();
-	private final Matrix view;
-	private final Matrix projection;
+	private final Matrix4 view;
+	private final Matrix4 projection;
 
 	public SpriteBatch() {
-		this.projection = MatrixMath.createIdentity();
-		this.view = MatrixMath.createIdentity();
+		this.projection = Matrix4.IDENTITY;
+		this.view = Matrix4.IDENTITY;
 	}
 
 	public void begin() {

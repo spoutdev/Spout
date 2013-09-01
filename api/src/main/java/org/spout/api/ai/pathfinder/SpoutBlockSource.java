@@ -29,7 +29,7 @@ package org.spout.api.ai.pathfinder;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.Material;
-import org.spout.api.math.Vector3;
+import org.spout.math.vector.Vector3;
 
 public class SpoutBlockSource extends AbstractBlockSource {
 	private final World world;
