@@ -53,14 +53,12 @@ package org.spout.engine.world;
  * including the MIT license.
  */
 
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
-import org.spout.api.render.RenderMaterial;
 
 //just need to,bottom,east,west,south,north, not diagonal neigbour it's 8 snapshot useless
 
@@ -80,24 +78,20 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 */
 	private final long time;
 	/**
-	 * Set of renderMaterial to render, null -> All encountered material
-	 */
-	private Set<RenderMaterial> renderMaterials = null;
-	/**
 	 * Indicates that the renderer has not received a model for this chunk yet
 	 */
 	private boolean first;
 	private final SpoutWorld world;
 
 	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, long time) {
-		this(world, cx, cy, cz, unload, null, 0, null, false, time);
+		this(world, cx, cy, cz, unload, null, 0, false, time);
 	}
 
-	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, boolean first, long time) {
-		this(world, cx, cy, cz, false, chunks, distance, renderMaterials, first, time);
+	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, boolean first, long time) {
+		this(world, cx, cy, cz, false, chunks, distance, first, time);
 	}
 
-	private SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, boolean first, long time) {
+	private SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, boolean first, long time) {
 		this.world = world;
 		this.cx = cx;
 		this.cy = cy;
@@ -107,7 +101,6 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		this.unload = unload;
 		this.distance = distance;
 		this.id = idCounter.getAndIncrement();
-		this.renderMaterials = renderMaterials;
 		this.time = time;
 		this.first = first;
 	}
@@ -199,24 +192,6 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 			return d1 - d2;
 		}
 	}
-	
-	/*@Override
-	public boolean equals(Object o) {
-		if (o == this) {
-		return true;
-		} else {
-		return id == ((SpoutChunkSnapshotModel) o).id;
-		}
-	}*/
-
-	@Override
-	public int hashCode() {
-		int hash = 5;
-		hash = 67 * hash + this.cx;
-		hash = 67 * hash + this.cy;
-		hash = 67 * hash + this.cz;
-		return hash;
-	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -239,44 +214,8 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		return true;
 	}
 
-	public void addDirty(SpoutChunkSnapshotModel oldModel, boolean oldRemoved) {
-		addRenderMaterials(oldModel.getRenderMaterials());
-		if (oldRemoved && oldModel.first) {
-			first = true;
-		}
-	}
-
 	public boolean isFirst() {
 		return first;
-	}
-
-	/**
-	 * Add a set of renderMaterial to render If the set is null, the set isn't added because null -> all encountered render material
-	 */
-	private void addRenderMaterials(Set<RenderMaterial> renderMaterials) {
-		if (this.renderMaterials == null || renderMaterials == null) {
-			this.renderMaterials = null;
-		} else {
-			this.renderMaterials.addAll(renderMaterials);
-		}
-	}
-
-	/**
-	 * Returns the set of render materials updates by this model
-	 */
-	public Set<RenderMaterial> getRenderMaterials() {
-		return this.renderMaterials;
-	}
-
-	/**
-	 * Check if a renderMaterial should be rendered
-	 */
-	public boolean hasRenderMaterial(RenderMaterial renderMaterial) {
-		//TODO : Fix render material set and decomment that
-		/*if( this.renderMaterials == null)
-			return true;
-		return renderMaterials.contains(renderMaterial);*/
-		return true;
 	}
 
 	public long getTime() {

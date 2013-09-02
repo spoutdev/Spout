@@ -28,11 +28,13 @@ package org.spout.engine.filesystem;
 
 import java.net.URI;
 
+import org.spout.engine.filesystem.resource.loader.ShaderProgramLoader;
 import org.spout.engine.filesystem.resource.loader.SoundLoader;
 
 public class ClientFileSystem extends CommonFileSystem {
 	@Override
 	public void init() {
+		registerLoader(new ShaderProgramLoader());
 		registerLoader(new SoundLoader());
 		super.init();
 	}

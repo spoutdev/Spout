@@ -85,6 +85,9 @@ import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.world.SpoutClientWorld;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.math.vector.Vector2;
+import org.spout.renderer.GLImplementation;
+import org.spout.renderer.GLVersioned.GLVersion;
+import org.spout.renderer.gl.GLFactory;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<>();
@@ -125,6 +128,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 			
 		super.init(args);
 
+		final GLFactory gl = GLImplementation.get(GLVersion.valueOf(args.renderMode.toString()));
+		final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.renderer = new SpoutRenderer(this, gl, new Vector2(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f));
+
 		inputManager = new SpoutInputManager();
 
 		// Initialize sound system
@@ -151,11 +158,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		// Register commands
 		AnnotatedCommandExecutorFactory.create(new InputCommands(this));
 
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-
-		this.renderer = getScheduler().startRenderThread(new Vector2(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f), null);
-		getScheduler().startMeshThread();
-		getScheduler().startGuiThread();
+		getScheduler().startRenderThread(renderer);
+		getScheduler().startGUIThread();
 
 		// TODO: Maybe a better way of alerting plugins the client is done?
 		if (EngineStartEvent.getHandlerList().getRegisteredListeners().length != 0) {
