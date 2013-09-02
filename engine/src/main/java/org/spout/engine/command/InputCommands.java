@@ -63,16 +63,7 @@ public class InputCommands {
 		}
 		args.assertCompletelyParsed();
 		final Screen consoleScreen = client.getScreenStack().getConsole();
-		client.getScheduler().enqueueRenderTask(new Runnable() {
-			@Override
-			public void run() {
-				if (client.getScreenStack().isOpened(consoleScreen)) {
-					client.getScreenStack().closeScreen(consoleScreen);
-				} else {
-					client.getScreenStack().openScreen(consoleScreen);
-				}
-			}
-		});
+		// TODO: toggle dev console
 	}
 
 	@CommandDescription (aliases = "debug_info", desc = "Toggle display of debugging info.")
@@ -82,18 +73,8 @@ public class InputCommands {
 			return;
 		}
 		args.assertCompletelyParsed();
-
 		final Screen debugScreen = (Screen) client.getScreenStack().getDebugHud();
-		client.getScheduler().enqueueRenderTask(new Runnable() {
-			@Override
-			public void run() {
-				if (client.getScreenStack().isOpened(debugScreen)) {
-					client.getScreenStack().closeScreen(debugScreen);
-				} else {
-					client.getScreenStack().openScreen(debugScreen);
-				}
-			}
-		});
+		// TODO: toggle debug screen
 	}
 
 	public static void setupInputCommands(Engine engine) {

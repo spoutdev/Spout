@@ -57,10 +57,10 @@ import org.spout.api.resource.LoaderNotFoundException;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.resource.ResourceNotFoundException;
 import org.spout.api.resource.ResourcePathResolver;
+
 import org.spout.engine.filesystem.path.FilePathResolver;
 import org.spout.engine.filesystem.path.JarFilePathResolver;
 import org.spout.engine.filesystem.path.ZipFilePathResolver;
-import org.spout.engine.filesystem.resource.loader.CommandBatchLoader;
 
 public abstract class CommonFileSystem implements FileSystem {
 	public static final File PLUGINS_DIRECTORY = new File("plugins");
@@ -102,8 +102,6 @@ public abstract class CommonFileSystem implements FileSystem {
 
 	@Override
 	public void init() {
-		registerLoader(new CommandBatchLoader());
-
 		createDirs();
 		pathResolvers.add(new FilePathResolver(CACHE_DIRECTORY.getPath()));
 		pathResolvers.add(new ZipFilePathResolver(RESOURCES_DIRECTORY.getPath()));

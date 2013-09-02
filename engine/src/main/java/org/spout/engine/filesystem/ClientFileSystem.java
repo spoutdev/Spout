@@ -28,34 +28,12 @@ package org.spout.engine.filesystem;
 
 import java.net.URI;
 
-import org.spout.engine.filesystem.resource.loader.AnimationLoader;
-import org.spout.engine.filesystem.resource.loader.BlockMeshLoader;
-import org.spout.engine.filesystem.resource.loader.CubeMeshLoader;
-import org.spout.engine.filesystem.resource.loader.EntityPrefabLoader;
-import org.spout.engine.filesystem.resource.loader.FontLoader;
-import org.spout.engine.filesystem.resource.loader.MeshLoader;
-import org.spout.engine.filesystem.resource.loader.ModelLoader;
-import org.spout.engine.filesystem.resource.loader.RenderMaterialLoader;
-import org.spout.engine.filesystem.resource.loader.ShaderLoader;
-import org.spout.engine.filesystem.resource.loader.SkeletonLoader;
 import org.spout.engine.filesystem.resource.loader.SoundLoader;
-import org.spout.engine.filesystem.resource.loader.TextureLoader;
 
 public class ClientFileSystem extends CommonFileSystem {
 	@Override
 	public void init() {
-		registerLoader(new AnimationLoader());
-		registerLoader(new BlockMeshLoader());
-		registerLoader(new CubeMeshLoader());
-		registerLoader(new EntityPrefabLoader());
-		registerLoader(new FontLoader());
-		registerLoader(new MeshLoader());
-		registerLoader(new ModelLoader());
-		registerLoader(new RenderMaterialLoader());
-		registerLoader(new ShaderLoader());
-		registerLoader(new SkeletonLoader());
 		registerLoader(new SoundLoader());
-		registerLoader(new TextureLoader());
 		super.init();
 	}
 

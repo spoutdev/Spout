@@ -26,21 +26,13 @@
  */
 package org.spout.api.render;
 
-import org.spout.api.Platform;
-import org.spout.api.Spout;
-
 public class SpoutRenderMaterials {
 	public static final Font DEFAULT_FONT;
 	public static final RenderMaterial GUI_COLOR;
 
 	static {
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			DEFAULT_FONT = (Font) Spout.getFileSystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
-			GUI_COLOR = (RenderMaterial) Spout.getFileSystem().getResource("material://Spout/materials/GUIColorMaterial.smt");
-		} else {
-			DEFAULT_FONT = null;
-			GUI_COLOR = null;
-		}
+		DEFAULT_FONT = null; // "font://Spout/fonts/ubuntu/Ubuntu-M.ttf"
+		GUI_COLOR = null; // "material://Spout/materials/GUIColorMaterial.smt"
 	}
 
 	private SpoutRenderMaterials() {
