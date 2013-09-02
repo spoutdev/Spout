@@ -46,10 +46,11 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
-import org.spout.math.vector.Vector3;
 import org.spout.api.scheduler.TaskManager;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.entity.SpoutClientPlayer;
+import org.spout.math.vector.Vector3;
 
 public class SpoutClientWorld extends SpoutWorld {
 	/**
@@ -64,7 +65,6 @@ public class SpoutClientWorld extends SpoutWorld {
 	public void addChunk(int chunkX, int chunkY, int chunkZ, short[] blockIds, short[] blockData, Map<Short, byte[]> light) {
 		SpoutChunk chunk = getRegionFromBlock(chunkX, chunkY, chunkZ, LoadOption.LOAD_GEN).addChunk(chunkX, chunkY, chunkZ, blockIds, blockData);
 		chunk.setLightingBufferData(light);
-		chunk.render();
 	}
 
 	public void removeChunk(int chunkX, int chunkY, int chunkZ) {

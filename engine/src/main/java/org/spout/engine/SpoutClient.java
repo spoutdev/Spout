@@ -76,7 +76,6 @@ import org.spout.api.resource.FileSystem;
 import org.spout.engine.audio.AudioConfiguration;
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputCommands;
-import org.spout.engine.command.RendererCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.gui.SpoutScreenStack;
@@ -95,7 +94,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final SessionTask sessionTask = new SessionTask();
 	// Handle stopping
 	private volatile boolean rendering = true;
-	private boolean ccoverride = false;
 	private String stopMessage = null;
 	private SpoutRenderer renderer;
 	private SoundManager soundManager;
@@ -127,8 +125,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 			
 		super.init(args);
 
-		this.ccoverride = args.ccoverride;
-
 		inputManager = new SpoutInputManager();
 
 		// Initialize sound system
@@ -154,11 +150,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		// Register commands
 		AnnotatedCommandExecutorFactory.create(new InputCommands(this));
-		AnnotatedCommandExecutorFactory.create(new RendererCommands(this));
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
-		this.renderer = getScheduler().startRenderThread(new Vector2(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f), ccoverride, null);
+		this.renderer = getScheduler().startRenderThread(new Vector2(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f), null);
 		getScheduler().startMeshThread();
 		getScheduler().startGuiThread();
 

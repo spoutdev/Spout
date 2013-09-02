@@ -50,11 +50,9 @@ import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.CommandDescription;
 import org.spout.api.command.annotated.Filter;
-import org.spout.api.command.annotated.Flag;
 import org.spout.api.command.annotated.Permissible;
 import org.spout.api.command.annotated.Platforms;
 import org.spout.api.command.filter.PlayerFilter;
-import org.spout.api.component.entity.AnimationComponent;
 import org.spout.api.component.entity.InteractComponent;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.component.widget.RenderPartComponent;
@@ -80,20 +78,17 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.material.BlockMaterial;
-import org.spout.math.vector.Vector3;
-import org.spout.api.model.Model;
-import org.spout.api.model.animation.Animation;
-import org.spout.api.model.animation.Skeleton;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.event.ChunkSendEvent;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.component.entity.SpoutModelComponent;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.vector.Vector3;
 
 public class TestCommands {
 	private final SpoutEngine engine;
@@ -369,63 +364,6 @@ public class TestCommands {
 		e.getPhysics().setTransform(transform);
 
 		engine.getLogger().info("Entity " + id + " scale to " + scale.getX() + " " + scale.getY() + " " + scale.getZ());
-	}
-
-	@CommandDescription (aliases = {"animstart"}, desc = "Launch a animation his Id", flags = {@Flag (aliases = {"loop", "l"})})
-	public void playAnimation(CommandSource source, CommandArguments args) throws CommandException {
-		int id = args.popInteger("id");
-		World world = args.popWorld("world", source);
-		String animationName = args.popString("animation");
-		args.assertCompletelyParsed();
-
-		Entity e = world.getEntity(id);
-		if (e == null) {
-			throw new CommandException("No entity with id " + id + " in world " + world.getName());
-		}
-
-		SpoutModelComponent rendererComponent = e.get(SpoutModelComponent.class);
-		if (rendererComponent.getModels().isEmpty()) {
-			throw new CommandException("Entity with id " + id + " in world " + world.getName() + " has no model");
-		}
-		Model model = rendererComponent.getModels().get(0);
-
-		Skeleton skeleton = model.getSkeleton();
-		if (skeleton == null) {
-			throw new CommandException("Entity with id " + id + " in world " + world.getName() + " has no skeleton");
-		}
-
-		Animation animation = model.getAnimations().get(animationName);
-		if (animation == null) {
-			source.sendMessage("No animation with " + animationName + ", see the list :");
-			for (String a : model.getAnimations().keySet()) {
-				source.sendMessage(a);
-			}
-			return;
-		}
-
-		AnimationComponent ac = e.get(AnimationComponent.class);
-		ac.playAnimation(model, animation, args.has("loop"));
-		source.sendMessage("Entity " + id + " is now playing " + animation.getName());
-	}
-
-	@CommandDescription (aliases = {"animstop"}, desc = "Stop all animation on a entity")
-	public void stopAnimation(CommandSource source, CommandArguments args) throws CommandException {
-		int id = args.popInteger("id");
-		World world = args.popWorld("world", source);
-		Entity e = world.getEntity(id);
-		args.assertCompletelyParsed();
-
-		if (e == null) {
-			throw new CommandException("No entity with id " + id + " in world " + world.getName());
-		}
-
-		AnimationComponent ac = e.get(AnimationComponent.class);
-		if (ac == null) {
-			throw new CommandException("Entity " + id + " in world " + world.getName() + " does not have an AnimationComponent");
-		}
-
-		ac.stopAnimations();
-		source.sendMessage("Entity " + id + " animation stopped ");
 	}
 
 	@CommandDescription (aliases = {"profpop"}, desc = "Prints the populator profiler results to console")

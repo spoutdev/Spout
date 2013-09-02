@@ -45,13 +45,10 @@ import org.spout.api.gui.Widget;
 import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
-import org.spout.engine.batcher.SpriteBatch;
 
 public class SpoutWidget extends BaseComponentOwner implements Widget {
-	private List<RenderPartPack> renderPartCache = new LinkedList<>();
-	private boolean renderCacheClean = false;
+	private final List<RenderPartPack> renderPartCache = new LinkedList<>();
 	private boolean dirty = true;
-	private SpriteBatch batcher = new SpriteBatch();
 	private Screen screen = null;
 	private Rectangle hitBox = Rectangle.ZERO;
 	private Transform2D transform = new Transform2D();
@@ -63,8 +60,8 @@ public class SpoutWidget extends BaseComponentOwner implements Widget {
 	@Override
 	public List<RenderPartPack> getRenderPartPacks() {
 		synchronized (renderPartCache) {
-			if (!renderCacheClean) {
-				renderPartCache = new LinkedList<>();
+			if (dirty) {
+				renderPartCache.clear();
 
 				for (Component component : values()) {
 					if (component instanceof RenderPartContainer) {
@@ -75,26 +72,20 @@ public class SpoutWidget extends BaseComponentOwner implements Widget {
 
 				Collections.sort(renderPartCache);
 
-				renderCacheClean = true;
+				dirty = false;
 			}
 			return renderPartCache;
 		}
 	}
 
 	public void render() {
-		if (dirty) {
-			batcher.flush(getRenderPartPacks());
-			dirty = false;
-		}
-
-		batcher.render(transform.toMatrix());
+		// TODO: render me
 	}
 
 	@Override
 	public void update() {
-		dirty = true;
 		synchronized (renderPartCache) {
-			renderCacheClean = false;
+			dirty = true;
 		}
 	}
 

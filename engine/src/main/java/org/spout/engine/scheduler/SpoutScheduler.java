@@ -28,12 +28,10 @@ package org.spout.engine.scheduler;
 
 import java.awt.Canvas;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -46,8 +44,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.lwjgl.opengl.Display;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -62,11 +58,11 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.Named;
 import org.spout.api.util.thread.annotation.DelayedWrite;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutRenderer;
-import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.protocol.NetworkSendThreadPool;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.util.thread.AsyncManager;
@@ -82,10 +78,7 @@ import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.world.RegionGenerator;
-import org.spout.engine.world.SpoutChunkSnapshotModel;
 import org.spout.math.vector.Vector2;
-
-import static org.spout.engine.world.SpoutChunk.meshesGenerated;
 
 /**
  * A class which handles scheduling for the engine {@link SpoutTask}s.<br> <br> Tasks can be submitted to the scheduler for execution by the main thread. These tasks are executed during a period where
@@ -148,7 +141,7 @@ public final class SpoutScheduler implements Scheduler {
 	private final LinkedBlockingDeque<Runnable> finalTaskQueue = new LinkedBlockingDeque<>();
 	private final ConcurrentLinkedQueue<Runnable> lastTickTaskQueue = new ConcurrentLinkedQueue<>();
 	// Scheduler tasks
-	private final StartTickTask[] startTickTask = new StartTickTask[] {
+	private final StartTickTask[] startTickTask = new StartTickTask[]{
 			new StartTickTask(0),
 			new StartTickTask(1),
 			new StartTickTask(2)
@@ -190,10 +183,7 @@ public final class SpoutScheduler implements Scheduler {
 
 	private class RenderThread extends Thread {
 		private int fps = 0;
-		boolean tooLongFrame = false;
 		private SpoutRenderer renderer;
-		private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<>();
-		Canvas parent = null;
 
 		public RenderThread() {
 			super("Render Thread");
@@ -203,112 +193,23 @@ public final class SpoutScheduler implements Scheduler {
 			this.renderer = renderer;
 		}
 
-		public void enqueueRenderTask(Runnable task) {
-			renderTaskQueue.add(task);
-		}
-
-		public void setParent(Canvas parent) {
-			this.parent = parent;
-		}
-
 		public int getFps() {
 			return fps;
 		}
 
-		public boolean getFrameOverhead() {
-			return tooLongFrame;
-		}
-
 		@Override
 		public void run() {
-			renderer.initRenderer(parent);
-			int frames = 0;
-			long lastFrameTime = System.currentTimeMillis();
-			int targetFrame = (int) (1f / TARGET_FPS * 1000);
-			int rate = (int) ((1f / TARGET_FPS) * 1000000000);
-
-			long lastTick = System.nanoTime();
-
-			long timeError = 0;
-			long maxError = rate >> 2; // time error total limited to 0.25 seconds 
-
 			while (!shutdown) {
-				if (Display.isCloseRequested() || !((SpoutClient) engine).isRendering()) {
-					engine.stop();
-					break;
-				}
-				long currentTime = System.nanoTime();
-				long delta = currentTime - lastTick;
-				lastTick = currentTime;
-
-				// Calculate error in frame time
-				timeError += delta - rate;
-				if (timeError > maxError) {
-					timeError = maxError;
-				} else if (timeError < -maxError) {
-					timeError = -maxError;
-				}
-
-				while (renderTaskQueue.peek() != null) {
-					Runnable task = renderTaskQueue.poll();
-					task.run();
-				}
-
-				renderer.render(delta / 1000000000f);
-
-				Display.update(true);
-
-				currentTime = System.nanoTime();
-				delta = currentTime - lastTick; // Time for render
-
-				// Round delay to the nearest ms value (from ns)
-				long delay = (rate - delta + 500000) / 1000000;
-
-				// Adjust delay by 1ms depending on current time error
-				// Forces average to the target rate
-				if (timeError > 0) {
-					delay--;
-				} else if (timeError < 0) {
-					delay++;
-				}
-
-				if (delay > 0) {
-
-					renderer.updateRender(delay);//Use free time to make update
-
-					delay = (rate - delta + 500000) / 1000000;
-
-					// Adjust delay by 1ms depending on current time error
-					// Forces average to the target rate
-					if (timeError > 0) {
-						delay--;
-					} else if (timeError < 0) {
-						delay++;
-					}
-
-					if (delay > 0) {
-						try {
-							Thread.sleep(delay);
-						} catch (InterruptedException e) {
-							Spout.severe("Interrupted while sleeping!");
-						}
-					}
-					tooLongFrame = false;
-				} else if (delay < -targetFrame) {
-					tooLongFrame = true;
-				} else {
-					tooLongFrame = false;
-				}
-
-				if (System.currentTimeMillis() - lastFrameTime > 1000) {
-					lastFrameTime = System.currentTimeMillis();
-					fps = frames;
-					frames = 0;
-				}
-				frames++;
 			}
-			Display.destroy();
-			engine.stop("Spout is shutting down");
+		}
+	}
+
+	public class MeshGeneratorThread extends Thread {
+		@Override
+		public void run() {
+			while (!shutdown) {
+
+			}
 		}
 	}
 
@@ -432,20 +333,24 @@ public final class SpoutScheduler implements Scheduler {
 
 		@Override
 		public void run() {
-			long targetPeriod = 1000 / 40;
+			final long targetPeriod = 1000 / 40;
 			long lastTick = System.currentTimeMillis();
 			long nextTick = lastTick + targetPeriod;
 			float dt = (float) targetPeriod;
 
-			ScreenStack stack;
-			stack = ((SpoutClient) engine).getScreenStack();
+			ScreenStack stack = ((SpoutClient) engine).getScreenStack();
+			if (stack == null) {
+				Spout.warn("Null screen stack in spout client GUI thread");
+			}
 
 			while (!shutdown) {
-				try {
-					stack.tick(dt);
-				} catch (Exception ex) {
-					Spout.severe("Error while pulsing: {0}", ex.getMessage());
-					ex.printStackTrace();
+				if (stack != null) {
+					try {
+						stack.tick(dt);
+					} catch (Exception ex) {
+						Spout.severe("Error while pulsing: {0}", ex.getMessage());
+						ex.printStackTrace();
+					}
 				}
 				long now = System.currentTimeMillis();
 				long sleepFor = nextTick - now;
@@ -462,35 +367,6 @@ public final class SpoutScheduler implements Scheduler {
 				nextTick += targetPeriod;
 			}
 		}
-	}
-
-	private static final Deque<SpoutChunkSnapshotModel> models = new ConcurrentLinkedDeque<>();
-	;
-
-	public class MeshGeneratorThread extends Thread {
-		@Override
-		public void run() {
-			while (!shutdown) {
-				SpoutChunkSnapshotModel poll = models.poll();
-				if (poll == null) {
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException ex) {
-						continue;
-					}
-					continue;
-				}
-				ChunkMesh mesh = new ChunkMesh(poll);
-				mesh.update();
-				((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer().addMeshToBatchQueue(mesh);
-				meshesGenerated.getAndIncrement();
-			}
-		}
-	}
-
-	public static void addToQueue(SpoutChunkSnapshotModel model) {
-		models.remove(model);
-		models.add(model);
 	}
 
 	public void startMeshThread() {
@@ -510,19 +386,14 @@ public final class SpoutScheduler implements Scheduler {
 		mainThread.start();
 	}
 
-	public SpoutRenderer startRenderThread(Vector2 resolution, boolean ccoverride, Canvas parent) {
+	public SpoutRenderer startRenderThread(Vector2 resolution, Canvas parent) {
 		if (renderThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the render thread twice");
 		}
-		SpoutRenderer renderer = new SpoutRenderer(((SpoutClient) engine), resolution, ccoverride);
+		SpoutRenderer renderer = new SpoutRenderer(((SpoutClient) engine), resolution);
 		renderThread.setRenderer(renderer);
-		renderThread.setParent(parent);
 		renderThread.start();
 		return renderer;
-	}
-
-	public void enqueueRenderTask(Runnable task) {
-		renderThread.enqueueRenderTask(task);
 	}
 
 	public void startGuiThread() {
@@ -858,10 +729,6 @@ public final class SpoutScheduler implements Scheduler {
 
 	public long getFps() {
 		return renderThread.getFps();
-	}
-
-	public boolean isRendererOverloaded() {
-		return renderThread != null && (renderThread.getFrameOverhead() || renderThread.getFps() < OVERHEAD_FPS);
 	}
 
 	@Override

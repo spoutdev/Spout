@@ -52,8 +52,6 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 
-import org.spout.engine.SpoutClient;
-import org.spout.engine.component.entity.SpoutModelComponent;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
@@ -144,11 +142,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		if (type.equals(PhysicsComponent.class)) {
 			return super.add(type, SpoutPhysicsComponent.class, attach);
 		} else if (type.equals(ModelComponent.class)) {
-			T component = super.add(type, SpoutModelComponent.class, attach);
-			if (getEngine() instanceof SpoutClient) {
-				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().add((SpoutModelComponent) component);
-			}
-			return component;
+			return null;
 		} else if (NetworkComponent.class.isAssignableFrom(type) && get(type) == null) {
 			//Detach old NetworkComponent
 			super.detach(NetworkComponent.class, true);
@@ -162,11 +156,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	@Override
 	protected <T extends Component> T detach(Class<? extends Component> type, boolean force) {
 		if (ModelComponent.class.equals(type)) {
-			T component = super.detach(type, force);
-			if (getEngine() instanceof SpoutClient) {
-				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().remove((SpoutModelComponent) component);
-			}
-			return component;
+			return super.detach(type, force);
 		} else if (NetworkComponent.class.isAssignableFrom(type) && !force) {
 			return (T) network;
 		}

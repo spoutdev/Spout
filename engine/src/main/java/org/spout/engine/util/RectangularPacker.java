@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.spout.api.render.Texture;
-import org.spout.engine.filesystem.resource.ClientTexture;
 
 /**
  * A bin packing algorithm useful for merging multiple textures into one.
@@ -65,7 +64,8 @@ public class RectangularPacker {
 
 		fit();
 		BufferedImage image = generateImage(true);
-		this.texture = new ClientTexture(image);
+		// TODO: fix this for the new renderer
+		this.texture = null;
 	}
 
 	private void fit() {
