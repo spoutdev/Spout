@@ -29,6 +29,7 @@ package org.spout.math.matrix;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
+import org.spout.math.HashFunctions;
 import org.spout.math.imaginary.Complex;
 import org.spout.math.vector.Vector2;
 
@@ -93,24 +94,24 @@ public class Matrix2 implements Matrix, Serializable, Cloneable {
 	@Override
 	public float get(int row, int col) {
 		switch (row) {
+		case 0:
+			switch (col) {
 			case 0:
-				switch (col) {
-					case 0:
-						return m00;
-					case 1:
-						return m01;
-				}
+				return m00;
 			case 1:
-				switch (col) {
-					case 0:
-						return m10;
-					case 1:
-						return m11;
-				}
+				return m01;
+			}
+		case 1:
+			switch (col) {
+			case 0:
+				return m10;
+			case 1:
+				return m11;
+			}
 		}
 		throw new IllegalArgumentException(
 				(row < 0 || row > 1 ? "row must be greater than zero and smaller than 2. " : "") +
-						(col < 0 || col > 1 ? "col must be greater than zero and smaller than 2." : ""));
+				(col < 0 || col > 1 ? "col must be greater than zero and smaller than 2." : ""));
 	}
 
 	@Override
@@ -344,10 +345,10 @@ public class Matrix2 implements Matrix, Serializable, Cloneable {
 	@Override
 	public int hashCode() {
 		if (!hashed) {
-			int result = (m00 != +0.0f ? Float.floatToIntBits(m00) : 0);
-			result = 31 * result + (m01 != +0.0f ? Float.floatToIntBits(m01) : 0);
-			result = 31 * result + (m10 != +0.0f ? Float.floatToIntBits(m10) : 0);
-			hashCode = 31 * result + (m11 != +0.0f ? Float.floatToIntBits(m11) : 0);
+			int result = (m00 != +0.0f ? HashFunctions.hash(m00) : 0);
+			result = 31 * result + (m01 != +0.0f ? HashFunctions.hash(m01) : 0);
+			result = 31 * result + (m10 != +0.0f ? HashFunctions.hash(m10) : 0);
+			hashCode = 31 * result + (m11 != +0.0f ? HashFunctions.hash(m11) : 0);
 			hashed = true;
 		}
 		return hashCode;

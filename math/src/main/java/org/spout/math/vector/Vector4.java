@@ -29,6 +29,7 @@ package org.spout.math.vector;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
+import org.spout.math.HashFunctions;
 
 public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
@@ -391,10 +392,10 @@ public class Vector4 implements Vector, Comparable<Vector4>, Serializable, Clone
 	@Override
 	public int hashCode() {
 		if (!hashed) {
-			int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
-			result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
-			result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
-			hashCode = 31 * result + (w != +0.0f ? Float.floatToIntBits(w) : 0);
+			int result = (x != +0.0f ? HashFunctions.hash(x) : 0);
+			result = 31 * result + (y != +0.0f ? HashFunctions.hash(y) : 0);
+			result = 31 * result + (z != +0.0f ? HashFunctions.hash(z) : 0);
+			hashCode = 31 * result + (w != +0.0f ? HashFunctions.hash(w) : 0);
 			hashed = true;
 		}
 		return hashCode;

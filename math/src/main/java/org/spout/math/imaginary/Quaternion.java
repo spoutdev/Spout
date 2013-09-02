@@ -29,6 +29,7 @@ package org.spout.math.imaginary;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
+import org.spout.math.HashFunctions;
 import org.spout.math.TrigMath;
 import org.spout.math.matrix.Matrix3;
 import org.spout.math.vector.Vector3;
@@ -447,10 +448,10 @@ public class Quaternion implements Imaginary, Comparable<Quaternion>, Serializab
 	@Override
 	public int hashCode() {
 		if (!hashed) {
-			int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
-			result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
-			result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
-			hashCode = 31 * result + (w != +0.0f ? Float.floatToIntBits(w) : 0);
+			int result = (x != +0.0f ? HashFunctions.hash(x) : 0);
+			result = 31 * result + (y != +0.0f ? HashFunctions.hash(y) : 0);
+			result = 31 * result + (z != +0.0f ? HashFunctions.hash(z) : 0);
+			hashCode = 31 * result + (w != +0.0f ? HashFunctions.hash(w) : 0);
 			hashed = true;
 		}
 		return hashCode;

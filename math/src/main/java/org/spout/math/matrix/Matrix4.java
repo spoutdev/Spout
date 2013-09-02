@@ -29,6 +29,7 @@ package org.spout.math.matrix;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
+import org.spout.math.HashFunctions;
 import org.spout.math.TrigMath;
 import org.spout.math.imaginary.Complex;
 import org.spout.math.imaginary.Quaternion;
@@ -164,54 +165,54 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 	@Override
 	public float get(int row, int col) {
 		switch (row) {
+		case 0:
+			switch (col) {
 			case 0:
-				switch (col) {
-					case 0:
-						return m00;
-					case 1:
-						return m01;
-					case 2:
-						return m02;
-					case 3:
-						return m03;
-				}
+				return m00;
 			case 1:
-				switch (col) {
-					case 0:
-						return m10;
-					case 1:
-						return m11;
-					case 2:
-						return m12;
-					case 3:
-						return m13;
-				}
+				return m01;
 			case 2:
-				switch (col) {
-					case 0:
-						return m20;
-					case 1:
-						return m21;
-					case 2:
-						return m22;
-					case 3:
-						return m23;
-				}
+				return m02;
 			case 3:
-				switch (col) {
-					case 0:
-						return m30;
-					case 1:
-						return m31;
-					case 2:
-						return m32;
-					case 3:
-						return m33;
-				}
+				return m03;
+			}
+		case 1:
+			switch (col) {
+			case 0:
+				return m10;
+			case 1:
+				return m11;
+			case 2:
+				return m12;
+			case 3:
+				return m13;
+			}
+		case 2:
+			switch (col) {
+			case 0:
+				return m20;
+			case 1:
+				return m21;
+			case 2:
+				return m22;
+			case 3:
+				return m23;
+			}
+		case 3:
+			switch (col) {
+			case 0:
+				return m30;
+			case 1:
+				return m31;
+			case 2:
+				return m32;
+			case 3:
+				return m33;
+			}
 		}
 		throw new IllegalArgumentException(
 				(row < 0 || row > 2 ? "row must be greater than zero and smaller than 3. " : "") +
-						(col < 0 || col > 2 ? "col must be greater than zero and smaller than 3." : ""));
+				(col < 0 || col > 2 ? "col must be greater than zero and smaller than 3." : ""));
 	}
 
 	@Override
@@ -543,22 +544,22 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 	@Override
 	public int hashCode() {
 		if (!hashed) {
-			int result = (m00 != +0.0f ? Float.floatToIntBits(m00) : 0);
-			result = 31 * result + (m01 != +0.0f ? Float.floatToIntBits(m01) : 0);
-			result = 31 * result + (m02 != +0.0f ? Float.floatToIntBits(m02) : 0);
-			result = 31 * result + (m03 != +0.0f ? Float.floatToIntBits(m03) : 0);
-			result = 31 * result + (m10 != +0.0f ? Float.floatToIntBits(m10) : 0);
-			result = 31 * result + (m11 != +0.0f ? Float.floatToIntBits(m11) : 0);
-			result = 31 * result + (m12 != +0.0f ? Float.floatToIntBits(m12) : 0);
-			result = 31 * result + (m13 != +0.0f ? Float.floatToIntBits(m13) : 0);
-			result = 31 * result + (m20 != +0.0f ? Float.floatToIntBits(m20) : 0);
-			result = 31 * result + (m21 != +0.0f ? Float.floatToIntBits(m21) : 0);
-			result = 31 * result + (m22 != +0.0f ? Float.floatToIntBits(m22) : 0);
-			result = 31 * result + (m23 != +0.0f ? Float.floatToIntBits(m23) : 0);
-			result = 31 * result + (m30 != +0.0f ? Float.floatToIntBits(m30) : 0);
-			result = 31 * result + (m31 != +0.0f ? Float.floatToIntBits(m31) : 0);
-			result = 31 * result + (m32 != +0.0f ? Float.floatToIntBits(m32) : 0);
-			hashCode = 31 * result + (m33 != +0.0f ? Float.floatToIntBits(m33) : 0);
+			int result = (m00 != +0.0f ? HashFunctions.hash(m00) : 0);
+			result = 31 * result + (m01 != +0.0f ? HashFunctions.hash(m01) : 0);
+			result = 31 * result + (m02 != +0.0f ? HashFunctions.hash(m02) : 0);
+			result = 31 * result + (m03 != +0.0f ? HashFunctions.hash(m03) : 0);
+			result = 31 * result + (m10 != +0.0f ? HashFunctions.hash(m10) : 0);
+			result = 31 * result + (m11 != +0.0f ? HashFunctions.hash(m11) : 0);
+			result = 31 * result + (m12 != +0.0f ? HashFunctions.hash(m12) : 0);
+			result = 31 * result + (m13 != +0.0f ? HashFunctions.hash(m13) : 0);
+			result = 31 * result + (m20 != +0.0f ? HashFunctions.hash(m20) : 0);
+			result = 31 * result + (m21 != +0.0f ? HashFunctions.hash(m21) : 0);
+			result = 31 * result + (m22 != +0.0f ? HashFunctions.hash(m22) : 0);
+			result = 31 * result + (m23 != +0.0f ? HashFunctions.hash(m23) : 0);
+			result = 31 * result + (m30 != +0.0f ? HashFunctions.hash(m30) : 0);
+			result = 31 * result + (m31 != +0.0f ? HashFunctions.hash(m31) : 0);
+			result = 31 * result + (m32 != +0.0f ? HashFunctions.hash(m32) : 0);
+			hashCode = 31 * result + (m33 != +0.0f ? HashFunctions.hash(m33) : 0);
 			hashed = true;
 		}
 		return hashCode;
@@ -683,7 +684,7 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 	 * @return A viewing frustum built from the provided values
 	 */
 	public static Matrix4 createOrthographic(float right, float left, float top, float bottom,
-											 float near, float far) {
+			float near, float far) {
 		return new Matrix4(
 				2 / (right - left), 0, 0, -(right + left) / (right - left),
 				0, 2 / (top - bottom), 0, -(top + bottom) / (top - bottom),
@@ -692,8 +693,8 @@ public class Matrix4 implements Matrix, Serializable, Cloneable {
 	}
 
 	private static float det3(float m00, float m01, float m02,
-							  float m10, float m11, float m12,
-							  float m20, float m21, float m22) {
+			float m10, float m11, float m12,
+			float m20, float m21, float m22) {
 		return m00 * (m11 * m22 - m12 * m21) - m01 * (m10 * m22 - m12 * m20) + m02 * (m10 * m21 - m11 * m20);
 	}
 }

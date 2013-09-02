@@ -29,6 +29,7 @@ package org.spout.math.matrix;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
+import org.spout.math.HashFunctions;
 import org.spout.math.imaginary.Complex;
 import org.spout.math.imaginary.Quaternion;
 import org.spout.math.vector.Vector2;
@@ -123,37 +124,37 @@ public class Matrix3 implements Matrix, Serializable, Cloneable {
 	@Override
 	public float get(int row, int col) {
 		switch (row) {
+		case 0:
+			switch (col) {
 			case 0:
-				switch (col) {
-					case 0:
-						return m00;
-					case 1:
-						return m01;
-					case 2:
-						return m02;
-				}
+				return m00;
 			case 1:
-				switch (col) {
-					case 0:
-						return m10;
-					case 1:
-						return m11;
-					case 2:
-						return m12;
-				}
+				return m01;
 			case 2:
-				switch (col) {
-					case 0:
-						return m20;
-					case 1:
-						return m21;
-					case 2:
-						return m22;
-				}
+				return m02;
+			}
+		case 1:
+			switch (col) {
+			case 0:
+				return m10;
+			case 1:
+				return m11;
+			case 2:
+				return m12;
+			}
+		case 2:
+			switch (col) {
+			case 0:
+				return m20;
+			case 1:
+				return m21;
+			case 2:
+				return m22;
+			}
 		}
 		throw new IllegalArgumentException(
 				(row < 0 || row > 2 ? "row must be greater than zero and smaller than 3. " : "") +
-						(col < 0 || col > 2 ? "col must be greater than zero and smaller than 3." : ""));
+				(col < 0 || col > 2 ? "col must be greater than zero and smaller than 3." : ""));
 	}
 
 	@Override
@@ -430,15 +431,15 @@ public class Matrix3 implements Matrix, Serializable, Cloneable {
 	@Override
 	public int hashCode() {
 		if (!hashed) {
-			int result = (m00 != +0.0f ? Float.floatToIntBits(m00) : 0);
-			result = 31 * result + (m01 != +0.0f ? Float.floatToIntBits(m01) : 0);
-			result = 31 * result + (m02 != +0.0f ? Float.floatToIntBits(m02) : 0);
-			result = 31 * result + (m10 != +0.0f ? Float.floatToIntBits(m10) : 0);
-			result = 31 * result + (m11 != +0.0f ? Float.floatToIntBits(m11) : 0);
-			result = 31 * result + (m12 != +0.0f ? Float.floatToIntBits(m12) : 0);
-			result = 31 * result + (m20 != +0.0f ? Float.floatToIntBits(m20) : 0);
-			result = 31 * result + (m21 != +0.0f ? Float.floatToIntBits(m21) : 0);
-			hashCode = 31 * result + (m22 != +0.0f ? Float.floatToIntBits(m22) : 0);
+			int result = (m00 != +0.0f ? HashFunctions.hash(m00) : 0);
+			result = 31 * result + (m01 != +0.0f ? HashFunctions.hash(m01) : 0);
+			result = 31 * result + (m02 != +0.0f ? HashFunctions.hash(m02) : 0);
+			result = 31 * result + (m10 != +0.0f ? HashFunctions.hash(m10) : 0);
+			result = 31 * result + (m11 != +0.0f ? HashFunctions.hash(m11) : 0);
+			result = 31 * result + (m12 != +0.0f ? HashFunctions.hash(m12) : 0);
+			result = 31 * result + (m20 != +0.0f ? HashFunctions.hash(m20) : 0);
+			result = 31 * result + (m21 != +0.0f ? HashFunctions.hash(m21) : 0);
+			hashCode = 31 * result + (m22 != +0.0f ? HashFunctions.hash(m22) : 0);
 			hashed = true;
 		}
 		return hashCode;

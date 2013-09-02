@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.util.Random;
 
 import org.spout.math.GenericMath;
+import org.spout.math.HashFunctions;
 import org.spout.math.TrigMath;
 
 public class Vector2 implements Vector, Comparable<Vector2>, Serializable, Cloneable {
@@ -343,8 +344,8 @@ public class Vector2 implements Vector, Comparable<Vector2>, Serializable, Clone
 	@Override
 	public int hashCode() {
 		if (!hashed) {
-			final int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
-			hashCode = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+			final int result = (x != +0.0f ? HashFunctions.hash(x) : 0);
+			hashCode = 31 * result + (y != +0.0f ? HashFunctions.hash(y) : 0);
 			hashed = true;
 		}
 		return hashCode;

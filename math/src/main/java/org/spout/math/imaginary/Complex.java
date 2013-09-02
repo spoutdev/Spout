@@ -29,6 +29,7 @@ package org.spout.math.imaginary;
 import java.io.Serializable;
 
 import org.spout.math.GenericMath;
+import org.spout.math.HashFunctions;
 import org.spout.math.TrigMath;
 import org.spout.math.vector.Vector2;
 
@@ -378,8 +379,8 @@ public class Complex implements Imaginary, Comparable<Complex>, Serializable, Cl
 	@Override
 	public int hashCode() {
 		if (!hashed) {
-			final int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
-			hashCode = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+			final int result = (x != +0.0f ? HashFunctions.hash(x) : 0);
+			hashCode = 31 * result + (y != +0.0f ? HashFunctions.hash(y) : 0);
 			hashed = true;
 		}
 		return hashCode;
