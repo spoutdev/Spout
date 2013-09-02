@@ -26,7 +26,6 @@
  */
 package org.spout.engine.gui;
 
-import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -38,15 +37,14 @@ import org.spout.api.gui.Screen;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.gui.Widget;
 import org.spout.api.input.InputManager;
-import org.spout.api.render.SpoutRenderMaterials;
 import org.spout.api.signal.SignalSubscriberObject;
 
 public class SpoutScreenStack extends SignalSubscriberObject implements ScreenStack {
 	private final LinkedList<Screen> screens = new LinkedList<>();
 	private final LinkedList<Screen> visibleScreens = new LinkedList<>();
 	private final Screen main;
-	private final DevConsole console;
-	private final DebugScreen debugScreen;
+	//private final DevConsole console;
+	//private final DebugScreen debugScreen;
 	/**
 	 * The screen that gets input, can be null
 	 */
@@ -57,13 +55,13 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 		screens.add(root);
 
 		// Add the debug screen
-		debugScreen = new DebugScreen();
-		screens.add(debugScreen);
+		//debugScreen = new DebugScreen();
+		//screens.add(debugScreen);
 
 		// Add the dev console
-		console = new DevConsole(SpoutRenderMaterials.DEFAULT_FONT);
-		console.setDateFormat(new SimpleDateFormat("E HH:mm:ss"));
-		screens.add(console);
+		//console = new DevConsole(SpoutRenderMaterials.DEFAULT_FONT);
+		//console.setDateFormat(new SimpleDateFormat("E HH:mm:ss"));
+		//screens.add(console);
 
 		update();
 	}
@@ -181,14 +179,16 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	 */
 	@Override
 	public DebugHud getDebugHud() {
-		return debugScreen;
+		return null;
+		//return debugScreen;
 	}
 
 	/**
-	 * Get the ingame developper's console
+	 * Get the in-game developer's console
 	 */
 	public DevConsole getConsole() {
-		return console;
+		return null;
+		//return console;
 	}
 
 	@Override

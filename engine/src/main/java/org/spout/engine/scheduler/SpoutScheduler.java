@@ -26,11 +26,8 @@
  */
 package org.spout.engine.scheduler;
 
-import java.awt.Canvas;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
@@ -45,6 +42,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
+
+import org.lwjgl.opengl.Display;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -79,7 +78,6 @@ import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.world.RegionGenerator;
-import org.spout.math.vector.Vector2;
 
 /**
  * A class which handles scheduling for the engine {@link SpoutTask}s.<br> <br> Tasks can be submitted to the scheduler for execution by the main thread. These tasks are executed during a period where
@@ -133,8 +131,6 @@ public final class SpoutScheduler implements Scheduler {
 	private final Thread mainThread;
 	private final RenderThread renderThread;
 	private final GUIThread guiThread;
-	private static final int MESH_THREADS = 4; // TODO make this changeable
-	private final Set<MeshGeneratorThread> meshThread;
 	private final SpoutTaskManager taskManager;
 	private SpoutParallelTaskManager parallelTaskManager = null;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
@@ -167,14 +163,9 @@ public final class SpoutScheduler implements Scheduler {
 		if (engine instanceof SpoutClient) {
 			renderThread = new RenderThread();
 			guiThread = new GUIThread();
-			meshThread = new HashSet<>();
-			for (int i = 0; i <= MESH_THREADS; i++) {
-				meshThread.add(new MeshGeneratorThread());
-			}
 		} else {
 			renderThread = null;
 			guiThread = null;
-			meshThread = null;
 		}
 
 		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 1, new MarkedNamedThreadFactory("SpoutScheduler - async manager executor service", true));
@@ -194,23 +185,23 @@ public final class SpoutScheduler implements Scheduler {
 			this.renderer = renderer;
 		}
 
-		public int getFps() {
+		public int getFPS() {
 			return fps;
 		}
 
 		@Override
 		public void run() {
+			renderer.init();
+			final float dt = 1 / TARGET_FPS;
 			while (!shutdown) {
+				if (Display.isCloseRequested()) {
+					engine.stop();
+					break;
+				}
+				renderer.render(dt);
+				Display.sync(TARGET_FPS);
 			}
-		}
-	}
-
-	public class MeshGeneratorThread extends Thread {
-		@Override
-		public void run() {
-			while (!shutdown) {
-
-			}
+			renderer.dispose();
 		}
 	}
 
@@ -261,7 +252,7 @@ public final class SpoutScheduler implements Scheduler {
 					try {
 						Thread.sleep(expectedTime - currentTime);
 					} catch (InterruptedException e) {
-						shutdown = true;
+						engine.stop();
 					}
 				}
 			}
@@ -375,15 +366,6 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	public void startMeshThread() {
-		for (MeshGeneratorThread t : meshThread) {
-			if (t.isAlive()) {
-				throw new IllegalStateException("Attempt was made to start a mesh thread twice");
-			}
-			t.start();
-		}
-	}
-
 	public void startMainThread() {
 		if (mainThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the main thread twice");
@@ -392,17 +374,15 @@ public final class SpoutScheduler implements Scheduler {
 		mainThread.start();
 	}
 
-	public SpoutRenderer startRenderThread(Vector2 resolution, Canvas parent) {
+	public void startRenderThread(SpoutRenderer renderer) {
 		if (renderThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the render thread twice");
 		}
-		SpoutRenderer renderer = new SpoutRenderer(((SpoutClient) engine), resolution);
 		renderThread.setRenderer(renderer);
 		renderThread.start();
-		return renderer;
 	}
 
-	public void startGuiThread() {
+	public void startGUIThread() {
 		if (guiThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the GUI thread twice");
 		}
@@ -731,7 +711,7 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	public long getFps() {
-		return renderThread.getFps();
+		return renderThread.getFPS();
 	}
 
 	@Override

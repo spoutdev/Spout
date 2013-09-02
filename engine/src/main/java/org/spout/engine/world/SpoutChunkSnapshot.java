@@ -70,7 +70,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final BiomeManager biomes;
 	private final SerializableMap dataMap;
 	private final PopulationState populationState;
-	private boolean renderDirty = false;
 
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
 		this(chunk, blockIds, blockData, null, 0, null, lightBuffers, type, data);
@@ -150,7 +149,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			this.dataMap = null;
 		}
 		this.populationState = chunk.getPopulationState();
-		renderDirty = chunk.isDirty();
 	}
 
 	//Maybe we can use that in ChunkMesh generation in SpoutRegion
@@ -233,14 +231,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@Override
 	public short[] getBlockData() {
 		return blockData;
-	}
-
-	public boolean isRenderDirty() {
-		return renderDirty;
-	}
-
-	public void setRenderDirty(boolean val) {
-		renderDirty = false;
 	}
 
 	@Override
@@ -353,10 +343,9 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public CuboidLightBuffer getLightBuffer(short id) {
-		int index = id;
-		if (index < 0 || index >= idLightBufferMap.length) {
+		if (id < 0 || id >= idLightBufferMap.length) {
 			return null;
 		}
-		return idLightBufferMap[index];
+		return idLightBufferMap[id];
 	}
 }
