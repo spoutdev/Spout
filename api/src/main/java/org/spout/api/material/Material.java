@@ -38,8 +38,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.Platform;
-import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.Action;
 import org.spout.api.geo.cuboid.Block;
@@ -51,6 +49,7 @@ import org.spout.api.resource.SpoutModels;
 import org.spout.api.util.LogicUtil;
 import org.spout.api.util.flag.Flag;
 import org.spout.api.util.flag.FlagSingle;
+
 import org.spout.math.GenericMath;
 
 public abstract class Material extends MaterialRegistry {
@@ -84,14 +83,7 @@ public abstract class Material extends MaterialRegistry {
 		this.subMaterials = MaterialRegistry.getSubMaterialReference(this.id);
 		this.dataMask = dataMask;
 		this.root = this;
-		if (model == null) {
-			model = SpoutModels.DEFAULT_MODEL;
-		}
-		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			this.model = (Model) Spout.getFileSystem().getResource(model);
-		} else {
-			this.model = null;
-		}
+		this.model = null; // if model is null, DEFAULT_MODEL else, model
 	}
 
 	/**
@@ -142,14 +134,7 @@ public abstract class Material extends MaterialRegistry {
 		this.subMaterials = MaterialRegistry.getSubMaterialReference(this.id);
 		this.dataMask = parent.getDataMask();
 		this.root = parent.getRoot();
-		if (model == null) {
-			model = SpoutModels.DEFAULT_MODEL;
-		}
-		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			this.model = (Model) Spout.getFileSystem().getResource(model);
-		} else {
-			this.model = null;
-		}
+		this.model = null; // if model is null, DEFAULT_MODEL else, model
 	}
 
 	/**
@@ -168,11 +153,7 @@ public abstract class Material extends MaterialRegistry {
 		this.subMaterials = MaterialRegistry.getSubMaterialReference(this.id);
 		this.dataMask = 0;
 		this.root = this;
-		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			this.model = (Model) Spout.getFileSystem().getResource(SpoutModels.DEFAULT_MODEL);
-		} else {
-			this.model = null;
-		}
+		this.model = null; // DEFAULT_MODEL
 	}
 
 	/**

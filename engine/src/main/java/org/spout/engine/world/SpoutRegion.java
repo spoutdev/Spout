@@ -64,7 +64,6 @@ import org.spout.api.lighting.LightingManager;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.ReactConverter;
@@ -774,8 +773,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 					spoutChunk.resetDirtyArrays();
 					spoutChunk.setLightDirty(false);
-				} else {
-					spoutChunk.render(BlockFaces.NONE);
 				}
 			}
 		}
@@ -1443,8 +1440,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		SpoutChunk chunk = chunks[regionChunkX][regionChunkY][regionChunkZ].get();
 		if (chunk != null) {
 			chunk.unload(false);
-			// TODO is this right?
-			SpoutScheduler.addToQueue(new SpoutChunkSnapshotModel(chunk.getWorld(), chunkX, chunkY, chunkZ, true, System.currentTimeMillis()));
 			chunks[regionChunkX][regionChunkY][regionChunkZ].set(null);
 		}
 	}
