@@ -47,7 +47,7 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 	protected final int cSx;
 	protected final int cSy;
 	protected final int cSz;
-	private final ImmutableCuboidBlockMaterialBuffer[][][] cache;
+	private ImmutableCuboidBlockMaterialBuffer[][][] cache;
 
 	public LocalRegionChunkCuboidBlockMaterialBufferWrapper(Region r, LoadOption loadOpt, BlockMaterial nullMaterial) {
 		this(r.getBlockX() - SINGLE, r.getBlockY() - SINGLE, r.getBlockZ() - SINGLE, TRIPLE, TRIPLE, TRIPLE, r, loadOpt, nullMaterial);
@@ -93,13 +93,7 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 	 * Clears the cache containing sub-buffers.
 	 */
 	public void clear() {
-		for (int x = 0; x < cSx; x++) {
-			for (int y = 0; y < cSy; y++) {
-				for (int z = 0; z < cSz; z++) {
-					cache[x][y][z] = null;
-				}
-			}
-		}
+		cache = new ImmutableCuboidBlockMaterialBuffer[cSx][cSy][cSz];
 	}
 
 	private ImmutableCuboidBlockMaterialBuffer getBlockMaterialBufferRaw(int x, int y, int z) {

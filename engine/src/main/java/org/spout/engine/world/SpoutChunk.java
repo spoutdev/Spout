@@ -1305,6 +1305,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				e.printStackTrace();
 			}
 		}
+		populated.incrementAndGet();
 
 		populationState.set(PopulationState.POPULATED);
 
@@ -1329,6 +1330,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	private final static ConcurrentHashMap<Class<? extends Populator>, AtomicLong> populatorProfilerMap = new ConcurrentHashMap<>();
 	private final static ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+	private final static AtomicInteger populated = new AtomicInteger();
 
 	private void populatorAdd(Populator populator, long delta) {
 		AtomicLong i = populatorProfilerMap.get(populator.getClass());
@@ -1366,6 +1368,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		Collections.sort(list, comp);
 
 		return list;
+	}
+
+	public static int getChunksPopulated() {
+		return populated.get();
 	}
 
 	@Override

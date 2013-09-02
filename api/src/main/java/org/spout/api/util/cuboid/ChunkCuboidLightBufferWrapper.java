@@ -39,7 +39,7 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 	protected final int cSx;
 	protected final int cSy;
 	protected final int cSz;
-	private final CuboidLightBuffer[][][] cache;
+	private CuboidLightBuffer[][][] cache;
 
 	protected ChunkCuboidLightBufferWrapper(int bx, int by, int bz, int sx, int sy, int sz, short id) {
 		super(null, id, bx, by, bz, sx, sy, sz);
@@ -91,13 +91,7 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 	 * Clears the cache containing sub-buffers.
 	 */
 	public void clear() {
-		for (int x = 0; x < cSx; x++) {
-			for (int y = 0; y < cSy; y++) {
-				for (int z = 0; z < cSz; z++) {
-					cache[x][y][z] = null;
-				}
-			}
-		}
+		cache = new CuboidLightBuffer[cSx][cSy][cSz];
 	}
 
 	protected abstract T getLightBufferRaw(int x, int y, int z, boolean allowNull);
