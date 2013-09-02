@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.spout.api.Client;
 import org.spout.api.Platform;
@@ -439,7 +440,7 @@ public class TestCommands {
 			totalPopulator += e.getValue();
 		}
 		for (Entry<Class<? extends Populator>, Long> e : SpoutChunk.getProfileResults()) {
-			Spout.getLogger().info(e.getKey().getSimpleName() + " " + e.getValue() + " (" + (0.10 * ((e.getValue() * 1000) / totalPopulator)) + ")");
+			Spout.getLogger().info(e.getKey().getSimpleName() + " " + (TimeUnit.SECONDS.convert(e.getValue(), TimeUnit.NANOSECONDS) / new Integer(SpoutChunk.getChunksPopulated()).floatValue()) + "s average per chunk (" + (0.10 * ((e.getValue() * 1000) / totalPopulator)) + ")");
 		}
 		Spout.getLogger().info("Total " + totalPopulator);
 		Spout.getLogger().info("");

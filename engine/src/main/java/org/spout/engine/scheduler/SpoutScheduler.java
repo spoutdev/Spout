@@ -46,6 +46,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
 
 import org.lwjgl.opengl.Display;
 
@@ -326,7 +327,12 @@ public final class SpoutScheduler implements Scheduler {
 				long startTime = System.currentTimeMillis();
 				tickStartTime.set(System.currentTimeMillis());
 
-				boolean underLoad = expectedTime < startTime - PULSE_EVERY;
+				// We allow for 5 ms of leeway for underload
+				boolean underLoad = expectedTime < startTime - 5;
+
+				if (Spout.debugMode() && underLoad) {
+					Spout.getLogger().log(Level.INFO, "Under load. Behind by {0} ms", startTime - expectedTime);
+				}
 
 				if (expectedTime < startTime - 10000) {
 					expectedTime = startTime;
@@ -830,7 +836,7 @@ public final class SpoutScheduler implements Scheduler {
 					try {
 						Future<?> f = futures.get(i);
 						if (!f.isDone()) {
-							f.get(PULSE_EVERY << 4, TimeUnit.MILLISECONDS);
+							f.get(PULSE_EVERY, TimeUnit.MILLISECONDS);
 						}
 						done = true;
 					} catch (InterruptedException e) {
@@ -1051,9 +1057,9 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private void logLongDurationTick(String stage, Iterable<AsyncManager> executors) {
-		/*
-		engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY << 4) + "ms");
-		AsyncExecutorUtils.dumpAllStacks();
+		
+		engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY) + "ms");
+		/*AsyncExecutorUtils.dumpAllStacks();
 		AsyncExecutorUtils.checkForDeadlocks();
 		for (AsyncExecutor executor : executors) {
 			if (!executor.isPulseFinished()) {
@@ -1074,8 +1080,8 @@ public final class SpoutScheduler implements Scheduler {
 					}
 				}
 			}
-		}
-		 */
+		}*/
+		 
 	}
 
 	private static class MarkedNamedThreadFactory extends Thread implements ThreadFactory {

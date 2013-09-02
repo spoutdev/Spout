@@ -105,6 +105,8 @@ public class ByteBufferChannelProcessorTest {
 			outputBuffer.release();
 		}
 
+		buffer.release();
+
 		for (int i = 0; i < input.length; i++) {
 			assertTrue("Mismatch at position " + i, input[i] == output[i]);
 		}
