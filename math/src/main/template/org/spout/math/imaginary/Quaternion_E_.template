@@ -1,0 +1,701 @@
+/*
+ * This file is part of Spout.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
+ *
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
+package org.spout.math.imaginary;
+
+import java.io.Serializable;
+
+import org.spout.math.GenericMath;
+import org.spout.math.HashFunctions;
+import org.spout.math.#ETrig#;
+import org.spout.math.matrix.Matrix3#E#;
+import org.spout.math.vector.Vector3#E#;
+
+/**
+ * Represent a quaternion of the form <code>xi + yj + zk + w</code>. The x, y, z and w components are stored as #e#s. This class is immutable.
+ */
+public class Quaternion#E# implements Imaginary#E#, Comparable<Quaternion#E#>, Serializable, Cloneable {
+	private static final long serialVersionUID = 1;
+	/**
+	 * An immutable identity (0, 0, 0, 1) quaternion.
+	 */
+	public static final Quaternion#E# IDENTITY = new Quaternion#E#();
+	private final #e# x;
+	private final #e# y;
+	private final #e# z;
+	private final #e# w;
+	private transient volatile boolean hashed = false;
+	private transient volatile int hashCode = 0;
+
+	/**
+	 * Constructs a new quaternion. The components are set to the identity (0, 0, 0, 1).
+	 */
+	public Quaternion#E#() {
+		this(0, 0, 0, 1);
+	}
+
+	/**
+	 * Constructs a new quaternion from the #EOverload# components.
+	 *
+	 * @param x The x (imaginary) component
+	 * @param y The y (imaginary) component
+	 * @param z The z (imaginary) component
+	 * @param w The w (real) component
+	 */
+	public Quaternion#E#(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		this((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	/**
+	 * Constructs a new quaternion from the #e# components.
+	 *
+	 * @param x The x (imaginary) component
+	 * @param y The y (imaginary) component
+	 * @param z The z (imaginary) component
+	 * @param w The w (real) component
+	 */
+	public Quaternion#E#(#e# x, #e# y, #e# z, #e# w) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
+	}
+
+	/**
+	 * Copy constructor.
+	 *
+	 * @param q The quaternion to copy
+	 */
+	public Quaternion#E#(Quaternion#E# q) {
+		this(q.x, q.y, q.z, q.w);
+	}
+
+	/**
+	 * Gets the x (imaginary) component of this quaternion.
+	 *
+	 * @return The x (imaginary) component
+	 */
+	public #e# getX() {
+		return x;
+	}
+
+	/**
+	 * Gets the y (imaginary) component of this quaternion.
+	 *
+	 * @return The y (imaginary) component
+	 */
+	public #e# getY() {
+		return y;
+	}
+
+	/**
+	 * Gets the z (imaginary) component of this quaternion.
+	 *
+	 * @return The z (imaginary) component
+	 */
+	public #e# getZ() {
+		return z;
+	}
+
+	/**
+	 * Gets the w (real) component of this quaternion.
+	 *
+	 * @return The w (real) component
+	 */
+	public #e# getW() {
+		return w;
+	}
+
+	/**
+	 * Adds another quaternion to this one.
+	 *
+	 * @param q The quaternion to add
+	 * @return A new quaternion, which is the sum of both
+	 */
+	public Quaternion#E# add(Quaternion#E# q) {
+		return add(q.x, q.y, q.z, q.w);
+	}
+
+	/**
+	 * Adds the #EOverload# components of another quaternion to this one.
+	 *
+	 * @param x The x (imaginary) component of the quaternion to add
+	 * @param y The y (imaginary) component of the quaternion to add
+	 * @param z The z (imaginary) component of the quaternion to add
+	 * @param w The w (real) component of the quaternion to add
+	 * @return A new quaternion, which is the sum of both
+	 */
+	public Quaternion#E# add(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return add((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	/**
+	 * Adds the #e# components of another quaternion to this one.
+	 *
+	 * @param x The x (imaginary) component of the quaternion to add
+	 * @param y The y (imaginary) component of the quaternion to add
+	 * @param z The z (imaginary) component of the quaternion to add
+	 * @param w The w (real) component of the quaternion to add
+	 * @return A new quaternion, which is the sum of both
+	 */
+	public Quaternion#E# add(#e# x, #e# y, #e# z, #e# w) {
+		return new Quaternion#E#(this.x + x, this.y + y, this.z + z, this.w + w);
+	}
+
+	/**
+	 * Subtracts another quaternion from this one.
+	 *
+	 * @param q The quaternion to subtract
+	 * @return A new quaternion, which is the difference of both
+	 */
+	public Quaternion#E# sub(Quaternion#E# q) {
+		return sub(q.x, q.y, q.z, q.w);
+	}
+
+	/**
+	 * Subtracts the #EOverload# components of another quaternion from this one.
+	 *
+	 * @param x The x (imaginary) component of the quaternion to subtract
+	 * @param y The y (imaginary) component of the quaternion to subtract
+	 * @param z The z (imaginary) component of the quaternion to subtract
+	 * @param w The w (real) component of the quaternion to subtract
+	 * @return A new quaternion, which is the difference of both
+	 */
+	public Quaternion#E# sub(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return sub((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	/**
+	 * Subtracts the #e# components of another quaternion from this one.
+	 *
+	 * @param x The x (imaginary) component of the quaternion to subtract
+	 * @param y The y (imaginary) component of the quaternion to subtract
+	 * @param z The z (imaginary) component of the quaternion to subtract
+	 * @param w The w (real) component of the quaternion to subtract
+	 * @return A new quaternion, which is the difference of both
+	 */
+	public Quaternion#E# sub(#e# x, #e# y, #e# z, #e# w) {
+		return new Quaternion#E#(this.x - x, this.y - y, this.z - z, this.w - w);
+	}
+
+	/**
+	 * Multiplies the components of this quaternion by a #EOverload# scalar.
+	 *
+	 * @param a The multiplication scalar
+	 * @return A new quaternion, which has each component multiplied by the scalar
+	 */
+	public Quaternion#E# mul(#EOverload# a) {
+		return mul((#e#) a);
+	}
+
+	/**
+	 * Multiplies the components of this quaternion by a #e# scalar.
+	 *
+	 * @param a The multiplication scalar
+	 * @return A new quaternion, which has each component multiplied by the scalar
+	 */
+	@Override
+	public Quaternion#E# mul(#e# a) {
+		return new Quaternion#E#(x * a, y * a, z * a, w * a);
+	}
+
+	/**
+	 * Multiplies another quaternion with this one.
+	 *
+	 * @param q The quaternion to multiply with
+	 * @return A new quaternion, which is the product of both
+	 */
+	public Quaternion#E# mul(Quaternion#E# q) {
+		return mul(q.x, q.y, q.z, q.w);
+	}
+
+	/**
+	 * Multiplies the #EOverload# components of another quaternion with this one.
+	 *
+	 * @param x The x (imaginary) component of the quaternion to multiply with
+	 * @param y The y (imaginary) component of the quaternion to multiply with
+	 * @param z The z (imaginary) component of the quaternion to multiply with
+	 * @param w The w (real) component of the quaternion to multiply with
+	 * @return A new quaternion, which is the product of both
+	 */
+	public Quaternion#E# mul(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return mul((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	/**
+	 * Multiplies the #e# components of another quaternion with this one.
+	 *
+	 * @param x The x (imaginary) component of the quaternion to multiply with
+	 * @param y The y (imaginary) component of the quaternion to multiply with
+	 * @param z The z (imaginary) component of the quaternion to multiply with
+	 * @param w The w (real) component of the quaternion to multiply with
+	 * @return A new quaternion, which is the product of both
+	 */
+	public Quaternion#E# mul(#e# x, #e# y, #e# z, #e# w) {
+		return new Quaternion#E#(
+				this.w * x + this.x * w + this.y * z - this.z * y,
+				this.w * y + this.y * w + this.z * x - this.x * z,
+				this.w * z + this.z * w + this.x * y - this.y * x,
+				this.w * w - this.x * x - this.y * y - this.z * z);
+	}
+
+	/**
+	 * Divides the components of this quaternion by a #EOverload# scalar.
+	 *
+	 * @param a The division scalar
+	 * @return A new quaternion, which has each component divided by the scalar
+	 */
+	public Quaternion#E# div(#EOverload# a) {
+		return div((#e#) a);
+	}
+
+	/**
+	 * Divides the components of this quaternion by a #e# scalar.
+	 *
+	 * @param a The division scalar
+	 * @return A new quaternion, which has each component divided by the scalar
+	 */
+	@Override
+	public Quaternion#E# div(#e# a) {
+		return new Quaternion#E#(x / a, y / a, z / a, w / a);
+	}
+
+	// TODO: quaternion division?
+
+	/**
+	 * Returns the dot product of this quaternion with another one.
+	 *
+	 * @param q The quaternion to calculate the dot product with
+	 * @return The dot product of the two quaternions
+	 */
+	public #e# dot(Quaternion#E# q) {
+		return dot(q.x, q.y, q.z, q.w);
+	}
+
+	/**
+	 * Returns the dot product of this quaternion with the #EOverload# components of another one.
+	 *
+	 * @param x The x (imaginary) component of the quaternion to calculate the dot product with
+	 * @param y The y (imaginary) component of the quaternion to calculate the dot product with
+	 * @param z The z (imaginary) component of the quaternion to calculate the dot product with
+	 * @param w The w (real) component of the quaternion to calculate the dot product with
+	 * @return The dot product of the two quaternions
+	 */
+	public #e# dot(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return dot((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	/**
+	 * Returns the dot product of this quaternion with the #e#s components of another one.
+	 *
+	 * @param x The x (imaginary) component of the quaternion to calculate the dot product with
+	 * @param y The y (imaginary) component of the quaternion to calculate the dot product with
+	 * @param z The z (imaginary) component of the quaternion to calculate the dot product with
+	 * @param w The w (real) component of the quaternion to calculate the dot product with
+	 * @return The dot product of the two quaternions
+	 */
+	public #e# dot(#e# x, #e# y, #e# z, #e# w) {
+		return this.x * x + this.y * y + this.z * z + this.w * w;
+	}
+
+	/**
+	 * Returns a unit vector representing the direction of this quaternion, which is {@link Vector3#E##FORWARD} rotated by this quaternion.
+	 *
+	 * @return The vector representing the direction this quaternion is pointing to
+	 */
+	public Vector3#E# getDirection() {
+		return Matrix3#E#.createRotation(this).transform(Vector3#E#.FORWARD);
+	}
+
+	/**
+	 * Returns the angles in degrees around the x, y and z axes that correspond to the rotation represented by this quaternion.
+	 *
+	 * @return The angle in degrees for each axis, stored in a vector, in the corresponding component
+	 */
+	public Vector3#E# getAxesAngleDeg() {
+		return getAxesAnglesRad().mul(#ETrig#.RAD_TO_DEG);
+	}
+
+	/**
+	 * Returns the angles in radians around the x, y and z axes that correspond to the rotation represented by this quaternion.
+	 *
+	 * @return The angle in radians for each axis, stored in a vector, in the corresponding component
+	 */
+	public Vector3#E# getAxesAnglesRad() {
+		final double roll;
+		final double pitch;
+		double yaw;
+		final double test = w * x - y * z;
+		if (Math.abs(test) < 0.4999) {
+			roll = #ETrig#.atan2(2 * (w * z + x * y), 1 - 2 * (x * x + z * z));
+			pitch = #ETrig#.asin(2 * test);
+			yaw = #ETrig#.atan2(2 * (w * y + z * x), 1 - 2 * (x * x + y * y));
+		} else {
+			final int sign = (test < 0) ? -1 : 1;
+			roll = 0;
+			pitch = sign * Math.PI / 2;
+			yaw = -sign * 2 * #ETrig#.atan2(z, w);
+		}
+		if (yaw > 180) {
+			yaw -= 360;
+		} else if (yaw < -180) {
+			yaw += 360;
+		}
+		return new Vector3#E#(pitch, yaw, roll);
+	}
+
+	/**
+	 * Conjugates the quaternion. <br> Conjugation of a quaternion <code>a</code> is an operation returning quaternion <code>a'</code> such that <code>a' * a = a * a' = |a|<sup>2</sup></code> where
+	 * <code>|a|<sup>2<sup/></code> is squared length of <code>a</code>.
+	 *
+	 * @return the conjugated quaternion
+	 */
+	@Override
+	public Quaternion#E# conjugate() {
+		return new Quaternion#E#(-x, -y, -z, w);
+	}
+
+	/**
+	 * Inverts the quaternion. <br> Inversion of a quaternion <code>a</code> returns quaternion <code>a<sup>-1</sup> = a' / |a|<sup>2</sup></code> where <code>a'</code> is {@link #conjugate()
+	 * conjugation} of <code>a</code>, and <code>|a|<sup>2</sup></code> is squared length of <code>a</code>. <br> For any quaternions <code>a, b, c</code>, such that <code>a * b = c</code> equations
+	 * <code>a<sup>-1</sup> * c = b</code> and <code>c * b<sup>-1</sup> = a</code> are true.
+	 *
+	 * @return the inverted quaternion
+	 */
+	@Override
+	public Quaternion#E# invert() {
+		return conjugate().div(lengthSquared());
+	}
+
+	/**
+	 * Returns the square of the length of this quaternion.
+	 *
+	 * @return The square of the length
+	 */
+	@Override
+	public #e# lengthSquared() {
+		return (#e#) GenericMath.lengthSquared(x, y, z, w);
+	}
+
+	/**
+	 * Returns the length of this quaternion.
+	 *
+	 * @return The length
+	 */
+	@Override
+	public #e# length() {
+		return (#e#) GenericMath.length(x, y, z, w);
+	}
+
+	/**
+	 * Normalizes this quaternion.
+	 *
+	 * @return A new quaternion of unit length
+	 */
+	@Override
+	public Quaternion#E# normalize() {
+		final #e# length = length();
+		return new Quaternion#E#(x / length, y / length, z / length, w / length);
+	}
+
+    @Override
+    public Quaternionf toFloat() {
+        return new Quaternionf(x, y, z, w);
+    }
+
+    @Override
+    public Quaterniond toDouble() {
+        return new Quaterniond(x, y, z, w);
+    }
+
+@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Quaternion#E#)) {
+			return false;
+		}
+		final Quaternion#E# that = (Quaternion#E#) o;
+		if (#ET#.compare(that.w, w) != 0) {
+			return false;
+		}
+		if (#ET#.compare(that.x, x) != 0) {
+			return false;
+		}
+		if (#ET#.compare(that.y, y) != 0) {
+			return false;
+		}
+		if (#ET#.compare(that.z, z) != 0) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		if (!hashed) {
+			int result = (x != +0.0f ? HashFunctions.hash(x) : 0);
+			result = 31 * result + (y != +0.0f ? HashFunctions.hash(y) : 0);
+			result = 31 * result + (z != +0.0f ? HashFunctions.hash(z) : 0);
+			hashCode = 31 * result + (w != +0.0f ? HashFunctions.hash(w) : 0);
+			hashed = true;
+		}
+		return hashCode;
+	}
+
+	@Override
+	public int compareTo(Quaternion#E# q) {
+		return (int) (lengthSquared() - q.lengthSquared());
+	}
+
+	@Override
+	public Quaternion#E# clone() {
+		return new Quaternion#E#(this);
+	}
+
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + ", " + z + ", " + w + ")";
+	}
+
+	/**
+	 * Creates a new quaternion from the #EOverload# angles in degrees around the x, y and z axes.
+	 *
+	 * @param pitch The rotation around x
+	 * @param yaw The rotation around y
+	 * @param roll The rotation around z
+	 * @return The quaternion defined by the rotations around the axes
+	 */
+	public static Quaternion#E# fromAxesAnglesDeg(#EOverload# pitch, #EOverload# yaw, #EOverload# roll) {
+		return fromAxesAnglesDeg((#e#) pitch, (#e#) yaw, (#e#) roll);
+	}
+
+	/**
+	 * Creates a new quaternion from the #EOverload# angles in radians around the x, y and z axes.
+	 *
+	 * @param pitch The rotation around x
+	 * @param yaw The rotation around y
+	 * @param roll The rotation around z
+	 * @return The quaternion defined by the rotations around the axes
+	 */
+	public static Quaternion#E# fromAxesAnglesRad(#EOverload# pitch, #EOverload# yaw, #EOverload# roll) {
+		return fromAxesAnglesRad((#e#) pitch, (#e#) yaw, (#e#) roll);
+	}
+
+	/**
+	 * Creates a new quaternion from the #e# angles in degrees around the x, y and z axes.
+	 *
+	 * @param pitch The rotation around x
+	 * @param yaw The rotation around y
+	 * @param roll The rotation around z
+	 * @return The quaternion defined by the rotations around the axes
+	 */
+	public static Quaternion#E# fromAxesAnglesDeg(#e# pitch, #e# yaw, #e# roll) {
+		return Quaternion#E#.fromAngleDegAxis(yaw, Vector3#E#.UNIT_Y).
+				mul(Quaternion#E#.fromAngleDegAxis(pitch, Vector3#E#.UNIT_X)).
+				mul(Quaternion#E#.fromAngleDegAxis(roll, Vector3#E#.UNIT_Z));
+	}
+
+	/**
+	 * Creates a new quaternion from the #e# angles in radians around the x, y and z axes.
+	 *
+	 * @param pitch The rotation around x
+	 * @param yaw The rotation around y
+	 * @param roll The rotation around z
+	 * @return The quaternion defined by the rotations around the axes
+	 */
+	public static Quaternion#E# fromAxesAnglesRad(#e# pitch, #e# yaw, #e# roll) {
+		return Quaternion#E#.fromAngleRadAxis(yaw, Vector3#E#.UNIT_Y).
+				mul(Quaternion#E#.fromAngleRadAxis(pitch, Vector3#E#.UNIT_X)).
+				mul(Quaternion#E#.fromAngleRadAxis(roll, Vector3#E#.UNIT_Z));
+	}
+
+	/**
+	 * Creates a new quaternion from the angle-axis rotation defined from the first to the second vector.
+	 *
+	 * @param from The first vector
+	 * @param to The second vector
+	 * @return The quaternion defined by the angle-axis rotation between the vectors
+	 */
+	public static Quaternion#E# fromRotationTo(Vector3#E# from, Vector3#E# to) {
+		return Quaternion#E#.fromAngleRadAxis(#ETrig#.acos(from.dot(to) / (from.length() * to.length())), from.cross(to));
+	}
+
+	/**
+	 * Creates a new quaternion from the rotation #EOverload# angle in degrees around the axis vector.
+	 *
+	 * @param angle The rotation angle in degrees
+	 * @param axis The axis of rotation
+	 * @return The quaternion defined by the rotation around the axis
+	 */
+	public static Quaternion#E# fromAngleDegAxis(#EOverload# angle, Vector3#E# axis) {
+		return fromAngleRadAxis(Math.toRadians(angle), axis);
+	}
+
+	/**
+	 * Creates a new quaternion from the rotation #EOverload# angle in radians around the axis vector.
+	 *
+	 * @param angle The rotation angle in radians
+	 * @param axis The axis of rotation
+	 * @return The quaternion defined by the rotation around the axis
+	 */
+	public static Quaternion#E# fromAngleRadAxis(#EOverload# angle, Vector3#E# axis) {
+		return fromAngleRadAxis((#e#) angle, axis);
+	}
+
+	/**
+	 * Creates a new quaternion from the rotation #e# angle in degrees around the axis vector.
+	 *
+	 * @param angle The rotation angle in degrees
+	 * @param axis The axis of rotation
+	 * @return The quaternion defined by the rotation around the axis
+	 */
+	public static Quaternion#E# fromAngleDegAxis(#e# angle, Vector3#E# axis) {
+		return fromAngleRadAxis((#e#) Math.toRadians(angle), axis);
+	}
+
+	/**
+	 * Creates a new quaternion from the rotation #e# angle in radians around the axis vector.
+	 *
+	 * @param angle The rotation angle in radians
+	 * @param axis The axis of rotation
+	 * @return The quaternion defined by the rotation around the axis
+	 */
+	public static Quaternion#E# fromAngleRadAxis(#e# angle, Vector3#E# axis) {
+		return fromAngleRadAxis(angle, axis.getX(), axis.getY(), axis.getZ());
+	}
+
+	/**
+	 * Creates a new quaternion from the rotation #EOverload# angle in degrees around the axis vector #EOverload# components.
+	 *
+	 * @param angle The rotation angle in degrees
+	 * @param x The x component of the axis vector
+	 * @param y The y component of the axis vector
+	 * @param z The z component of the axis vector
+	 * @return The quaternion defined by the rotation around the axis
+	 */
+	public static Quaternion#E# fromAngleDegAxis(#EOverload# angle, #EOverload# x, #EOverload# y, #EOverload# z) {
+		return fromAngleRadAxis(Math.toRadians(angle), x, y, z);
+	}
+
+	/**
+	 * Creates a new quaternion from the rotation #EOverload# angle in radians around the axis vector #EOverload# components.
+	 *
+	 * @param angle The rotation angle in radians
+	 * @param x The x component of the axis vector
+	 * @param y The y component of the axis vector
+	 * @param z The z component of the axis vector
+	 * @return The quaternion defined by the rotation around the axis
+	 */
+	public static Quaternion#E# fromAngleRadAxis(#EOverload# angle, #EOverload# x, #EOverload# y, #EOverload# z) {
+		return fromAngleRadAxis((#e#) angle, (#e#) x, (#e#) y, (#e#) z);
+	}
+
+	/**
+	 * Creates a new quaternion from the rotation #e# angle in degrees around the axis vector #e# components.
+	 *
+	 * @param angle The rotation angle in degrees
+	 * @param x The x component of the axis vector
+	 * @param y The y component of the axis vector
+	 * @param z The z component of the axis vector
+	 * @return The quaternion defined by the rotation around the axis
+	 */
+	public static Quaternion#E# fromAngleDegAxis(#e# angle, #e# x, #e# y, #e# z) {
+		return fromAngleRadAxis((#e#) Math.toRadians(angle), x, y, z);
+	}
+
+	/**
+	 * Creates a new quaternion from the rotation #e# angle in radians around the axis vector #e# components.
+	 *
+	 * @param angle The rotation angle in radians
+	 * @param x The x component of the axis vector
+	 * @param y The y component of the axis vector
+	 * @param z The z component of the axis vector
+	 * @return The quaternion defined by the rotation around the axis
+	 */
+	public static Quaternion#E# fromAngleRadAxis(#e# angle, #e# x, #e# y, #e# z) {
+		final #e# halfAngle = angle / 2;   //TODO: Maybe use always double here?
+		final double q = #ETrig#.sin(halfAngle) / Math.sqrt(x * x + y * y + z * z);
+		return new Quaternion#E#(x * q, y * q, z * q, #ETrig#.cos(halfAngle));
+	}
+
+	/**
+	 * Creates a new quaternion from the rotation matrix. The matrix will be interpreted as a rotation matrix even if it is not.
+	 *
+	 * @param matrix The rotation matrix
+	 * @return The quaternion defined by the rotation matrix
+	 */
+	public static Quaternion#E# fromRotationMatrix(Matrix3#E# matrix) {
+		final #e# trace = matrix.trace();
+		if (trace < 0) {
+			if (matrix.get(1, 1) > matrix.get(0, 0)) {
+				if (matrix.get(2, 2) > matrix.get(1, 1)) {
+                    //TODO: Maybe use always doubles here?
+					final #e# r = (#e#) Math.sqrt(matrix.get(2, 2) - matrix.get(0, 0) - matrix.get(1, 1) + 1);
+					final #e# s = 0.5f / r;
+					return new Quaternion#E#(
+							(matrix.get(2, 0) + matrix.get(0, 2)) * s,
+							(matrix.get(1, 2) + matrix.get(2, 1)) * s,
+							0.5f * r,
+							(matrix.get(1, 0) - matrix.get(0, 1)) * s);
+				} else {
+					final #e# r = (#e#) Math.sqrt(matrix.get(1, 1) - matrix.get(2, 2) - matrix.get(0, 0) + 1);
+					final #e# s = 0.5f / r;
+					return new Quaternion#E#(
+							(matrix.get(0, 1) + matrix.get(1, 0)) * s,
+							0.5f * r,
+							(matrix.get(1, 2) + matrix.get(2, 1)) * s,
+							(matrix.get(0, 2) - matrix.get(2, 0)) * s);
+				}
+			} else if (matrix.get(2, 2) > matrix.get(0, 0)) {
+				final #e# r = (#e#) Math.sqrt(matrix.get(2, 2) - matrix.get(0, 0) - matrix.get(1, 1) + 1);
+				final #e# s = 0.5f / r;
+				return new Quaternion#E#(
+						(matrix.get(2, 0) + matrix.get(0, 2)) * s,
+						(matrix.get(1, 2) + matrix.get(2, 1)) * s,
+						0.5f * r,
+						(matrix.get(1, 0) - matrix.get(0, 1)) * s);
+			} else {
+				final #e# r = (#e#) Math.sqrt(matrix.get(0, 0) - matrix.get(1, 1) - matrix.get(2, 2) + 1);
+				final #e# s = 0.5f / r;
+				return new Quaternion#E#(
+						0.5f * r,
+						(matrix.get(0, 1) + matrix.get(1, 0)) * s,
+						(matrix.get(2, 0) - matrix.get(0, 2)) * s,
+						(matrix.get(2, 1) - matrix.get(1, 2)) * s);
+			}
+		} else {
+			final #e# r = (#e#) Math.sqrt(trace + 1);
+			final #e# s = 0.5f / r;
+			return new Quaternion#E#(
+					(matrix.get(2, 1) - matrix.get(1, 2)) * s,
+					(matrix.get(0, 2) - matrix.get(2, 0)) * s,
+					(matrix.get(1, 0) - matrix.get(0, 1)) * s,
+					0.5f * r);
+		}
+	}
+}

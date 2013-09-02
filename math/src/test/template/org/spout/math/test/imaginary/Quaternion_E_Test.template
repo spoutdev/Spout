@@ -1,0 +1,383 @@
+/*
+ * This file is part of Spout.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
+ *
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
+package org.spout.math.test.imaginary;
+
+import static org.spout.math.test.TestUtil#E#.SQRT54;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import org.spout.math.#ETrig#;
+import org.spout.math.imaginary.Quaternion#E#;
+import org.spout.math.matrix.Matrix3#E#;
+import org.spout.math.test.TestUtil#E#;
+import org.spout.math.vector.Vector3#E#;
+
+public class Quaternion#E#Test {
+	@Test
+	public void testDefaultConstructor() {
+		Quaternion#E# quaternion = new Quaternion#E#();
+		TestUtil#E#.assertEquals(quaternion, 0, 0, 0, 1);
+	}
+
+	@Test
+	public void testDoubleComponentsConstructor() {
+		Quaternion#E# quaternion = new Quaternion#E#(1d, 2d, 3d, 4d);
+		TestUtil#E#.assertEquals(quaternion, 1, 2, 3, 4);
+	}
+
+	@Test
+	public void testFloatComponentsConstructor() {
+		Quaternion#E# quaternion = new Quaternion#E#(1, 2, 3, 4);
+		TestUtil#E#.assertEquals(quaternion, 1, 2, 3, 4);
+	}
+
+	@Test
+	public void testCopyConstructor() {
+		Quaternion#E# quaternion = new Quaternion#E#(new Quaternion#E#(1, 2, 3, 4));
+		TestUtil#E#.assertEquals(quaternion, 1, 2, 3, 4);
+	}
+
+	@Test
+	public void testGetters() {
+		Quaternion#E# quaternion = new Quaternion#E#(1, 2, 3, 4);
+		TestUtil#E#.assertEquals(quaternion.getX(), 1);
+		TestUtil#E#.assertEquals(quaternion.getY(), 2);
+		TestUtil#E#.assertEquals(quaternion.getZ(), 3);
+		TestUtil#E#.assertEquals(quaternion.getW(), 4);
+	}
+
+	@Test
+	public void testQuaternionAddition() {
+		Quaternion#E# quaternion = new Quaternion#E#(0, 1, 1, 1).add(new Quaternion#E#(5.5, -0.5, 3.8, 5.5));
+		TestUtil#E#.assertEquals(quaternion, (#e#) 5.5, (#e#) 0.5, (#e#) 4.8, (#e#) 6.5);
+	}
+
+	@Test
+	public void testDoubleComponentsAddition() {
+		Quaternion#E# quaternion = new Quaternion#E#(0, 1, 1, 1).add(5.5, -0.5, 3.8, 5.5);
+		TestUtil#E#.assertEquals(quaternion, (#e#) 5.5, (#e#) 0.5, (#e#) 4.8, (#e#) 6.5);
+	}
+
+	@Test
+	public void testFloatComponentsAddition() {
+		Quaternion#E# quaternion = new Quaternion#E#(0, 1, 1, 1).add(5.5f, -0.5f, 3.8f, 5.5f);
+		TestUtil#E#.assertEquals(quaternion, 5.5f, 0.5f, (#e#) 4.8, 6.5f);
+	}
+
+	@Test
+	public void testQuaternionSubtraction() {
+		Quaternion#E# quaternion = new Quaternion#E#(10, 5, 1, 1).sub(new Quaternion#E#(9, 4.5, 2, 1));
+		TestUtil#E#.assertEquals(quaternion, 1, (#e#) 0.5, -1, 0);
+	}
+
+	@Test
+	public void testDoubleComponentsSubtraction() {
+		Quaternion#E# quaternion = new Quaternion#E#(10, 5, 1, 1).sub(9, 4.5, 2, 1);
+		TestUtil#E#.assertEquals(quaternion, 1, (#e#) 0.5, -1, 0);
+	}
+
+	@Test
+	public void testFloatComponentsSubtraction() {
+		Quaternion#E# quaternion = new Quaternion#E#(10, 5, 1, 1).sub(9, 4.5f, 2f, 1f);
+		TestUtil#E#.assertEquals(quaternion, 1, 0.5f, -1, 0);
+	}
+
+	@Test
+	public void testDoubleFactorMultiplication() {
+		Quaternion#E# quaternion = new Quaternion#E#(2, 3, 4, 5).mul(1.5);
+		TestUtil#E#.assertEquals(quaternion, 3, (#e#) 4.5, 6, (#e#) 7.5);
+	}
+
+	@Test
+	public void testFloatFactorMultiplication() {
+		Quaternion#E# quaternion = new Quaternion#E#(2, 3, 4, 5).mul(1.5f);
+		TestUtil#E#.assertEquals(quaternion, 3, 4.5f, 6, 7.5f);
+	}
+
+	@Test
+	public void testQuaternionMultiplication() {
+		Quaternion#E# quaternion = new Quaternion#E#(2, 3, 4, 5).mul(new Quaternion#E#(1, 6, 7, 8));
+		TestUtil#E#.assertEquals(quaternion, 18, 44, 76, -8);
+	}
+
+	@Test
+	public void testDoubleComponentsMultiplication() {
+		Quaternion#E# quaternion = new Quaternion#E#(2, 3, 4, 5).mul(2d);
+		TestUtil#E#.assertEquals(quaternion, 4, 6, 8, 10);
+	}
+
+	@Test
+	public void testFloatComponentsMultiplication() {
+		Quaternion#E# quaternion = new Quaternion#E#(2, 3, 4, 5).mul(2);
+		TestUtil#E#.assertEquals(quaternion, 4, 6, 8, 10);
+	}
+
+	@Test
+	public void testDoubleFactorDivision() {
+		Quaternion#E# quaternion = new Quaternion#E#(2, 3, 4, 5).div(2d);
+		TestUtil#E#.assertEquals(quaternion, 1, (#e#) 1.5, 2, (#e#) 2.5);
+	}
+
+	@Test
+	public void testFloatFactorDivision() {
+		Quaternion#E# quaternion = new Quaternion#E#(2, 3, 4, 5).div(2);
+		TestUtil#E#.assertEquals(quaternion, 1, 1.5f, 2, 2.5f);
+	}
+
+	@Test
+	public void testQuaternionDotProduct() {
+		#e# f = new Quaternion#E#(2, 3, 4, 5).dot(new Quaternion#E#(6, 7, 8, 9));
+		TestUtil#E#.assertEquals(f, 110);
+	}
+
+	@Test
+	public void testDoubleComponentsDotProduct() {
+		#e# f = new Quaternion#E#(2, 3, 4, 5).dot(6d, 7d, 8d, 9d);
+		TestUtil#E#.assertEquals(f, 110);
+	}
+
+	@Test
+	public void testFloatComponentsDotProduct() {
+		#e# f = new Quaternion#E#(2, 3, 4, 5).dot(6, 7, 8, 9);
+		TestUtil#E#.assertEquals(f, 110);
+	}
+
+	@Test
+	public void testDirection() {
+		Vector3#E# vector = new Quaternion#E#((#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO).getDirection();
+		TestUtil#E#.assertEquals(vector, 0, -1, 0);
+	}
+
+	@Test
+	public void testAxesAnglesDegrees() {
+		Vector3#E# vector1 = new Quaternion#E#((#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO).getAxesAngleDeg();
+		TestUtil#E#.assertEquals(vector1, 90, 0, 0);
+		Vector3#E# vector2 = new Quaternion#E#(0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO).getAxesAngleDeg();
+		TestUtil#E#.assertEquals(vector2, 0, 90, 0);
+		Vector3#E# vector3 = new Quaternion#E#(0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO).getAxesAngleDeg();
+		TestUtil#E#.assertEquals(vector3, 0, 0, 90);
+	}
+
+	@Test
+	public void testAxesAnglesRadians() {
+		Vector3#E# vector1 = new Quaternion#E#((#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO).getAxesAnglesRad();
+		TestUtil#E#.assertEquals(vector1, (#e#) #ETrig#.HALF_PI, 0, 0);
+		Vector3#E# vector2 = new Quaternion#E#(0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO).getAxesAnglesRad();
+		TestUtil#E#.assertEquals(vector2, 0, (#e#) #ETrig#.HALF_PI, 0);
+		Vector3#E# vector3 = new Quaternion#E#(0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO).getAxesAnglesRad();
+		TestUtil#E#.assertEquals(vector3, 0, 0, (#e#) #ETrig#.HALF_PI);
+	}
+
+	@Test
+	public void testConjugate() {
+		Quaternion#E# quaternion = new Quaternion#E#(2, 3, 4, 5).conjugate();
+		TestUtil#E#.assertEquals(quaternion, -2, -3, -4, 5);
+	}
+
+	@Test
+	public void testInvert() {
+		Quaternion#E# quaternion = new Quaternion#E#(2, 3, 4, 5).invert();
+		TestUtil#E#.assertEquals(quaternion, (#e#) (-2/54d), (#e#) (-3/54d), (#e#) (-4/54d),(#e#) (5/54d));
+	}
+
+	@Test
+	public void testLengthSquared() {
+		#e# f = new Quaternion#E#(2, 3, 4, 5).lengthSquared();
+		TestUtil#E#.assertEquals(f, 54);
+	}
+
+	@Test
+	public void testLength() {
+		#e# f = new Quaternion#E#(2, 3, 4, 5).length();
+		TestUtil#E#.assertEquals(f, SQRT54);
+	}
+
+	@Test
+	public void testNormalize() {
+		Quaternion#E# quaternion = new Quaternion#E#(2, 3, 4, 5).normalize();
+		TestUtil#E#.assertEquals(quaternion, (#e#) (2/SQRT54), (#e#) (3/SQRT54), (#e#) (4/SQRT54), (#e#) (5/SQRT54));
+	}
+
+	@Test
+	public void testEquals() {
+		Assert.assertTrue(new Quaternion#E#(122, 43, 96, 50).equals(new Quaternion#E#(122, 43, 96, 50)));
+		Assert.assertFalse(new Quaternion#E#(122, 43, 96, 50).equals(new Quaternion#E#(378, 95, 96, 0)));
+	}
+
+	@Test
+	public void testComparison() {
+		int c1 = new Quaternion#E#(10, 20, 30, 40).compareTo(new Quaternion#E#(20, 20, 30, 40));
+		Assert.assertTrue(c1 < 0);
+		int c2 = new Quaternion#E#(10, 20, 30, 40).compareTo(new Quaternion#E#(10, 20, 30, 40));
+		Assert.assertTrue(c2 == 0);
+		int c3 = new Quaternion#E#(10, 20, 30, 40).compareTo(new Quaternion#E#(10, 10, 30, 40));
+		Assert.assertTrue(c3 > 0);
+	}
+
+	@Test
+	public void testCloning() {
+		Quaternion#E# quaternion = new Quaternion#E#(3, 2, 5, 6);
+		Assert.assertEquals(quaternion, quaternion.clone());
+	}
+
+	@Test
+	public void testCreateFromAxesDoubleAnglesDegrees() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAxesAnglesDeg(90d, 0, 0);
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAxesAnglesDeg(0, 90d, 0);
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAxesAnglesDeg(0, 0, 90d);
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromAxesDoubleAnglesRadians() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAxesAnglesRad(#ETrig#.HALF_PI, 0, 0);
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAxesAnglesRad(0, #ETrig#.HALF_PI, 0);
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAxesAnglesRad(0, 0, #ETrig#.HALF_PI);
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromAxesFloatAnglesDegrees() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAxesAnglesDeg(90, 0, 0);
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAxesAnglesDeg(0, 90, 0);
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAxesAnglesDeg(0, 0, 90);
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromAxesFloatAnglesRadians() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAxesAnglesRad((#e#) #ETrig#.HALF_PI, 0, 0);
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAxesAnglesRad(0, (#e#) #ETrig#.HALF_PI, 0);
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAxesAnglesRad(0, 0, (#e#) #ETrig#.HALF_PI);
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromRotationBetweenTwoVector3() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromRotationTo(new Vector3#E#(0, 1, 0), new Vector3#E#(0, 0, 1));
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromRotationTo(new Vector3#E#(0, 0, 1), new Vector3#E#(1, 0, 0));
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromRotationTo(new Vector3#E#(1, 0, 0), new Vector3#E#(0, 1, 0));
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromDoubleAngleDegreesVectorAxis() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAngleDegAxis(90d, new Vector3#E#(1, 0, 0));
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAngleDegAxis(90d, new Vector3#E#(0, 1, 0));
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAngleDegAxis(90d, new Vector3#E#(0, 0, 1));
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromDoubleAngleRadiansVectorAxis() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAngleRadAxis(#ETrig#.HALF_PI, new Vector3#E#(1, 0, 0));
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAngleRadAxis(#ETrig#.HALF_PI, new Vector3#E#(0, 1, 0));
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAngleRadAxis(#ETrig#.HALF_PI, new Vector3#E#(0, 0, 1));
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromFloatAngleDegreesVectorAxis() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAngleDegAxis(90, new Vector3#E#(1, 0, 0));
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAngleDegAxis(90, new Vector3#E#(0, 1, 0));
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAngleDegAxis(90, new Vector3#E#(0, 0, 1));
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromFloatAngleRadiansVectorAxis() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAngleRadAxis((#e#) #ETrig#.HALF_PI, new Vector3#E#(1, 0, 0));
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAngleRadAxis((#e#) #ETrig#.HALF_PI, new Vector3#E#(0, 1, 0));
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAngleRadAxis((#e#) #ETrig#.HALF_PI, new Vector3#E#(0, 0, 1));
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromDoubleAngleDegreesAxisDoubleComponents() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAngleDegAxis(90d, 1d, 0, 0);
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAngleDegAxis(90d, 0, 1d, 0);
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAngleDegAxis(90d, 0, 0, 1d);
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromDoubleAngleRadiansAxisDoubleComponents() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAngleRadAxis(#ETrig#.HALF_PI, 1d, 0, 0);
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAngleRadAxis(#ETrig#.HALF_PI, 0, 1d, 0);
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAngleRadAxis(#ETrig#.HALF_PI, 0, 0, 1d);
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromFloatAngleDegreesAxisFloatComponents() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAngleDegAxis(90, 1, 0, 0);
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAngleDegAxis(90, 0, 1, 0);
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAngleDegAxis(90, 0, 0, 1);
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromFloatAngleRadiansAxisFloatComponents() {
+		Quaternion#E# quaternion1 = Quaternion#E#.fromAngleRadAxis((#e#) #ETrig#.HALF_PI, 1, 0, 0);
+		TestUtil#E#.assertEquals(quaternion1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion2 = Quaternion#E#.fromAngleRadAxis((#e#) #ETrig#.HALF_PI, 0, 1, 0);
+		TestUtil#E#.assertEquals(quaternion2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+		Quaternion#E# quaternion3 = Quaternion#E#.fromAngleRadAxis((#e#) #ETrig#.HALF_PI, 0, 0, 1);
+		TestUtil#E#.assertEquals(quaternion3, 0, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	public void testCreateFromRotationMatrix3() {
+		final Quaternion#E# quaternion = Quaternion#E#.fromAngleDegAxis(45, 1, 1, -1);
+		final Matrix3#E# matrix = Matrix3#E#.createRotation(quaternion);
+		Assert.assertEquals(quaternion, Quaternion#E#.fromRotationMatrix(matrix));
+	}
+}

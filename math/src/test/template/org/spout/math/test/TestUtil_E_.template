@@ -1,0 +1,137 @@
+/*
+ * This file is part of Spout.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
+ *
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
+package org.spout.math.test;
+
+import org.junit.Assert;
+
+import org.spout.math.imaginary.Complex#E#;
+import org.spout.math.imaginary.Quaternion#E#;
+import org.spout.math.matrix.Matrix2#E#;
+import org.spout.math.matrix.Matrix3#E#;
+import org.spout.math.matrix.Matrix4#E#;
+import org.spout.math.matrix.MatrixN#E#;
+import org.spout.math.vector.Vector2#E#;
+import org.spout.math.vector.Vector3#E#;
+import org.spout.math.vector.Vector4#E#;
+import org.spout.math.vector.VectorN#E#;
+
+public class TestUtil#E# {
+    // Constants to reduce the amount of time redundant (5+) quantities are computed:
+    public static final #e# SQRT2 = (#e#) Math.sqrt(2);
+    public static final #e# SQRT5 = (#e#) Math.sqrt(5);
+    public static final #e# SQRT13 = (#e#) Math.sqrt(13);
+    public static final #e# SQRT54 = (#e#) Math.sqrt(54);
+
+	private static final #e# EPSILON = #Eeps#;
+
+	public static void assertEquals(#e# value, #e# expected) {
+		Assert.assertEquals(expected, value, EPSILON);
+	}
+
+	public static void assertEquals(Vector2#E# v, #e# x, #e# y) {
+		assertEquals(v.getX(), x);
+		assertEquals(v.getY(), y);
+	}
+
+	public static void assertEquals(Vector3#E# v, #e# x, #e# y, #e# z) {
+		assertEquals(v.getX(), x);
+		assertEquals(v.getY(), y);
+		assertEquals(v.getZ(), z);
+	}
+
+	public static void assertEquals(Vector4#E# v, #e# x, #e# y, #e# z, #e# w) {
+		assertEquals(v.getX(), x);
+		assertEquals(v.getY(), y);
+		assertEquals(v.getZ(), z);
+		assertEquals(v.getW(), w);
+	}
+
+	public static void assertEquals(VectorN#E# v, #e#... f) {
+		Assert.assertArrayEquals(f, v.toArray(), EPSILON);
+	}
+
+	public static void assertEquals(Complex#E# c, #e# x, #e# y) {
+		assertEquals(c.getX(), x);
+		assertEquals(c.getY(), y);
+	}
+
+	public static void assertEquals(Quaternion#E# q, #e# x, #e# y, #e# z, #e# w) {
+		assertEquals(q.getX(), x);
+		assertEquals(q.getY(), y);
+		assertEquals(q.getZ(), z);
+		assertEquals(q.getW(), w);
+	}
+
+	public static void assertEquals(Matrix2#E# m, #e# m00, #e# m01, #e# m10, #e# m11) {
+		assertEquals(m.get(0, 0), m00);
+		assertEquals(m.get(0, 1), m01);
+		assertEquals(m.get(1, 0), m10);
+		assertEquals(m.get(1, 1), m11);
+	}
+
+	public static void assertEquals(Matrix3#E# m, #e# m00, #e# m01, #e# m02, #e# m10, #e# m11,
+			#e# m12, #e# m20, #e# m21, #e# m22) {
+		assertEquals(m.get(0, 0), m00);
+		assertEquals(m.get(0, 1), m01);
+		assertEquals(m.get(0, 2), m02);
+		assertEquals(m.get(1, 0), m10);
+		assertEquals(m.get(1, 1), m11);
+		assertEquals(m.get(1, 2), m12);
+		assertEquals(m.get(2, 0), m20);
+		assertEquals(m.get(2, 1), m21);
+		assertEquals(m.get(2, 2), m22);
+	}
+
+	public static void assertEquals(Matrix4#E# m, #e# m00, #e# m01, #e# m02, #e# m03, #e# m10,
+			#e# m11, #e# m12, #e# m13, #e# m20, #e# m21, #e# m22,
+			#e# m23, #e# m30, #e# m31, #e# m32, #e# m33) {
+		assertEquals(m.get(0, 0), m00);
+		assertEquals(m.get(0, 1), m01);
+		assertEquals(m.get(0, 2), m02);
+		assertEquals(m.get(0, 3), m03);
+		assertEquals(m.get(1, 0), m10);
+		assertEquals(m.get(1, 1), m11);
+		assertEquals(m.get(1, 2), m12);
+		assertEquals(m.get(1, 3), m13);
+		assertEquals(m.get(2, 0), m20);
+		assertEquals(m.get(2, 1), m21);
+		assertEquals(m.get(2, 2), m22);
+		assertEquals(m.get(2, 3), m23);
+		assertEquals(m.get(3, 0), m30);
+		assertEquals(m.get(3, 1), m31);
+		assertEquals(m.get(3, 2), m32);
+		assertEquals(m.get(3, 3), m33);
+	}
+
+	public static void assertEquals(MatrixN#E# m, #e#... f) {
+		Assert.assertArrayEquals(f, m.toArray(), EPSILON);
+	}
+
+	public static void assertEquals(#e#[] a, #e#... f) {
+		Assert.assertArrayEquals(f, a, EPSILON);
+	}
+}

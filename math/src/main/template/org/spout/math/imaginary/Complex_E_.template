@@ -1,0 +1,465 @@
+/*
+ * This file is part of Spout.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
+ *
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
+package org.spout.math.imaginary;
+
+import java.io.Serializable;
+import java.lang.Override;
+
+import org.spout.math.GenericMath;
+import org.spout.math.HashFunctions;
+import org.spout.math.#ETrig#;
+import org.spout.math.vector.Vector2#E#;
+
+/**
+ * Represent a complex number of the form <code>x + yi</code>. The x and y components are stored as #e#s. This class is immutable.
+ */
+public class Complex#E# implements Imaginary#E#, Comparable<Complex#E#>, Serializable, Cloneable {
+	private static final long serialVersionUID = 1;
+	/**
+	 * An immutable identity (1, 0) complex.
+	 */
+	public static final Complex#E# IDENTITY = new Complex#E#();
+	private final #e# x;
+	private final #e# y;
+	private transient volatile boolean hashed = false;
+	private transient volatile int hashCode = 0;
+
+	/**
+	 * Constructs a new complex. The components are set to the identity (1, 0).
+	 */
+	public Complex#E#() {
+		this(1, 0);
+	}
+
+	/**
+	 * Constructs a new complex from the #EOverload# components.
+	 *
+	 * @param x The x (real) component
+	 * @param y The y (imaginary) component
+	 */
+	public Complex#E#(#EOverload# x, #EOverload# y) {
+		this((#e#) x, (#e#) y);
+	}
+
+	/**
+	 * Constructs a new complex from the #e# components.
+	 *
+	 * @param x The x (real) component
+	 * @param y The y (imaginary) component
+	 */
+	public Complex#E#(#e# x, #e# y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	/**
+	 * Copy constructor.
+	 *
+	 * @param c The complex to copy
+	 */
+	public Complex#E#(Complex#E# c) {
+		this.x = c.x;
+		this.y = c.y;
+	}
+
+	/**
+	 * Gets the x (real) component of this complex.
+	 *
+	 * @return The x (real) component
+	 */
+	public #e# getX() {
+		return x;
+	}
+
+	/**
+	 * Gets the y (imaginary) component of this complex.
+	 *
+	 * @return The y (imaginary) component
+	 */
+	public #e# getY() {
+		return y;
+	}
+
+	/**
+	 * Adds another complex to this one.
+	 *
+	 * @param c The complex to add
+	 * @return A new complex, which is the sum of both
+	 */
+	public Complex#E# add(Complex#E# c) {
+		return add(c.x, c.y);
+	}
+
+	/**
+	 * Adds the #EOverload# components of another complex to this one.
+	 *
+	 * @param x The x (real) component of the complex to add
+	 * @param y The y (imaginary) component of the complex to add
+	 * @return A new complex, which is the sum of both
+	 */
+	public Complex#E# add(#EOverload# x, #EOverload# y) {
+		return add((#e#) x, (#e#) y);
+	}
+
+	/**
+	 * Adds the #e# components of another complex to this one.
+	 *
+	 * @param x The x (real) component of the complex to add
+	 * @param y The y (imaginary) component of the complex to add
+	 * @return A new complex, which is the sum of both
+	 */
+	public Complex#E# add(#e# x, #e# y) {
+		return new Complex#E#(this.x + x, this.y + y);
+	}
+
+	/**
+	 * Subtracts another complex from this one.
+	 *
+	 * @param c The complex to subtract
+	 * @return A new complex, which is the difference of both
+	 */
+	public Complex#E# sub(Complex#E# c) {
+		return sub(c.x, c.y);
+	}
+
+	/**
+	 * Subtracts the #EOverload# components of another complex from this one.
+	 *
+	 * @param x The x (real) component of the complex to subtract
+	 * @param y The y (imaginary) component of the complex to subtract
+	 * @return A new complex, which is the difference of both
+	 */
+	public Complex#E# sub(#EOverload# x, #EOverload# y) {
+		return sub((#e#) x, (#e#) y);
+	}
+
+	/**
+	 * Subtracts the #e# components of another complex from this one.
+	 *
+	 * @param x The x (real) component of the complex to subtract
+	 * @param y The y (imaginary) component of the complex to subtract
+	 * @return A new complex, which is the difference of both
+	 */
+	public Complex#E# sub(#e# x, #e# y) {
+		return new Complex#E#(this.x - x, this.y - y);
+	}
+
+	/**
+	 * Multiplies the components of this complex by a #EOverload# scalar.
+	 *
+	 * @param a The multiplication scalar
+	 * @return A new complex, which has each component multiplied by the scalar
+	 */
+	public Complex#E# mul(#EOverload# a) {
+		return mul((#e#) a);
+	}
+
+	/**
+	 * Multiplies the components of this complex by a #e# scalar.
+	 *
+	 * @param a The multiplication scalar
+	 * @return A new complex, which has each component multiplied by the scalar
+	 */
+	@Override
+	public Complex#E# mul(#e# a) {
+		return new Complex#E#(x * a, y * a);
+	}
+
+	/**
+	 * Multiplies another complex with this one.
+	 *
+	 * @param c The complex to multiply with
+	 * @return A new complex, which is the product of both
+	 */
+	public Complex#E# mul(Complex#E# c) {
+		return mul(c.x, c.y);
+	}
+
+	/**
+	 * Multiplies the #EOverload# components of another complex with this one.
+	 *
+	 * @param x The x (real) component of the complex to multiply with
+	 * @param y The y (imaginary) component of the complex to multiply with
+	 * @return A new complex, which is the product of both
+	 */
+	public Complex#E# mul(#EOverload# x, #EOverload# y) {
+		return mul((#e#) x, (#e#) y);
+	}
+
+	/**
+	 * Multiplies the #e# components of another complex with this one.
+	 *
+	 * @param x The x (real) component of the complex to multiply with
+	 * @param y The y (imaginary) component of the complex to multiply with
+	 * @return A new complex, which is the product of both
+	 */
+	public Complex#E# mul(#e# x, #e# y) {
+		return new Complex#E#(
+				this.x * x - this.y * y,
+				this.x * y + this.y * x);
+	}
+
+	/**
+	 * Divides the components of this complex by a #EOverload# scalar.
+	 *
+	 * @param a The division scalar
+	 * @return A new complex, which has each component divided by the scalar
+	 */
+	public Complex#E# div(#EOverload# a) {
+		return div((#e#) a);
+	}
+
+	/**
+	 * Divides the components of this complex by a #e# scalar.
+	 *
+	 * @param a The division scalar
+	 * @return A new complex, which has each component divided by the scalar
+	 */
+	@Override
+	public Complex#E# div(#e# a) {
+		return new Complex#E#(x / a, y / a);
+	}
+
+	// TODO: complex division?
+
+	/**
+	 * Returns the dot product of this complex with another one.
+	 *
+	 * @param c The complex to calculate the dot product with
+	 * @return The dot product of the two complexes
+	 */
+	public #e# dot(Complex#E# c) {
+		return dot(c.x, c.y);
+	}
+
+	/**
+	 * Returns the dot product of this complex with the #EOverload# components of another one.
+	 *
+	 * @param x The x (real) component of the complex to calculate the dot product with
+	 * @param y The y (imaginary) component of the complex to calculate the dot product with
+	 * @return The dot product of the two complexes
+	 */
+	public #e# dot(#EOverload# x, #EOverload# y) {
+		return dot((#e#) x, (#e#) y);
+	}
+
+	/**
+	 * Returns the dot product of this complex with the #e# components of another one.
+	 *
+	 * @param x The x (real) component of the complex to calculate the dot product with
+	 * @param y The y (imaginary) component of the complex to calculate the dot product with
+	 * @return The dot product of the two complexes
+	 */
+	public #e# dot(#e# x, #e# y) {
+		return this.x * x + this.y * y;
+	}
+
+	/**
+	 * Returns a unit vector pointing in the same direction as this complex on the complex plane.
+	 *
+	 * @return The vector representing the direction this complex is pointing to
+	 */
+	public Vector2#E# getDirection() {
+		return new Vector2#E#(x, y).normalize();
+	}
+
+	/**
+	 * Returns the angle in radians formed by the direction vector of this complex on the complex plane.
+	 *
+	 * @return The angle in radians of the direction vector of this complex
+	 */
+	public #e# getAngleRad() {
+		return (#e#) #ETrig#.atan2(x, y);
+	}
+
+	/**
+	 * Returns the angle in degrees formed by the direction vector of this complex on the complex plane.
+	 *
+	 * @return The angle in degrees of the direction vector of this complex
+	 */
+	public #e# getAngleDeg() {
+		return (#e#) Math.toDegrees(getAngleRad());
+	}
+
+	/**
+	 * Returns the conjugate of this complex. <br> Conjugation of a complex <code>a</code> is an operation returning complex <code>a'</code> such that <code>a' * a = a * a' = |a|<sup>2</sup></code> where
+	 * <code>|a|<sup>2</sup></code> is squared length of <code>a</code>.
+	 *
+	 * @return A new complex, which is the conjugate of this one
+	 */
+	@Override
+	public Complex#E# conjugate() {
+		return new Complex#E#(x, -y);
+	}
+
+	/**
+	 * Returns the inverse of this complex. <br> Inversion of a complex <code>a</code> returns complex <code>a<sup>-1</sup> = a' / |a|<sup>2</sup></code> where <code>a'</code> is {@link #conjugate()
+	 * conjugation} of <code>a</code>, and <code>|a|<sup>2</sup></code> is squared length of <code>a</code>. <br> For any complexes <code>a, b, c</code>, such that <code>a * b = c</code> equations
+	 * <code>a<sup>-1</sup> * c = b</code> and <code>c * b<sup>-1</sup> = a</code> are true.
+	 *
+	 * @return A new complex, which is the inverse of this one
+	 */
+	@Override
+	public Complex#E# invert() {
+		return conjugate().div(lengthSquared());
+	}
+
+	/**
+	 * Returns the square of the length of this complex.
+	 *
+	 * @return The square of the length
+	 */
+	@Override
+	public #e# lengthSquared() {
+		return (#e#) GenericMath.lengthSquared(x, y);
+	}
+
+	/**
+	 * Returns the length of this complex.
+	 *
+	 * @return The length
+	 */
+	@Override
+	public #e# length() {
+		return (#e#) GenericMath.length(x, y);
+	}
+
+	/**
+	 * Normalizes this complex.
+	 *
+	 * @return A new complex of unit length
+	 */
+	@Override
+	public Complex#E# normalize() {
+		final #e# length = length();
+		return new Complex#E#(x / length, y / length);
+	}
+
+    @Override
+    public Complexf toFloat() {
+        return new Complexf(x, y);
+    }
+
+    @Override
+    public Complexd toDouble() {
+        return new Complexd(x, y);
+    }
+
+    @Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Complex#E#)) {
+			return false;
+		}
+		final Complex#E# complex = (Complex#E#) o;
+		if (#ET#.compare(complex.x, x) != 0) {
+			return false;
+		}
+		if (#ET#.compare(complex.y, y) != 0) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		if (!hashed) {
+			final int result = (x != +0.0f ? HashFunctions.hash(x) : 0);
+			hashCode = 31 * result + (y != +0.0f ? HashFunctions.hash(y) : 0);
+			hashed = true;
+		}
+		return hashCode;
+	}
+
+	@Override
+	public int compareTo(Complex#E# c) {
+		return (int) (lengthSquared() - c.lengthSquared());
+	}
+
+	@Override
+	public Complex#E# clone() {
+		return new Complex#E#(this);
+	}
+
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + ")";
+	}
+
+	/**
+	 * Creates a new complex from the angle defined from the first to the second vector.
+	 *
+	 * @param from The first vector
+	 * @param to The second vector
+	 * @return The complex defined by the angle between the vectors
+	 */
+	public static Complex#E# fromRotationTo(Vector2#E# from, Vector2#E# to) {
+		return fromAngleRad(#ETrig#.acos(from.dot(to) / (from.length() * to.length())));
+	}
+
+	/**
+	 * Creates a new complex from the #EOverload# angle in degrees.
+	 *
+	 * @param angle The angle in degrees
+	 * @return The complex defined by the angle
+	 */
+	public static Complex#E# fromAngleDeg(#EOverload# angle) {
+		return fromAngleRad(Math.toRadians(angle));
+	}
+
+	/**
+	 * Creates a new complex from the #EOverload# angle in radians.
+	 *
+	 * @param angle The angle in radians
+	 * @return The complex defined by the angle
+	 */
+	public static Complex#E# fromAngleRad(#EOverload# angle) {
+		return fromAngleRad((#e#) angle);
+	}
+
+	/**
+	 * Creates a new complex from the #e# angle in radians.
+	 *
+	 * @param angle The angle in radians
+	 * @return The complex defined by the angle
+	 */
+	public static Complex#E# fromAngleDeg(#e# angle) {
+		return fromAngleRad((#e#) Math.toRadians(angle));
+	}
+
+	/**
+	 * Creates a new complex from the #e# angle in radians.
+	 *
+	 * @param angle The angle in radians
+	 * @return The complex defined by the angle
+	 */
+	public static Complex#E# fromAngleRad(#e# angle) {
+		return new Complex#E#(#ETrig#.cos(angle), #ETrig#.sin(angle));
+	}
+}

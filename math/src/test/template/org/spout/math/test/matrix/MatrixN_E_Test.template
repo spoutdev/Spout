@@ -1,0 +1,869 @@
+/*
+ * This file is part of Spout.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
+ *
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
+package org.spout.math.test.matrix;
+
+import static org.junit.Assert.assertEquals;
+import static org.spout.math.test.TestUtil#E#.SQRT13;
+
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import org.spout.math.imaginary.Complex#E#;
+import org.spout.math.imaginary.Quaternion#E#;
+import org.spout.math.matrix.Matrix2#E#;
+import org.spout.math.matrix.Matrix3#E#;
+import org.spout.math.matrix.Matrix4#E#;
+import org.spout.math.matrix.MatrixN#E#;
+import org.spout.math.test.TestUtil#E#;
+import org.spout.math.vector.VectorN#E#;
+
+public class MatrixN#E#Test {
+	@Test
+	public void testSizeConstructor() {
+		MatrixN#E# matrix = new MatrixN#E#(4);
+		assertEquals(matrix.size(), 4);
+	}
+
+	@Test
+	public void testCopyMatrix2Constructor() {
+		MatrixN#E# matrix = new MatrixN#E#(new Matrix2#E#(1, 2, 3, 4));
+		TestUtil#E#.assertEquals(matrix, 1, 2, 3, 4);
+	}
+
+	@Test
+	public void testCopyMatrix3Constructor() {
+		MatrixN#E# matrix = new MatrixN#E#(new Matrix3#E#(1, 2, 3, 4, 5, 6, 7, 8, 9));
+		TestUtil#E#.assertEquals(matrix, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+	}
+
+	@Test
+	public void testCopyMatrix4Constructor() {
+		MatrixN#E# matrix = new MatrixN#E#(new Matrix4#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16));
+		TestUtil#E#.assertEquals(matrix,
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+	}
+
+	@Test
+	public void testCopyMatrixNConstructor() {
+		MatrixN#E# matrix = new MatrixN#E#(new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16));
+		TestUtil#E#.assertEquals(matrix,
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+	}
+
+	@Test
+	public void testFloatComponentsConstructor() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		TestUtil#E#.assertEquals(matrix,
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+	}
+
+	@Test
+	public void testSize() {
+		MatrixN#E# matrix = new MatrixN#E#(5);
+		assertEquals(matrix.size(), 5);
+	}
+
+	@Test
+	public void testGetter() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		TestUtil#E#.assertEquals(matrix.get(0, 0), 1);
+		TestUtil#E#.assertEquals(matrix.get(0, 1), 2);
+		TestUtil#E#.assertEquals(matrix.get(0, 2), 3);
+		TestUtil#E#.assertEquals(matrix.get(0, 3), 4);
+		TestUtil#E#.assertEquals(matrix.get(1, 0), 5);
+		TestUtil#E#.assertEquals(matrix.get(1, 1), 6);
+		TestUtil#E#.assertEquals(matrix.get(1, 2), 7);
+		TestUtil#E#.assertEquals(matrix.get(1, 3), 8);
+		TestUtil#E#.assertEquals(matrix.get(2, 0), 9);
+		TestUtil#E#.assertEquals(matrix.get(2, 1), 10);
+		TestUtil#E#.assertEquals(matrix.get(2, 2), 11);
+		TestUtil#E#.assertEquals(matrix.get(2, 3), 12);
+		TestUtil#E#.assertEquals(matrix.get(3, 0), 13);
+		TestUtil#E#.assertEquals(matrix.get(3, 1), 14);
+		TestUtil#E#.assertEquals(matrix.get(3, 2), 15);
+		TestUtil#E#.assertEquals(matrix.get(3, 3), 16);
+	}
+
+	@Test
+	public void testRowGetter() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		TestUtil#E#.assertEquals(matrix.getRow(0), 1, 2, 3, 4);
+		TestUtil#E#.assertEquals(matrix.getRow(1), 5, 6, 7, 8);
+		TestUtil#E#.assertEquals(matrix.getRow(2), 9, 10, 11, 12);
+		TestUtil#E#.assertEquals(matrix.getRow(3), 13, 14, 15, 16);
+	}
+
+	@Test
+	public void testColumnGetter() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		TestUtil#E#.assertEquals(matrix.getColumn(0), 1, 5, 9, 13);
+		TestUtil#E#.assertEquals(matrix.getColumn(1), 2, 6, 10, 14);
+		TestUtil#E#.assertEquals(matrix.getColumn(2), 3, 7, 11, 15);
+		TestUtil#E#.assertEquals(matrix.getColumn(3), 4, 8, 12, 16);
+	}
+
+	@Test
+	public void testSetterFloatValue() {
+		MatrixN#E# matrix = new MatrixN#E#(4);
+		matrix.set(0, 0, 1);
+		matrix.set(0, 1, 2);
+		matrix.set(0, 2, 3);
+		matrix.set(0, 3, 4);
+		matrix.set(1, 0, 5);
+		matrix.set(1, 1, 6);
+		matrix.set(1, 2, 7);
+		matrix.set(1, 3, 8);
+		matrix.set(2, 0, 9);
+		matrix.set(2, 1, 10);
+		matrix.set(2, 2, 11);
+		matrix.set(2, 3, 12);
+		matrix.set(3, 0, 13);
+		matrix.set(3, 1, 14);
+		matrix.set(3, 2, 15);
+		matrix.set(3, 3, 16);
+		TestUtil#E#.assertEquals(matrix,
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+	}
+
+	@Test
+	public void testSetterDoubleValue() {
+		MatrixN#E# matrix = new MatrixN#E#(4);
+		matrix.set(0, 0, 1d);
+		matrix.set(0, 1, 2d);
+		matrix.set(0, 2, 3d);
+		matrix.set(0, 3, 4d);
+		matrix.set(1, 0, 5d);
+		matrix.set(1, 1, 6d);
+		matrix.set(1, 2, 7d);
+		matrix.set(1, 3, 8d);
+		matrix.set(2, 0, 9d);
+		matrix.set(2, 1, 10d);
+		matrix.set(2, 2, 11d);
+		matrix.set(2, 3, 12d);
+		matrix.set(3, 0, 13d);
+		matrix.set(3, 1, 14d);
+		matrix.set(3, 2, 15d);
+		matrix.set(3, 3, 16d);
+		TestUtil#E#.assertEquals(matrix,
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+	}
+
+	@Test
+	public void testSetIdentity() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		matrix.setIdentity();
+		TestUtil#E#.assertEquals(matrix,
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+	}
+
+	@Test
+	public void testSetZero() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		matrix.setZero();
+		TestUtil#E#.assertEquals(matrix,
+				0, 0, 0, 0,
+				0, 0, 0, 0,
+				0, 0, 0, 0,
+				0, 0, 0, 0);
+	}
+
+	@Test
+	public void testResize() {
+		MatrixN#E# matrix1 = new MatrixN#E#(4);
+		MatrixN#E# resize1 = matrix1.resize(2);
+		TestUtil#E#.assertEquals(resize1.size(), 2);
+		MatrixN#E# matrix2 = new MatrixN#E#(4);
+		MatrixN#E# resize2 = matrix2.resize(8);
+		TestUtil#E#.assertEquals(resize2.size(), 8);
+		TestUtil#E#.assertEquals(resize2.get(7, 7), 0);
+	}
+
+	@Test
+	public void testMatrixNAddition() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		MatrixN#E# m = new MatrixN#E#(
+				1, 1, 1, 1,
+				1, 1, 1, 1,
+				1, 1, 1, 1,
+				1, 1, 1, 1);
+		matrix = matrix.add(m);
+		TestUtil#E#.assertEquals(matrix,
+				2, 3, 4, 5,
+				6, 7, 8, 9,
+				10, 11, 12, 13,
+				14, 15, 16, 17);
+	}
+
+	@Test
+	public void testMatrixNSubtraction() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		MatrixN#E# m = new MatrixN#E#(
+				1, 1, 1, 1,
+				1, 1, 1, 1,
+				1, 1, 1, 1,
+				1, 1, 1, 1);
+		matrix = matrix.sub(m);
+		TestUtil#E#.assertEquals(matrix,
+				0, 1, 2, 3,
+				4, 5, 6, 7,
+				8, 9, 10, 11,
+				12, 13, 14, 15);
+	}
+
+	@Test
+	public void testFloatFactorMultiplication() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		matrix = matrix.mul(2);
+		TestUtil#E#.assertEquals(matrix,
+				2, 4, 6, 8,
+				10, 12, 14, 16,
+				18, 20, 22, 24,
+				26, 28, 30, 32);
+	}
+
+	@Test
+	public void testDoubleFactorMultiplication() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		matrix = matrix.mul(2d);
+		TestUtil#E#.assertEquals(matrix,
+				2, 4, 6, 8,
+				10, 12, 14, 16,
+				18, 20, 22, 24,
+				26, 28, 30, 32);
+	}
+
+	@Test
+	public void testMatrixNMultiplication() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 10, 0, 0,
+				0, 1, 0, 4,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+		MatrixN#E# m = new MatrixN#E#(
+				-1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 4, 1);
+		matrix = matrix.mul(m);
+		TestUtil#E#.assertEquals(matrix,
+				-1, 10, 0, 0,
+				0, 1, 16, 4,
+				0, 0, 1, 0,
+				0, 0, 4, 1);
+	}
+
+	@Test
+	public void testFloatFactorDivision() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		matrix = matrix.div(0.5f);
+		TestUtil#E#.assertEquals(matrix,
+				2, 4, 6, 8,
+				10, 12, 14, 16,
+				18, 20, 22, 24,
+				26, 28, 30, 32);
+	}
+
+	@Test
+	public void testDoubleFactorDivision() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		matrix = matrix.div(0.5);
+		TestUtil#E#.assertEquals(matrix,
+				2, 4, 6, 8,
+				10, 12, 14, 16,
+				18, 20, 22, 24,
+				26, 28, 30, 32);
+	}
+
+	@Test
+	public void testMatrixNDivision() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 10, 0, 0,
+				0, 1, 0, 4,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+		MatrixN#E# m = new MatrixN#E#(
+				-1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 4, 1);
+		matrix = matrix.div(m);
+		TestUtil#E#.assertEquals(matrix,
+				-1, 10, 0, 0,
+				0, 1, -16, 4,
+				0, 0, 1, 0,
+				0, 0, -4, 1);
+	}
+
+	@Test
+	public void testRaiseToFloatPower() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		matrix = matrix.pow(2);
+		TestUtil#E#.assertEquals(matrix,
+				1, 4, 9, 16,
+				25, 36, 49, 64,
+				81, 100, 121, 144,
+				169, 196, 225, 256);
+	}
+
+	@Test
+	public void testRaiseToDoublePower() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		matrix = matrix.pow(2d);
+		TestUtil#E#.assertEquals(matrix,
+				1, 4, 9, 16,
+				25, 36, 49, 64,
+				81, 100, 121, 144,
+				169, 196, 225, 256);
+	}
+
+	@Test
+	public void testTranslateVectorN() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+		matrix = matrix.translate(new VectorN#E#(2, 3, 4));
+		TestUtil#E#.assertEquals(matrix,
+				1, 0, 0, 2,
+				0, 1, 0, 3,
+				0, 0, 1, 4,
+				0, 0, 0, 1);
+	}
+
+	@Test
+	public void testTranslateFloatComponents() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+		matrix = matrix.translate(2, 3, 4);
+		TestUtil#E#.assertEquals(matrix,
+				1, 0, 0, 2,
+				0, 1, 0, 3,
+				0, 0, 1, 4,
+				0, 0, 0, 1);
+	}
+
+	@Test
+	public void testScaleVectorN() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+		matrix = matrix.scale(new VectorN#E#(2, 3, 4, 5));
+		TestUtil#E#.assertEquals(matrix,
+				2, 0, 0, 0,
+				0, 3, 0, 0,
+				0, 0, 4, 0,
+				0, 0, 0, 5);
+	}
+
+	@Test
+	public void testScaleFloatComponents() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+		matrix = matrix.scale(2, 3, 4, 5);
+		TestUtil#E#.assertEquals(matrix,
+				2, 0, 0, 0,
+				0, 3, 0, 0,
+				0, 0, 4, 0,
+				0, 0, 0, 5);
+	}
+
+	@Test
+	public void testRotateComplex() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+		matrix = matrix.rotate(new Complex#E#(2, 3));
+		TestUtil#E#.assertEquals(matrix,
+                (#e#) (2/SQRT13), (#e#) (-3/SQRT13), 0, 0,
+                (#e#) (3/SQRT13), (#e#) (2/SQRT13), 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+	}
+
+	@Test
+	public void testRotateQuaternion() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+		matrix = matrix.rotate(new Quaternion#E#(4, 3, 2, 0));
+		TestUtil#E#.assertEquals(matrix,
+                (#e#) (3/29d), (#e#) (24/29d), (#e#) (16/29d), 0,
+                (#e#) (24/29d), (#e#) (-11/29d), (#e#) (12/29d), 0,
+                (#e#) (16/29d), (#e#) (12/29d), (#e#) (-21/29d), 0,
+				0, 0, 0, 1);
+	}
+
+	@Test
+	public void testTransformVectorN() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+		VectorN#E# vector = matrix.scale(2, 3, 4, 1).translate(4, 5, 3).transform(new VectorN#E#(3, 2, 8, 1));
+		TestUtil#E#.assertEquals(vector, 10, 11, 35, 1);
+	}
+
+	@Test
+	public void testTransformFloatComponents() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+		VectorN#E# vector = matrix.scale(2, 3, 4, 1).translate(4, 5, 3).transform(3, 2, 8, 1);
+		TestUtil#E#.assertEquals(vector, 10, 11, 35, 1);
+	}
+
+	@Test
+	public void testFloor() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				-1.1, 2.5, 2.9, 3.2,
+				-6.3, 2.2, 2.1, 5.6,
+				-8.8, 8.1, 4.6, 6.7,
+				-1.3, 1.7, 7.3, 7.6);
+		matrix = matrix.floor();
+		TestUtil#E#.assertEquals(matrix,
+				-2, 2, 2, 3,
+				-7, 2, 2, 5,
+				-9, 8, 4, 6,
+				-2, 1, 7, 7);
+	}
+
+	@Test
+	public void testCeiling() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				-1.1, 2.5, 2.9, 3.2,
+				-6.3, 2.2, 2.1, 5.6,
+				-8.8, 8.1, 4.6, 6.7,
+				-1.3, 1.7, 7.3, 7.6);
+		matrix = matrix.ceil();
+		TestUtil#E#.assertEquals(matrix,
+				-1, 3, 3, 4,
+				-6, 3, 3, 6,
+				-8, 9, 5, 7,
+				-1, 2, 8, 8);
+	}
+
+	@Test
+	public void testRound() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				-1.1, 2.5, 2.9, 3.2,
+				-6.3, 2.2, 2.1, 5.6,
+				-8.8, 8.1, 4.6, 6.7,
+				-1.3, 1.7, 7.3, 7.6);
+		matrix = matrix.round();
+		TestUtil#E#.assertEquals(matrix,
+				-1, 3, 3, 3,
+				-6, 2, 2, 6,
+				-9, 8, 5, 7,
+				-1, 2, 7, 8);
+	}
+
+	@Test
+	public void testAbsolute() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				-1, -1, -1, -1,
+				-1, -1, -1, -1,
+				-1, -1, -1, -1,
+				-1, -1, -1, -1);
+		matrix = matrix.abs();
+		TestUtil#E#.assertEquals(matrix,
+				1, 1, 1, 1,
+				1, 1, 1, 1,
+				1, 1, 1, 1,
+				1, 1, 1, 1);
+		MatrixN#E# matrix2 = new MatrixN#E#(
+				1, 1, 1, 1,
+				1, 1, 1, 1,
+				1, 1, 1, 1,
+				1, 1, 1, 1);
+		matrix2 = matrix2.abs();
+		TestUtil#E#.assertEquals(matrix2,
+				1, 1, 1, 1,
+				1, 1, 1, 1,
+				1, 1, 1, 1,
+				1, 1, 1, 1);
+	}
+
+	@Test
+	public void testNegate() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, -1, 1, -1,
+				-1, 1, -1, 1,
+				1, -1, 1, -1,
+				-1, 1, -1, 1);
+		matrix = matrix.negate();
+		TestUtil#E#.assertEquals(matrix,
+				-1, 1, -1, 1,
+				1, -1, 1, -1,
+				-1, 1, -1, 1,
+				1, -1, 1, -1);
+	}
+
+	@Test
+	public void testTranspose() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12,
+				13, 14, 15, 16);
+		matrix = matrix.transpose();
+		TestUtil#E#.assertEquals(matrix,
+				1, 5, 9, 13,
+				2, 6, 10, 14,
+				3, 7, 11, 15,
+				4, 8, 12, 16);
+	}
+
+	@Test
+	public void testTrace() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		#e# value = matrix.trace();
+		TestUtil#E#.assertEquals(value, 10);
+	}
+
+	@Test
+	public void testDeterminant() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		#e# value = matrix.determinant();
+		TestUtil#E#.assertEquals(value, 24);
+	}
+
+	@Test
+	public void testInvert() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				4, 1, 2, 3,
+				3, 4, 1, 2,
+				2, 3, 1, 4);
+		matrix = matrix.invert();
+		TestUtil#E#.assertEquals(matrix,
+                (#e#) -0.1875, (#e#) 0.275, (#e#) 0.0625, (#e#) -0.05,
+                (#e#) 0.0625, (#e#) -0.225, (#e#) 0.3125, (#e#) -0.05,
+                (#e#) 0.4375, (#e#) 0.025, (#e#) 0.1875, (#e#) -0.55,
+                (#e#) -0.0625, (#e#) 0.025, (#e#) -0.3125, (#e#) 0.45);
+	}
+
+	@Test
+	public void testConvertToMatrix2() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		Matrix2#E# matrix2 = matrix.toMatrix2();
+		TestUtil#E#.assertEquals(matrix2,
+				1, 0,
+				0, 2);
+	}
+
+	@Test
+	public void testConvertToMatrix3() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		Matrix3#E# matrix3 = matrix.toMatrix3();
+		TestUtil#E#.assertEquals(matrix3,
+				1, 0, 0,
+				0, 2, 0,
+				0, 0, 3);
+	}
+
+	@Test
+	public void testConvertToMatrix4() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		Matrix4#E# matrix4 = matrix.toMatrix4();
+		TestUtil#E#.assertEquals(matrix4,
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+	}
+
+	@Test
+	public void testConvertToArrayRowMajorDefault() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		#e#[] array = matrix.toArray();
+		TestUtil#E#.assertEquals(array,
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+	}
+
+	@Test
+	public void testConvertToArray() {
+		MatrixN#E# matrix1 = new MatrixN#E#(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		#e#[] array1 = matrix1.toArray(false);
+		TestUtil#E#.assertEquals(array1,
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		MatrixN#E# matrix2 = new MatrixN#E#(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		#e#[] array2 = matrix2.toArray(true);
+		TestUtil#E#.assertEquals(array2,
+				1, 0, 0, 0,
+				2, 2, 0, 0,
+				3, 0, 3, 0,
+				4, 0, 0, 4);
+	}
+
+	@Test
+	public void testEquals() {
+		MatrixN#E# matrix01 = new MatrixN#E#(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		MatrixN#E# matrix02 = new MatrixN#E#(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		Assert.assertTrue(matrix01.equals(matrix02));
+		MatrixN#E# matrix11 = new MatrixN#E#(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		MatrixN#E# matrix12 = new MatrixN#E#(
+				1, 2, 3, 4,
+				0, 2, 4, 0,
+				0, 7, 3, 0,
+				0, 0, 0, 4);
+		Assert.assertFalse(matrix11.equals(matrix12));
+	}
+
+	@Test
+	public void testCloning() {
+		MatrixN#E# matrix = new MatrixN#E#(
+				1, 2, 3, 4,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+		Assert.assertEquals(matrix, matrix.clone());
+	}
+
+	@Test
+	public void testCreateFromScalingVectorN() {
+		MatrixN#E# matrix = MatrixN#E#.createScaling(new VectorN#E#(1, 2, 3, 4));
+		TestUtil#E#.assertEquals(matrix,
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+	}
+
+	@Test
+	public void testCreateFromScalingFloatComponents() {
+		MatrixN#E# matrix = MatrixN#E#.createScaling(1, 2, 3, 4);
+		TestUtil#E#.assertEquals(matrix,
+				1, 0, 0, 0,
+				0, 2, 0, 0,
+				0, 0, 3, 0,
+				0, 0, 0, 4);
+	}
+
+	@Test
+	public void testCreateTranslationVectorN() {
+		MatrixN#E# matrix = MatrixN#E#.createTranslation(new VectorN#E#(1, 2, 3));
+		TestUtil#E#.assertEquals(matrix,
+				1, 0, 0, 1,
+				0, 1, 0, 2,
+				0, 0, 1, 3,
+				0, 0, 0, 1);
+	}
+
+	@Test
+	public void testCreateTranslationFloatComponents() {
+		MatrixN#E# matrix = MatrixN#E#.createTranslation(1, 2, 3);
+		TestUtil#E#.assertEquals(matrix,
+				1, 0, 0, 1,
+				0, 1, 0, 2,
+				0, 0, 1, 3,
+				0, 0, 0, 1);
+	}
+
+	@Test
+	public void testCreateRotationFromComplex() {
+		MatrixN#E# matrix = MatrixN#E#.createRotation(4, new Complex#E#(2, 3));
+		TestUtil#E#.assertEquals(matrix,
+                (#e#) (2/SQRT13), (#e#) (-3/SQRT13), 0, 0,
+                (#e#) (3/SQRT13), (#e#) (2/SQRT13), 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+	}
+
+	@Test
+	public void testCreateRotationFromQuaternion() {
+		MatrixN#E# matrix = MatrixN#E#.createRotation(4, new Quaternion#E#(4, 3, 2, 0));
+		TestUtil#E#.assertEquals(matrix,
+                (#e#) (3/29d), (#e#) (24/29d), (#e#) (16/29d), 0,
+                (#e#) (24/29d), (#e#) (-11/29d), (#e#) (12/29d), 0,
+                (#e#) (16/29d), (#e#) (12/29d), (#e#) (-21/29d), 0,
+				0, 0, 0, 1);
+	}
+
+	@Test
+	public void testCreateLookAt() {
+		// TODO: figure out a test for this
+	}
+
+	@Test
+	public void testCreatePerspective() {
+		// TODO: figure out a test for this
+	}
+
+	@Test
+	public void testCreateOrthographic() {
+		// TODO: figure out a test for this
+	}
+}

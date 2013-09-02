@@ -1,0 +1,423 @@
+/*
+ * This file is part of Spout.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
+ *
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
+package org.spout.math.vector;
+
+import java.io.Serializable;
+
+import org.spout.math.GenericMath;
+import org.spout.math.HashFunctions;
+
+public class Vector4#E# implements Vector#E#, Comparable<Vector4#E#>, Serializable, Cloneable {
+	private static final long serialVersionUID = 1;
+	public static final Vector4#E# ZERO = new Vector4#E#(0, 0, 0, 0);
+	public static final Vector4#E# UNIT_X = new Vector4#E#(1, 0, 0, 0);
+	public static final Vector4#E# UNIT_Y = new Vector4#E#(0, 1, 0, 0);
+	public static final Vector4#E# UNIT_Z = new Vector4#E#(0, 0, 1, 0);
+	public static final Vector4#E# UNIT_W = new Vector4#E#(0, 0, 0, 1);
+	public static final Vector4#E# ONE = new Vector4#E#(1, 1, 1, 1);
+	private final #e# x;
+	private final #e# y;
+	private final #e# z;
+	private final #e# w;
+	private transient volatile boolean hashed = false;
+	private transient volatile int hashCode = 0;
+
+	public Vector4#E#() {
+		this(0, 0, 0, 0);
+	}
+
+	public Vector4#E#(Vector2#E# v) {
+		this(v, 0, 0);
+	}
+
+	// TODO: add #EOverload# overloads
+
+	public Vector4#E#(Vector2#E# v, #e# z, #e# w) {
+		this(v.getX(), v.getY(), z, w);
+	}
+
+	public Vector4#E#(Vector3#E# v) {
+		this(v, 0);
+	}
+
+	// TODO: add #EOverload# overloads
+
+	public Vector4#E#(Vector3#E# v, #e# w) {
+		this(v.getX(), v.getY(), v.getZ(), w);
+	}
+
+	public Vector4#E#(Vector4#E# v) {
+		this(v.x, v.y, v.z, v.w);
+	}
+
+	public Vector4#E#(VectorN#E# v) {
+		this(v.get(0), v.get(1), v.size() > 2 ? v.get(2) : 0, v.size() > 3 ? v.get(3) : 0);
+	}
+
+	public Vector4#E#(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		this((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	public Vector4#E#(#e# x, #e# y, #e# z, #e# w) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
+	}
+
+	public #e# getX() {
+		return x;
+	}
+
+	public #e# getY() {
+		return y;
+	}
+
+	public #e# getZ() {
+		return z;
+	}
+
+	public #e# getW() {
+		return w;
+	}
+
+	public int getFloorX() {
+		return GenericMath.floor(x);
+	}
+
+	public int getFloorY() {
+		return GenericMath.floor(y);
+	}
+
+	public int getFloorZ() {
+		return GenericMath.floor(z);
+	}
+
+	public int getFloorW() {
+		return GenericMath.floor(w);
+	}
+
+	public Vector4#E# add(Vector4#E# v) {
+		return add(v.x, v.y, v.z, v.w);
+	}
+
+	public Vector4#E# add(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return add((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	public Vector4#E# add(#e# x, #e# y, #e# z, #e# w) {
+		return new Vector4#E#(this.x + x, this.y + y, this.z + z, this.w + w);
+	}
+
+	public Vector4#E# sub(Vector4#E# v) {
+		return sub(v.x, v.y, v.z, v.w);
+	}
+
+	public Vector4#E# sub(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return sub((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	public Vector4#E# sub(#e# x, #e# y, #e# z, #e# w) {
+		return new Vector4#E#(this.x - x, this.y - y, this.z - z, this.w - w);
+	}
+
+	public Vector4#E# mul(#EOverload# a) {
+		return mul((#e#) a);
+	}
+
+	@Override
+	public Vector4#E# mul(#e# a) {
+		return mul(a, a, a, a);
+	}
+
+	public Vector4#E# mul(Vector4#E# v) {
+		return mul(v.x, v.y, v.z, v.w);
+	}
+
+	public Vector4#E# mul(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return mul((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	public Vector4#E# mul(#e# x, #e# y, #e# z, #e# w) {
+		return new Vector4#E#(this.x * x, this.y * y, this.z * z, this.w * w);
+	}
+
+	public Vector4#E# div(#EOverload# a) {
+		return div((#e#) a);
+	}
+
+	@Override
+	public Vector4#E# div(#e# a) {
+		return div(a, a, a, a);
+	}
+
+	public Vector4#E# div(Vector4#E# v) {
+		return div(v.x, v.y, v.z, v.w);
+	}
+
+	public Vector4#E# div(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return div((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	public Vector4#E# div(#e# x, #e# y, #e# z, #e# w) {
+		return new Vector4#E#(this.x / x, this.y / y, this.z / z, this.w / w);
+	}
+
+	public #e# dot(Vector4#E# v) {
+		return dot(v.x, v.y, v.z, v.w);
+	}
+
+	public #e# dot(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return dot((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	public #e# dot(#e# x, #e# y, #e# z, #e# w) {
+		return this.x * x + this.y * y + this.z * z + this.w * w;
+	}
+
+	public Vector4#E# pow(#EOverload# pow) {
+		return pow((#e#) pow);
+	}
+
+	@Override
+	public Vector4#E# pow(#e# power) {
+		return new Vector4#E#(Math.pow(x, power), Math.pow(y, power), Math.pow(z, power), Math.pow(w, power));
+	}
+
+	@Override
+	public Vector4#E# ceil() {
+		return new Vector4#E#(Math.ceil(x), Math.ceil(y), Math.ceil(z), Math.ceil(w));
+	}
+
+	@Override
+	public Vector4#E# floor() {
+		return new Vector4#E#(GenericMath.floor(x), GenericMath.floor(y), GenericMath.floor(z), GenericMath.floor(w));
+	}
+
+	@Override
+	public Vector4#E# round() {
+		return new Vector4#E#(Math.round(x), Math.round(y), Math.round(z), Math.round(w));
+	}
+
+	@Override
+	public Vector4#E# abs() {
+		return new Vector4#E#(Math.abs(x), Math.abs(y), Math.abs(z), Math.abs(w));
+	}
+
+	@Override
+	public Vector4#E# negate() {
+		return new Vector4#E#(-x, -y, -z, -w);
+	}
+
+	public Vector4#E# min(Vector4#E# v) {
+		return min(v.x, v.y, v.z, v.w);
+	}
+
+	public Vector4#E# min(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return min((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	public Vector4#E# min(#e# x, #e# y, #e# z, #e# w) {
+		return new Vector4#E#(Math.min(this.x, x), Math.min(this.y, y), Math.min(this.z, z), Math.min(this.w, w));
+	}
+
+	public Vector4#E# max(Vector4#E# v) {
+		return max(v.x, v.y, v.z, v.w);
+	}
+
+	public Vector4#E# max(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return max((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	public Vector4#E# max(#e# x, #e# y, #e# z, #e# w) {
+		return new Vector4#E#(Math.max(this.x, x), Math.max(this.y, y), Math.max(this.z, z), Math.max(this.w, w));
+	}
+
+	public #e# distanceSquared(Vector4#E# v) {
+		return distanceSquared(v.x, v.y, v.z, v.w);
+	}
+
+	public #e# distanceSquared(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return distanceSquared((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	public #e# distanceSquared(#e# x, #e# y, #e# z, #e# w) {
+		return (#e#) GenericMath.lengthSquared(this.x - x, this.y - y, this.z - z, this.w - w);
+	}
+
+	public #e# distance(Vector4#E# v) {
+		return distance(v.x, v.y, v.z, v.w);
+	}
+
+	public #e# distance(#EOverload# x, #EOverload# y, #EOverload# z, #EOverload# w) {
+		return distance((#e#) x, (#e#) y, (#e#) z, (#e#) w);
+	}
+
+	public #e# distance(#e# x, #e# y, #e# z, #e# w) {
+		return (#e#) GenericMath.length(this.x - x, this.y - y, this.z - z, this.w - w);
+	}
+
+	@Override
+	public #e# lengthSquared() {
+		return (#e#) GenericMath.lengthSquared(x, y, z, w);
+	}
+
+	@Override
+	public #e# length() {
+		return (#e#) GenericMath.length(x, y, z, w);
+	}
+
+	@Override
+	public Vector4#E# normalize() {
+		final #e# length = length();
+		return new Vector4#E#(x / length, y / length, z / length, w / length);
+	}
+
+	/**
+	 * Return the axis with the minimal value.
+	 *
+	 * @return {@link int} axis with minimal value
+	 */
+	@Override
+	public int getMinAxis() {
+		#e# value = x;
+		int axis = 0;
+		if (y < value) {
+			value = y;
+			axis = 1;
+		}
+		if (z < value) {
+			value = z;
+			axis = 2;
+		}
+		if (w < value) {
+			axis = 3;
+		}
+		return axis;
+	}
+
+	/**
+	 * Return the axis with the maximum value.
+	 *
+	 * @return {@link int} axis with maximum value
+	 */
+	@Override
+	public int getMaxAxis() {
+		#e# value = x;
+		int axis = 0;
+		if (y > value) {
+			value = y;
+			axis = 1;
+		}
+		if (z > value) {
+			value = z;
+			axis = 2;
+		}
+		if (w > value) {
+			axis = 3;
+		}
+		return axis;
+	}
+
+	public Vector2#E# toVector2() {
+		return new Vector2#E#(this);
+	}
+
+	public Vector3#E# toVector3() {
+		return new Vector3#E#(this);
+	}
+
+	public VectorN#E# toVectorN() {
+		return new VectorN#E#(this);
+	}
+
+	@Override
+	public #e#[] toArray() {
+		return new #e#[]{x, y, z, w};
+	}
+
+    @Override
+    public Vector4f toFloat() {
+        return new Vector4f(x, y, z, w);
+    }
+
+    @Override
+    public Vector4d toDouble() {
+        return new Vector4d(x, y, z, w);
+    }
+
+    @Override
+	public int compareTo(Vector4#E# v) {
+		return (int) (lengthSquared() - v.lengthSquared());
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Vector4#E#)) {
+			return false;
+		}
+		final Vector4#E# vector4 = (Vector4#E#) o;
+		if (#ET#.compare(vector4.w, w) != 0) {
+			return false;
+		}
+		if (#ET#.compare(vector4.x, x) != 0) {
+			return false;
+		}
+		if (#ET#.compare(vector4.y, y) != 0) {
+			return false;
+		}
+		if (#ET#.compare(vector4.z, z) != 0) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		if (!hashed) {
+			int result = (x != +0.0f ? HashFunctions.hash(x) : 0);
+			result = 31 * result + (y != +0.0f ? HashFunctions.hash(y) : 0);
+			result = 31 * result + (z != +0.0f ? HashFunctions.hash(z) : 0);
+			hashCode = 31 * result + (w != +0.0f ? HashFunctions.hash(w) : 0);
+			hashed = true;
+		}
+		return hashCode;
+	}
+
+	@Override
+	public Vector4#E# clone() {
+		return new Vector4#E#(this);
+	}
+
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + ", " + z + ", " + w + ")";
+	}
+}
