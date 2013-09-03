@@ -307,7 +307,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		}
 	}
 
-	public int incrementDirtyIndex() {
+	private int incrementDirtyIndex() {
 		boolean success = false;
 		int index = -1;
 		while (!success) {
