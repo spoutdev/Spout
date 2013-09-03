@@ -31,11 +31,11 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import org.spout.api.ai.AStarNode;
 import org.spout.api.ai.Agent;
 import org.spout.api.ai.Plan;
+
+import com.google.common.collect.Lists;
 
 public class PlannerNode extends AStarNode {
 	private final PlannerAgent agent;
@@ -118,5 +118,30 @@ public class PlannerNode extends AStarNode {
 
 	public static PlannerNode create(PlannerAgent agent, WorldState initialState, Action appliedAction) {
 		return new PlannerNode(agent, initialState, appliedAction);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		return prime + ((state == null) ? 0 : state.hashCode());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		PlannerNode other = (PlannerNode) obj;
+		if (state == null) {
+			if (other.state != null) {
+				return false;
+			}
+		} else if (!state.equals(other.state)) {
+			return false;
+		}
+		return true;
 	}
 }

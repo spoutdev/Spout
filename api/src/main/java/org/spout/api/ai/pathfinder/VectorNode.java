@@ -28,14 +28,14 @@ package org.spout.api.ai.pathfinder;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import org.spout.api.ai.AStarNode;
 import org.spout.math.vector.Vector3;
 
+import com.google.common.collect.Lists;
+
 public class VectorNode extends AStarNode implements PathPoint {
 	private float blockCost = -1;
-	final BlockSource blockSource;
+	private final BlockSource blockSource;
 	List<PathCallback> callbacks;
 	private final BlockExaminer[] examiners;
 	final Vector3 location;
@@ -55,7 +55,7 @@ public class VectorNode extends AStarNode implements PathPoint {
 	}
 
 	boolean at(Vector3 goal) {
-		return location.distanceSquared(goal) <= 10;
+		return location.distanceSquared(goal) <= 4;
 	}
 
 	@Override
@@ -66,6 +66,25 @@ public class VectorNode extends AStarNode implements PathPoint {
 
 	public float distance(VectorNode to) {
 		return (float) location.distanceSquared(to.location);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		VectorNode other = (VectorNode) obj;
+		if (location == null) {
+			if (other.location != null) {
+				return false;
+			}
+		} else if (!location.equals(other.location)) {
+			return false;
+		}
+		return true;
 	}
 
 	private float getBlockCost() {
@@ -106,8 +125,19 @@ public class VectorNode extends AStarNode implements PathPoint {
 		return new VectorNode(mod, blockSource, examiners);
 	}
 
+	@Override
+	public Vector3 getVector() {
+		return location;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		return prime + ((location == null) ? 0 : location.hashCode());
+	}
+
 	public float heuristicDistance(Vector3 goal) {
-		return (float) location.distanceSquared(goal) + getBlockCost();
+		return (float) (location.distance(goal) + getBlockCost()) * TIEBREAKER;
 	}
 
 	private boolean isPassable(PathPoint mod) {
@@ -120,8 +150,5 @@ public class VectorNode extends AStarNode implements PathPoint {
 		return true;
 	}
 
-	@Override
-	public Vector3 getVector() {
-		return location;
-	}
+	private static final float TIEBREAKER = 1.001f;
 }

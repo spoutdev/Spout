@@ -55,7 +55,7 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 
 	/**
 	 * Creates an {@link AStarState} that can be reused across multiple invocations of {{@link #run(AStarState, int)}.
-	 *
+	 * 
 	 * @param goal The {@link AStarGoal} state
 	 * @param start The starting {@link AStarNode}
 	 * @return The created state
@@ -67,7 +67,7 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 
 	/**
 	 * Runs the {@link AStarState} until a plan is found.
-	 *
+	 * 
 	 * @param state The state to use
 	 * @return The generated {@link Plan}, or <code>null</code>
 	 * @see #run(AStarState)
@@ -78,7 +78,7 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 
 	/**
 	 * Runs the machine using the given {@link AStarState}'s {@link AStarStorage}. Can be used to provide a continuation style usage of the A* algorithm.
-	 *
+	 * 
 	 * @param state The state to use
 	 * @param maxIterations The maximum number of iterations
 	 * @return The generated {@link Plan}, or <code>null</code> if not found
@@ -119,7 +119,7 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 
 	/**
 	 * Runs the machine until a plan is either found or cannot be generated.
-	 *
+	 * 
 	 * @see #runFully(AStarGoal, AStarNode, int)
 	 */
 	public P runFully(AStarGoal<N> goal, N start) {
@@ -127,8 +127,9 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 	}
 
 	/**
-	 * Runs the machine fully until the iteration limit has been exceeded. This will use the supplied goal and start to generate neighbours until the goal state has been reached using the A* algorithm.
-	 *
+	 * Runs the machine fully until the iteration limit has been exceeded. This will use the supplied goal and start to generate neighbours until the goal state has been reached using the A*
+	 * algorithm.
+	 * 
 	 * @param goal The {@link AStarGoal} state
 	 * @param start The starting {@link AStarNode}
 	 * @param iterations The number of iterations to run the machine for
@@ -140,7 +141,7 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 
 	/**
 	 * Sets the {@link Supplier} to use to generate instances of {@link AStarStorage} for use while searching.
-	 *
+	 * 
 	 * @param newSupplier The new supplier to use
 	 */
 	public void setStorageSupplier(Supplier<AStarStorage> newSupplier) {
@@ -166,7 +167,7 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 
 	/**
 	 * Creates an AStarMachine using {@link SimpleAStarStorage} as the storage backend.
-	 *
+	 * 
 	 * @return The created instance
 	 */
 	public static <N extends AStarNode, P extends Plan<?>> AStarMachine<N, P> createWithDefaultStorage() {
@@ -175,7 +176,7 @@ public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 
 	/**
 	 * Creates an AStarMachine that uses the given {@link Supplier <AStarStorage>} to create {@link AStarStorage} instances.
-	 *
+	 * 
 	 * @param storageSupplier The storage supplier
 	 * @return The created instance
 	 */
