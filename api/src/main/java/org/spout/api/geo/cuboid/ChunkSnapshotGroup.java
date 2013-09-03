@@ -26,7 +26,7 @@
  */
 package org.spout.api.geo.cuboid;
 
-public interface ChunkSnapshotModel {
+public interface ChunkSnapshotGroup {
 	public int getX();
 
 	public int getY();

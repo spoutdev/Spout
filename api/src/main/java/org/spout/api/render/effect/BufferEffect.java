@@ -26,9 +26,9 @@
  */
 package org.spout.api.render.effect;
 
-import org.spout.api.geo.cuboid.ChunkSnapshotModel;
+import org.spout.api.geo.cuboid.ChunkSnapshotGroup;
 import org.spout.api.render.BufferContainer;
 
 public interface BufferEffect {
-	public abstract void post(ChunkSnapshotModel chunkModel, BufferContainer value);
+	public abstract void post(ChunkSnapshotGroup chunkModel, BufferContainer value);
 }

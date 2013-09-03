@@ -31,14 +31,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
-import org.spout.api.geo.cuboid.ChunkSnapshotModel;
+import org.spout.api.geo.cuboid.ChunkSnapshotGroup;
 
 //just need to,bottom,east,west,south,north, not diagonal neigbour it's 8 snapshot useless
 
 /**
  * Stores 9 chunk snapshots (1 middle chunk and 8 neighbours) for quick access
  */
-public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<SpoutChunkSnapshotModel> {
+public class SpoutChunkSnapshotGroup implements ChunkSnapshotGroup, Comparable<SpoutChunkSnapshotGroup> {
 	private static final AtomicInteger idCounter = new AtomicInteger(0);
 	private final int cx, cy, cz;
 	private final ChunkSnapshot[][][] chunks;
@@ -47,7 +47,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	private final int distance;
 	private final int id;
 	/**
-	 * Time of the SpoutChunkSnapshotModel creation To benchmark purpose
+	 * Time of the SpoutChunkSnapshotGroup creation To benchmark purpose
 	 */
 	private final long time;
 	/**
@@ -56,15 +56,15 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	private boolean first;
 	private final SpoutWorld world;
 
-	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, long time) {
+	public SpoutChunkSnapshotGroup(SpoutWorld world, int cx, int cy, int cz, boolean unload, long time) {
 		this(world, cx, cy, cz, unload, null, 0, false, time);
 	}
 
-	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, boolean first, long time) {
+	public SpoutChunkSnapshotGroup(SpoutWorld world, int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, boolean first, long time) {
 		this(world, cx, cy, cz, false, chunks, distance, first, time);
 	}
 
-	private SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, boolean first, long time) {
+	private SpoutChunkSnapshotGroup(SpoutWorld world, int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, boolean first, long time) {
 		this.world = world;
 		this.cx = cx;
 		this.cy = cy;
@@ -155,7 +155,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	}
 
 	@Override
-	public int compareTo(final SpoutChunkSnapshotModel o) {
+	public int compareTo(final SpoutChunkSnapshotGroup o) {
 		int d1 = getDistance();
 		int d2 = o.getDistance();
 
@@ -174,7 +174,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final SpoutChunkSnapshotModel other = (SpoutChunkSnapshotModel) obj;
+		final SpoutChunkSnapshotGroup other = (SpoutChunkSnapshotGroup) obj;
 		if (this.cx != other.cx) {
 			return false;
 		}
