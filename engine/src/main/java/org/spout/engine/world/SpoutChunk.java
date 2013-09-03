@@ -115,7 +115,7 @@ import org.spout.engine.world.physics.UpdateQueue;
 import org.spout.math.GenericMath;
 import org.spout.math.vector.Vector3;
 
-public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
+public class SpoutChunk extends Chunk implements Modifiable {
 	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<>(null);
 	//Not static to allow the engine to parse values first
 	private final int autosaveInterval = SpoutConfiguration.AUTOSAVE_INTERVAL.getInt(60000);
@@ -983,10 +983,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		TickStage.checkStage(allowedStages, restrictedStages, getRegion().getExecutionThread());
 	}
 
-	@Override
-	public void copySnapshot() {
-	}
-
 	public enum SaveState {
 		UNLOAD_SAVE,
 		UNLOAD,
@@ -1845,7 +1841,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		return selfReference;
 	}
 
-	protected void queueDirty() {
+	private void queueDirty() {
 		dirtyChunkQueueElement.add();
 	}
 

@@ -39,6 +39,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.collections.keyvalue.MultiKey;
+
 import org.spout.api.ClientOnly;
 import org.spout.api.Platform;
 import org.spout.api.ServerOnly;
@@ -56,6 +58,7 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Transform;
@@ -79,6 +82,7 @@ import org.spout.api.util.cuboid.LocalRegionChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.LocalRegionChunkHeightMapBufferWrapper;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
+import org.spout.api.util.map.WeakValueHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
@@ -94,7 +98,6 @@ import org.spout.engine.filesystem.versioned.ChunkFiles;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.util.thread.AsyncManager;
-import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.world.collision.SpoutCollisionListener;
 import org.spout.engine.world.collision.SpoutLinkedWorldInfo;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
@@ -122,10 +125,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 */
 	private final RegionSource source;
 	/**
-	 * Snapshot manager for this region
-	 */
-	protected SnapshotManager snapshotManager = new SnapshotManager();
-	/**
 	 * Holds all of the entities to be simulated
 	 */
 	protected final EntityManager entityManager = new EntityManager(this);
@@ -133,6 +132,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 * Reference to the persistent ByteArrayArray that stores chunk data
 	 */
 	private final BAAWrapper chunkStore;
+	private final Queue<SpoutChunk> resetDirtyChunkQueue = new ConcurrentLinkedQueue<>();
 	private final Queue<SpoutChunkSnapshotFuture> snapshotQueue = new ConcurrentLinkedQueue<>();
 	protected SetQueue<SpoutChunk> unloadQueue = new SetQueue<>(CHUNKS.VOLUME);
 	/**
@@ -486,9 +486,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 	public void copySnapshotRun() {
 		entityManager.copyAllSnapshots();
 
-		snapshotManager.copyAllSnapshots();
-
 		dynamicBlockTree.setRegionThread(Thread.currentThread());
+
+		SpoutChunk dirtyChunk;
+		while ((dirtyChunk = resetDirtyChunkQueue.poll()) != null) {
+			dirtyChunk.resetDirtyArrays();
+			dirtyChunk.setLightDirty(false);
+		}
 
 		boolean empty = false;
 		Cube cube;
@@ -513,9 +517,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 				empty |= processChunkSaveUnload((SpoutChunk) cube);
 			}
 		}
-
-		// Updates on nulled chunks
-		snapshotManager.copyAllSnapshots();
 
 		if (empty) {
 			source.removeRegion(this);
@@ -757,6 +758,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 		Spout.getEventManager().callDelayedEvent(evt);
 	}
 
+	private final WeakValueHashMap<MultiKey, SpoutChunkSnapshot> cached = Spout.getPlatform() == Platform.CLIENT ? new WeakValueHashMap<MultiKey, SpoutChunkSnapshot>() : null;
+
 	@Override
 	public void preSnapshotRun() {
 		entityManager.preSnapshotRun();
@@ -764,17 +767,34 @@ public class SpoutRegion extends Region implements AsyncManager {
 			entityManager.syncEntities();
 		}
 
-		// TODO: should this block be moved somewhere else
 		SpoutChunk spoutChunk;
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 			if (spoutChunk.isDirty()) {
-				if (Spout.getPlatform() == Platform.SERVER) {
-					processChunkUpdatedEvent(spoutChunk);
-
-					spoutChunk.resetDirtyArrays();
-					spoutChunk.setLightDirty(false);
+				processChunkUpdatedEvent(spoutChunk);
+				if (cached != null) {
+					SpoutChunkSnapshot[][][] snapshots = new SpoutChunkSnapshot[3][3][3];
+					for (int x = -1; x <= 1; x++) {
+						for (int y = -1; y <= 1; y++) {
+							for (int z = -1; z <= 1; z++) {
+								final int localX = x + spoutChunk.getX();
+								final int localY = x + spoutChunk.getY();
+								final int localZ = x + spoutChunk.getZ();
+								final MultiKey key = new MultiKey(localX, localY, localZ);
+								SpoutChunkSnapshot get = cached.get(key);
+								if (get == null) {
+									SpoutChunkSnapshot snapshot = getWorld().getChunk(localX, localY, localZ).getSnapshot(ChunkSnapshot.SnapshotType.BOTH, ChunkSnapshot.EntityType.NO_ENTITIES, ChunkSnapshot.ExtraData.NO_EXTRA_DATA);
+									cached.put(key, snapshot);
+									get = snapshot;
+								}
+								snapshots[x + 1][y + 1][z + 1] = get;
+							}
+						}
+					}
+					SpoutChunkSnapshotModel model = new SpoutChunkSnapshotModel(getWorld(), spoutChunk.getX(), spoutChunk.getY(), spoutChunk.getZ(), snapshots, 1, false, System.currentTimeMillis());
+					// TODO: submit this ChunkSnapshotModel to mesh thread for meshing
 				}
 			}
+			resetDirtyChunkQueue.add(spoutChunk);
 		}
 
 		SpoutChunkSnapshotFuture snapshotFuture;
