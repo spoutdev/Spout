@@ -28,7 +28,7 @@ package org.spout.api.render.effect;
 
 import java.util.List;
 
-import org.spout.api.geo.cuboid.ChunkSnapshotModel;
+import org.spout.api.geo.cuboid.ChunkSnapshotGroup;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.Material;
 import org.spout.api.model.mesh.Mesh;
@@ -37,12 +37,12 @@ import org.spout.api.model.mesh.MeshFace;
 public class SnapshotMesh {
 	private Mesh mesh;
 	private Material material;
-	private ChunkSnapshotModel snapshotModel;
+	private ChunkSnapshotGroup snapshotModel;
 	private Point position;
 	private boolean[] toRender;
 	private List<MeshFace> faces;
 
-	public SnapshotMesh(Material material, ChunkSnapshotModel snapshotModel, Point position, boolean toRender[]) {
+	public SnapshotMesh(Material material, ChunkSnapshotGroup snapshotModel, Point position, boolean toRender[]) {
 		this.setMaterial(material);
 		this.setSnapshotModel(snapshotModel);
 		this.setPosition(position);
@@ -66,11 +66,11 @@ public class SnapshotMesh {
 		this.material = material;
 	}
 
-	public ChunkSnapshotModel getSnapshotModel() {
+	public ChunkSnapshotGroup getSnapshotModel() {
 		return snapshotModel;
 	}
 
-	public void setSnapshotModel(ChunkSnapshotModel snapshotModel) {
+	public void setSnapshotModel(ChunkSnapshotGroup snapshotModel) {
 		this.snapshotModel = snapshotModel;
 	}
 

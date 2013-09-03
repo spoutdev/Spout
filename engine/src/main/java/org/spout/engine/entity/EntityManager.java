@@ -37,6 +37,7 @@ import org.spout.api.Spout;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.protocol.event.EntityUpdateEvent;
 import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 import org.spout.engine.component.entity.SpoutPhysicsComponent;
@@ -207,22 +208,23 @@ public class EntityManager {
 	 * Syncs all entities/observers in this region
 	 */
 	public void syncEntities() {
-		if (!(Spout.getPlatform() == Platform.SERVER)) {
+		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Must be in server mode to sync entities");
 		}
 		for (Entity observed : getAll()) {
 			if (observed.getId() == SpoutEntity.NOTSPAWNEDID) {
 				throw new IllegalStateException("Attempt to sync entity with not spawned id.");
 			}
-			if (observed.getChunk() == null) {
+			Chunk chunk = observed.getChunk();
+			if (chunk == null) {
 				continue;
 			}
 			//Players observing the chunk this entity is in
-			Set<? extends Entity> observers = observed.getChunk().getObservers();
+			Set<? extends Entity> observers = chunk.getObservers();
 			syncEntity(observed, observers, false);
 
 			//TODO: Why do we need this...?
-			Set<? extends Entity> expiredObservers = ((SpoutChunk) observed.getChunk()).getExpiredObservers();
+			Set<? extends Entity> expiredObservers = ((SpoutChunk) chunk).getExpiredObservers();
 			syncEntity(observed, expiredObservers, true);
 		}
 	}
