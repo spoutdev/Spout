@@ -31,6 +31,8 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -135,7 +137,7 @@ public final class SpoutScheduler implements Scheduler {
 	private final Thread mainThread;
 	private final RenderThread renderThread;
 	private final GUIThread guiThread;
-	private final Set<MeshGeneratorThread> meshThreads;
+	private final ArrayBlockingQueue<MeshGeneratorThread> meshThreads;
 	private final SpoutTaskManager taskManager;
 	private SpoutParallelTaskManager parallelTaskManager = null;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
@@ -168,8 +170,8 @@ public final class SpoutScheduler implements Scheduler {
 		if (engine instanceof SpoutClient) {
 			renderThread = new RenderThread();
 			guiThread = new GUIThread();
-			meshThreads = new HashSet<>();
-			for (int i = 0; i <= SpoutConfiguration.MESH_THREAD_COUNT.getInt(4); i++) {
+			meshThreads = new ArrayBlockingQueue<>(2000);
+			for (int i = 0; i <= 4; i++) { //TODO kitskub Get config working again.
 				meshThreads.add(new MeshGeneratorThread());
 			}
 		} else {
