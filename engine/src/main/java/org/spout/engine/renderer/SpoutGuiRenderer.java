@@ -26,15 +26,32 @@
  */
 package org.spout.engine.renderer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.spout.api.gui.GuiRenderer;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.ScreenStack;
+import org.spout.api.gui.Widget;
 
 public class SpoutGuiRenderer implements GuiRenderer {
 	@Override
 	public void render(ScreenStack stack) {
 		for (Screen screen : stack.getScreens()) {
-
+			renderScreen(screen);
 		}
+	}
+
+	private void renderScreen(Screen screen) {
+		List<Widget> widgets = new ArrayList<>(screen.getWidgets());
+		Collections.sort(widgets);
+		for (Widget widget : widgets) {
+			renderWidget(widget);
+		}
+	}
+
+	private void renderWidget(Widget widget) {
+		// TODO: Render with Caustic
 	}
 }

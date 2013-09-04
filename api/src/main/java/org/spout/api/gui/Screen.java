@@ -42,7 +42,7 @@ import org.spout.math.vector.Vector2;
  * Represents a layer on the GUI and a collection of {@link Widget}s.
  */
 public class Screen extends BasicTickable {
-	private final List<Widget> widgets = new ArrayList<Widget>();
+	private final List<Widget> widgets = new ArrayList<>();
 	private int focusIndex = 0;
 	private boolean takesInput = true, visible = true, grabsMouse = true;
 
