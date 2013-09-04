@@ -791,7 +791,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 						snapshots[x + 1][y + 1][z + 1] = get;
 					}
 					SpoutChunkSnapshotGroup group = new SpoutChunkSnapshotGroup(getWorld(), spoutChunk.getX(), spoutChunk.getY(), spoutChunk.getZ(), snapshots, 1, false, System.currentTimeMillis());
-					// TODO: submit this ChunkSnapshotModel to mesh thread for meshing
+					SpoutScheduler.addToQueue(group);
 				}
 			}
 			resetDirtyChunkQueue.add(spoutChunk);

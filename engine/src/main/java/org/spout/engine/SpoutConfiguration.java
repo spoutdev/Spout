@@ -43,6 +43,7 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder RECLAIM_MEMORY = new ConfigurationHolder(true, "general", "reclaim-memory");
 	public static final ConfigurationHolder AUTOSAVE_INTERVAL = new ConfigurationHolder(60000, "general", "autosave-interval");
 	public static final ConfigurationHolder PHYSICS = new ConfigurationHolder(true, "general", "physics");
+	public static final ConfigurationHolder MESH_THREAD_COUNT = new ConfigurationHolder(4, "general", "mesh-thread-count");
 	// Chunks
 	public static final ConfigurationHolder CHUNK_REAP_DELAY = new ConfigurationHolder(1, "chunks", "reap-delay");
 	public static final ConfigurationHolder REAP_CHUNKS_PER_TICK = new ConfigurationHolder(50, "chunks", "reap-per-tick");
