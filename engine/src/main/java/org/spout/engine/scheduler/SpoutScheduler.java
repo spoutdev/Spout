@@ -31,6 +31,8 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -216,21 +218,17 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	private static final Deque<SpoutChunkSnapshotGroup> groups = new ConcurrentLinkedDeque<>();
+	private static final BlockingQueue<SpoutChunkSnapshotGroup> groups = new ArrayBlockingQueue<>(2000);
 
 	public class MeshGeneratorThread extends Thread {
 		@Override
 		public void run() {
 			while (!shutdown) {
-				SpoutChunkSnapshotGroup poll = groups.poll();
-				if (poll == null) {
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException ex) {
-						continue;
-					}
+				try {
+					SpoutChunkSnapshotGroup poll = groups.take();
+				} catch (InterruptedException e) {
 					continue;
-				}
+				} 
 				// Do something with the model; previously:
 				//ChunkMesh mesh = new ChunkMesh(poll);
 				//mesh.update();
