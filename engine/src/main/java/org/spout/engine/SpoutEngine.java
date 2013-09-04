@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.spout.api.Engine;
@@ -94,6 +95,14 @@ import org.spout.engine.world.SpoutRegion;
 
 public abstract class SpoutEngine implements AsyncManager, Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
+	private final SpoutConfiguration config = new SpoutConfiguration();
+	{
+		try {
+			// TODO: we have to use this so it loads before SpoutScheduler. Maybe change this?
+			config.load();
+		} catch (ConfigurationException ex) {
+		}
+	}
 	private final PluginSecurityManager securityManager = new PluginSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
 	private final PluginManager pluginManager = new PluginManager(this, securityManager, 0.0);
 	private final ConsoleManager consoleManager;
@@ -104,7 +113,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
-	private final SpoutConfiguration config = new SpoutConfiguration();
 	private final SpoutInputConfiguration inputConfig = new SpoutInputConfiguration();
 	protected final SnapshotableReference<World> defaultWorld = new SnapshotableReference<>(snapshotManager, null);
 	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<>();
