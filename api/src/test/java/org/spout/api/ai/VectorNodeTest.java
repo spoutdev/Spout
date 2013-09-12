@@ -32,7 +32,6 @@ import java.util.Map;
 import org.junit.Test;
 
 import org.spout.api.ai.pathfinder.VectorNode;
-
 import org.spout.math.vector.Vector3;
 
 import static org.hamcrest.CoreMatchers.equalTo;

@@ -148,7 +148,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void start() {
 		// Completely blank world to allow the player to start in
 		this.world.getAndSet(new SpoutClientWorld("NullWorld", this, UUID.randomUUID()));
-		if (!connnect()) {
+		if (!connect()) {
 			return;
 		}
 
@@ -179,7 +179,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		get.send(Session.SendType.FORCE, get.getProtocol().getIntroductionMessage(getPlayer().getName(), (InetSocketAddress) get.getChannel().remoteAddress()));
 	}
 
-	private boolean connnect() {
+	private boolean connect() {
 		// Connect to server to establish session
 		Protocol protocol = null;
 		if (getArguments().protocol != null) {
