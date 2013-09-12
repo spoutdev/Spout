@@ -86,6 +86,9 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		this(shift, storeState, compress, dirtySize, initial, null);
 	}
 
+	/**
+	 * If either {@code blocks} is not null, getDirtyOverflow will return true
+	 */
 	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, short[] blocks, short[] data) {
 		this(shift, storeState, compress, dirtySize);
 		if (blocks != null) {
@@ -99,6 +102,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 			} else {
 				store.uncompressedSet(initial);
 			}
+			dirtyBlocks.set(dirtySize + 1);
 		}
 	}
 
