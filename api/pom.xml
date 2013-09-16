@@ -39,19 +39,13 @@
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
-			<version>4.0.7.Final</version>
+			<version>4.0.9.Final</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.jmdns</groupId>
 			<artifactId>jmdns</artifactId>
 			<version>3.4.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.royawesome</groupId>
-			<artifactId>jlibnoise</artifactId>
-			<version>dev-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -81,6 +75,12 @@
 		<dependency>
 			<groupId>org.spout</groupId>
 			<artifactId>cereal</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.spout</groupId>
+			<artifactId>jlibnoise</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
