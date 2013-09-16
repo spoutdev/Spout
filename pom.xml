@@ -7,15 +7,15 @@
 	<artifactId>spout-parent</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<url>http://www.spout.org</url>
 	<inceptionYear>2011</inceptionYear>
+	<url>https://github.com/SpoutDev/Spout</url>
 	<description>Parent Maven project pom for the Spout platform.</description>
 
 	<!-- Parent information -->
 	<parent>
-		<groupId>org.spout</groupId>
-		<artifactId>shared-parent</artifactId>
-		<version>1</version>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
 	</parent>
 
 	<!-- Project modules -->
@@ -35,12 +35,6 @@
 		<commit>unknown</commit>
 	</properties>
 
-	<!-- Organization information -->
-	<organization>
-		<name>Spout LLC</name>
-		<url>http://www.spout.org</url>
-	</organization>
-
 	<!-- License information -->
 	<licenses>
 		<license>
@@ -50,6 +44,26 @@
 			<comments>GNU Lesser General Public License Version 3, but with a provision that files are released under the MIT license 180 days after they are published.</comments>
 		</license>
 	</licenses>
+
+	<!-- Organization information -->
+	<organization>
+		<name>Spout LLC</name>
+		<url>http://www.spout.org</url>
+	</organization>
+
+	<!-- Project developers -->
+	<developers>
+		<developer>
+			<id>Afforess</id>
+			<name>Cameron McAvoy</name>
+			<email>afforess@gmail.com</email>
+		</developer>
+		<developer>
+			<id>Wulfspider</id>
+			<name>Luke Spragg</name>
+			<email>the@wulf.im</email>
+		</developer>
+	</developers>
 
 	<!-- Source code access -->
 	<scm>
@@ -73,14 +87,42 @@
 	<!-- Dependency repositories -->
 	<repositories>
 		<repository>
-			<id>spout-repo</id>
-			<url>http://nexus.spout.org/content/groups/public/</url>
+			<id>sonatype-nexus-releases</id>
+			<url>https://oss.sonatype.org/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>sonatype-nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>4thline-cling</id>
+			<url>http://4thline.org/m2</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
 	</repositories>
+
+	<!-- Build plugin repositories -->
+	<pluginRepositories>
+		<pluginRepository>
+			<id>sonatype-nexus-releases</id>
+			<url>https://oss.sonatype.org/content/repositories/releases</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<!-- Project dependencies -->
 	<dependencies>
