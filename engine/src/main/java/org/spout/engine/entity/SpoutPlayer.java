@@ -75,6 +75,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicReference<String> displayName = new AtomicReference<>();
 	private final AtomicReference<String> name = new AtomicReference<>();
 	private boolean online = true;
+	private boolean firstLogin = false;
 	private final int hashcode;
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
@@ -89,8 +90,12 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		copySnapshot();
 	}
 
+	/**
+	 * Only used when creating a new SpoutPlayer, hence firstLogin being set to true.
+	 */
 	public SpoutPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, String name, Transform transform) {
 		this(engine, network, name, transform, null, (byte[]) null, (Class<? extends Component>[]) null);
+		firstLogin = true;
 	}
 
 	public SpoutPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, String name, Transform transform, UUID uid, byte[] dataMap, Class<? extends Component>... components) {
@@ -128,6 +133,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@SnapshotRead
 	public boolean isOnline() {
 		return online;
+	}
+
+	@Override
+	public boolean hasJoinedBefore() {
+		return !firstLogin;
 	}
 
 	@DelayedWrite
