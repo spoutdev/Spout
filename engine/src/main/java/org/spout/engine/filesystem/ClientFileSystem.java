@@ -30,12 +30,14 @@ import java.net.URI;
 
 import org.spout.engine.filesystem.resource.loader.ShaderProgramLoader;
 import org.spout.engine.filesystem.resource.loader.SoundLoader;
+import org.spout.engine.filesystem.resource.loader.TextureLoader;
 
 public class ClientFileSystem extends CommonFileSystem {
 	@Override
 	public void init() {
 		registerLoader(new ShaderProgramLoader());
 		registerLoader(new SoundLoader());
+		registerLoader(new TextureLoader());
 		super.init();
 	}
 

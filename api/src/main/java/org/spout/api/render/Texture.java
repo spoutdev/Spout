@@ -26,75 +26,27 @@
  */
 package org.spout.api.render;
 
-import java.awt.Color;
-
-import org.spout.api.ClientOnly;
+import org.spout.math.vector.Vector2;
 
 public abstract class Texture {
 	protected int[] image;
-	protected int width;
-	protected int height;
+	protected Vector2 edge;
 
-	public Texture(int[] baseImage, int width, int height) {
-		this.image = baseImage;
-		this.width = width;
-		this.height = height;
+	public Texture(int[] baseImage, Vector2 edge) {
+		image = baseImage;
+		this.edge = edge;
+	}
+	
+	public int getWidth() {
+		return edge.getFloorX();
 	}
 
-	public final int getHeight() {
-		return this.height;
+	public int getHeight() {
+		return edge.getFloorY();
 	}
-
-	public final int getWidth() {
-		return this.width;
-	}
-
+	
 	public int[] getImage() {
-		int[] colorCopy = new int[image.length];
-		System.arraycopy(image, 0, colorCopy, 0, image.length);
-		return colorCopy;
+		return image;
 	}
-
-	public final void setColors(Color[] colors, int offset, int num) {
-		for (int i = 0; i < num; i++) {
-			this.image[offset + i] = colors[i].getRGB();
-		}
-	}
-
-	public final void setColors(Color[] colors) {
-		for (int i = 0; i < colors.length; i++) {
-			this.image[i] = colors[i].getRGB();
-		}
-	}
-
 	public abstract Texture subTexture(int x, int y, int w, int h);
-
-	@ClientOnly
-	public abstract void writeGPU();
-
-	@ClientOnly
-	public abstract void bind();
-
-	@ClientOnly
-	public abstract boolean isLoaded();
-
-	public static Color[] convertFromIntArray(int[] rgba) {
-		final Color[] colors = new Color[rgba.length];
-
-		for (int i = 0; i < rgba.length; i++) {
-			colors[i] = new Color(rgba[i], true);
-		}
-
-		return colors;
-	}
-
-	public static int[] converToIntArray(Color[] colors) {
-		int[] rgba = new int[colors.length];
-
-		for (int i = 0; i < rgba.length; i++) {
-			rgba[i] = colors[i].getRGB();
-		}
-
-		return rgba;
-	}
 }

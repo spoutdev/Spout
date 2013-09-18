@@ -26,15 +26,14 @@
  */
 package org.spout.engine.filesystem.resource.loader;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import org.spout.api.Spout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import org.spout.api.resource.ResourceLoader;
-import org.spout.engine.SpoutClient;
-import org.spout.renderer.gl.Texture;
-import org.spout.renderer.gl.Texture.Format;
-import org.spout.renderer.util.CausticUtil;
-import org.spout.renderer.util.Rectangle;
+import org.spout.engine.filesystem.resource.SpoutTexture;
 
 /**
  *
@@ -45,15 +44,14 @@ public class TextureLoader extends ResourceLoader {
 	}
 
 	@Override
-	public Texture load(InputStream in) {
-		ByteBuffer data;
-		final Rectangle size = new Rectangle();
-		Texture texture = ((SpoutClient) Spout.getEngine()).getRenderer().getGL().createTexture();
-		data = CausticUtil.getImageData(in, Format.RGB, size);
-		data.flip();
-		texture.setImageData(data, size.getWidth(), size.getHeight());
-		texture.create();
-
-		return texture;		
+	public SpoutTexture load(InputStream in) {
+		BufferedImage image = null;
+		try {
+			image = ImageIO.read(in);
+		} catch (IOException ex) {
+			Logger.getLogger(TextureLoader.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+		return new SpoutTexture(image);
 	}
 }
