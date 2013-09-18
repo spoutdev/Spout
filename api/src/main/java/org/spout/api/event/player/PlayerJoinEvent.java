@@ -30,7 +30,7 @@ import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when a player joins the server, this event can be disallowed to prevent the Player from logging in.<br/>
+ * Called when a player joins the server.<br/>
  */
 public class PlayerJoinEvent extends AbstractPlayerEvent {
 	private static HandlerList handlers = new HandlerList();

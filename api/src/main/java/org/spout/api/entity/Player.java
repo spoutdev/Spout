@@ -68,6 +68,13 @@ public interface Player extends CommandSource, Entity {
 	public boolean isOnline();
 
 	/**
+	 * Gets if the player has joined before
+	 *
+	 * @return true if joined before
+	 */
+	public boolean hasJoinedBefore();
+
+	/**
 	 * Kicks the player without giving a reason, or forcing it.
 	 */
 	@ServerOnly
