@@ -45,12 +45,22 @@ import org.spout.renderer.util.Rectangle;
 public class SpoutTexture extends Texture {
 	org.spout.renderer.gl.Texture texture;
 	
-	public SpoutTexture(int[] data, Vector2 edge) {
-		super(data, edge);
+	public SpoutTexture(BufferedImage baseImage, Vector2 edge) {
+		super(edge);
+		ByteBuffer data;
+		texture = ((SpoutClient) Spout.getEngine()).getRenderer().getGL().createTexture();
+		data = CausticUtil.getImageData(baseImage, Format.RGBA);
+		data.flip();
+		texture.setImageData(data, getWidth(), getHeight());
 	}
 	
 	public SpoutTexture(BufferedImage baseImage) {
-		super(baseImage.getRGB(0, 0, baseImage.getWidth(), baseImage.getHeight(), null, 0, baseImage.getWidth()), new Vector2(baseImage.getWidth(), baseImage.getHeight()));
+		super(new Vector2(baseImage.getWidth(), baseImage.getHeight()));
+		ByteBuffer data;
+		texture = ((SpoutClient) Spout.getEngine()).getRenderer().getGL().createTexture();
+		data = CausticUtil.getImageData(baseImage, Format.RGBA);
+		data.flip();
+		texture.setImageData(data, getWidth(), getHeight());
 	}
 	
 	public void bind(int i) {
@@ -62,13 +72,8 @@ public class SpoutTexture extends Texture {
 	}
 	
 	public void create() {
-		ByteBuffer data;
-		Rectangle size = new Rectangle();
-		texture = ((SpoutClient) Spout.getEngine()).getRenderer().getGL().createTexture();
-		data = CausticUtil.getImageData(this.getImage(), Format.RED, getHeight(), getWidth());
-		data.flip();
-		texture.setImageData(data, getWidth(), getHeight());
 		texture.create();
+		
 	}
 	
 	public void destroy() {

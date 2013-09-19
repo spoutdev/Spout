@@ -29,11 +29,9 @@ package org.spout.api.render;
 import org.spout.math.vector.Vector2;
 
 public abstract class Texture {
-	protected int[] image;
 	protected Vector2 edge;
 
-	public Texture(int[] baseImage, Vector2 edge) {
-		image = baseImage;
+	public Texture(Vector2 edge) {
 		this.edge = edge;
 	}
 	
@@ -43,10 +41,6 @@ public abstract class Texture {
 
 	public int getHeight() {
 		return edge.getFloorY();
-	}
-	
-	public int[] getImage() {
-		return image;
 	}
 	public abstract Texture subTexture(int x, int y, int w, int h);
 }
