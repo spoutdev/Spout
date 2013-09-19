@@ -1841,7 +1841,7 @@ public class SpoutChunk extends Chunk implements Modifiable {
 		return selfReference;
 	}
 
-	private void queueDirty() {
+	protected void queueDirty() {
 		dirtyChunkQueueElement.add();
 	}
 

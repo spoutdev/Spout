@@ -901,6 +901,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@SuppressWarnings ("rawtypes")
 	@Override
 	public void runLighting(int sequence) {
+		//Lighting is server only
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			return;
+		}
 		if (sequence != this.updateSequence) {
 			return;
 		}

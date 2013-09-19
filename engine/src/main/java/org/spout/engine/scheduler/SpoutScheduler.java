@@ -224,6 +224,7 @@ public final class SpoutScheduler implements Scheduler {
 			while (!shutdown) {
 				try {
 					SpoutChunkSnapshotGroup poll = groups.take();
+					System.out.println(poll);
 				} catch (InterruptedException e) {
 					continue;
 				} 
