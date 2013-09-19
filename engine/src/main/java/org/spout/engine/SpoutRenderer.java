@@ -35,6 +35,7 @@ import org.spout.math.vector.Vector2;
 import org.spout.renderer.data.Color;
 import org.spout.renderer.gl.GLFactory;
 import org.spout.renderer.gl.Renderer;
+import org.spout.renderer.util.Rectangle;
 
 public class SpoutRenderer {
 	private final SpoutClient client;
@@ -58,7 +59,7 @@ public class SpoutRenderer {
 	public void init() {
 		renderer = gl.createRenderer();
 		renderer.setWindowTitle(client.getName());
-		renderer.setWindowSize(resolution.getFloorX(), resolution.getFloorY());
+		renderer.setViewPort(new Rectangle(0, 0, resolution.getFloorX(), resolution.getFloorY()));
 		renderer.create();
 		renderer.setClearColor(Color.DARK_GRAY);
 	}
