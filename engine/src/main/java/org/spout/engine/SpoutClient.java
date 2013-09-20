@@ -159,6 +159,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		AnnotatedCommandExecutorFactory.create(new InputCommands(this));
 
 		getScheduler().startRenderThread(renderer);
+		getScheduler().startMeshThreads();
 		getScheduler().startGUIThread();
 
 		// TODO: Maybe a better way of alerting plugins the client is done?

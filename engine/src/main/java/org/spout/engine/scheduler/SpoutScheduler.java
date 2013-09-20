@@ -68,6 +68,7 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.protocol.NetworkSendThreadPool;
+import org.spout.engine.renderer.ChunkMesher;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.coretasks.CopySnapshotTask;
@@ -83,6 +84,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.world.RegionGenerator;
 import org.spout.engine.world.SpoutChunkSnapshotGroup;
+import org.spout.renderer.data.VertexData;
 
 /**
  * A class which handles scheduling for the engine {@link SpoutTask}s.<br> <br> Tasks can be submitted to the scheduler for execution by the main thread. These tasks are executed during a period where
@@ -203,7 +205,7 @@ public final class SpoutScheduler implements Scheduler {
 		@Override
 		public void run() {
 			renderer.init();
-			final float dt = 1 / TARGET_FPS;
+			final float dt = 1f / TARGET_FPS;
 			while (!shutdown) {
 				if (Display.isCloseRequested()) {
 					engine.stop();
@@ -221,18 +223,15 @@ public final class SpoutScheduler implements Scheduler {
 	public class MeshGeneratorThread extends Thread {
 		@Override
 		public void run() {
+			final ChunkMesher mesher = new ChunkMesher();
 			while (!shutdown) {
 				try {
-					SpoutChunkSnapshotGroup poll = groups.take();
-					System.out.println(poll);
-				} catch (InterruptedException e) {
-					continue;
-				} 
-				// Do something with the model; previously:
-				//ChunkMesh mesh = new ChunkMesh(poll);
-				//mesh.update();
-				//((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer().addMeshToBatchQueue(mesh);
-				//meshesGenerated.getAndIncrement();
+					final SpoutChunkSnapshotGroup group = groups.take();
+					System.out.println(group.getCenter().getBase());
+					final VertexData mesh = mesher.mesh(group);
+					((SpoutClient) Spout.getEngine()).getRenderer().addMesh(group.getCenter(), mesh);
+				} catch (InterruptedException ignored) {
+				}
 			}
 		}
 	}
@@ -403,7 +402,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	public void startMeshThread() {
+	public void startMeshThreads() {
 		for (MeshGeneratorThread t : meshThreads) {
 			if (t.isAlive()) {
 				throw new IllegalStateException("Attempt was made to start a mesh thread twice");
@@ -456,6 +455,10 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	public void stop() {
 		shutdown = true;
+
+		for (Thread thread : meshThreads) {
+			thread.interrupt();
+		}
 	}
 
 	public void submitFinalTask(Runnable task, boolean addToStart) {

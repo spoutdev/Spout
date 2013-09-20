@@ -32,8 +32,9 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshotGroup;
+import org.spout.api.material.BlockMaterial;
 
-//just need to,bottom,east,west,south,north, not diagonal neigbour it's 8 snapshot useless
+//just need to,bottom,east,west,south,north, not diagonal neighbour it's 8 snapshot useless
 
 /**
  * Stores 9 chunk snapshots (1 middle chunk and 8 neighbours) for quick access
@@ -152,6 +153,11 @@ public class SpoutChunkSnapshotGroup implements ChunkSnapshotGroup, Comparable<S
 	@Override
 	public ChunkSnapshot getChunkFromBlock(int bx, int by, int bz) {
 		return getChunk(bx >> Chunk.BLOCKS.BITS, by >> Chunk.BLOCKS.BITS, bz >> Chunk.BLOCKS.BITS);
+	}
+
+	@Override
+	public BlockMaterial getBlock(int bx, int by, int bz) {
+		return getChunkFromBlock(bx, by, bz).getBlockMaterial(bx, by, bz);
 	}
 
 	@Override
