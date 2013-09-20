@@ -26,6 +26,8 @@
  */
 package org.spout.api.geo.cuboid;
 
+import org.spout.api.material.BlockMaterial;
+
 public interface ChunkSnapshotGroup {
 	public int getX();
 
@@ -67,4 +69,14 @@ public interface ChunkSnapshotGroup {
 	 * @return The chunk, or null if not available
 	 */
 	public ChunkSnapshot getChunkFromBlock(int bx, int by, int bz);
+
+	/**
+	 * Gets the block material at the world block coordinates.<br> Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 *
+	 * @param bx coordinate of the block
+	 * @param by coordinate of the block
+	 * @param bz coordinate of the block
+	 * @return The block, or null if not available
+	 */
+	public BlockMaterial getBlock(int bx, int by, int bz);
 }

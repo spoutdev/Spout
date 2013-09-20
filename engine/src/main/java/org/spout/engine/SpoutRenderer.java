@@ -27,15 +27,40 @@
 package org.spout.engine;
 
 import java.awt.Canvas;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
+import gnu.trove.list.TFloatList;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TFloatArrayList;
+import gnu.trove.list.array.TIntArrayList;
+
+import org.spout.api.Spout;
+import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.gui.FullScreen;
 
 import org.spout.engine.gui.SpoutScreenStack;
+import org.spout.math.imaginary.Quaternion;
 import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
+import org.spout.renderer.Camera;
+import org.spout.renderer.Material;
 import org.spout.renderer.data.Color;
+import org.spout.renderer.data.RenderList;
+import org.spout.renderer.data.VertexAttribute;
+import org.spout.renderer.data.VertexAttribute.DataType;
+import org.spout.renderer.data.VertexData;
+import org.spout.renderer.gl.Capability;
 import org.spout.renderer.gl.GLFactory;
+import org.spout.renderer.gl.Program;
 import org.spout.renderer.gl.Renderer;
-import org.spout.renderer.util.Rectangle;
+import org.spout.renderer.gl.Shader.ShaderType;
+import org.spout.renderer.gl.VertexArray;
+import org.spout.renderer.model.Model;
+import org.spout.renderer.util.ObjFileLoader;
 
 public class SpoutRenderer {
 	private final SpoutClient client;
@@ -44,7 +69,6 @@ public class SpoutRenderer {
 	private SpoutScreenStack screenStack;
 	private final Vector2 resolution;
 	private final float aspectRatio;
-	private Renderer renderer;
 
 	public SpoutRenderer(SpoutClient client, GLFactory gl, Vector2 resolution) {
 		this.client = client;
@@ -57,19 +81,17 @@ public class SpoutRenderer {
 	}
 
 	public void init() {
-		renderer = gl.createRenderer();
-		renderer.setWindowTitle(client.getName());
-		renderer.setViewPort(new Rectangle(0, 0, resolution.getFloorX(), resolution.getFloorY()));
-		renderer.create();
-		renderer.setClearColor(Color.DARK_GRAY);
+		initRendering();
 	}
 
 	public void dispose() {
-		renderer.destroy();
+		disposeRendering();
 	}
 
 	public void render(float dt) {
+		generateChunkModels();
 		renderer.render();
+		model.setRotation(Quaternion.fromAngleDegAxis(20 * dt, 1, 0, 0).mul(Quaternion.fromAngleDegAxis(10 * dt, 0, 1, 0)).mul(model.getRotation()));
 	}
 
 	public SpoutScreenStack getScreenStack() {
@@ -94,5 +116,99 @@ public class SpoutRenderer {
 
 	public GLFactory getGL() {
 		return gl;
+	}
+
+	private Renderer renderer;
+	private Program program;
+	private Material material;
+	private Camera camera;
+	private RenderList renderList;
+	private Model model;
+	// TODO: this should be a queue
+	private final Map<Vector3, VertexData> chunkMeshes = new ConcurrentHashMap<>();
+	private final Map<Vector3, Model> chunkModels = new HashMap<>();
+
+	private void initRendering() {
+		renderer = gl.createRenderer();
+		renderer.setWindowTitle(client.getName());
+		renderer.getViewPort().setSize(resolution.getFloorX(), resolution.getFloorY());
+		renderer.create();
+		renderer.setClearColor(Color.DARK_GRAY);
+
+		program = Spout.getFileSystem().getResource("shader://Spout/fallbacks/fallback.ssf");
+		program.getShader(ShaderType.VERTEX).create();
+		program.getShader(ShaderType.FRAGMENT).create();
+		program.create();
+
+		material = new Material(program);
+
+		camera = Camera.createPerspective(60, resolution.getFloorX(), resolution.getFloorY(), 0.1f, 1000f);
+		camera.setPosition(new Vector3(0, 0, 0));
+
+		renderList = new RenderList("chunks", camera, 0);
+		renderList.addCapability(Capability.DEPTH_TEST);
+		renderer.addRenderList(renderList);
+
+		final TFloatList positions = new TFloatArrayList();
+		final TFloatList textureCoords = new TFloatArrayList();
+		final TFloatList normals = new TFloatArrayList();
+		final TIntList indices = new TIntArrayList();
+		ObjFileLoader.load(SpoutRenderer.class.getResourceAsStream("/models/meshes/cube.obj"), positions, textureCoords, normals, indices);
+		final VertexData vertexData = new VertexData();
+		final VertexAttribute posAttribute = new VertexAttribute("positions", DataType.FLOAT, 3);
+		posAttribute.setData(positions);
+		vertexData.addAttribute(0, posAttribute);
+		vertexData.getIndices().addAll(indices);
+		final VertexArray vertexArray = gl.createVertexArray();
+		vertexArray.setData(vertexData);
+		vertexArray.create();
+
+		model = new Model(vertexArray, material);
+		model.setPosition(new Vector3(0, 0, -5));
+		renderList.add(model);
+	}
+
+	private void disposeRendering() {
+		program.destroy();
+
+		material = null;
+
+		for (Model model : renderList) {
+			model.getVertexArray().destroy();
+		}
+
+		renderList.clear();
+		renderList.clearCapabilities();
+
+		chunkMeshes.clear();
+
+		renderer.destroy();
+	}
+
+	public void addMesh(ChunkSnapshot chunk, VertexData mesh) {
+		if (renderList.size() < 100) {
+			System.out.println(chunk.getBase().mul(16));
+			chunkMeshes.put(chunk.getBase(), mesh);
+		}
+	}
+
+	private void generateChunkModels() {
+		for (Entry<Vector3, VertexData> chunkMesh : chunkMeshes.entrySet()) {
+			final Vector3 chunk = chunkMesh.getKey();
+			final VertexData mesh = chunkMesh.getValue();
+
+			final VertexArray vertexArray = gl.createVertexArray();
+			vertexArray.setData(mesh);
+			vertexArray.create();
+
+			final Model model = new Model(vertexArray, material);
+			model.setPosition(chunk.mul(Chunk.BLOCKS.SIZE));
+
+			renderList.add(model);
+
+			chunkModels.put(chunk, model);
+		}
+
+		chunkMeshes.clear();
 	}
 }
