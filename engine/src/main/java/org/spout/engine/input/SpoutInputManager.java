@@ -65,6 +65,7 @@ public class SpoutInputManager implements InputManager {
 	private boolean redirected = false;
 
 	public SpoutInputManager() {
+		// TODO: these should be fallback ONLY.
 		bind(new Binding("forward", Keyboard.valueOf(SpoutInputConfiguration.FORWARD.getString().toUpperCase())).setAsync(true));
 		bind(new Binding("backward", Keyboard.valueOf(SpoutInputConfiguration.BACKWARD.getString().toUpperCase())).setAsync(true));
 		bind(new Binding("left", Keyboard.valueOf(SpoutInputConfiguration.LEFT.getString().toUpperCase())).setAsync(true));
@@ -78,7 +79,6 @@ public class SpoutInputManager implements InputManager {
 		bind(new Binding("fire_2", Mouse.BUTTON_MIDDLE).setAsync(true));
 		bind(new Binding("pitch", MouseDirection.PITCH).setAsync(true));
 		bind(new Binding("yaw", MouseDirection.YAW).setAsync(true));
-		bind(new Binding("validate_movement", Keyboard.KEY_V).setAsync(true));
 	}
 
 	@Override
@@ -332,7 +332,6 @@ public class SpoutInputManager implements InputManager {
 
 		@Override
 		public void run() {
-			player.processCommand(command, arguments);
 			player.sendCommand(command, arguments);
 		}
 	}

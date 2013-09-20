@@ -213,7 +213,7 @@ public class TestCommands {
 	}
 
 	@CommandDescription (aliases = "break", desc = "Debug command to break a block")
-	@Platforms (Platform.CLIENT)
+	@Platforms (Platform.SERVER)
 	@Filter (PlayerFilter.class)
 	public void debugBreak(Player player, CommandArguments args) throws CommandException {
 		Block block = player.get(InteractComponent.class).getTargetBlock();

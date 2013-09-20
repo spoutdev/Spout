@@ -27,6 +27,9 @@
 package org.spout.api.input;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.spout.api.ClientOnly;
+import org.spout.api.Platform;
+import org.spout.api.Spout;
 
 import org.spout.api.entity.state.PlayerInputState.MouseDirection;
 
@@ -41,21 +44,29 @@ public class Binding {
 	public static final String PITCH = "pitch", YAW = "yaw";
 	private final AtomicBoolean async = new AtomicBoolean(false);
 
+	// TODO allow server to register client bindings; needs client approval
+	@ClientOnly
 	public Binding(String cmd, Keyboard[] keys, int[] buttons, MouseDirection[] directions) {
+		if (Spout.getPlatform() != Platform.CLIENT) {
+			throw new UnsupportedOperationException("Bindings can only be created on the client!");
+		}
 		this.cmd = cmd;
 		this.keys = keys;
 		this.buttons = buttons;
 		this.directions = directions;
 	}
 
+	@ClientOnly
 	public Binding(String cmd, Keyboard... keys) {
 		this(cmd, keys, new int[0], new MouseDirection[0]);
 	}
 
+	@ClientOnly
 	public Binding(String cmd, int... buttons) {
 		this(cmd, new Keyboard[0], buttons, new MouseDirection[0]);
 	}
 
+	@ClientOnly
 	public Binding(String cmd, MouseDirection... directions) {
 		this(cmd, new Keyboard[0], new int[0], directions);
 	}
