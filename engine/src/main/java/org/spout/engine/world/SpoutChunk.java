@@ -109,7 +109,6 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.scheduler.SpoutScheduler;
-import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 import org.spout.math.GenericMath;
@@ -1750,7 +1749,7 @@ public class SpoutChunk extends Chunk implements Modifiable {
 	}
 
 	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData, Cause<?> cause) {
-		// Add chunk to regions's dirty queue
+		// Add chunk to region's dirty queue
 		queueDirty();
 
 		x &= BLOCKS.MASK;
