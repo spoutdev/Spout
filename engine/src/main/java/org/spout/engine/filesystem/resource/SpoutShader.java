@@ -24,28 +24,59 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.filesystem;
+package org.spout.engine.filesystem.resource;
 
-import java.net.URI;
+import java.io.InputStream;
 
-import org.spout.engine.filesystem.resource.loader.ProgramLoader;
-import org.spout.engine.filesystem.resource.loader.ShaderLoader;
-import org.spout.engine.filesystem.resource.loader.SoundLoader;
-import org.spout.engine.filesystem.resource.loader.TextureLoader;
+import org.spout.api.Spout;
 
-public class ClientFileSystem extends CommonFileSystem {
-	@Override
-	public void init() {
-		registerLoader(new ProgramLoader());
-		registerLoader(new SoundLoader());
-		registerLoader(new TextureLoader());
-		registerLoader(new ShaderLoader());
-		super.init();
+import org.spout.engine.SpoutClient;
+
+import org.spout.renderer.GLVersioned.GLVersion;
+import org.spout.renderer.gl.Shader;
+import org.spout.renderer.gl.Shader.ShaderType;
+
+public class SpoutShader {
+	protected Shader shader;
+
+	public SpoutShader(InputStream stream) {
+		shader = ((SpoutClient) Spout.getEngine()).getRenderer().getGL().createShader();
+		shader.setSource(stream);
 	}
 
-	@Override
-	public void requestPluginInstall(String name, URI uri) {
-		// TODO: Implement with an user interface
-		throw new UnsupportedOperationException();
+	public void checkCreated() {
+		shader.checkCreated();
+	}
+
+	public void create() {
+		shader.create();
+	}
+
+	public void destory() {
+		shader.destroy();
+	}
+
+	public GLVersion getGLVersion() {
+		return shader.getGLVersion();
+	}
+
+	public int getID() {
+		return shader.getID();
+	}
+
+	public ShaderType getType() {
+		return shader.getType();
+	}
+
+	public boolean isCreated() {
+		return shader.isCreated();
+	}
+
+	public void setSource(InputStream in) {
+		shader.setSource(in);
+	}
+
+	public void setType(ShaderType type){
+		shader.setType(Shader.ShaderType.VERTEX);
 	}
 }

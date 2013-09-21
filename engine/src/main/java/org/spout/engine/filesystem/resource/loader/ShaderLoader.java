@@ -24,28 +24,23 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.filesystem;
+package org.spout.engine.filesystem.resource.loader;
 
-import java.net.URI;
+import java.io.InputStream;
 
-import org.spout.engine.filesystem.resource.loader.ProgramLoader;
-import org.spout.engine.filesystem.resource.loader.ShaderLoader;
-import org.spout.engine.filesystem.resource.loader.SoundLoader;
-import org.spout.engine.filesystem.resource.loader.TextureLoader;
+import org.spout.api.resource.ResourceLoader;
 
-public class ClientFileSystem extends CommonFileSystem {
-	@Override
-	public void init() {
-		registerLoader(new ProgramLoader());
-		registerLoader(new SoundLoader());
-		registerLoader(new TextureLoader());
-		registerLoader(new ShaderLoader());
-		super.init();
+import org.spout.engine.filesystem.resource.SpoutShader;
+
+public class ShaderLoader extends ResourceLoader{
+
+	public ShaderLoader() {
+		super("shader", null);
 	}
 
 	@Override
-	public void requestPluginInstall(String name, URI uri) {
-		// TODO: Implement with an user interface
-		throw new UnsupportedOperationException();
+	public SpoutShader load(InputStream in) {
+		return new SpoutShader(in);
 	}
+
 }
