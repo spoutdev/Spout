@@ -24,28 +24,36 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.filesystem;
+package org.spout.api.render.shader;
 
-import java.net.URI;
+import org.spout.math.matrix.Matrix2;
+import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector4;
 
-import org.spout.engine.filesystem.resource.loader.ProgramLoader;
-import org.spout.engine.filesystem.resource.loader.ShaderLoader;
-import org.spout.engine.filesystem.resource.loader.SoundLoader;
-import org.spout.engine.filesystem.resource.loader.TextureLoader;
+public interface Program {
 
-public class ClientFileSystem extends CommonFileSystem {
-	@Override
-	public void init() {
-		registerLoader(new ProgramLoader());
-		registerLoader(new SoundLoader());
-		registerLoader(new TextureLoader());
-		registerLoader(new ShaderLoader());
-		super.init();
-	}
+	public abstract void setUniform(String string, Matrix2 matrix);
 
-	@Override
-	public void requestPluginInstall(String name, URI uri) {
-		// TODO: Implement with an user interface
-		throw new UnsupportedOperationException();
-	}
+	public abstract void setUniform(String string, Matrix3 matrix);
+
+	public abstract void setUniform(String string, Matrix4 matrix);
+
+	public abstract void setUniform(String string, Vector2 vector);
+
+	public abstract void setUniform(String string, Vector2[] vector);
+
+	public abstract void setUniform(String string, Vector3 vector);
+
+	public abstract void setUniform(String string, Vector3[] vector);
+
+	public abstract void setUniform(String string, Vector4 vector);
+
+	public abstract void setUniform(String string, Boolean bool);
+
+	public abstract void setUniform(String string, float f);
+
+	public abstract void setUniform(String string, int i);
 }

@@ -36,21 +36,21 @@ import org.spout.api.resource.ResourceLoader;
 import org.spout.cereal.config.ConfigurationException;
 import org.spout.cereal.config.ConfigurationNode;
 import org.spout.cereal.config.yaml.YamlConfiguration;
+
 import org.spout.engine.SpoutClient;
+import org.spout.engine.filesystem.resource.SpoutShader;
+import org.spout.engine.filesystem.resource.SpoutProgram;
+
 import org.spout.renderer.gl.Program;
-import org.spout.renderer.gl.Shader;
 import org.spout.renderer.gl.Shader.ShaderType;
 
-/**
- *
- */
-public class ShaderProgramLoader extends ResourceLoader {
-	public ShaderProgramLoader() {
-		super("shader", "shader://Spout/fallbacks/fallback.ssf");
+public class ProgramLoader extends ResourceLoader {
+	public ProgramLoader() {
+		super("program", "program://Spout/fallbacks/fallback.ssf");
 	}
 
 	@Override
-	public Program load(InputStream in) {
+	public SpoutProgram load(InputStream in) {
 		final YamlConfiguration configuration = new YamlConfiguration(in);
 		try {
 			configuration.load();
@@ -70,25 +70,26 @@ public class ShaderProgramLoader extends ResourceLoader {
 			throw new IllegalStateException("Missing version in spout shader file: " + mode);
 		}
 
-		final Shader vertex = client.getRenderer().getGL().createShader();
+		final SpoutShader vertex;
 		String shaderFile = shaderNode.getNode("Vertex").getString();
 		InputStream shaderSource = Spout.getFileSystem().getResourceStream(shaderFile);
 		if (shaderSource == null) {
 			throw new IllegalStateException("Shader file not found: " + shaderFile);
 		}
+		vertex = new SpoutShader(shaderSource);
 		vertex.setSource(shaderSource);
 		vertex.setType(ShaderType.VERTEX);
 
-		final Shader fragment = client.getRenderer().getGL().createShader();
+		final SpoutShader fragment;;
 		shaderFile = shaderNode.getNode("Fragment").getString();
 		shaderSource = Spout.getFileSystem().getResourceStream(shaderFile);
 		if (shaderSource == null) {
 			throw new IllegalStateException("Shader file not found: " + shaderFile);
 		}
-		fragment.setSource(shaderSource);
+		fragment = new SpoutShader(shaderSource);
 		fragment.setType(ShaderType.FRAGMENT);
 
-		final Program program = client.getRenderer().getGL().createProgram();
+		final SpoutProgram program = new SpoutProgram();
 		program.addShader(vertex);
 		program.addShader(fragment);
 
