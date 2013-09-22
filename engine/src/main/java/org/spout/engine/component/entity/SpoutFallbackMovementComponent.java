@@ -69,17 +69,13 @@ public class SpoutFallbackMovementComponent extends Component {
 		if (state.getCrouch()) {
 			motion = motion.add(playerTransform.upVector().mul(speed * -dt));
 		}
-		boolean changed = false;
-		if (state.pitch() != 0 || state.yaw() != 0) {
-			changed = true;
-			playerTransform.setRotation(Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
-		}
+
+		playerTransform.setRotation(Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
+		
 		if (!motion.equals(Vector3.ZERO)) {
-			changed = true;
 			playerTransform.translate(motion);
 		}
-		if (changed) {
-			client.getPlayer().getPhysics().setTransform(playerTransform);
-		}
+
+		client.getPlayer().getPhysics().setTransform(playerTransform);
 	}
 }

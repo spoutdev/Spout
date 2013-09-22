@@ -272,8 +272,9 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 				sync = true;
 				sendPositionUpdates(live);
 			}
+			return;
 		}
-		if (Spout.getPlatform() != Platform.SERVER || session.get().getState() != Session.State.GAME) {
+		if (session.get().getState() != Session.State.GAME) {
 			return;
 		}
 		super.preSnapshotRun(live);
@@ -283,6 +284,7 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 			resetChunks();
 			callProtocolEvent(new WorldChangeProtocolEvent(ep.getWorld()), getOwner());
 			worldChanged = false;
+			sync = true;
 		} else {
 			// Free chunks first
 			freeChunks();
@@ -350,6 +352,8 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 
 	private void sendPositionUpdates(Transform live) {
 		if (getOwner().getPhysics().isTransformDirty() && sync) {
+			if (Spout.getPlatform() == Platform.CLIENT) System.out.println("Client world: " + ((Client) Spout.getEngine()).getWorld().getName());
+			System.out.println("Live world: " + live.getPosition().getWorld().getName());
 			callProtocolEvent(new EntityUpdateEvent(getOwner(), live, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
 			sync = false;
 		}
