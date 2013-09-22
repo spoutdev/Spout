@@ -32,6 +32,8 @@ import org.spout.api.component.Component;
 import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.geo.discrete.Transform;
+
+import org.spout.engine.component.entity.SpoutFallbackMovementComponent;
 import org.spout.engine.gui.SpoutScreenStack;
 
 /**
@@ -42,6 +44,8 @@ public class SpoutClientPlayer extends SpoutPlayer {
 		super(engine, network, name, transform, null, (byte[]) null, (Class<? extends Component>[]) null);
 
 		add(CameraComponent.class);
+		// TODO clearly, this should only be a fallback component
+		add(SpoutFallbackMovementComponent.class);
 	}
 
 	@Override

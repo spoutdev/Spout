@@ -135,15 +135,11 @@ public class SpoutProtocol extends Protocol {
 
 	@Override
 	public Message getKickMessage(String message) {
-		Command cmd = Spout.getCommandManager().getCommand("disconnect", false);
-		if (cmd != null) {
-			return getCommandMessage(cmd, new CommandArguments("disconnect", message.split(" ")));
-		}
-		return null;
+		return getCommandMessage("disconnect", new CommandArguments("disconnect", message.split(" ")));
 	}
 
 	@Override
-	public Message getCommandMessage(Command command, CommandArguments args) {
+	public Message getCommandMessage(String command, CommandArguments args) {
 		return new CommandMessage(command, args.toArray());
 	}
 

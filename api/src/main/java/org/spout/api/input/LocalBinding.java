@@ -36,34 +36,35 @@ import org.spout.api.entity.state.PlayerInputState.MouseDirection;
 /**
  * Represents a binding between an input action and a command.
  */
-public class Binding extends InputActionExecutor {
+public class LocalBinding extends InputActionExecutor {
+
 	private final String cmd;
 
 	// TODO allow server to register client bindings; needs client approval
 	@ClientOnly
-	public Binding(String cmd, Keyboard[] keys, int[] buttons, MouseDirection[] directions) {
+	public LocalBinding(String cmd, Keyboard[] keys, int[] buttons, MouseDirection[] directions) {
 		super(keys, buttons, directions);
 		this.cmd = cmd;
 	}
 
 	@ClientOnly
-	public Binding(String cmd, Keyboard... keys) {
+	public LocalBinding(String cmd, Keyboard... keys) {
 		this(cmd, keys, new int[0], new MouseDirection[0]);
 	}
 
 	@ClientOnly
-	public Binding(String cmd, int... buttons) {
+	public LocalBinding(String cmd, int... buttons) {
 		this(cmd, new Keyboard[0], buttons, new MouseDirection[0]);
 	}
 
 	@ClientOnly
-	public Binding(String cmd, MouseDirection... directions) {
+	public LocalBinding(String cmd, MouseDirection... directions) {
 		this(cmd, new Keyboard[0], new int[0], directions);
 	}
 
 	@Override
-	public Binding setAsync(boolean async) {
-		return (Binding) super.setAsync(async);
+	public LocalBinding setAsync(boolean async) {
+		return (LocalBinding) super.setAsync(async);
 	}
 
 	/**
@@ -91,7 +92,7 @@ public class Binding extends InputActionExecutor {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Binding other = (Binding) obj;
+		final LocalBinding other = (LocalBinding) obj;
 		if (!Objects.equals(this.cmd, other.cmd)) {
 			return false;
 		}
@@ -100,11 +101,11 @@ public class Binding extends InputActionExecutor {
 
 	@Override
 	public void onKeyboardAction(Player player, Keyboard key, boolean pressed) {
-		player.sendCommand(cmd, pressed ? "+" : "-");
+		player.processCommand(cmd, pressed ? "+" : "-");
 	}
 
 	@Override
 	public void onMouseDirectionAction(Player player, PlayerInputState.MouseDirection direction, float delta) {
-		player.sendCommand(cmd, "" + delta);
+		player.processCommand(cmd, "" + delta);
 	}
 }

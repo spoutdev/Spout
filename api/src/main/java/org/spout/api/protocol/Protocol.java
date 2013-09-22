@@ -162,12 +162,12 @@ public abstract class Protocol {
 	public abstract Message getKickMessage(String message);
 
 	/**
-	 * Gets a command packet for a given {@link Command} and {@link String}
+	 * Gets a command packet for a given command and arguments
 	 *
 	 * @param command The command to execute
 	 * @return The command packet
 	 */
-	public abstract Message getCommandMessage(Command command, CommandArguments args);
+	public abstract Message getCommandMessage(String command, CommandArguments args);
 
 	/**
 	 * Gets the introduction message that the client sends to the server on connect

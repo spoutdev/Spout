@@ -128,7 +128,7 @@ public final class AnnotatedCommandExecutorFactory {
 				// you can still have a binding annotation on a server command method but this block will be skipped
 				if (method.isAnnotationPresent(Binding.class) && engine instanceof Client) {
 					Binding binding = method.getAnnotation(Binding.class);
-					org.spout.api.input.Binding b = new org.spout.api.input.Binding(command.getName(), binding.value(), binding.mouse(), binding.mouseDirections()).setAsync(binding.async());
+					org.spout.api.input.LocalBinding b = new org.spout.api.input.LocalBinding(command.getName(), binding.value(), binding.mouse(), binding.mouseDirections()).setAsync(binding.async());
 					((Client) engine).getInputManager().bind(b);
 				}
 

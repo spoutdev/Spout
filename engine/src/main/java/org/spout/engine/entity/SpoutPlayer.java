@@ -158,9 +158,8 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void sendCommand(String command, String... args) {
-		final Command cmd = Spout.getCommandManager().getCommand(command, false);
 		final Session session = getNetwork().getSession();
-		final Message msg = session.getProtocol().getCommandMessage(cmd, new CommandArguments(cmd.getName(), args));
+		final Message msg = session.getProtocol().getCommandMessage(command, new CommandArguments(command, args));
 		if (msg == null) {
 			return;
 		}
@@ -332,15 +331,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			}
 		}
 		super.finalizeRun();
-	}
-
-	@Override
-	public void preSnapshotRun() {
-		super.preSnapshotRun();
-		if (isRemoved()) {
-			return;
-		}
-		this.getNetwork().preSnapshotRun(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
 	}
 
 	@Override

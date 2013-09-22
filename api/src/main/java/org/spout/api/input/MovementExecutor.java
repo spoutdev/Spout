@@ -36,34 +36,35 @@ import org.spout.api.entity.state.PlayerInputState.MouseDirection;
 /**
  * Represents a binding between an input action and a command.
  */
-public class Binding extends InputActionExecutor {
+public class MovementExecutor extends InputActionExecutor {
+
 	private final String cmd;
 
 	// TODO allow server to register client bindings; needs client approval
 	@ClientOnly
-	public Binding(String cmd, Keyboard[] keys, int[] buttons, MouseDirection[] directions) {
+	public MovementExecutor(String cmd, Keyboard[] keys, int[] buttons, MouseDirection[] directions) {
 		super(keys, buttons, directions);
 		this.cmd = cmd;
 	}
 
 	@ClientOnly
-	public Binding(String cmd, Keyboard... keys) {
+	public MovementExecutor(String cmd, Keyboard... keys) {
 		this(cmd, keys, new int[0], new MouseDirection[0]);
 	}
 
 	@ClientOnly
-	public Binding(String cmd, int... buttons) {
+	public MovementExecutor(String cmd, int... buttons) {
 		this(cmd, new Keyboard[0], buttons, new MouseDirection[0]);
 	}
 
 	@ClientOnly
-	public Binding(String cmd, MouseDirection... directions) {
+	public MovementExecutor(String cmd, MouseDirection... directions) {
 		this(cmd, new Keyboard[0], new int[0], directions);
 	}
 
 	@Override
-	public Binding setAsync(boolean async) {
-		return (Binding) super.setAsync(async);
+	public MovementExecutor setAsync(boolean async) {
+		return (MovementExecutor) super.setAsync(async);
 	}
 
 	/**
@@ -91,7 +92,7 @@ public class Binding extends InputActionExecutor {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Binding other = (Binding) obj;
+		final MovementExecutor other = (MovementExecutor) obj;
 		if (!Objects.equals(this.cmd, other.cmd)) {
 			return false;
 		}
@@ -101,10 +102,26 @@ public class Binding extends InputActionExecutor {
 	@Override
 	public void onKeyboardAction(Player player, Keyboard key, boolean pressed) {
 		player.sendCommand(cmd, pressed ? "+" : "-");
+
+		// TODO: this should be fallback only
+		PlayerInputState.Flags f;
+		if ((f = PlayerInputState.Flags.getFlag(cmd)) != null) {
+			player.processInput(pressed ? player.input().withAddedFlag(f) : player.input().withRemovedFlag(f));
+		}
 	}
 
 	@Override
-	public void onMouseDirectionAction(Player player, PlayerInputState.MouseDirection direction, float delta) {
+	public void onMouseDirectionAction(Player player, PlayerInputState.MouseDirection d, float delta) {
 		player.sendCommand(cmd, "" + delta);
+
+		switch (d) {
+			case YAW:
+				player.processInput(player.input().withAddedYaw(delta));
+				break;
+			case PITCH:
+				player.processInput(player.input().withAddedPitch(delta));
+				break;
+		}
+
 	}
 }

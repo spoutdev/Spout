@@ -71,7 +71,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 
 	@Override
 	public void updateView() {
-		Transform transform = getOwner().getPhysics().getTransformRender();
+		Transform transform = getOwner().getPhysics().getTransform();
 		Matrix4 pos = Matrix4.createTranslation(transform.getPosition().mul(-1));
 		Matrix4 rot = Matrix4.createRotation(transform.getRotation());
 		view = pos.mul(rot);
@@ -80,7 +80,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 
 	@Override
 	public void updateReflectedView() {
-		Transform transform = getOwner().getPhysics().getTransformRender();
+		Transform transform = getOwner().getPhysics().getTransform();
 		Matrix4 pos = Matrix4.createTranslation(transform.getPosition().mul(-1, 1, -1));
 		Matrix4 rot = Matrix4.createRotation(transform.getRotation());
 		view = Matrix4.createScaling(1, -1, 1, 1).mul(pos).mul(rot);
@@ -99,7 +99,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 
 	@Override
 	public Matrix4 getRotation() {
-		Transform transform = getOwner().getPhysics().getTransformRender();
+		Transform transform = getOwner().getPhysics().getTransform();
 		return Matrix4.createRotation(transform.getRotation());
 	}
 }
