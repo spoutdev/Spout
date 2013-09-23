@@ -772,27 +772,30 @@ public class SpoutRegion extends Region implements AsyncManager {
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 			if (spoutChunk.isDirty()) {
 				processChunkUpdatedEvent(spoutChunk);
-				if (cached != null) {
-					SpoutChunkSnapshot[][][] snapshots = new SpoutChunkSnapshot[3][3][3];
-					for (BlockFace face : BlockFaces.BTNSWE) {
-						final int x = face.getOffset().getFloorX();
-						final int y = face.getOffset().getFloorY();
-						final int z = face.getOffset().getFloorZ();
-						final int localX = x + spoutChunk.getX();
-						final int localY = y + spoutChunk.getY();
-						final int localZ = z + spoutChunk.getZ();
-						final MultiKey key = new MultiKey(localX, localY, localZ);
-						SpoutChunkSnapshot get = cached.get(key);
-						if (get == null) {
-							SpoutChunkSnapshot snapshot = getWorld().getChunk(localX, localY, localZ).getSnapshot(ChunkSnapshot.SnapshotType.BOTH, ChunkSnapshot.EntityType.NO_ENTITIES, ChunkSnapshot.ExtraData.NO_EXTRA_DATA);
-							cached.put(key, snapshot);
-							get = snapshot;
-						}
-						snapshots[x + 1][y + 1][z + 1] = get;
+			}
+			// Doubles as Platform check
+			if (cached != null) {
+				SpoutChunkSnapshot[][][] snapshots = new SpoutChunkSnapshot[3][3][3];
+				for (BlockFace face : BlockFaces.BTNSWE) {
+					final int x = face.getOffset().getFloorX();
+					final int y = face.getOffset().getFloorY();
+					final int z = face.getOffset().getFloorZ();
+					final int localX = x + spoutChunk.getX();
+					final int localY = y + spoutChunk.getY();
+					final int localZ = z + spoutChunk.getZ();
+					final MultiKey key = new MultiKey(localX, localY, localZ);
+					SpoutChunkSnapshot get = cached.get(key);
+					if (get == null) {
+						SpoutChunk local = getWorld().getChunk(localX, localY, localZ, LoadOption.NO_LOAD);
+						SpoutChunkSnapshot snapshot = local == null ? null : local.getSnapshot(ChunkSnapshot.SnapshotType.BOTH, ChunkSnapshot.EntityType.NO_ENTITIES, ChunkSnapshot.ExtraData.NO_EXTRA_DATA);
+						cached.put(key, snapshot);
+						get = snapshot;
 					}
-					SpoutChunkSnapshotGroup group = new SpoutChunkSnapshotGroup(getWorld(), spoutChunk.getX(), spoutChunk.getY(), spoutChunk.getZ(), snapshots, 1, false, System.currentTimeMillis());
-					SpoutScheduler.addToQueue(group);
+					snapshots[x + 1][y + 1][z + 1] = get;
 				}
+				snapshots[1][1][1] = spoutChunk.getSnapshot(ChunkSnapshot.SnapshotType.BOTH, ChunkSnapshot.EntityType.NO_ENTITIES, ChunkSnapshot.ExtraData.NO_EXTRA_DATA);
+				SpoutChunkSnapshotGroup group = new SpoutChunkSnapshotGroup(getWorld(), spoutChunk.getX(), spoutChunk.getY(), spoutChunk.getZ(), snapshots, 1, false, System.currentTimeMillis());
+				SpoutScheduler.addToQueue(group);
 			}
 			resetDirtyChunkQueue.add(spoutChunk);
 		}
