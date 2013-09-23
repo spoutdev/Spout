@@ -227,7 +227,7 @@ public final class SpoutScheduler implements Scheduler {
 			while (!shutdown) {
 				try {
 					final SpoutChunkSnapshotGroup group = groups.take();
-					System.out.println(group.getCenter().getBase());
+					System.out.println(group.getCenter());
 					final VertexData mesh = mesher.mesh(group);
 					((SpoutClient) Spout.getEngine()).getRenderer().addMesh(group.getCenter(), mesh);
 				} catch (InterruptedException ignored) {
