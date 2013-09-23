@@ -352,8 +352,6 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 
 	private void sendPositionUpdates(Transform live) {
 		if (getOwner().getPhysics().isTransformDirty() && sync) {
-			if (Spout.getPlatform() == Platform.CLIENT) System.out.println("Client world: " + ((Client) Spout.getEngine()).getWorld().getName());
-			System.out.println("Live world: " + live.getPosition().getWorld().getName());
 			callProtocolEvent(new EntityUpdateEvent(getOwner(), live, EntityUpdateEvent.UpdateAction.TRANSFORM, getRepositionManager()), getOwner());
 			sync = false;
 		}

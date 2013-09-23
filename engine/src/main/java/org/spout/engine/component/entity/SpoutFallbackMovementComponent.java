@@ -70,12 +70,11 @@ public class SpoutFallbackMovementComponent extends Component {
 			motion = motion.add(playerTransform.upVector().mul(speed * -dt));
 		}
 
-		playerTransform.setRotation(Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
+		client.getPlayer().getPhysics().setRotation(Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
 		
 		if (!motion.equals(Vector3.ZERO)) {
-			playerTransform.translate(motion);
+			client.getPlayer().getPhysics().translate(motion);
 		}
 
-		client.getPlayer().getPhysics().setTransform(playerTransform);
 	}
 }
