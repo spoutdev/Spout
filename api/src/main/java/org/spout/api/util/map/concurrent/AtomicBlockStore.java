@@ -247,16 +247,6 @@ public interface AtomicBlockStore {
 	public Vector3 getDirtyBlock(int i);
 
 	/**
-	 * Gets the old state for the dirty block at a given index.<br> <br> If there is no block at that index, then the method return null.<br>
-	 */
-	public int getDirtyOldState(int i);
-
-	/**
-	 * Gets the new state for the dirty block at a given index.<br> <br> If there is no block at that index, then the method return null.<br>
-	 */
-	public int getDirtyNewState(int i);
-
-	/**
 	 * Gets the width of each entry in the packed array
 	 */
 	public int getPackedWidth();
@@ -282,7 +272,10 @@ public interface AtomicBlockStore {
 	public void writeUnlock();
 
 	/**
-	 * Attempts to write lock the store
+	 * Toggles the dirty state of the store.
+	 *
+	 * This should only be used for specific reasons. Namely informing the client a chunk is dirty on recieving chunk data.
+	 * @param dirty New dirty state
 	 */
-	public boolean tryWriteLock();
+	public void setDirty(boolean dirty);
 }
