@@ -271,24 +271,6 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		return new Vector3(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
 	}
 
-	@Override
-	public int getDirtyOldState(int i) {
-		if (oldState == null || i >= dirtyBlocks.get()) {
-			return -1;
-		}
-
-		return oldState[i];
-	}
-
-	@Override
-	public int getDirtyNewState(int i) {
-		if (newState == null || i >= dirtyBlocks.get()) {
-			return -1;
-		}
-
-		return newState[i];
-	}
-
 	public void markDirty(int x, int y, int z, int oldState, int newState) {
 		setAsMax(maxX, x);
 		setAsMin(minX, x);
@@ -355,8 +337,12 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	}
 
 	@Override
-	public boolean tryWriteLock() {
-		return store.tryLock();
+	public void setDirty(boolean dirty) {
+		if (dirty) {
+			dirtyBlocks.incrementAndGet();
+		} else {
+			dirtyBlocks.set(0);
+		}
 	}
 
 	@Override

@@ -349,7 +349,7 @@ public class SpoutChunk extends Chunk implements Modifiable {
 
 		if (newState != oldState) {
 			short oldData = BlockFullState.getData(oldState);
-			blockChanged(x, y, z, material, newData, oldMaterial, oldData, cause);
+			blockChanged(x, y, z, material, newData, oldMaterial, oldData);
 			return true;
 		}
 		return false;
@@ -885,6 +885,13 @@ public class SpoutChunk extends Chunk implements Modifiable {
 		}
 	}
 
+	public void setBlockDirty(boolean dirty) {
+		blockStore.setDirty(true);
+		if (dirty) {
+			queueDirty();
+		}
+	}
+
 	public boolean isLightDirty() {
 		return lightDirty.get();
 	}
@@ -909,10 +916,6 @@ public class SpoutChunk extends Chunk implements Modifiable {
 		blockStore.writeUnlock();
 	}
 
-	public boolean tryLockStore() {
-		return blockStore.tryWriteLock();
-	}
-
 	public boolean isDirtyOverflow() {
 		return blockStore.isDirtyOverflow();
 	}
@@ -931,14 +934,6 @@ public class SpoutChunk extends Chunk implements Modifiable {
 
 	public int getDirtyBlocks() {
 		return blockStore.getDirtyBlocks();
-	}
-
-	public int getDirtyOldState(int i) {
-		return blockStore.getDirtyOldState(i);
-	}
-
-	public int getDirtyNewState(int i) {
-		return blockStore.getDirtyNewState(i);
 	}
 
 	public void resetDirtyArrays() {
@@ -997,10 +992,6 @@ public class SpoutChunk extends Chunk implements Modifiable {
 
 		public boolean isUnload() {
 			return this == UNLOAD || this == POST_SAVED;
-		}
-
-		public boolean isPostUnload() {
-			return this == SAVING;
 		}
 
 		public boolean isUnloaded() {
@@ -1268,7 +1259,7 @@ public class SpoutChunk extends Chunk implements Modifiable {
 						}
 					}
 				} catch (Exception e) {
-					Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
+					Spout.severe("Could not populate Chunk with " + populator.toString());
 					e.printStackTrace();
 				}
 			}
@@ -1422,11 +1413,7 @@ public class SpoutChunk extends Chunk implements Modifiable {
 	}
 
 	public boolean isReapable() {
-		if (Spout.getPlatform() == Platform.SERVER) {
-			return isReapable(getWorld().getAge());
-		} else {
-			return false;
-		}
+		return Spout.getPlatform() == Platform.SERVER && isReapable(getWorld().getAge());
 	}
 
 	private boolean isReapable(long worldAge) {
@@ -1593,7 +1580,7 @@ public class SpoutChunk extends Chunk implements Modifiable {
 
 		boolean success = this.blockStore.compareAndSetBlock(bx & BLOCKS.MASK, by & BLOCKS.MASK, bz & BLOCKS.MASK, expId, expData, expId, data);
 		if (success && expData != data) {
-			blockChanged(bx, by, bz, expId, data, expId, expData, cause);
+			blockChanged(bx, by, bz, expId, data, expId, expData);
 		}
 		return success;
 	}
@@ -1694,7 +1681,7 @@ public class SpoutChunk extends Chunk implements Modifiable {
 		}
 
 		if (updated) {
-			blockChanged(bx, by, bz, newId, newData, oldId, oldData, cause);
+			blockChanged(bx, by, bz, newId, newData, oldId, oldData);
 		}
 
 		return oldData;
@@ -1739,22 +1726,22 @@ public class SpoutChunk extends Chunk implements Modifiable {
 		}
 
 		if (updated) {
-			blockChanged(bx, by, bz, newId, newData, oldId, oldData, cause);
+			blockChanged(bx, by, bz, newId, newData, oldId, oldData);
 		}
 
 		return oldData;
 	}
 
-	private void blockChanged(int x, int y, int z, short newId, short newData, short oldId, short oldData, Cause<?> cause) {
+	private void blockChanged(int x, int y, int z, short newId, short newData, short oldId, short oldData) {
 		BlockMaterial newMaterial = (BlockMaterial) MaterialRegistry.get(newId).getSubMaterial(newData);
 		BlockMaterial oldMaterial = (BlockMaterial) MaterialRegistry.get(oldId).getSubMaterial(oldData);
 		if (oldMaterial == null) {
 			oldMaterial = BlockMaterial.ERROR;
 		}
-		blockChanged(x, y, z, newMaterial, newData, oldMaterial, oldData, cause);
+		blockChanged(x, y, z, newMaterial, newData, oldMaterial, oldData);
 	}
 
-	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData, Cause<?> cause) {
+	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData) {
 		// Add chunk to region's dirty queue
 		queueDirty();
 
@@ -1925,14 +1912,14 @@ public class SpoutChunk extends Chunk implements Modifiable {
 	/**
 	 * Called when an entity enters the chunk. This method is NOT called for players. <p> This method occurs during finalizeRun
 	 */
-	public void onEntityEnter(SpoutEntity e) {
+	public void onEntityEnter() {
 		entitiesModified.compareAndSet(false, true);
 	}
 
 	/**
 	 * Called when an entity leaves the chunk. This method is NOT called for players. <p> This method occurs during finalizeRun
 	 */
-	public void onEntityLeave(SpoutEntity e) {
+	public void onEntityLeave() {
 		entitiesModified.compareAndSet(false, true);
 	}
 
@@ -2023,12 +2010,11 @@ public class SpoutChunk extends Chunk implements Modifiable {
 	protected CuboidLightBuffer[] getLightBuffers() {
 		CuboidLightBuffer[] array = lightBuffers.get();
 		ArrayList<CuboidLightBuffer> list = new ArrayList<>(array.length);
-		for (int i = 0; i < array.length; i++) {
-			CuboidLightBuffer b = array[i];
+		for (CuboidLightBuffer b : array) {
 			if (b != null) {
 				list.add(b);
 			} else {
-				System.out.println("Removed null LightBuffer");
+				Spout.warn("Removed null LightBuffer");
 			}
 		}
 		return list.toArray(lightBufferExample);

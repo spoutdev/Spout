@@ -210,7 +210,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 			}
 			//Track entities w/their chunks
 			if (chunk != null) {
-				chunk.onEntityLeave(this);
+				chunk.onEntityLeave();
 			}
 			return;
 		}
@@ -219,10 +219,10 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		if (!(this instanceof SpoutPlayer)) {
 			if (chunk != chunkLive) {
 				if (chunk != null) {
-					chunk.onEntityLeave(this);
+					chunk.onEntityLeave();
 				}
 				if (chunkLive != null) {
-					chunkLive.onEntityEnter(this);
+					chunkLive.onEntityEnter();
 				}
 			}
 		}
