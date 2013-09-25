@@ -226,12 +226,14 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
-		switch (loadopt) {
-			case LOAD_ONLY:
-				TickStage.checkStage(~TickStage.SNAPSHOT);
-				break;
-			case LOAD_GEN:
-				TickStage.checkStage(~(TickStage.SNAPSHOT | TickStage.PRESNAPSHOT | TickStage.LIGHTING));
+		if (Spout.getPlatform() != Platform.CLIENT) {
+			switch (loadopt) {
+				case LOAD_ONLY:
+					TickStage.checkStage(~TickStage.SNAPSHOT);
+					break;
+				case LOAD_GEN:
+					TickStage.checkStage(~(TickStage.SNAPSHOT | TickStage.PRESNAPSHOT | TickStage.LIGHTING));
+			}
 		}
 
 		x &= CHUNKS.MASK;
@@ -246,12 +248,17 @@ public class SpoutRegion extends Region implements AsyncManager {
 			return chunk;
 		}
 
-		if (Spout.getPlatform() == Platform.CLIENT) {
+		if (Spout.getPlatform() == Platform.CLIENT && (loadopt.loadIfNeeded() || loadopt.generateIfNeeded())) {
 			short[] blocks = new short[16 * 16 * 16];
 			Arrays.fill(blocks, BlockMaterial.UNGENERATED.getId());
 			SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getChunkX() + x, getChunkY() + y, getChunkZ() + z, SpoutChunk.PopulationState.UNTOUCHED, blocks, null, null);
 			chunks[x][y][z].set(newChunk);
 			return newChunk;
+		}
+
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			// Client should NEVER actually try to load or generate chunks
+			return null;
 		}
 
 		SpoutChunk newChunk = null;
@@ -781,12 +788,14 @@ public class SpoutRegion extends Region implements AsyncManager {
 						final MultiKey key = new MultiKey(localX, localY, localZ);
 						SpoutChunkSnapshot get = cached.get(key);
 						if (get == null) {
-							SpoutChunkSnapshot snapshot = getWorld().getChunk(localX, localY, localZ, LoadOption.NO_LOAD).getSnapshot(ChunkSnapshot.SnapshotType.BOTH, ChunkSnapshot.EntityType.NO_ENTITIES, ChunkSnapshot.ExtraData.NO_EXTRA_DATA);
+							SpoutChunk local = getWorld().getChunk(localX, localY, localZ, LoadOption.LOAD_GEN);
+							SpoutChunkSnapshot snapshot = local.getSnapshot(ChunkSnapshot.SnapshotType.BOTH, ChunkSnapshot.EntityType.NO_ENTITIES, ChunkSnapshot.ExtraData.NO_EXTRA_DATA);
 							cached.put(key, snapshot);
 							get = snapshot;
 						}
 						snapshots[x + 1][y + 1][z + 1] = get;
 					}
+					snapshots[1][1][1] = spoutChunk.getSnapshot(ChunkSnapshot.SnapshotType.BOTH, ChunkSnapshot.EntityType.NO_ENTITIES, ChunkSnapshot.ExtraData.NO_EXTRA_DATA);
 					SpoutChunkSnapshotGroup group = new SpoutChunkSnapshotGroup(getWorld(), spoutChunk.getX(), spoutChunk.getY(), spoutChunk.getZ(), snapshots, 1, false, System.currentTimeMillis());
 					SpoutScheduler.addToQueue(group);
 				}
