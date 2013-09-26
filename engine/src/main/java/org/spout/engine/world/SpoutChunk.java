@@ -1816,6 +1816,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 					c.touchBlock(x, y, 0);
 				}
 			}
+			dirtyChunkQueueElement.add();
 		}
 
 		// Handle onPlacement for dynamic materials
@@ -2140,7 +2141,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		final HashSet<RenderMaterial> updatedRenderMaterials;
 
 		// TODO restore original functionality
-		if (first || isDirtyOverflow() || isLightDirty()) {
+		if (true || first || isDirtyOverflow() || isLightDirty()) {
 			updatedRenderMaterials = null;
 			firstRender = false;
 		} else {

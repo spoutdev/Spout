@@ -265,7 +265,16 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	 */
 	@Override
 	public void preSnapshotRun(final Transform live) {
-		if (Spout.getPlatform() != Platform.SERVER || session.get().getState() != Session.State.GAME) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			// TODO: protocol - hacky fix
+			if (!((Client) Spout.getEngine()).getWorld().getName().equalsIgnoreCase("NullWorld")) {
+				// Client always syncs to server
+				sync = true;
+				sendPositionUpdates(live);
+			}
+			return;
+		}
+		if (session.get().getState() != Session.State.GAME) {
 			return;
 		}
 		super.preSnapshotRun(live);
@@ -275,6 +284,7 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 			resetChunks();
 			callProtocolEvent(new WorldChangeProtocolEvent(ep.getWorld()), getOwner());
 			worldChanged = false;
+			sync = true;
 		} else {
 			// Free chunks first
 			freeChunks();

@@ -49,6 +49,7 @@ import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
+import org.spout.api.command.annotated.Binding;
 import org.spout.api.command.annotated.CommandDescription;
 import org.spout.api.command.annotated.Filter;
 import org.spout.api.command.annotated.Flag;
@@ -213,10 +214,12 @@ public class TestCommands {
 	}
 
 	@CommandDescription (aliases = "break", desc = "Debug command to break a block")
-	@Platforms (Platform.CLIENT)
+	@Platforms (Platform.SERVER)
+	@Binding (mouse = 0)
 	@Filter (PlayerFilter.class)
 	public void debugBreak(Player player, CommandArguments args) throws CommandException {
-		Block block = player.get(InteractComponent.class).getTargetBlock();
+		System.out.println("Break command!");
+		Block block = player.add(InteractComponent.class).getTargetBlock();
 
 		if (block == null || block.getMaterial().equals(BlockMaterial.AIR)) {
 			player.sendMessage("No blocks in range.");

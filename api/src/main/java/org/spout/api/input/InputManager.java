@@ -35,32 +35,25 @@ import org.spout.api.entity.state.PlayerInputState.MouseDirection;
  */
 public interface InputManager {
 	/**
-	 * Binds an input action to a command.
+	 * Binds an input action to an InputActionExecutor
 	 *
 	 * @param binding to bind
 	 */
-	public void bind(Binding binding);
-
-	/**
-	 * Unbinds an input binding.
-	 *
-	 * @param cmd to unbind
-	 */
-	public void unbind(String cmd);
+	public void bind(InputActionExecutor binding);
 
 	/**
 	 * Unbinds an input binding.
 	 *
 	 * @param binding to unbind.
 	 */
-	public void unbind(Binding binding);
+	public void unbind(InputActionExecutor binding);
 
 	/**
-	 * Returns a set of all the {@link Binding}s.
+	 * Returns a set of all the {@link InputActionExecutor}s.
 	 *
 	 * @return all bound bindings
 	 */
-	public Set<Binding> getBindings();
+	public Set<InputActionExecutor> getInputActionExecutors();
 
 	/**
 	 * Returns the bindings that are bound to the specified key.
@@ -68,7 +61,7 @@ public interface InputManager {
 	 * @param key that key is bound to
 	 * @return all bindings bound to specified key
 	 */
-	public Set<Binding> getKeyBindingsFor(Keyboard key);
+	public Set<InputActionExecutor> getKeyInputActionExecutorsFor(Keyboard key);
 
 	/**
 	 * Returns the bindings that are bound to the specified mouse button.
@@ -76,7 +69,7 @@ public interface InputManager {
 	 * @param button button bound
 	 * @return bindings bound to specified button
 	 */
-	public Set<Binding> getMouseBindingsFor(int button);
+	public Set<InputActionExecutor> getMouseInputActionExecutorsFor(int button);
 
 	/**
 	 * Returns the bindings that are bound to the specified mouse direction.
@@ -84,24 +77,8 @@ public interface InputManager {
 	 * @param direction mouse direction bound
 	 * @return bindings bound to specified MouseDirection
 	 */
-	public Set<Binding> getMouseDirectionBindingsFor(MouseDirection direction);
+	public Set<InputActionExecutor> getMouseDirectionInputActionExecutorsFor(MouseDirection direction);
 
-	/**
-	 * Returns a set of {@link InputExecutor} that are added.
-	 *
-	 * @return input executors
-	 */
-	public Set<InputExecutor> getInputExecutors();
-
-	/**
-	 * Register a input executor called each frame.
-	 */
-	public void addInputExecutor(InputExecutor executor);
-
-	/**
-	 * Removes an input executor called each frame.
-	 */
-	public void removeInputExecutor(InputExecutor executor);
 
 	/**
 	 * Returns true if the input is redirected from this.

@@ -103,13 +103,12 @@ public class InputCommands {
 					.setExecutor(new InputFlagHandler(flag));
 		}
 
-		engine.getCommandManager().getCommand(PlayerInputState.MouseDirection.PITCH.getFlagName())
-				.setHelp("Adds pitch handling to the calling player's input state")
-				.setExecutor(new MouseMovementHandler(PlayerInputState.MouseDirection.PITCH));
+		for (PlayerInputState.MouseDirection dir : PlayerInputState.MouseDirection.values()) {
+			engine.getCommandManager().getCommand(dir.name())
+					.setHelp("Adds " + dir.name() + " handling to the calling player's input state")
+					.setExecutor(new MouseMovementHandler(dir));
 
-		engine.getCommandManager().getCommand(PlayerInputState.MouseDirection.YAW.getFlagName())
-				.setHelp("Adds yaw handling to the calling player's input state")
-				.setExecutor(new MouseMovementHandler(PlayerInputState.MouseDirection.YAW));
+		}
 	}
 
 	public static class InputFlagHandler implements Executor {

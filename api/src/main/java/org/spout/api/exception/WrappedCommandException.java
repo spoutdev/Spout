@@ -38,10 +38,6 @@ public class WrappedCommandException extends CommandException {
 
 	@Override
 	public String getMessage() {
-		StringBuilder b = new StringBuilder(super.getMessage() + "\n");
-		for (StackTraceElement s : getStackTrace()) {
-			b.append(s.toString()).append("\n");
-		}
-		return b.toString();
+		return "Internal error";
 	}
 }

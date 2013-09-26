@@ -53,6 +53,7 @@ import org.spout.api.event.server.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.exception.CommandException;
+import org.spout.api.exception.WrappedCommandException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Locale;
@@ -158,9 +159,8 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void sendCommand(String command, String... args) {
-		final Command cmd = Spout.getCommandManager().getCommand(command, false);
 		final Session session = getNetwork().getSession();
-		final Message msg = session.getProtocol().getCommandMessage(cmd, new CommandArguments(cmd.getName(), args));
+		final Message msg = session.getProtocol().getCommandMessage(command, new CommandArguments(command, args));
 		if (msg == null) {
 			return;
 		}
@@ -189,6 +189,9 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			cmd.process(this, arguments);
 		} catch (CommandException e) {
 			sendMessage(e.getMessage());
+			if (e instanceof WrappedCommandException) {
+				Spout.warn(e.getMessage(), e);
+			}
 		}
 	}
 
@@ -332,15 +335,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			}
 		}
 		super.finalizeRun();
-	}
-
-	@Override
-	public void preSnapshotRun() {
-		super.preSnapshotRun();
-		if (isRemoved()) {
-			return;
-		}
-		this.getNetwork().preSnapshotRun(((SpoutPhysicsComponent) getPhysics()).getTransformLive().copy());
 	}
 
 	@Override
