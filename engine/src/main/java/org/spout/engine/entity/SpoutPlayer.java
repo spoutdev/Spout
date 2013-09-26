@@ -53,6 +53,7 @@ import org.spout.api.event.server.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.exception.CommandException;
+import org.spout.api.exception.WrappedCommandException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Locale;
@@ -188,6 +189,9 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			cmd.process(this, arguments);
 		} catch (CommandException e) {
 			sendMessage(e.getMessage());
+			if (e instanceof WrappedCommandException) {
+				Spout.warn(e.getMessage(), e);
+			}
 		}
 	}
 

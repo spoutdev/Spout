@@ -219,7 +219,7 @@ public class TestCommands {
 	@Filter (PlayerFilter.class)
 	public void debugBreak(Player player, CommandArguments args) throws CommandException {
 		System.out.println("Break command!");
-		Block block = player.get(InteractComponent.class).getTargetBlock();
+		Block block = player.add(InteractComponent.class).getTargetBlock();
 
 		if (block == null || block.getMaterial().equals(BlockMaterial.AIR)) {
 			player.sendMessage("No blocks in range.");
