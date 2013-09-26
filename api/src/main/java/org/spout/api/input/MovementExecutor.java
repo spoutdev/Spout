@@ -26,25 +26,24 @@
  */
 package org.spout.api.input;
 
-import java.util.Objects;
 import org.spout.api.ClientOnly;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
-
 import org.spout.api.entity.state.PlayerInputState.MouseDirection;
 
 /**
- * Represents a binding between an input action and a command.
+ * Represents a binding between an input action and a command for (@link PlayerInputState}
  */
-public class MovementExecutor extends InputActionExecutor {
+public class MovementExecutor extends Binding {
+	private final PlayerInputState.Flags flag;
 
-	private final String cmd;
-
-	// TODO allow server to register client bindings; needs client approval
 	@ClientOnly
 	public MovementExecutor(String cmd, Keyboard[] keys, int[] buttons, MouseDirection[] directions) {
-		super(keys, buttons, directions);
-		this.cmd = cmd;
+		super(cmd, keys, buttons, directions);
+		this.flag = PlayerInputState.Flags.getFlag(cmd);
+		if (flag == null) {
+			throw new UnsupportedOperationException(cmd + " is not a valid PlayerInputState.Flags");
+		}
 	}
 
 	@ClientOnly
@@ -67,52 +66,17 @@ public class MovementExecutor extends InputActionExecutor {
 		return (MovementExecutor) super.setAsync(async);
 	}
 
-	/**
-	 * Returns the command that this binding is bound to. When one of the input actions are executed, this command
-	 * will be executed.
-	 *
-	 * @return command bound to input actions
-	 */
-	public String getCommand() {
-		return cmd;
-	}
-
-	@Override
-	public int hashCode() {
-		int hash = 7;
-		hash = 53 * hash + Objects.hashCode(this.cmd);
-		return hash;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final MovementExecutor other = (MovementExecutor) obj;
-		if (!Objects.equals(this.cmd, other.cmd)) {
-			return false;
-		}
-		return true;
-	}
-
 	@Override
 	public void onKeyboardAction(Player player, Keyboard key, boolean pressed) {
-		player.sendCommand(cmd, pressed ? "+" : "-");
+		super.onKeyboardAction(player, key, pressed);
 
 		// TODO: this should be fallback only
-		PlayerInputState.Flags f;
-		if ((f = PlayerInputState.Flags.getFlag(cmd)) != null) {
-			player.processInput(pressed ? player.input().withAddedFlag(f) : player.input().withRemovedFlag(f));
-		}
+		player.processInput(pressed ? player.input().withAddedFlag(flag) : player.input().withRemovedFlag(flag));
 	}
 
 	@Override
 	public void onMouseDirectionAction(Player player, PlayerInputState.MouseDirection d, float delta) {
-		player.sendCommand(cmd, "" + delta);
+		super.onMouseDirectionAction(player, d, delta);
 
 		switch (d) {
 			case YAW:
