@@ -229,6 +229,22 @@ public class TestCommands {
 		}
 	}
 
+	@CommandDescription (aliases = "place", desc = "Debug command to place a block")
+	@Platforms (Platform.SERVER)
+	@Binding (mouse = 1)
+	@Filter (PlayerFilter.class)
+	public void debugPlace(Player player, CommandArguments args) throws CommandException {
+		System.out.println("Place command!");
+		Block block = player.add(InteractComponent.class).getTargetBlock();
+
+		if (block == null || block.getMaterial().equals(BlockMaterial.AIR)) {
+			player.sendMessage("Block is already not air.");
+		} else {
+			player.sendMessage("Block to place into: " + block.toString());
+			block.setMaterial(BlockMaterial.SOLID_BLUE);
+		}
+	}
+
 	@CommandDescription (aliases = {"dbg"}, desc = "Debug Output")
 	public void debugOutput(CommandSource source, CommandArguments args) {
 		World world = engine.getDefaultWorld();

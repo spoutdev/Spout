@@ -104,7 +104,7 @@ public class BlockIterator implements Iterator<Block> {
 		this.world = from.getWorld();
 		this.origin = from;
 		this.direction = to.sub(from).normalize();
-		this.range = (float) from.distance(to);
+		this.range = from.distance(to);
 
 		reset();
 	}

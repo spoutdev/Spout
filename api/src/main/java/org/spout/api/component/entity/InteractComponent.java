@@ -97,7 +97,8 @@ public class InteractComponent extends EntityComponent {
 		Transform tr = new Transform();
 		tr.setRotation(Quaternion.fromRotationTo(Vector3.FORWARD, ptr.getRotation().getDirection().mul(-1)));
 		tr.setPosition(ptr.getPosition());
-		return new BlockIterator(player.getWorld(), tr, range);
+		//return new BlockIterator(player.getWorld(), tr, range);
+		return new BlockIterator(player.getWorld(), ptr.copy(), range);
 	}
 
 	/**

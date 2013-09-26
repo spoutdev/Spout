@@ -41,7 +41,7 @@ public class MovementExecutor extends Binding {
 	public MovementExecutor(String cmd, Keyboard[] keys, int[] buttons, MouseDirection[] directions) {
 		super(cmd, keys, buttons, directions);
 		this.flag = PlayerInputState.Flags.getFlag(cmd);
-		if (flag == null) {
+		if (flag == null && !"PITCH".equalsIgnoreCase(cmd) && !"YAW".equalsIgnoreCase(cmd)) {
 			throw new UnsupportedOperationException(cmd + " is not a valid PlayerInputState.Flags");
 		}
 	}

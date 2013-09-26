@@ -26,21 +26,20 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
+import org.spout.api.Spout;
 import org.spout.api.entity.Player;
-import org.spout.api.geo.cuboid.Block;
+import org.spout.api.event.cause.PluginCause;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.protocol.ClientSession;
 import org.spout.api.protocol.MessageHandler;
+
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 
-/**
- *
- */
 public class BlockUpdateMessageHandler extends MessageHandler<BlockUpdateMessage> {
 	@Override
 	public void handleClient(ClientSession session, BlockUpdateMessage message) {
 		Player player = session.getPlayer();
-		Block block = player.getWorld().getBlock(message.getX(), message.getY(), message.getZ());
-		block.setMaterial(BlockMaterial.get(message.getType()), message.getData());
+		player.getWorld().setBlockMaterial(message.getX(), message.getY(), message.getZ(), BlockMaterial.get(message.getType()), message.getData(), new PluginCause(Spout.getPluginManager().getMetaPlugin()));
+		System.out.println("Updating single block!");
 	}
 }
