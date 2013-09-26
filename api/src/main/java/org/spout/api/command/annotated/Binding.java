@@ -36,6 +36,7 @@ import org.spout.api.input.Keyboard;
 
 /**
  * Represents a key-binding used with the {@link CommandDescription} annotation in {@link AnnotatedCommandExecutor}s.
+ * If there is not also a {@link Platforms} annotation, this will only be a local binding.
  */
 @Target (ElementType.METHOD)
 @Retention (RetentionPolicy.RUNTIME)

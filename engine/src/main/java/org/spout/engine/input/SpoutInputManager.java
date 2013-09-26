@@ -40,76 +40,60 @@ import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.entity.state.PlayerInputState.MouseDirection;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
-import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.input.Binding;
-import org.spout.api.input.InputExecutor;
+import org.spout.api.input.InputActionExecutor;
 import org.spout.api.input.InputManager;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
+import org.spout.api.input.MovementExecutor;
 import org.spout.api.math.IntVector2;
-import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 
-import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.protocol.builtin.message.ClickRequestMessage;
-import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector3;
 
 public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
-	private final Set<Binding> bindings = new HashSet<>();
-	private final Set<InputExecutor> inputExecutors = new HashSet<>();
+	private final Set<InputActionExecutor> actions = new HashSet<>();
 	private boolean redirected = false;
 
 	public SpoutInputManager() {
-		bind(new Binding("forward", Keyboard.valueOf(SpoutInputConfiguration.FORWARD.getString().toUpperCase())).setAsync(true));
-		bind(new Binding("backward", Keyboard.valueOf(SpoutInputConfiguration.BACKWARD.getString().toUpperCase())).setAsync(true));
-		bind(new Binding("left", Keyboard.valueOf(SpoutInputConfiguration.LEFT.getString().toUpperCase())).setAsync(true));
-		bind(new Binding("right", Keyboard.valueOf(SpoutInputConfiguration.RIGHT.getString().toUpperCase())).setAsync(true));
-		bind(new Binding("jump", Keyboard.valueOf(SpoutInputConfiguration.UP.getString().toUpperCase())).setAsync(true));
-		bind(new Binding("crouch", Keyboard.valueOf(SpoutInputConfiguration.DOWN.getString().toUpperCase())).setAsync(true));
-		bind(new Binding("select_down", Mouse.SCROLL_DOWN).setAsync(true));
-		bind(new Binding("select_up", Mouse.SCROLL_UP).setAsync(true));
-		bind(new Binding("left_click", Mouse.BUTTON_LEFT).setAsync(true));
-		bind(new Binding("interact", Mouse.BUTTON_RIGHT).setAsync(true));
-		bind(new Binding("fire_2", Mouse.BUTTON_MIDDLE).setAsync(true));
-		bind(new Binding("pitch", MouseDirection.PITCH).setAsync(true));
-		bind(new Binding("yaw", MouseDirection.YAW).setAsync(true));
-		bind(new Binding("validate_movement", Keyboard.KEY_V).setAsync(true));
+		// TODO: these should be fallback ONLY.
+		bind(new MovementExecutor(PlayerInputState.Flags.FORWARD.name(), Keyboard.valueOf(SpoutInputConfiguration.FORWARD.getString().toUpperCase())).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.Flags.BACKWARD.name(), Keyboard.valueOf(SpoutInputConfiguration.BACKWARD.getString().toUpperCase())).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.Flags.LEFT.name(), Keyboard.valueOf(SpoutInputConfiguration.LEFT.getString().toUpperCase())).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.Flags.RIGHT.name(), Keyboard.valueOf(SpoutInputConfiguration.RIGHT.getString().toUpperCase())).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.Flags.JUMP.name(), Keyboard.valueOf(SpoutInputConfiguration.UP.getString().toUpperCase())).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.Flags.CROUCH.name(), Keyboard.valueOf(SpoutInputConfiguration.DOWN.getString().toUpperCase())).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.Flags.SELECT_DOWN.name(), Mouse.SCROLL_DOWN).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.Flags.SELECT_UP.name(), Mouse.SCROLL_UP).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.Flags.LEFT_CLICK.name(), Mouse.BUTTON_LEFT).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.Flags.INTERACT.name(), Mouse.BUTTON_RIGHT).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.Flags.FIRE_2.name(), Mouse.BUTTON_MIDDLE).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.MouseDirection.PITCH.name(), MouseDirection.PITCH).setAsync(true));
+		bind(new MovementExecutor(PlayerInputState.MouseDirection.YAW.name(), MouseDirection.YAW).setAsync(true));
 	}
 
 	@Override
-	public void bind(Binding binding) {
-		bindings.add(binding);
+	public void bind(InputActionExecutor binding) {
+		actions.add(binding);
 	}
 
 	@Override
-	public void unbind(String cmd) {
-		for (Binding binding : bindings) {
-			if (binding.getCommand().equalsIgnoreCase(cmd)) {
-				bindings.remove(binding);
-				return;
-			}
-		}
+	public void unbind(InputActionExecutor binding) {
+		actions.remove(binding);
 	}
 
 	@Override
-	public void unbind(Binding binding) {
-		bindings.remove(binding);
+	public Set<InputActionExecutor> getInputActionExecutors() {
+		return Collections.unmodifiableSet(actions);
 	}
 
 	@Override
-	public Set<Binding> getBindings() {
-		return Collections.unmodifiableSet(bindings);
-	}
-
-	@Override
-	public Set<Binding> getKeyBindingsFor(Keyboard key) {
-		Set<Binding> bound = new HashSet<>();
-		for (Binding binding : bindings) {
+	public Set<InputActionExecutor> getKeyInputActionExecutorsFor(Keyboard key) {
+		Set<InputActionExecutor> bound = new HashSet<>();
+		for (InputActionExecutor binding : actions) {
 			for (Keyboard k : binding.getKeyBindings()) {
 				if (k == key) {
 					bound.add(binding);
@@ -121,9 +105,9 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	@Override
-	public Set<Binding> getMouseBindingsFor(int mouse) {
-		Set<Binding> bound = new HashSet<>();
-		for (Binding binding : bindings) {
+	public Set<InputActionExecutor> getMouseInputActionExecutorsFor(int mouse) {
+		Set<InputActionExecutor> bound = new HashSet<>();
+		for (InputActionExecutor binding : actions) {
 			for (int button : binding.getMouseBindings()) {
 				if (button == mouse) {
 					bound.add(binding);
@@ -135,9 +119,9 @@ public class SpoutInputManager implements InputManager {
 	}
 
 	@Override
-	public Set<Binding> getMouseDirectionBindingsFor(MouseDirection direction) {
-		Set<Binding> bound = new HashSet<>();
-		for (Binding binding : bindings) {
+	public Set<InputActionExecutor> getMouseDirectionInputActionExecutorsFor(MouseDirection direction) {
+		Set<InputActionExecutor> bound = new HashSet<>();
+		for (InputActionExecutor binding : actions) {
 			for (MouseDirection d : binding.getMouseDirectionBindings()) {
 				if (d == direction) {
 					bound.add(binding);
@@ -146,21 +130,6 @@ public class SpoutInputManager implements InputManager {
 			}
 		}
 		return bound;
-	}
-
-	@Override
-	public Set<InputExecutor> getInputExecutors() {
-		return Collections.unmodifiableSet(inputExecutors);
-	}
-
-	@Override
-	public void addInputExecutor(InputExecutor executor) {
-		inputExecutors.add(executor);
-	}
-
-	@Override
-	public void removeInputExecutor(InputExecutor executor) {
-		inputExecutors.remove(executor);
 	}
 
 	public void pollInput(Player player) {
@@ -178,26 +147,23 @@ public class SpoutInputManager implements InputManager {
 			// TODO can these be bytes, or should they be ints
 			int x, y;
 			while (org.lwjgl.input.Mouse.next()) {
-
 				// Calculate dx/dy since last event polling
 				x = org.lwjgl.input.Mouse.getEventX();
 				y = org.lwjgl.input.Mouse.getEventY();
 
-				int button = org.lwjgl.input.Mouse.getEventButton();
-				if (button != -1) { // -1 if no button clicked
-					onMouseClicked(player, button, org.lwjgl.input.Mouse.getEventButtonState(), x, y);
-					continue;
+				int info;
+				if ((info = org.lwjgl.input.Mouse.getEventButton()) != -1) { // -1 if no button clicked
+					onMouseClicked(player, info, org.lwjgl.input.Mouse.getEventButtonState(), x, y);
+				} else if ((info = org.lwjgl.input.Mouse.getEventDWheel()) != 0) {
+					// Handle scrolls
+					if (info < 0) {
+						onMouseClicked(player, Mouse.SCROLL_UP, true, x, y);
+					} else if (info > 0) {
+						onMouseClicked(player, Mouse.SCROLL_DOWN, true, x, y);
+					}
+				} else {
+					onMouseMove(player, org.lwjgl.input.Mouse.getEventDX(), org.lwjgl.input.Mouse.getEventDY(), org.lwjgl.input.Mouse.getEventX(), org.lwjgl.input.Mouse.getEventY());
 				}
-
-				// Handle scrolls
-				int scroll = org.lwjgl.input.Mouse.getEventDWheel();
-				if (scroll < 0) {
-					onMouseClicked(player, Mouse.SCROLL_UP, true, x, y);
-				} else if (scroll > 0) {
-					onMouseClicked(player, Mouse.SCROLL_DOWN, true, x, y);
-				}
-
-				onMouseMove(player, org.lwjgl.input.Mouse.getEventDX(), org.lwjgl.input.Mouse.getEventDY(), org.lwjgl.input.Mouse.getEventX(), org.lwjgl.input.Mouse.getEventY());
 			}
 		}
 	}
@@ -232,7 +198,7 @@ public class SpoutInputManager implements InputManager {
 			}
 		}
 
-		executeBindings(getKeyBindingsFor(key), player, pressed);
+		executeBindings(getKeyInputActionExecutorsFor(key), player, key, pressed);
 	}
 
 	private void onMouseClicked(Player player, int button, boolean pressed, int x, int y) {
@@ -260,7 +226,7 @@ public class SpoutInputManager implements InputManager {
 			}
 		}
 
-		executeBindings(getMouseBindingsFor(button), player, pressed);
+		executeBindings(getMouseInputActionExecutorsFor(button), player, Keyboard.get(button), pressed);
 	}
 
 	private void onMouseMove(Player player, int dx, int dy, int x, int y) {
@@ -282,58 +248,80 @@ public class SpoutInputManager implements InputManager {
 		if (!redirected) {
 			boolean invert = SpoutInputConfiguration.INVERT_MOUSE.getBoolean();
 			if (dx != 0) {
-				executeDirectionBindings(getMouseDirectionBindingsFor(MouseDirection.YAW), player, (PlayerInputState.MOUSE_SENSITIVITY * dx * (invert ? 1 : -1)));
+				executeDirectionBindings(getMouseDirectionInputActionExecutorsFor(MouseDirection.YAW), player, MouseDirection.YAW, (PlayerInputState.MOUSE_SENSITIVITY * dx * (invert ? -1 : 1)));
 			}
 
 			// Mouse moved on y-axis
 			if (dy != 0) {
-				executeDirectionBindings(getMouseDirectionBindingsFor(MouseDirection.PITCH), player, (PlayerInputState.MOUSE_SENSITIVITY * dy * (invert ? -1 : 1)));
+				executeDirectionBindings(getMouseDirectionInputActionExecutorsFor(MouseDirection.PITCH), player, MouseDirection.PITCH, (PlayerInputState.MOUSE_SENSITIVITY * dy * (invert ? 1 : -1))); 
 			}
 		}
 	}
 
-	private void executeBindings(Set<Binding> bindings, Player player, boolean pressed) {
+	private void executeBindings(Set<InputActionExecutor> bindings, Player player, Keyboard key, boolean pressed) {
 		String arg = pressed ? "+" : "-";
 		// Do bindings
-		for (Binding binding : bindings) {
+		for (InputActionExecutor binding : bindings) {
+			KeyboardActionTask task = new KeyboardActionTask(player, binding, key, pressed);
 			if (binding.isAsync()) {
 				// Execute async
-				new BindingTask(player, binding.getCommand(), arg).run();
+				task.run();
 			} else {
 				// Queue sync
-				player.getEngine().getScheduler().scheduleSyncDelayedTask(Spout.getPluginManager().getMetaPlugin(), new BindingTask(player, binding.getCommand(), arg));
+				player.getEngine().getScheduler().scheduleSyncDelayedTask(Spout.getPluginManager().getMetaPlugin(), task);
 			}
 		}
 	}
 
-	private void executeDirectionBindings(Set<Binding> bindings, Player player, float arg) {
+	private void executeDirectionBindings(Set<InputActionExecutor> bindings, Player player, PlayerInputState.MouseDirection direction, float arg) {
 		// Do bindings
-		for (Binding binding : bindings) {
+		for (InputActionExecutor binding : bindings) {
+			MouseActionTask task = new MouseActionTask(player, binding, direction, arg);
 			if (binding.isAsync()) {
 				// Execute async
-				new BindingTask(player, binding.getCommand(), "" + arg).run();
+				task.run();
 			} else {
 				// Queue sync
-				player.getEngine().getScheduler().scheduleSyncDelayedTask(Spout.getPluginManager().getMetaPlugin(), new BindingTask(player, binding.getCommand(), "" + arg));
+				player.getEngine().getScheduler().scheduleSyncDelayedTask(Spout.getPluginManager().getMetaPlugin(), task);
 			}
 		}
 	}
 
-	private static class BindingTask implements Runnable {
+	private static class KeyboardActionTask implements Runnable {
 		private final Player player;
-		private final String command;
-		private final String[] arguments;
+		private final InputActionExecutor e;
+		private final Keyboard key;
+		private final boolean pressed;
 
-		BindingTask(Player player, String command, String... arguments) {
+		KeyboardActionTask(Player player, InputActionExecutor e, Keyboard key, boolean pressed) {
 			this.player = player;
-			this.command = command;
-			this.arguments = arguments;
+			this.e = e;
+			this.key = key;
+			this.pressed = pressed;
 		}
 
 		@Override
 		public void run() {
-			player.processCommand(command, arguments);
-			player.sendCommand(command, arguments);
+			e.onKeyboardAction(player, key, pressed);
+		}
+	}
+
+	private static class MouseActionTask implements Runnable {
+		private final Player player;
+		private final InputActionExecutor e;
+		private final PlayerInputState.MouseDirection direction;
+		private final float arg;
+
+		MouseActionTask(Player player, InputActionExecutor e, PlayerInputState.MouseDirection direction, float arg) {
+			this.player = player;
+			this.e = e;
+			this.direction = direction;
+			this.arg = arg;
+		}
+
+		@Override
+		public void run() {
+			e.onMouseDirectionAction(player, direction, arg);
 		}
 	}
 
@@ -343,25 +331,6 @@ public class SpoutInputManager implements InputManager {
 			throw new IllegalStateException("Cannot access ScreenStack in server mode.");
 		}
 		return ((Client) engine).getScreenStack().getInputScreen();
-	}
-
-	private Transform old;
-
-	public void execute(float dt) {
-		// TODO: protocol - hacky fix
-		if (((Client) Spout.getEngine()).getWorld().getName().equalsIgnoreCase("NullWorld")) {
-			return;
-		}
-		SpoutPhysicsComponent physics = (SpoutPhysicsComponent) ((Client) Spout.getEngine()).getPlayer().getPhysics();
-		for (InputExecutor executor : inputExecutors) {
-			executor.execute(dt, physics.getTransformLive());
-		}
-		Player player = ((Client) Spout.getEngine()).getPlayer();
-		// TODO: move this to NetworkSynchronizer?
-		if (!physics.getTransformLive().equals(old)) {
-			player.getNetwork().getSession().send(new UpdateEntityMessage(player.getId(), physics.getTransformLive(), UpdateAction.TRANSFORM, player.getNetwork().getRepositionManager()));
-		}
-		old = physics.getTransformLive().copy();
 	}
 
 	@Override
@@ -382,43 +351,5 @@ public class SpoutInputManager implements InputManager {
 	@Override
 	public boolean isButtonDown(int button) {
 		return org.lwjgl.input.Mouse.isButtonDown(button);
-	}
-
-	public void onClientStart() {
-		if (inputExecutors.isEmpty()) {
-			Spout.warn("No input executor found, using fallback input");
-			addInputExecutor(new FallbackInputExecutor());
-		}
-	}
-
-	private static class FallbackInputExecutor implements InputExecutor {
-		@Override
-		public void execute(float dt, Transform playerTransform) {
-
-			final Client client = (Client) Spout.getEngine();
-			final PlayerInputState state = client.getPlayer().input();
-			final float speed = 50f;
-			final Vector3 motion;
-			if (state.getForward()) {
-				motion = playerTransform.forwardVector().mul(speed * -dt);
-			} else if (state.getBackward()) {
-				motion = playerTransform.forwardVector().mul(speed * dt);
-			} else if (state.getLeft()) {
-				motion = playerTransform.rightVector().mul(speed * -dt); //TODO getLeftVector
-			} else if (state.getRight()) {
-				motion = playerTransform.rightVector().mul(speed * dt);
-			} else if (state.getJump()) {
-				motion = playerTransform.upVector().mul(speed * dt);
-			} else if (state.getCrouch()) {
-				motion = playerTransform.upVector().mul(speed * -dt);
-			} else {
-				playerTransform.setRotation(Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
-				client.getPlayer().getPhysics().setTransform(playerTransform);
-				return;
-			}
-
-			playerTransform.translateAndSetRotation(motion, Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
-			client.getPlayer().getPhysics().setTransform(playerTransform);
-		}
 	}
 }

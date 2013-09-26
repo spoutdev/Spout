@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.Platform;
 
 import org.spout.api.Spout;
 import org.spout.api.component.BlockComponentOwner;
@@ -198,7 +199,11 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public boolean setMaterial(BlockMaterial material, int data, Cause<?> cause) {
-		return this.getChunk().setBlockMaterial(this.x, y, z, material, (short) data, cause);
+		// TODO once stable, remove this
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new UnsupportedOperationException("Temporary lockdown of setMaterial. Server only!");
+		}
+		return this.getChunk().setBlockMaterial(x, y, z, material, (short) data, cause);
 	}
 
 	@Override

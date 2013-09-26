@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandFlags;
@@ -101,6 +102,30 @@ public final class AnnotatedCommandExecutorFactory {
 				}
 				command.setShouldParseFlags(a.parseFlags());
 
+				// add binding
+				// you can still have a binding annotation on a server command method but this block will be skipped
+				// we will also add the binding, regardless if the command is going to be run on this platform or not
+				if (method.isAnnotationPresent(Binding.class) && engine instanceof Client) {
+					if (method.isAnnotationPresent(Platforms.class)) {
+						Platforms pa = method.getAnnotation(Platforms.class);
+						for (Platform platform : pa.value()) {
+							if (platform == Platform.SERVER) {
+								Binding binding = method.getAnnotation(Binding.class);
+								org.spout.api.input.Binding b = new org.spout.api.input.Binding(command.getName(), binding.value(), binding.mouse(), binding.mouseDirections()).setAsync(binding.async());
+								((Client) engine).getInputManager().bind(b);
+							} else if (platform == Platform.CLIENT) {
+								Binding binding = method.getAnnotation(Binding.class);
+								org.spout.api.input.LocalBinding b = new org.spout.api.input.LocalBinding(command.getName(), binding.value(), binding.mouse(), binding.mouseDirections()).setAsync(binding.async());
+								((Client) engine).getInputManager().bind(b);
+							}
+						}
+					} else {
+						Binding binding = method.getAnnotation(Binding.class);
+						org.spout.api.input.LocalBinding b = new org.spout.api.input.LocalBinding(command.getName(), binding.value(), binding.mouse(), binding.mouseDirections()).setAsync(binding.async());
+						((Client) engine).getInputManager().bind(b);
+					}
+				}
+
 				// check the platform
 				if (method.isAnnotationPresent(Platforms.class)) {
 					Platforms pa = method.getAnnotation(Platforms.class);
@@ -122,14 +147,6 @@ public final class AnnotatedCommandExecutorFactory {
 				// add the permissions
 				if (method.isAnnotationPresent(Permissible.class)) {
 					command.setPermission(method.getAnnotation(Permissible.class).value());
-				}
-
-				// add binding
-				// you can still have a binding annotation on a server command method but this block will be skipped
-				if (method.isAnnotationPresent(Binding.class) && engine instanceof Client) {
-					Binding binding = method.getAnnotation(Binding.class);
-					org.spout.api.input.Binding b = new org.spout.api.input.Binding(command.getName(), binding.value(), binding.mouse(), binding.mouseDirections()).setAsync(binding.async());
-					((Client) engine).getInputManager().bind(b);
 				}
 
 				// add filter

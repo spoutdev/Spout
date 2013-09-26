@@ -85,6 +85,9 @@ public class WorldChangeMessage extends DatatableMessage {
 
 	public Transform getPlayerTransform() {
 		if (Spout.getPlatform() == Platform.CLIENT) {
+			if (!((Client) Spout.getEngine()).getWorld().getUID().equals(worldUUID)) {
+				throw new IllegalStateException("World with name '" + worldName + "' does not exist on client!");
+			}
 			return new Transform(new Point(position, ((Client) Spout.getEngine()).getWorld()), rotation, scale);
 		} else {
 			return new Transform(new Point(position, ((Server) Spout.getEngine()).getWorld(worldUUID)), rotation, scale);

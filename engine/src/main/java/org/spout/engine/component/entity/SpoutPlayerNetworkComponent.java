@@ -93,7 +93,8 @@ public class SpoutPlayerNetworkComponent extends PlayerNetworkComponent implemen
 				break;
 			case POSITION:
 			case TRANSFORM:
-				if (!e.equals(getOwner())) {
+				// If this is coming from EntityManager (FullSync), we don't want to sync to the owner
+				if (!e.equals(getOwner()) || !event.isFullSync()) {
 					event.getMessages().add(new UpdateEntityMessage(event.getEntityId(), transform, event.getAction(), getRepositionManager()));
 				}
 				break;

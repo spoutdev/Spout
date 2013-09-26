@@ -27,6 +27,8 @@
 package org.spout.api.entity.state;
 
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -52,6 +54,7 @@ public class PlayerInputState {
 		FIRE_2,
 		INTERACT;
 		private final short bitValue;
+		private final static Map<String, Flags> byName = new HashMap<>();
 
 		private Flags() {
 			int shifts = FLAG_COUNTER.getAndIncrement();
@@ -68,26 +71,27 @@ public class PlayerInputState {
 		public boolean has(short bitfield) {
 			return (bitfield & bitValue) != 0;
 		}
+
+		static {
+			for (Flags f : values()) {
+				byName.put(f.name(), f);
+			}
+		}
+
+		public static Flags getFlag(String name) {
+			return byName.get(name);
+		}
 	}
 
 	public static enum MouseDirection {
 		/**
 		 * Up/Down
 		 */
-		PITCH("pitch"),
+		PITCH(),
 		/**
 		 * Left/Right
 		 */
-		YAW("yaw");
-		private final String flagName;
-
-		private MouseDirection(String flagName) {
-			this.flagName = flagName;
-		}
-
-		public String getFlagName() {
-			return flagName;
-		}
+		YAW();
 	}
 
 	public static final PlayerInputState DEFAULT_STATE = new PlayerInputState((short) 0, (short) 0, (short) 0);
