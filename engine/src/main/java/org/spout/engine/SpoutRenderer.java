@@ -37,8 +37,11 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
+
 import org.spout.api.Spout;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.gui.FullScreen;
 
@@ -63,6 +66,10 @@ import org.spout.renderer.model.Model;
 import org.spout.renderer.util.ObjFileLoader;
 
 public class SpoutRenderer {
+	/**
+	 * Target Frames per Second for the renderer
+	 */
+	public static final int TARGET_FPS = 60;
 	private final SpoutClient client;
 	private final GLFactory gl;
 	private Canvas parent;
@@ -90,6 +97,7 @@ public class SpoutRenderer {
 
 	public void render(float dt) {
 		generateChunkModels();
+		processInput(dt);
 		renderer.render();
 		model.setRotation(Quaternion.fromAngleDegAxis(20 * dt, 1, 0, 0).mul(Quaternion.fromAngleDegAxis(10 * dt, 0, 1, 0)).mul(model.getRotation()));
 	}
@@ -127,6 +135,12 @@ public class SpoutRenderer {
 	// TODO: this should be a queue
 	private final Map<Vector3, VertexData> chunkMeshes = new ConcurrentHashMap<>();
 	private final Map<Vector3, Model> chunkModels = new HashMap<>();
+	// Temp input
+	private float mouseSensitivity = 0.08f;
+	private float cameraSpeed = 0.2f;
+	private boolean mouseGrabbed;
+	private static float cameraPitch = 0;
+	private static float cameraYaw = 0;
 
 	private void initRendering() {
 		renderer = gl.createRenderer();
@@ -143,7 +157,7 @@ public class SpoutRenderer {
 		material = new Material(program);
 
 		camera = Camera.createPerspective(60, resolution.getFloorX(), resolution.getFloorY(), 0.1f, 1000f);
-		camera.setPosition(new Vector3(0, 0, 0));
+		camera.setPosition(new Vector3(0, 5, 0));
 
 		renderList = new RenderList("chunks", camera, 0);
 		renderList.addCapability(Capability.DEPTH_TEST);
@@ -164,7 +178,7 @@ public class SpoutRenderer {
 		vertexArray.create();
 
 		model = new Model(vertexArray, material);
-		model.setPosition(new Vector3(0, 0, -5));
+		model.setPosition(new Vector3(0, 5, -5));
 		renderList.add(model);
 	}
 
@@ -187,7 +201,7 @@ public class SpoutRenderer {
 
 	public void addMesh(ChunkSnapshot chunk, VertexData mesh) {
 		if (renderList.size() < 100) {
-			System.out.println(chunk.getBase().mul(16));
+			System.out.println(chunk.getBase());
 			chunkMeshes.put(chunk.getBase(), mesh);
 		}
 	}
@@ -202,7 +216,7 @@ public class SpoutRenderer {
 			vertexArray.create();
 
 			final Model model = new Model(vertexArray, material);
-			model.setPosition(chunk.mul(Chunk.BLOCKS.SIZE));
+			model.setPosition(chunk);
 
 			renderList.add(model);
 
@@ -210,5 +224,57 @@ public class SpoutRenderer {
 		}
 
 		chunkMeshes.clear();
+	}
+
+	private void processInput(float dt) {
+		dt /= 1f / TARGET_FPS;
+		final boolean mouseGrabbedBefore = mouseGrabbed;
+		while (Keyboard.next()) {
+			if (Keyboard.getEventKeyState()) {
+				switch (Keyboard.getEventKey()) {
+					case Keyboard.KEY_ESCAPE:
+						mouseGrabbed ^= true;
+				}
+			}
+		}
+		if (Display.isActive()) {
+			if (mouseGrabbed != mouseGrabbedBefore) {
+				Mouse.setGrabbed(!mouseGrabbedBefore);
+			}
+			if (mouseGrabbed) {
+				final float sensitivity = mouseSensitivity * dt;
+				cameraPitch -= Mouse.getDX() * sensitivity;
+				cameraPitch %= 360;
+				final Quaternion pitch = Quaternion.fromAngleDegAxis(cameraPitch, 0, 1, 0);
+				cameraYaw += Mouse.getDY() * sensitivity;
+				cameraYaw %= 360;
+				final Quaternion yaw = Quaternion.fromAngleDegAxis(cameraYaw, 1, 0, 0);
+				camera.setRotation(pitch.mul(yaw));
+			}
+		}
+		final Vector3 right = camera.getRight();
+		final Vector3 up = camera.getUp();
+		final Vector3 forward = camera.getForward();
+		Vector3 position = camera.getPosition();
+		final float speed = cameraSpeed * dt;
+		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+			position = position.add(forward.mul(speed));
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+			position = position.add(forward.mul(-speed));
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+			position = position.add(right.mul(speed));
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+			position = position.add(right.mul(-speed));
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+			position = position.add(up.mul(speed));
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+			position = position.add(up.mul(-speed));
+		}
+		camera.setPosition(position);
 	}
 }

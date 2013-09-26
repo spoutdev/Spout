@@ -109,14 +109,6 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	public static final long END_OF_THE_WORLD = Long.MAX_VALUE - PULSE_EVERY;
 	/**
-	 * Target Frames per Second for the renderer
-	 */
-	private static final int TARGET_FPS = 60;
-	/**
-	 * Used to detect if the render is under heavy load
-	 */
-	private static final int OVERHEAD_FPS = TARGET_FPS / 2;
-	/**
 	 * The engine this scheduler is managing for.
 	 */
 	private final Engine engine;
@@ -205,14 +197,16 @@ public final class SpoutScheduler implements Scheduler {
 		@Override
 		public void run() {
 			renderer.init();
-			final float dt = 1f / TARGET_FPS;
+			long lastTime = System.currentTimeMillis();
 			while (!shutdown) {
 				if (Display.isCloseRequested()) {
 					engine.stop();
 					break;
 				}
-				renderer.render(dt);
-				Display.sync(TARGET_FPS);
+				final long currentTime = System.currentTimeMillis();
+				renderer.render((currentTime - lastTime) / 1000f);
+				lastTime = currentTime;
+				Display.sync(SpoutRenderer.TARGET_FPS);
 			}
 			renderer.dispose();
 		}
@@ -227,7 +221,6 @@ public final class SpoutScheduler implements Scheduler {
 			while (!shutdown) {
 				try {
 					final SpoutChunkSnapshotGroup group = groups.take();
-					System.out.println(group.getCenter());
 					final VertexData mesh = mesher.mesh(group);
 					((SpoutClient) Spout.getEngine()).getRenderer().addMesh(group.getCenter(), mesh);
 				} catch (InterruptedException ignored) {

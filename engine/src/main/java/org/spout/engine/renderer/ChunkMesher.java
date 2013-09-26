@@ -64,7 +64,7 @@ public class ChunkMesher {
 						continue;
 					}
 
-					if (yy != 0) {
+					if (yy != -1) {
 						if (faceNeeded(lastMaterial, currentMaterial, BlockFace.TOP)) {
 							final Vector3 offset = BlockFace.TOP.getOffset();
 							final float fx = xx + (offset.getX() + 1) / 2;
