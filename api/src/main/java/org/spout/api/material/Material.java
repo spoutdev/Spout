@@ -271,7 +271,7 @@ public abstract class Material extends MaterialRegistry {
 		try {
 			int data = material.data & 0xFFFF;
 			if ((data & dataMask) != data) {
-				throw new IllegalArgumentException("Sub material data value has non-zero bits outside data mask");
+				throw new IllegalArgumentException("Sub material of: " + material.getId() + " with data value: " + data + " is outside data mask: " + Integer.toHexString(dataMask));
 			}
 			if (material.isSubMaterial) {
 				if (material.getParentMaterial() == this) {

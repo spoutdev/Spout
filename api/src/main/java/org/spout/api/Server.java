@@ -39,7 +39,6 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.ServerSession;
-import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.util.access.AccessManager;
 import org.spout.api.util.thread.annotation.LiveRead;
@@ -329,10 +328,4 @@ public interface Server extends Engine {
 	public File getWorldFolder();
 
 	public ServerSession newSession(Channel c);
-
-	/**
-	 * Gets the server's name
-	 * @return server name
-	 */
-	public String getName();
 }
