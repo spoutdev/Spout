@@ -368,7 +368,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public String getName() {
-		return "Spout Server";
+		return SpoutConfiguration.SERVER_NAME.getString();
 	}
 
 	private UpnpService getUPnPService() {

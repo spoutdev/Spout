@@ -242,11 +242,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	}
 
 	@Override
-	public String getName() {
-		return "Spout Engine";
-	}
-
-	@Override
 	public String getVersion() {
 		return getClass().getPackage().getImplementationVersion();
 	}

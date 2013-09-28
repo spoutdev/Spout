@@ -329,4 +329,10 @@ public interface Server extends Engine {
 	public File getWorldFolder();
 
 	public ServerSession newSession(Channel c);
+
+	/**
+	 * Gets the server's name
+	 * @return server name
+	 */
+	public String getName();
 }
