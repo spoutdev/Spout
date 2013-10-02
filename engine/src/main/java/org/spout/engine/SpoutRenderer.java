@@ -31,35 +31,37 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import gnu.trove.list.TFloatList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-
+import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.entity.Player;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.gui.FullScreen;
 
 import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.math.imaginary.Quaternion;
+import org.spout.math.matrix.Matrix4;
 import org.spout.math.vector.Vector2;
 import org.spout.math.vector.Vector3;
 import org.spout.renderer.Camera;
 import org.spout.renderer.Material;
+import org.spout.renderer.Pipeline;
+import org.spout.renderer.Pipeline.PipelineBuilder;
 import org.spout.renderer.data.Color;
-import org.spout.renderer.data.RenderList;
 import org.spout.renderer.data.VertexAttribute;
 import org.spout.renderer.data.VertexAttribute.DataType;
 import org.spout.renderer.data.VertexData;
-import org.spout.renderer.gl.Capability;
+import org.spout.renderer.gl.Context;
+import org.spout.renderer.gl.Context.Capability;
 import org.spout.renderer.gl.GLFactory;
 import org.spout.renderer.gl.Program;
-import org.spout.renderer.gl.Renderer;
 import org.spout.renderer.gl.Shader.ShaderType;
 import org.spout.renderer.gl.VertexArray;
 import org.spout.renderer.model.Model;
@@ -97,8 +99,8 @@ public class SpoutRenderer {
 
 	public void render(float dt) {
 		generateChunkModels();
-		processInput(dt);
-		renderer.render();
+		renderer.setCamera(((Client) Spout.getEngine()).getPlayer().getType(Camera.class));
+		pipeline.run(renderer);
 		model.setRotation(Quaternion.fromAngleDegAxis(20 * dt, 1, 0, 0).mul(Quaternion.fromAngleDegAxis(10 * dt, 0, 1, 0)).mul(model.getRotation()));
 	}
 
@@ -126,26 +128,21 @@ public class SpoutRenderer {
 		return gl;
 	}
 
-	private Renderer renderer;
+	private Context renderer;
+	private Pipeline pipeline;
 	private Program program;
 	private Material material;
-	private Camera camera;
-	private RenderList renderList;
+	private final Camera camera = new ClientCamera();
+	private List<Model> renderList;
 	private Model model;
 	// TODO: this should be a queue
 	private final Map<Vector3, VertexData> chunkMeshes = new ConcurrentHashMap<>();
 	private final Map<Vector3, Model> chunkModels = new HashMap<>();
-	// Temp input
-	private float mouseSensitivity = 0.08f;
-	private float cameraSpeed = 0.2f;
-	private boolean mouseGrabbed;
-	private static float cameraPitch = 0;
-	private static float cameraYaw = 0;
 
 	private void initRendering() {
-		renderer = gl.createRenderer();
+		renderer = gl.createContext();
 		renderer.setWindowTitle(client.getName());
-		renderer.getViewPort().setSize(resolution.getFloorX(), resolution.getFloorY());
+		renderer.setWindowSize(resolution);
 		renderer.create();
 		renderer.setClearColor(Color.DARK_GRAY);
 
@@ -156,12 +153,13 @@ public class SpoutRenderer {
 
 		material = new Material(program);
 
-		camera = Camera.createPerspective(60, resolution.getFloorX(), resolution.getFloorY(), 0.1f, 1000f);
-		camera.setPosition(new Vector3(0, 5, 0));
+		renderer.setCamera(camera);
 
-		renderList = new RenderList("chunks", camera, 0);
-		renderList.addCapability(Capability.DEPTH_TEST);
-		renderer.addRenderList(renderList);
+		renderList = new ArrayList<>();
+		PipelineBuilder builder = new PipelineBuilder();
+		builder.enableCapabilities(Capability.DEPTH_TEST);
+		builder.renderModels(renderList);
+		pipeline = builder.build();
 
 		final TFloatList positions = new TFloatArrayList();
 		final TFloatList textureCoords = new TFloatArrayList();
@@ -192,7 +190,6 @@ public class SpoutRenderer {
 		}
 
 		renderList.clear();
-		renderList.clearCapabilities();
 
 		chunkMeshes.clear();
 
@@ -226,55 +223,57 @@ public class SpoutRenderer {
 		chunkMeshes.clear();
 	}
 
-	private void processInput(float dt) {
-		dt /= 1f / TARGET_FPS;
-		final boolean mouseGrabbedBefore = mouseGrabbed;
-		while (Keyboard.next()) {
-			if (Keyboard.getEventKeyState()) {
-				switch (Keyboard.getEventKey()) {
-					case Keyboard.KEY_ESCAPE:
-						mouseGrabbed ^= true;
-				}
-			}
+	private static class ClientCamera extends Camera {
+		private final Player player;
+		public ClientCamera() {
+			super(Matrix4.ZERO);
+			player = ((Client) Spout.getEngine()).getPlayer();
 		}
-		if (Display.isActive()) {
-			if (mouseGrabbed != mouseGrabbedBefore) {
-				Mouse.setGrabbed(!mouseGrabbedBefore);
-			}
-			if (mouseGrabbed) {
-				final float sensitivity = mouseSensitivity * dt;
-				cameraPitch -= Mouse.getDX() * sensitivity;
-				cameraPitch %= 360;
-				final Quaternion pitch = Quaternion.fromAngleDegAxis(cameraPitch, 0, 1, 0);
-				cameraYaw += Mouse.getDY() * sensitivity;
-				cameraYaw %= 360;
-				final Quaternion yaw = Quaternion.fromAngleDegAxis(cameraYaw, 1, 0, 0);
-				camera.setRotation(pitch.mul(yaw));
-			}
+
+		@Override
+		public Matrix4 getProjectionMatrix() {
+			return player.getType(Camera.class).getProjectionMatrix();
 		}
-		final Vector3 right = camera.getRight();
-		final Vector3 up = camera.getUp();
-		final Vector3 forward = camera.getForward();
-		Vector3 position = camera.getPosition();
-		final float speed = cameraSpeed * dt;
-		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			position = position.add(forward.mul(speed));
+
+		@Override
+		public Matrix4 getViewMatrix() {
+			return player.getType(Camera.class).getViewMatrix();
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			position = position.add(forward.mul(-speed));
+
+		@Override
+		public Vector3 getPosition() {
+			return player.getType(Camera.class).getPosition();
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			position = position.add(right.mul(speed));
+
+		@Override
+		public void setPosition(Vector3 position) {
+			player.getType(Camera.class).setPosition(position);
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			position = position.add(right.mul(-speed));
+
+		@Override
+		public Quaternion getRotation() {
+			return player.getType(Camera.class).getRotation();
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-			position = position.add(up.mul(speed));
+
+		@Override
+		public void setRotation(Quaternion rotation) {
+			player.getType(Camera.class).setRotation(rotation);
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			position = position.add(up.mul(-speed));
+
+		@Override
+		public Vector3 getRight() {
+			return player.getType(Camera.class).getRight();
 		}
-		camera.setPosition(position);
+
+		@Override
+		public Vector3 getUp() {
+			return player.getType(Camera.class).getUp();
+		}
+
+		@Override
+		public Vector3 getForward() {
+			return player.getType(Camera.class).getForward();
+		}
+
 	}
 }
