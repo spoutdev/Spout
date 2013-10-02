@@ -226,12 +226,14 @@ public class SpoutRenderer {
 
 		@Override
 		public Matrix4 getProjectionMatrix() {
-			return ((Client) Spout.getEngine()).getPlayer().add(CameraComponent.class).getProjection();
+			return ((Client) Spout.getEngine()).getPlayer().getType(CameraComponent.class).getProjection();
 		}
 
 		@Override
 		public Matrix4 getViewMatrix() {
-			return ((Client) Spout.getEngine()).getPlayer().getType(CameraComponent.class).getView();
+			final CameraComponent camera = ((Client) Spout.getEngine()).getPlayer().getType(CameraComponent.class);
+			camera.updateView();
+			return camera.getView();
 		}
 	}
 }
