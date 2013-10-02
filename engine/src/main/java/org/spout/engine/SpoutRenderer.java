@@ -27,12 +27,12 @@
 package org.spout.engine;
 
 import java.awt.Canvas;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.ArrayList;
-import java.util.List;
 
 import gnu.trove.list.TFloatList;
 import gnu.trove.list.TIntList;
@@ -41,7 +41,7 @@ import gnu.trove.list.array.TIntArrayList;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.entity.Player;
+import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.gui.FullScreen;
 
@@ -99,8 +99,7 @@ public class SpoutRenderer {
 
 	public void render(float dt) {
 		generateChunkModels();
-		renderer.setCamera(((Client) Spout.getEngine()).getPlayer().getType(Camera.class));
-		pipeline.run(renderer);
+		pipeline.run(context);
 		model.setRotation(Quaternion.fromAngleDegAxis(20 * dt, 1, 0, 0).mul(Quaternion.fromAngleDegAxis(10 * dt, 0, 1, 0)).mul(model.getRotation()));
 	}
 
@@ -128,23 +127,26 @@ public class SpoutRenderer {
 		return gl;
 	}
 
-	private Context renderer;
+	private Context context;
 	private Pipeline pipeline;
 	private Program program;
 	private Material material;
 	private final Camera camera = new ClientCamera();
-	private List<Model> renderList;
+	private List<Model> renderList = new ArrayList<>();
 	private Model model;
 	// TODO: this should be a queue
 	private final Map<Vector3, VertexData> chunkMeshes = new ConcurrentHashMap<>();
 	private final Map<Vector3, Model> chunkModels = new HashMap<>();
 
 	private void initRendering() {
-		renderer = gl.createContext();
-		renderer.setWindowTitle(client.getName());
-		renderer.setWindowSize(resolution);
-		renderer.create();
-		renderer.setClearColor(Color.DARK_GRAY);
+		context = gl.createContext();
+		context.setWindowTitle(client.getName());
+		context.setWindowSize(resolution);
+		context.create();
+		context.setClearColor(Color.DARK_GRAY);
+		context.setCamera(camera);
+		context.enableCapability(Capability.DEPTH_TEST);
+		context.enableCapability(Capability.CULL_FACE);
 
 		program = Spout.getFileSystem().getResource("shader://Spout/fallbacks/fallback.ssf");
 		program.getShader(ShaderType.VERTEX).create();
@@ -153,13 +155,7 @@ public class SpoutRenderer {
 
 		material = new Material(program);
 
-		renderer.setCamera(camera);
-
-		renderList = new ArrayList<>();
-		PipelineBuilder builder = new PipelineBuilder();
-		builder.enableCapabilities(Capability.DEPTH_TEST);
-		builder.renderModels(renderList);
-		pipeline = builder.build();
+		pipeline = new PipelineBuilder().clearBuffer().renderModels(renderList).updateDisplay().build();
 
 		final TFloatList positions = new TFloatArrayList();
 		final TFloatList textureCoords = new TFloatArrayList();
@@ -193,7 +189,7 @@ public class SpoutRenderer {
 
 		chunkMeshes.clear();
 
-		renderer.destroy();
+		context.destroy();
 	}
 
 	public void addMesh(ChunkSnapshot chunk, VertexData mesh) {
@@ -224,56 +220,18 @@ public class SpoutRenderer {
 	}
 
 	private static class ClientCamera extends Camera {
-		private final Player player;
 		public ClientCamera() {
 			super(Matrix4.ZERO);
-			player = ((Client) Spout.getEngine()).getPlayer();
 		}
 
 		@Override
 		public Matrix4 getProjectionMatrix() {
-			return player.getType(Camera.class).getProjectionMatrix();
+			return ((Client) Spout.getEngine()).getPlayer().add(CameraComponent.class).getProjection();
 		}
 
 		@Override
 		public Matrix4 getViewMatrix() {
-			return player.getType(Camera.class).getViewMatrix();
+			return ((Client) Spout.getEngine()).getPlayer().getType(CameraComponent.class).getView();
 		}
-
-		@Override
-		public Vector3 getPosition() {
-			return player.getType(Camera.class).getPosition();
-		}
-
-		@Override
-		public void setPosition(Vector3 position) {
-			player.getType(Camera.class).setPosition(position);
-		}
-
-		@Override
-		public Quaternion getRotation() {
-			return player.getType(Camera.class).getRotation();
-		}
-
-		@Override
-		public void setRotation(Quaternion rotation) {
-			player.getType(Camera.class).setRotation(rotation);
-		}
-
-		@Override
-		public Vector3 getRight() {
-			return player.getType(Camera.class).getRight();
-		}
-
-		@Override
-		public Vector3 getUp() {
-			return player.getType(Camera.class).getUp();
-		}
-
-		@Override
-		public Vector3 getForward() {
-			return player.getType(Camera.class).getForward();
-		}
-
 	}
 }
