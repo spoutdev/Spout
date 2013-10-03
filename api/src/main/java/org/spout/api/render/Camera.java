@@ -26,38 +26,30 @@
  */
 package org.spout.api.render;
 
+import org.spout.math.imaginary.Quaternion;
 import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector3;
 
 /**
  * Represents a Camera to be used for rendering.
  */
 public interface Camera {
-	/**
-	 * Get the projection matrix associated with this camera
-	 *
-	 * @return 4x4 matrix representing the projection
-	 */
-	public Matrix4 getProjection();
 
-	/**
-	 * Gets the view matrix
-	 */
-	public Matrix4 getView();
+	public Vector3 getForward();
 
-	/**
-	 * Update the view matrix.
-	 */
-	public void updateView();
+	public Vector3 getPosition();
 
-	/**
-	 * Update the view matrix for the reflected render
-	 */
-	public void updateReflectedView();
+	public Matrix4 getProjectionMatrix();
 
-	/**
-	 * Gets the view frustum of this Camera.
-	 */
-	public ViewFrustum getFrustum();
+	public Vector3 getRight();
 
-	public Matrix4 getRotation();
+	public Quaternion getRotation();
+
+	public Vector3 getUp();
+
+	public Matrix4 getViewMatrix();
+
+	public void setPosition(Vector3 pos);
+
+	public void setRotation(Quaternion rot);
 }

@@ -24,30 +24,63 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.entity;
-
-import org.spout.api.Client;
-import org.spout.api.Engine;
-import org.spout.api.component.Component;
-import org.spout.api.component.entity.PlayerNetworkComponent;
-import org.spout.api.geo.discrete.Transform;
-
-import org.spout.engine.component.entity.SpoutFallbackMovementComponent;
-import org.spout.engine.gui.SpoutScreenStack;
-
-/**
- * A subclass of SpoutPlayer with modifications for the client
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
-public class SpoutClientPlayer extends SpoutPlayer {
-	public SpoutClientPlayer(Engine engine, Class<? extends PlayerNetworkComponent> network, String name, Transform transform) {
-		super(engine, network, name, transform, null, (byte[]) null, (Class<? extends Component>[]) null);
+package org.spout.engine.renderer;
 
-		// TODO clearly, this should only be a fallback component
-		add(SpoutFallbackMovementComponent.class);
+import org.spout.api.render.Camera;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.matrix.Matrix4;
+import org.spout.math.vector.Vector3;
+
+public class SpoutCamera extends org.spout.renderer.Camera implements Camera {
+
+	public SpoutCamera(Matrix4 projection) {
+		super(projection);
+	}
+	@Override
+	public Vector3 getForward() {
+		return super.getForward();	}
+
+	@Override
+	public Vector3 getPosition() {
+		return super.getPosition();
 	}
 
 	@Override
-	public void sendMessage(String message) {
-		((SpoutScreenStack) ((Client) getEngine()).getScreenStack()).getConsole().addMessage(message);
+	public Matrix4 getProjectionMatrix() {
+		return super.getProjectionMatrix();
+	}
+
+	@Override
+	public Vector3 getRight() {
+		return super.getRight();
+	}
+
+	@Override
+	public Quaternion getRotation() {
+		return super.getRotation();
+	}
+
+	@Override
+	public Vector3 getUp() {
+		return super.getUp();
+	}
+
+	@Override
+	public Matrix4 getViewMatrix() {
+		return super.getViewMatrix();
+	}
+
+	@Override
+	public void setPosition(Vector3 pos) {
+		super.setPosition(pos);
+	}
+
+	@Override
+	public void setRotation(Quaternion rot) {
+		super.setRotation(rot);
 	}
 }
