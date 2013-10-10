@@ -50,6 +50,8 @@ public class SpoutClientPlayer extends SpoutPlayer {
 
 	@Override
 	public void sendMessage(String message) {
-		((SpoutScreenStack) ((Client) getEngine()).getScreenStack()).getConsole().addMessage(message);
+		// TODO: new-render re-implement this; possibily add a buffer-type thing for when the console is closed?
+		//((SpoutScreenStack) ((Client) getEngine()).getScreenStack()).getConsole().addMessage(message);
+		getEngine().getCommandSource().sendMessage(message);
 	}
 }
