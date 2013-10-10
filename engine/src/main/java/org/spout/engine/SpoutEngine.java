@@ -94,6 +94,17 @@ import org.spout.engine.world.SpoutRegion;
 
 public abstract class SpoutEngine implements AsyncManager, Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
+	private final SpoutConfiguration config = new SpoutConfiguration();
+	private final SpoutInputConfiguration inputConfig = new SpoutInputConfiguration();
+	// TODO: this is really hacky
+	{
+		try {
+			config.load();
+			inputConfig.load();
+		} catch (ConfigurationException e) {
+			Spout.severe("Error loading config: " + e.getMessage(), e);
+		}
+	}
 	private final PluginSecurityManager securityManager = new PluginSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
 	private final PluginManager pluginManager = new PluginManager(this, securityManager, 0.0);
 	private final ConsoleManager consoleManager;
@@ -104,8 +115,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
-	private final SpoutConfiguration config = new SpoutConfiguration();
-	private final SpoutInputConfiguration inputConfig = new SpoutInputConfiguration();
 	protected final SnapshotableReference<World> defaultWorld = new SnapshotableReference<>(snapshotManager, null);
 	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<>();
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<>(snapshotManager);
@@ -125,12 +134,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	public void init(SpoutApplication args) {
 		this.arguments = args;
-		try {
-			config.load();
-			inputConfig.load();
-		} catch (ConfigurationException e) {
-			Spout.severe("Error loading config: " + e.getMessage(), e);
-		}
 
 		consoleManager.setupConsole();
 

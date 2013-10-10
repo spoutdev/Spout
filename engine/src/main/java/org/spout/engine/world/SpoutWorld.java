@@ -1034,6 +1034,10 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 		return total;
 	}
 
+	public int getNumLoadedRegions() {
+		return this.regions.getRegions().size();
+	}
+
 	@Override
 	public TaskManager getParallelTaskManager() {
 		return parallelTaskManager;

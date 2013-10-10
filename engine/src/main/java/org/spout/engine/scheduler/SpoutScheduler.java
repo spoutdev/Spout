@@ -597,6 +597,10 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
+	private final boolean DYNAMIC_UPDATES = SpoutConfiguration.DYNAMIC_BLOCKS.getBoolean();
+	private final boolean BLOCK_PHYSICS = SpoutConfiguration.BLOCK_PHYSICS.getBoolean();
+	private final boolean LIGHTING = SpoutConfiguration.RUN_LIGHTING.getBoolean();
+
 	/**
 	 * Adds new tasks and updates existing tasks, removing them if necessary.
 	 */
@@ -646,7 +650,7 @@ public final class SpoutScheduler implements Scheduler {
 			int uD = 1;
 			int uP = 1;
 			while ((uD + uP) > 0 && totalUpdates < UPDATE_THRESHOLD) {
-				if (SpoutConfiguration.DYNAMIC_BLOCKS.getBoolean()) {
+				if (DYNAMIC_UPDATES) {
 					doDynamicUpdates(managers);
 				}
 
@@ -654,7 +658,7 @@ public final class SpoutScheduler implements Scheduler {
 				totalUpdates += uD;
 				dynamicUpdates += uD;
 
-				if (SpoutConfiguration.BLOCK_PHYSICS.getBoolean()) {
+				if (BLOCK_PHYSICS) {
 					doPhysics(managers);
 				}
 
@@ -665,7 +669,9 @@ public final class SpoutScheduler implements Scheduler {
 
 			updates.set(1);
 
-			doLighting(managers);
+			if (LIGHTING || !Spout.debugMode()) {
+				doLighting(managers);
+			}
 
 			if (totalUpdates >= UPDATE_THRESHOLD) {
 				Spout.warn("Block updates per tick of " + totalUpdates + " exceeded the threshold " + UPDATE_THRESHOLD + "; " + dynamicUpdates + " dynamic updates, " + physicsUpdates + " block physics updates and " + lightUpdates + " lighting updates");

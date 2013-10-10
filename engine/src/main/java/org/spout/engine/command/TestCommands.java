@@ -511,6 +511,17 @@ public class TestCommands {
 		}
 	}
 
+	@CommandDescription (aliases = "profile", usage = "", desc = "Print out information used to profile the engine as a whole")
+	@Platforms (Platform.SERVER)
+	@Filter (PlayerFilter.class)
+	public void profile(Player player, CommandArguments args) throws CommandException {
+		args.assertCompletelyParsed();
+		// This IS a DEBUG command ONLY
+		System.out.println("Loaded chunks: " + player.getWorld().getNumLoadedChunks());
+		System.out.println("Entities: " + player.getWorld().getAll().size());
+		System.out.println("Active chunks: " + player.getNetwork().getActiveChunks().size());
+	}
+
 	@CommandDescription (aliases = "respawn", usage = "", desc = "Forces the client to respawn")
 	@Platforms (Platform.SERVER)
 	@Filter (PlayerFilter.class)

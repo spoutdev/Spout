@@ -290,11 +290,12 @@ public class SpoutRenderer {
 			debugScreen.spoutUpdate(id++, "Spout client! Logged as " + client.getPlayer().getDisplayName() + " in world: " + client.getWorld().getName());
 			debugScreen.spoutUpdate(id++, "x: " + position.getX() + "y: " + position.getY() + "z: " + position.getZ());
 			debugScreen.spoutUpdate(id++, "FPS: " + client.getScheduler().getFps() + " (" + (client.getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal") + ")");
+			debugScreen.spoutUpdate(id++, "Regions Loaded: " + client.getWorld().getNumLoadedRegions());
 			debugScreen.spoutUpdate(id++, "Chunks Loaded: " + client.getWorld().getNumLoadedChunks());
 			debugScreen.spoutUpdate(id++, "Total ChunkMeshBatchAggregators in Renderer: " + worldRenderer.getTotalChunks() + "");
-			debugScreen.spoutUpdate(id++, "Chunks Drawn: " + ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")");
-			debugScreen.spoutUpdate(id++, "Occluded Chunks: " + (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")");
-			debugScreen.spoutUpdate(id++, "Cull Chunks: " + (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getCulledChunks() + ")");
+			debugScreen.spoutUpdate(id++, "Total Chunks Drawn: " + ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")");
+			debugScreen.spoutUpdate(id++, "Total Occluded Chunks: " + (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")");
+			debugScreen.spoutUpdate(id++, "Total Culled Chunks: " + (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getCulledChunks() + ")");
 			debugScreen.spoutUpdate(id++, "Entities: " + entityRenderer.getRenderedEntities());
 			debugScreen.spoutUpdate(id++, "Buffer: " + worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch);
 			debugScreen.spoutUpdate(id++, "Mesh batch queue size: " + ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer().getBatchWaiting());
