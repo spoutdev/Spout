@@ -531,6 +531,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 				c.syncSave();
 			}
 			if (oldState.isUnload() && !c.isObserved()) {
+				// TODO: this is getting called when it should not
 				if (removeChunk(c)) {
 					empty = true;
 				}
@@ -584,14 +585,20 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@ServerOnly
 	private void updatePopulation() {
-		for (int i = 0; i < POPULATE_PER_TICK && !scheduler.isServerOverloaded(); i++) {
+		for (int i = 0; i < POPULATE_PER_TICK && !scheduler.isServerOverloaded();) {
+			// First take from priorityQueue then from populationQueue
 			SpoutChunk toPopulate = populationPriorityQueue.poll();
 			if (toPopulate == null) {
 				toPopulate = populationQueue.poll();
 				if (toPopulate == null) {
+					// If there's no more chunks to populate, we're done
 					break;
 				}
 			}
+
+			// TODO: we should first check if the chunk NEEDS population and only load chunks if it does
+			// This would mean that chunks that don't need population, they're performance hit is nearly 0
+			// Also, we could move loading chunks to the actual population, so if the populators don't need the extra chunks, they don't get loaded either
 			if (toPopulate.isLoaded()) {
 				if (!toPopulate.isObserved()) {
 					continue;
@@ -603,6 +610,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 						int nyy = ny + toPopulate.getY();
 						for (int nz = -1; nz <= 1; nz++) {
 							int nzz = nz + toPopulate.getZ();
+							// TODO: Can we make chunks not unload if there are surrounding chunks that are/need to be queued for population
 							Chunk c = getWorld().getChunk(nxx, nyy, nzz, LoadOption.LOAD_ONLY);
 							if (c == null) {
 								surrounded = false;
@@ -615,10 +623,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 					if (scheduler.isServerOverloaded()) {
 						break;
 					}
-					continue;
+					i++;
 				}
 			}
-			i--;
 		}
 	}
 
@@ -661,6 +668,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 	}
 
+	private final boolean RUN_POPULATION = SpoutConfiguration.RUN_POPULATION.getBoolean(true);
+
 	@Override
 	public void startTickRun(int stage, long delta) {
 		final float dt = delta / 1000f;
@@ -671,7 +680,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 				updateEntities(dt);
 				if (Spout.getPlatform() == Platform.SERVER) {
 					updateAutosave();
-					updatePopulation();
+					if (RUN_POPULATION) {
+						updatePopulation();
+					}
 					unloadChunks();
 				}
 				break;
@@ -792,6 +803,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 					if (chunk != null) {
 						chunk.updateExpiredObservers();
 						if (Spout.getPlatform() == Platform.SERVER) {
+							// TODO: isEmpty has fairly bad perfomance; can we optimize it out?
 							if (!chunk.getDataMap().getDeltaMap().isEmpty()) {
 								for (Player entity : chunk.getObservingPlayers()) {
 									entity.getNetwork().callProtocolEvent(new ChunkDatatableSendEvent(chunk));

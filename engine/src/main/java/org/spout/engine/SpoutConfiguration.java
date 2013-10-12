@@ -65,6 +65,7 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder DEBUG_SHADERS = new ConfigurationHolder(false, "debug", "debug-shaders");
 	public static final ConfigurationHolder CREATE_FALLBACK_WORLD = new ConfigurationHolder(true, "debug", "create-fallback-world");
 	public static final ConfigurationHolder RUN_LIGHTING = new ConfigurationHolder(true, "debug", "run-lighting");
+	public static final ConfigurationHolder RUN_POPULATION = new ConfigurationHolder(true, "debug", "run-population");
 
 	public SpoutConfiguration() {
 		super(new YamlConfiguration(new File(CommonFileSystem.CONFIG_DIRECTORY, "spout.yml")));

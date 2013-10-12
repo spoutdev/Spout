@@ -72,9 +72,6 @@ public class ManagedHashMap extends SerializableHashMap implements ManagedMap {
 
 	@Override
 	public void deserialize(byte[] data, boolean wipe) throws IOException {
-		if (wipe) {
-			delta.setType(DeltaMap.DeltaType.REPLACE);
-		}
 		delta.deserialize(data, wipe);
 		super.deserialize(data, wipe);
 	}

@@ -61,7 +61,9 @@ public class SerializableHashMap implements SerializableMap {
 	public static final String NILTYPE = "NULL";
 
 	public SerializableHashMap() {
-		this.map = new ConcurrentHashMap<>();
+		// Let's scale these values down a little
+		// TODO: maybe tweak these a little
+		this.map = new ConcurrentHashMap<>(8, .9f, 5);
 	}
 
 	@Override

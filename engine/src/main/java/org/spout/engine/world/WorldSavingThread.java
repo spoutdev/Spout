@@ -46,6 +46,7 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 /**
  * Dedicated thread to IO write operations for world chunks
  */
+// TODO: we should send snapshots here, not actual SpoutChunk
 public class WorldSavingThread extends Thread {
 	private static final WorldSavingThread instance = new WorldSavingThread();
 	private final AtomicBoolean queueRunning = new AtomicBoolean(true);

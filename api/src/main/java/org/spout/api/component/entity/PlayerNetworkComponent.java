@@ -292,6 +292,7 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 			// Then initialize new ones
 			initChunks();
 
+			// We will update old chunks, but not new ones
 			List<Point> prevActive = new ArrayList<>(activeChunks);
 
 			// Now send new chunks
@@ -312,7 +313,7 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 
 			// Check all active old chunks for updates
 			for (Point p : prevActive) {
-				Chunk chunk = p.getChunk(LoadOption.LOAD_ONLY);
+				Chunk chunk = p.getChunk(LoadOption.NO_LOAD);
 				if (chunk == null) {
 					continue;
 				}
