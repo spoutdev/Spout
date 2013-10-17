@@ -40,7 +40,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -184,7 +186,7 @@ public final class SpoutScheduler implements Scheduler {
 			meshThread = null;
 		}
 
-		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 1, new MarkedNamedThreadFactory("SpoutScheduler - async manager executor service", true));
+		executorService = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() + 1, Runtime.getRuntime().availableProcessors() * 3 + 1, 120L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new MarkedNamedThreadFactory("SpoutScheduler - AsyncManager executor service", false));
 
 		taskManager = new SpoutTaskManager(this, mainThread);
 	}
@@ -846,10 +848,7 @@ public final class SpoutScheduler implements Scheduler {
 						Spout.info("Warning: main thread interrupted while waiting on tick stage task, " + taskFactory.getClass().getName());
 						break forLoop;
 					} catch (ExecutionException e) {
-						Spout.info("Exception thrown when executing task, " + taskFactory.getClass().getName() + ", " + e.getMessage());
-						e.printStackTrace();
-						Spout.info("Caused by");
-						e.getCause().printStackTrace();
+						Spout.info("Exception thrown when executing task, " + taskFactory.getClass().getName() + ", " + e.getMessage(), e);
 						done = true;
 					} catch (TimeoutException e) {
 						if (((SpoutEngine) engine).isSetupComplete()) {
@@ -1060,8 +1059,7 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private void logLongDurationTick(String stage, Iterable<AsyncManager> executors) {
-		
-		engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY) + "ms");
+		Spout.info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY) + "ms");
 		/*AsyncExecutorUtils.dumpAllStacks();
 		AsyncExecutorUtils.checkForDeadlocks();
 		for (AsyncExecutor executor : executors) {
@@ -1088,7 +1086,7 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private static class MarkedNamedThreadFactory extends Thread implements ThreadFactory {
-		private final AtomicInteger idCounter = new AtomicInteger();
+		private final AtomicInteger idCounter = new AtomicInteger(1);
 		private final String namePrefix;
 		private final boolean daemon;
 
