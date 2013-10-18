@@ -27,6 +27,7 @@
 package org.spout.engine.world;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -203,6 +204,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		} else {
 			this.generator = new RegionGenerator(this, 4);
 			this.chunkStore = ((SpoutServerWorld) world).getRegionFile(getX(), getY(), getZ());
+			this.chunkStore.getBlockInputStream(0);
 		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), null, this, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
@@ -260,18 +262,24 @@ public class SpoutRegion extends Region implements AsyncManager {
 		SpoutChunk newChunk = null;
 		ChunkDataForRegion dataForRegion = null;
 
-		boolean fileExists = this.inputStreamExists(x, y, z);
-
-		if (loadopt.loadIfNeeded() && fileExists) {
+		if (!loadopt.loadIfNeeded()) {
+			return null;
+		}
+		InputStream stream = this.getChunkInputStream(x, y, z);
+		if (stream != null) {
 			dataForRegion = new ChunkDataForRegion();
-			newChunk = ChunkFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
+			newChunk = ChunkFiles.loadChunk(this, x, y, z, stream, dataForRegion);
 			if (newChunk == null) {
 				Spout.getLogger().severe("Unable to load chunk at location " + (getChunkX() + x) + ", " + (getChunkY() + y) + ", " + (getChunkZ() + z) + " in region " + this + ", regenerating chunks");
-				fileExists = false;
 			}
 		}
+		try {
+			if (stream != null) {
+				stream.close();
+			}
+		} catch (IOException e) {}
 
-		if (loadopt.generateIfNeeded() && !fileExists && newChunk == null) {
+		if (loadopt.generateIfNeeded() && newChunk == null) {
 			generateColumn(x, z);
 			final SpoutChunk generatedChunk = chunks[x][y][z].get();
 			if (generatedChunk != null) {
@@ -707,11 +715,12 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	private int reapX = 0, reapY = 0, reapZ = 0;
 
+	public final int CHUNK_REAPS_PER_TICK = SpoutConfiguration.REAP_CHUNKS_PER_TICK.getInt();
 	@Override
 	public void finalizeRun() {
 		if (Spout.getPlatform() == Platform.SERVER) {
 			//long worldAge = getWorld().getAge();
-			for (int reap = 0; reap < SpoutConfiguration.REAP_CHUNKS_PER_TICK.getInt(); reap++) {
+			for (int reap = 0; reap < CHUNK_REAPS_PER_TICK; reap++) {
 				if (++reapX >= CHUNKS.SIZE) {
 					reapX = 0;
 					if (++reapY >= CHUNKS.SIZE) {

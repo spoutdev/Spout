@@ -28,6 +28,8 @@ package org.spout.engine.world;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -54,11 +56,11 @@ import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.math.GenericMath;
 
 public class RegionGenerator implements Named {
-	private final static ExecutorService pool =
-			Executors.newFixedThreadPool(
-					Runtime.getRuntime().availableProcessors() * 2 + 1,
-					new NamedThreadFactory("RegionGenerator - async pool",
-							true));
+	private final static ExecutorService pool = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() + 1,
+		Runtime.getRuntime().availableProcessors() * 3 + 1, 120L, TimeUnit.SECONDS,
+		new LinkedBlockingQueue<Runnable>(),
+		new NamedThreadFactory("RegionGenerator - async pool", false));
+
 	private final SpoutRegion region;
 	private final SpoutWorld world;
 	private final Lock[][] columnLocks;
@@ -393,23 +395,22 @@ public class RegionGenerator implements Named {
 	}
 
 	protected void touchChunk(final int x, final int y, final int z) {
-
-		final int mask = Region.CHUNKS.MASK;
-
-		Chunk c = region.getChunk(x, y, z, LoadOption.NO_LOAD);
-
-		if (c != null) {
-			return;
-		}
-
-		if (!region.inputStreamExists(x, y, z)) {
-			pool.submit(new Runnable() {
-				@Override
-				public void run() {
-					generateColumn(x & mask, z & mask, false, false);
+		pool.submit(new Runnable() {
+			@Override
+			public void run() {
+				if (region.inputStreamExists(x, y, z)) {
+					return;
 				}
-			}, true);
-		}
+				final int mask = Region.CHUNKS.MASK;
+
+				Chunk c = region.getChunk(x, y, z, LoadOption.NO_LOAD);
+
+				if (c != null) {
+					return;
+				}
+				generateColumn(x & mask, z & mask, false, false);
+			}
+		}, true);
 	}
 
 	private static enum GenerateState {
