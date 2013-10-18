@@ -40,6 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -186,7 +187,7 @@ public final class SpoutScheduler implements Scheduler {
 			meshThread = null;
 		}
 
-		executorService = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() + 1, Runtime.getRuntime().availableProcessors() * 3 + 1, 120L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new MarkedNamedThreadFactory("SpoutScheduler - AsyncManager executor service", false));
+		executorService = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() + 1, Runtime.getRuntime().availableProcessors() * 3 + 1, 120L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new MarkedNamedThreadFactory("SpoutScheduler - AsyncManager executor service", false));
 
 		taskManager = new SpoutTaskManager(this, mainThread);
 	}
