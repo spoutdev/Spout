@@ -107,23 +107,28 @@ public class SimpleRegionFile implements ByteArrayArray {
 		if (file.length() <= headerSize) {
 			file.seek(0);
 			file.writeInt(VERSION);
+			this.version = VERSION;
 			file.writeInt(desiredSegmentSize);
+			this.segmentSize = desiredSegmentSize;
 			file.writeInt(entries);
+			this.entries = entries;
 			for (int i = 0; i < entries << 1; i++) {
 				file.writeInt(0);
 			}
+		} else {
+			file.seek(0);
+			this.version = file.readInt();
+			this.segmentSize = file.readInt();
+			this.entries = file.readInt();
+
+			if (entries != this.entries) {
+				file.close();
+				throw new SRFException("Number of entries mismatch for file " + this.filePath + ", expected " + entries + " got " + this.entries);
+			}
 		}
 
-		file.seek(0);
-		this.version = file.readInt();
-		this.segmentSize = file.readInt();
 		this.segmentMask = (1 << this.segmentSize) - 1;
-		this.entries = file.readInt();
 
-		if (entries != this.entries) {
-			file.close();
-			throw new SRFException("Number of entries mismatch for file " + this.filePath + ", expected " + entries + " got " + this.entries);
-		}
 
 		inuse = new AtomicReference<>(new AtomicBoolean[0]);
 
@@ -144,7 +149,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 			blockSegmentStart[i] = new AtomicInteger(file.readInt());
 			blockActualLength[i] = new AtomicInteger(file.readInt());
 			blockSegmentLength[i] = new AtomicInteger(sizeToSegments(blockActualLength[i].get()));
-			blockLock[i] = new SRFReentrantReadWriteLock(numberBlocksLocked);
+			//blockLock[i] = new SRFReentrantReadWriteLock(numberBlocksLocked);
 			int length = reserveSegments(blockSegmentStart[i].get(), blockSegmentLength[i].get());
 			if (length != blockSegmentLength[i].get()) {
 				throw new SRFException("Reserved segments for Block " + i + " overlap with another block");
@@ -164,7 +169,8 @@ public class SimpleRegionFile implements ByteArrayArray {
 			throw new SRFException("Read block index out of range");
 		}
 		refreshAccess();
-		Lock lock = blockLock[i].readLock();
+		//Lock lock = blockLock[i].readLock();
+		Lock lock = getLock(i).readLock();
 		lock.lock();
 		try {
 			if (this.isClosed()) {
@@ -182,7 +188,8 @@ public class SimpleRegionFile implements ByteArrayArray {
 			throw new SRFException("Read block index out of range");
 		}
 		refreshAccess();
-		Lock lock = blockLock[i].readLock();
+		//Lock lock = blockLock[i].readLock();
+		Lock lock = getLock(i).readLock();
 		lock.lock();
 		try {
 			if (this.isClosed()) {
@@ -214,7 +221,8 @@ public class SimpleRegionFile implements ByteArrayArray {
 			throw new SRFException("Read block index out of range");
 		}
 		refreshAccess();
-		Lock lock = blockLock[i].writeLock();
+		//Lock lock = blockLock[i].writeLock();
+		Lock lock = getLock(i).writeLock();
 		lock.lock();
 		if (this.isClosed()) {
 			throw new SRFClosedException("File closed");
@@ -252,7 +260,8 @@ public class SimpleRegionFile implements ByteArrayArray {
 	@Override
 	public void delete(int i) throws IOException {
 		refreshAccess();
-		Lock lock = blockLock[i].writeLock();
+		//Lock lock = blockLock[i].writeLock();
+		Lock lock = getLock(i).writeLock();
 		lock.lock();
 		try {
 			if (this.isClosed()) {
@@ -530,5 +539,14 @@ public class SimpleRegionFile implements ByteArrayArray {
 
 			success = inuse.compareAndSet(oldArray, newArray);
 		}
+	}
+
+	private synchronized SRFReentrantReadWriteLock getLock(int i) {
+		SRFReentrantReadWriteLock lock = blockLock[i];
+		if (lock == null) {
+			lock = new SRFReentrantReadWriteLock(numberBlocksLocked);
+			blockLock[i] = lock;
+		}
+		return lock;
 	}
 }

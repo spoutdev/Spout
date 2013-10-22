@@ -106,7 +106,7 @@ public class SpoutTaskManager implements TaskManager {
 
 	@Override
 	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
-		return scheduleAsyncDelayedTask(plugin, task, delay, priority, true);
+		return scheduleAsyncDelayedTask(plugin, task, delay, priority, false);
 	}
 
 	@Override

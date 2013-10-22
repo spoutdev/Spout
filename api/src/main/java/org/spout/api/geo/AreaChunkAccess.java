@@ -41,9 +41,9 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	/**
 	 * Gets the {@link Chunk} at chunk coordinates (x, y, z)
 	 *
-	 * @param x coordinate of the chunk
-	 * @param y coordinate of the chunk
-	 * @param z coordinate of the chunk
+	 * @param x local coordinate of the chunk
+	 * @param y local coordinate of the chunk
+	 * @param z local coordinate of the chunk
 	 * @return the chunk
 	 */
 	@LiveRead
@@ -52,9 +52,9 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	/**
 	 * Gets the {@link Chunk} at chunk coordinates (x, y, z)
 	 *
-	 * @param x coordinate of the chunk
-	 * @param y coordinate of the chunk
-	 * @param z coordinate of the chunk
+	 * @param x local coordinate of the chunk
+	 * @param y local coordinate of the chunk
+	 * @param z local coordinate of the chunk
 	 * @param loadopt to control whether to load and/or generate the chunk, if needed
 	 * @return the chunk
 	 */

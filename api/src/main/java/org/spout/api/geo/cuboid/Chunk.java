@@ -347,13 +347,40 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets a chunk relative to this chunk
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param opt 
+	 * @return The Chunk, or null if not loaded and load is False
+	 */
+	public Chunk getRelative(int x, int y, int z, LoadOption opt) {
+		// We check to see if the chunk is in this chunk's region first, to avoid a map lookup for the other region
+		final int otherChunkX = this.getX() + x;
+		final int otherChunkY = this.getX() + y;
+		final int otherChunkZ = this.getX() + z;
+		final int regionX = getRegion().getX();
+		final int regionY = getRegion().getY();
+		final int regionZ = getRegion().getZ();
+		final int otherRegionX = otherChunkX / Region.CHUNKS.SIZE;
+		final int otherRegionY = otherChunkY / Region.CHUNKS.SIZE;
+		final int otherRegionZ = otherChunkZ / Region.CHUNKS.SIZE;
+		if (regionX == otherRegionX && regionZ == otherRegionZ && regionY == otherRegionY) {
+			// Get the chunk from the current region
+			return getRegion().getChunk(otherChunkX - otherRegionX, otherChunkY - otherRegionY, otherChunkZ - otherRegionZ, opt);
+		}
+		return this.getWorld().getChunk(otherChunkX, otherChunkY, otherChunkZ, opt);	
+	}
+
+	/**
+	 * Gets a chunk relative to this chunk
 	 *
 	 * @param offset of the chunk relative to this chunk
 	 * @param opt True to load the chunk if it is not yet loaded
 	 * @return The Chunk, or null if not loaded and load is False
 	 */
 	public Chunk getRelative(Vector3 offset, LoadOption opt) {
-		return this.getWorld().getChunk(this.getX() + (int) offset.getX(), this.getY() + (int) offset.getY(), this.getZ() + (int) offset.getZ(), opt);
+		return getRelative((int) offset.getX(), (int) offset.getX(), (int) offset.getX(), opt);
 	}
 
 	/**

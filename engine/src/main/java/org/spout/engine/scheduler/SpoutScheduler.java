@@ -958,7 +958,7 @@ public final class SpoutScheduler implements Scheduler {
 		return taskManager.getUpTime();
 	}
 
-	@Override
+	//@Override
 	public SpoutSnapshotLock getSnapshotLock() {
 		return snapshotLock;
 	}

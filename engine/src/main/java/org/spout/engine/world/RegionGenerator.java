@@ -52,6 +52,7 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
+import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.math.GenericMath;
 
@@ -133,17 +134,17 @@ public class RegionGenerator implements Named {
 			generationIndex = generationCounter.getAndIncrement();
 		}
 
-		Lock colLock = getColumnLock(chunkX, chunkZ);
+		final Lock colLock = getColumnLock(chunkX, chunkZ);
 
 		if (sync) {
-			if (Spout.getScheduler().getSnapshotLock().isWriteLocked()) {
+			/*if (Spout.getScheduler().getSnapshotLock().isWriteLocked()) {
 				throw new IllegalStateException("Attempt to sync generate a chunk during snapshot lock");
 				// This code allows the sync thread to cancel an async generation.
 				// However, sync generations should not happen during snapshot lock
 				//
 				// TODO - simplify this method, assuming no thread can hold a snapshot lock before it is called
 				// generated.compareAndSet(GenerateState.IN_PROGRESS_ASYNC, GenerateState.IN_PROGRESS_SYNC);
-			}
+			}*/
 			colLock.lock();
 		} else if (wait) {
 			colLock.lock();
@@ -214,7 +215,7 @@ public class RegionGenerator implements Named {
 									}
 								}
 							}
-							SnapshotLock lock = Spout.getScheduler().getSnapshotLock();
+							SnapshotLock lock = ((SpoutScheduler) Spout.getScheduler()).getSnapshotLock();
 							lock.readLock(colLock);
 							try {
 								world.setIfNotGenerated(colWorldX, colWorldZ, generatedHeights);
@@ -263,7 +264,7 @@ public class RegionGenerator implements Named {
 				}
 			}
 
-			SnapshotLock lock = Spout.getScheduler().getSnapshotLock();
+			SnapshotLock lock = ((SpoutScheduler) Spout.getScheduler()).getSnapshotLock();
 
 			lock.readLock(colLock);
 			try {
@@ -377,7 +378,7 @@ public class RegionGenerator implements Named {
 					pool.submit(new Runnable() {
 						@Override
 						public void run() {
-							SnapshotLock lock = Spout.getScheduler().getSnapshotLock();
+							SnapshotLock lock = ((SpoutScheduler) Spout.getScheduler()).getSnapshotLock();
 							lock.readLock(RegionGenerator.this);
 							try {
 								SpoutRegion newRegion = region.getLocalRegion(finalFace, LoadOption.LOAD_GEN);

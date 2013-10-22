@@ -311,6 +311,7 @@ public class NetworkComponent extends EntityComponent {
 		int cx = p.getChunkX();
 		int cy = p.getChunkY();
 		int cz = p.getChunkZ();
+		Chunk center = p.getChunk(LoadOption.LOAD_ONLY);
 
 		HashSet<Chunk> observing = new HashSet<>((syncDistance * syncDistance * syncDistance * 3) / 2);
 		Iterator<IntVector3> itr = liveObserverIterator.get();
@@ -320,7 +321,7 @@ public class NetworkComponent extends EntityComponent {
 		observeChunksFailed = false;
 		while (itr.hasNext()) {
 			IntVector3 v = itr.next();
-			Chunk chunk = w.getChunk(v.getX(), v.getY(), v.getZ(), LoadOption.LOAD_ONLY);
+			Chunk chunk = center == null ? w.getChunk(v.getX(), v.getY(), v.getZ(), LoadOption.LOAD_ONLY) : center.getRelative(v.getX() - cx, v.getY() - cy, v.getZ() - cz, LoadOption.LOAD_ONLY);
 			if (chunk != null) {
 				chunk.refreshObserver(getOwner());
 				observing.add(chunk);
