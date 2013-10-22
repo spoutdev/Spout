@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -81,7 +80,6 @@ import org.spout.api.util.cuboid.LocalRegionChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.LocalRegionChunkHeightMapBufferWrapper;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
-import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
 
@@ -90,7 +88,6 @@ import org.spout.engine.component.entity.SpoutPhysicsComponent;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutEntitySnapshot;
-import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.versioned.ChunkFiles;
 import org.spout.engine.scheduler.SpoutScheduler;
@@ -149,7 +146,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	private final RegionGenerator generator;
 	private final SpoutTaskManager taskManager;
 	private final SpoutScheduler scheduler;
-	private final LinkedHashMap<SpoutPlayer, TByteTripleHashSet> observers = new LinkedHashMap<>();
 	protected final SetQueue<SpoutChunk> localPhysicsChunkQueue = new SetQueue<>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutChunk> globalPhysicsChunkQueue = new SetQueue<>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutChunk> dirtyChunkQueue = new SetQueue<>(CHUNKS.VOLUME);
@@ -1611,7 +1607,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Cannot queue chunks for generation if not in server mode!");
 		}
-		generator.touchChunk(chunk.getFloorX(), chunk.getFloorY(), chunk.getFloorZ());
+		generator.touchChunk((int) chunk.getX(), (int) chunk.getY(), (int) chunk.getZ());
 	}
 
 	@Override

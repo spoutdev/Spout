@@ -57,7 +57,7 @@ import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.math.GenericMath;
 
 public class RegionGenerator implements Named {
-	private final static ExecutorService pool = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() + 1,
+	private final static ExecutorService pool = new ThreadPoolExecutor(1,
 		Runtime.getRuntime().availableProcessors() * 3 + 1, 120L, TimeUnit.SECONDS,
 		new LinkedBlockingQueue<Runnable>(),
 		new NamedThreadFactory("RegionGenerator - async pool", false));
@@ -203,8 +203,8 @@ public class RegionGenerator implements Named {
 								int blWorldX = blockX + (colWorldX << Chunk.BLOCKS.BITS);
 								for (int blockZ = 0; blockZ < Chunk.BLOCKS.SIZE; blockZ++) {
 									int blWorldZ = blockZ + (colWorldZ << Chunk.BLOCKS.BITS);
-									int topY = buffer.getTop().getFloorY();
-									int botY = buffer.getBase().getFloorY();
+									int topY = (int) buffer.getTop().getY();
+									int botY = (int) buffer.getBase().getY();
 									generatedHeights[blockX][blockZ] = region.getBlockY() - 1;
 									for (int blY = topY - 1; blY >= botY; blY--) {
 										BlockMaterial m = buffer.get(blWorldX, blY, blWorldZ);
