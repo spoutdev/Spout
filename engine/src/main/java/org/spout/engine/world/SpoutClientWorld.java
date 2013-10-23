@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.spout.api.Platform;
+import org.spout.api.Spout;
 
 import org.spout.api.component.Component;
 import org.spout.api.component.entity.EntityComponent;
@@ -83,6 +85,19 @@ public class SpoutClientWorld extends SpoutWorld {
 		for (Region r : regions) {
 			r.unload(save);
 		}
+	}
+
+	@Override
+	protected SpoutColumn getColumn(int x, int z, LoadOption loadopt) {
+		SpoutColumn column = super.getColumn(x, z, loadopt);
+		if (column == null) {
+			int[][] heights = new int[16][16];
+			for (int[] row : heights) {
+				Arrays.fill(row, (byte) 0);
+			}
+			return setColumn(x, z, new SpoutColumn(heights, this, x, z));
+		}
+		return column;
 	}
 
 	@Override
@@ -138,16 +153,6 @@ public class SpoutClientWorld extends SpoutWorld {
 	@Override
 	public void removeColumn(int x, int z, SpoutColumn column) {
 		throw new UnsupportedOperationException("Client is not allowed to remove a column");
-	}
-
-	@Override
-	public SpoutColumn setIfNotGenerated(int x, int z, int[][] heightMap) {
-		throw new UnsupportedOperationException("Client is not allowed to set modify columns");
-	}
-
-	@Override
-	public SpoutColumn loadColumn(int x, int z) {
-		throw new UnsupportedOperationException("Client is not allowed to load columns");
 	}
 
 	@Override

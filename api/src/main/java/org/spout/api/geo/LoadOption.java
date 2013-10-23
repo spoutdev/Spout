@@ -26,29 +26,36 @@
  */
 package org.spout.api.geo;
 
-public enum LoadOption {
+public class LoadOption {
 	/**
 	 * Do not load or generate chunk/region if not currently loaded
 	 */
-	NO_LOAD(false, false),
+	public static final LoadOption NO_LOAD = new LoadOption(false, false, true);
 	/**
 	 * Load chunk/region if not currently loaded, but do not generate it if it does not yet exist
 	 */
-	LOAD_ONLY(true, false),
+	public static final LoadOption LOAD_ONLY = new LoadOption(true, false, true);
 	/**
 	 * Load chunk/region if not currently loaded, and generate it if it does not yet exist
 	 */
-	LOAD_GEN(true, true),
+	public static final LoadOption LOAD_GEN = new LoadOption(true, true, true);
 	/**
 	 * Don't load the chunk if it has already been generated, only generate if it does not yet exist
 	 */
-	GEN_ONLY(false, true);
+	public static final LoadOption GEN_ONLY = new LoadOption(false, true, true);
+	/**
+	 * Load chunk/region if not currently loaded, and generate it if it does not yet exist. Do not wait for it to Load/Gen.
+	 */
+	public static final LoadOption LOAD_GEN_NOWAIT = new LoadOption(true, true, false);
+
 	private final boolean load;
 	private final boolean generate;
+	private final boolean wait;
 
-	private LoadOption(boolean load, boolean generate) {
+	public LoadOption(boolean load, boolean generate, boolean wait) {
 		this.load = load;
 		this.generate = generate;
+		this.wait = wait;
 	}
 
 	/**
@@ -67,5 +74,19 @@ public enum LoadOption {
 	 */
 	public final boolean generateIfNeeded() {
 		return generate;
+	}
+
+	/**
+	 * Test if chunk/region should be generated if it does not exist
+	 *
+	 * @return true if yes, false if no
+	 */
+	public final boolean waitForLoadOrGen() {
+		return wait;
+	}
+
+	@Override
+	public String toString() {
+		return "LoadOption{" + "load=" + load + ", generate=" + generate + ", wait=" + wait + '}';
 	}
 }

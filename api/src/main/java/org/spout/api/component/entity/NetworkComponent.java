@@ -60,6 +60,7 @@ import org.spout.math.vector.Vector3;
  * The networking behind {@link org.spout.api.entity.Entity}s.
  */
 public class NetworkComponent extends EntityComponent {
+	public static final LoadOption LOAD_NOWAIT = new LoadOption(true, false, false);
 	private static final WrappedSerizableIterator INITIAL_TICK = new WrappedSerizableIterator(null);
 	//TODO: Move all observer code to NetworkComponent
 	public final DefaultedKey<Boolean> IS_OBSERVER = new DefaultedKeyImpl<>("IS_OBSERVER", false);
@@ -303,7 +304,6 @@ public class NetworkComponent extends EntityComponent {
 	@ServerOnly
 	protected void updateObserver() {
 		first = false;
-		List<Vector3> ungenerated = new ArrayList<>();
 		final int syncDistance = getSyncDistance();
 		World w = getOwner().getWorld();
 		Transform t = getOwner().getPhysics().getTransform();
@@ -311,7 +311,7 @@ public class NetworkComponent extends EntityComponent {
 		int cx = p.getChunkX();
 		int cy = p.getChunkY();
 		int cz = p.getChunkZ();
-		Chunk center = p.getChunk(LoadOption.LOAD_ONLY);
+		Chunk center = p.getChunk(LoadOption.LOAD_GEN_NOWAIT);
 
 		HashSet<Chunk> observing = new HashSet<>((syncDistance * syncDistance * syncDistance * 3) / 2);
 		Iterator<IntVector3> itr = liveObserverIterator.get();
@@ -321,12 +321,11 @@ public class NetworkComponent extends EntityComponent {
 		observeChunksFailed = false;
 		while (itr.hasNext()) {
 			IntVector3 v = itr.next();
-			Chunk chunk = center == null ? w.getChunk(v.getX(), v.getY(), v.getZ(), LoadOption.LOAD_ONLY) : center.getRelative(v.getX() - cx, v.getY() - cy, v.getZ() - cz, LoadOption.LOAD_ONLY);
+			Chunk chunk = center == null ? w.getChunk(v.getX(), v.getY(), v.getZ(), LoadOption.LOAD_GEN_NOWAIT) : center.getRelative(v.getX() - cx, v.getY() - cy, v.getZ() - cz, LoadOption.LOAD_GEN_NOWAIT);
 			if (chunk != null) {
 				chunk.refreshObserver(getOwner());
 				observing.add(chunk);
 			} else {
-				ungenerated.add(v.toVector3());
 				observeChunksFailed = true;
 			}
 		}
@@ -340,9 +339,6 @@ public class NetworkComponent extends EntityComponent {
 		}
 		observingChunks.clear();
 		observingChunks.addAll(observing);
-		if (!ungenerated.isEmpty()) {
-			w.queueChunksForGeneration(ungenerated);
-		}
 	}
 
 	public void copySnapshot() {

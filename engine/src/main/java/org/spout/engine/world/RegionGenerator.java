@@ -37,6 +37,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.spout.api.Platform;
+import org.spout.api.ServerOnly;
 import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
@@ -63,7 +64,7 @@ public class RegionGenerator implements Named {
 		new NamedThreadFactory("RegionGenerator - async pool", false));
 
 	private final SpoutRegion region;
-	private final SpoutWorld world;
+	private final SpoutServerWorld world;
 	private final Lock[][] columnLocks;
 	private final AtomicReference<GenerateState>[][] generatedColumns;
 	private final int shift;
@@ -75,6 +76,7 @@ public class RegionGenerator implements Named {
 	private final int cz;
 
 	@SuppressWarnings ("unchecked")
+	@ServerOnly
 	public RegionGenerator(SpoutRegion region, int width) {
 		if (GenericMath.roundUpPow2(width) != width || width > Region.CHUNKS.SIZE || width < 0) {
 			throw new IllegalArgumentException("Width must be a power of 2 and can't be more than one region width");
@@ -96,7 +98,7 @@ public class RegionGenerator implements Named {
 
 		this.shift = GenericMath.multiplyToShift(width);
 		this.region = region;
-		this.world = region.getWorld();
+		this.world = (SpoutServerWorld) region.getWorld();
 		this.cx = region.getChunkX();
 		this.cy = region.getChunkY();
 		this.cz = region.getChunkZ();
@@ -137,14 +139,16 @@ public class RegionGenerator implements Named {
 		final Lock colLock = getColumnLock(chunkX, chunkZ);
 
 		if (sync) {
-			/*if (Spout.getScheduler().getSnapshotLock().isWriteLocked()) {
+			if (((SpoutScheduler) Spout.getScheduler()).getSnapshotLock().isWriteLocked()) {
+				// This is a really really bad place to be. It means we're waiting for the region to finish generating when it can't set the region.
+				// It's either this error or a deadlock
 				throw new IllegalStateException("Attempt to sync generate a chunk during snapshot lock");
 				// This code allows the sync thread to cancel an async generation.
 				// However, sync generations should not happen during snapshot lock
 				//
 				// TODO - simplify this method, assuming no thread can hold a snapshot lock before it is called
 				// generated.compareAndSet(GenerateState.IN_PROGRESS_ASYNC, GenerateState.IN_PROGRESS_SYNC);
-			}*/
+			}
 			colLock.lock();
 		} else if (wait) {
 			colLock.lock();
@@ -224,7 +228,7 @@ public class RegionGenerator implements Named {
 							}
 						}
 
-						col = world.getColumn(colWorldX, colWorldZ, LoadOption.LOAD_GEN, sync);
+						col = world.getColumn(colWorldX, colWorldZ, LoadOption.LOAD_GEN);
 						if (col == null) {
 							throw new IllegalStateException("Column generation failed, " + colWorldX + ", " + colWorldZ + " chunk: " + chunkX + ", " + chunkZ + " region (chunk coords): " + region.getBase().toChunkString());
 						}
@@ -279,7 +283,7 @@ public class RegionGenerator implements Named {
 
 							for (int i = 0; i < managers.length; i++) {
 								CuboidLightBuffer lightBuffer = buffers[i][xx][yy][zz];
-								if (newChunk.setIfAbsentLightBuffer((short) lightBuffer.getManagerId(), lightBuffer) != lightBuffer) {
+								if (newChunk.setIfAbsentLightBuffer(lightBuffer.getManagerId(), lightBuffer) != lightBuffer) {
 									Spout.getLogger().info("Unable to set light buffer for new chunk " + newChunk + " as the id is already in use, " + lightBuffer.getManagerId());
 								}
 							}

@@ -127,8 +127,8 @@ public class RegionSource implements Iterable<Region> {
 	 */
 	@LiveRead
 	// TODO RegionSource no longer generates regions; make this more of a client/server mold
-	public SpoutRegion getRegion(int x, int y, int z, LoadOption loadopt) {
-		if (loadopt != LoadOption.NO_LOAD) {
+	public SpoutRegion getRegion(final int x, final int y, final int z, final LoadOption loadopt) {
+		if (loadopt.loadIfNeeded()) {
 			TickStage.checkStage(~TickStage.SNAPSHOT);
 		}
 
@@ -142,12 +142,30 @@ public class RegionSource implements Iterable<Region> {
 			return null;
 		}
 
-		/* If not generating region, and it doesn't exist yet, we're done */
-		if ((!loadopt.generateIfNeeded()) && (!SpoutRegion.regionFileExists(world, x, y, z))) {
+		if (!loadopt.generateIfNeeded()) {
 			return null;
 		}
 
-		region = new SpoutRegion(world, x, y, z, this);
+		if (loadopt.waitForLoadOrGen()) {
+			return newRegion(loadopt.generateIfNeeded(), x, y, z);
+		}
+
+		((SpoutScheduler) Spout.getScheduler()).coreAsyncTask(new Runnable() {
+			@Override
+			public void run() {
+				newRegion(loadopt.generateIfNeeded(), x, y, z);
+			}
+		});
+
+		return null;
+	}
+
+	private SpoutRegion newRegion(boolean gen, int x, int y, int z) {
+		/* If not generating region, and it doesn't exist yet, we're done */
+		if (!gen && !SpoutRegion.regionFileExists(world, x, y, z)) {
+			return null;
+		}
+		SpoutRegion region = new SpoutRegion(world, x, y, z, this);
 		SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);
 
 		if (current != null) {

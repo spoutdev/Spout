@@ -95,7 +95,6 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	private boolean sync = false;
 	protected int tickCounter = 0;
 	private int chunksSent = 0;
-	private Set<Point> unsendable = new HashSet<>();
 	private final AtomicReference<RepositionManager> rm = new AtomicReference<>(NullRepositionManager.getInstance());
 
 	@Override
@@ -297,7 +296,6 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 
 			// Now send new chunks
 			chunksSent = 0;
-			unsendable.clear();
 
 			// Send priority chunks first
 			sendPriorityChunks();
@@ -345,7 +343,7 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 		Iterator<Point> i = priorityChunkSendQueue.iterator();
 		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
 			Point p = i.next();
-			if (attemptSendChunk(p)) {
+			if (attemptSendChunk(true, p)) {
 				i.remove();
 			}
 		}
@@ -362,7 +360,7 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 		Iterator<Point> i = chunkSendQueue.iterator();
 		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && Spout.getScheduler().getRemainingTickTime() > 0) {
 			Point p = i.next();
-			if (attemptSendChunk(p)) {
+			if (attemptSendChunk(false, p)) {
 				i.remove();
 			}
 		}
@@ -387,17 +385,12 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 		return true;
 	}
 
-	private boolean attemptSendChunk(Point p) {
-		Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.LOAD_ONLY);
+	private boolean attemptSendChunk(boolean priority, Point p) {
+		Chunk c = p.getWorld().getChunkFromBlock(p, priority ? LoadOption.LOAD_ONLY : LoadOption.LOAD_GEN_NOWAIT);
 		if (c == null) {
-			unsendable.add(p);
-			return false;
-		}
-		if (unsendable.contains(p)) {
 			return false;
 		}
 		if (!canSendChunk(c)) {
-			unsendable.add(p);
 			return false;
 		}
 

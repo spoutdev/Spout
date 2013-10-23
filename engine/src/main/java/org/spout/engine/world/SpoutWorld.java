@@ -137,7 +137,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	 */
 	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<>();
 	protected final Set<SpoutColumn> columnSet = new LinkedHashSet<>();
-	private final ReentrantLock[] columnLockMap = new ReentrantLock[16];
+	protected final ReentrantLock[] columnLockMap = new ReentrantLock[16];
 	/**
 	 * A map of column height map files
 	 */
@@ -235,7 +235,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 		SpoutRegion region = getRegionFromChunk(x, y, z, loadopt);
 		if (region != null) {
 			return region.getChunk(x, y, z, loadopt);
-		} else if (loadopt.loadIfNeeded() && loadopt.generateIfNeeded()) {
+		} else if (loadopt.loadIfNeeded() && loadopt.generateIfNeeded() && loadopt.waitForLoadOrGen()) {
 			getEngine().getLogger().info("Warning unable to load region: " + x + ", " + y + ", " + z + ":" + loadopt);
 		}
 		return null;
@@ -870,82 +870,9 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	 * @return the column or null if it doesn't exist
 	 */
 	protected SpoutColumn getColumn(int x, int z, LoadOption loadopt) {
-		return getColumn(x, z, loadopt, true);
-	}
-
-	protected SpoutColumn getColumn(int x, int z, LoadOption loadopt, boolean sync) {
 		long key = IntPairHashed.key(x, z);
 		SpoutColumn column = columns.get(key);
-		if (column == null && Spout.getPlatform() == Platform.CLIENT) {
-			int[][] heights = new int[16][16];
-			for (int[] row : heights) {
-				Arrays.fill(row, (byte) 0);
-			}
-			return setColumn(x, z, new SpoutColumn(heights, this, x, z));
-		}
-		if (column != null || !loadopt.loadIfNeeded()) {
-			return column;
-		}
-
-		column = loadColumn(x, z);
-		if (column != null || !loadopt.generateIfNeeded()) {
-			return column;
-		}
-
-		int[][] height = this.getGenerator().getSurfaceHeight(this, x, z);
-
-		int h = (height[7][7] >> Chunk.BLOCKS.BITS);
-
-		SpoutRegion r = getRegionFromChunk(x, h, z, loadopt);
-
-		if (r == null) {
-			throw new IllegalStateException("Unable to generate region for new column and load option " + loadopt);
-		}
-
-		RegionGenerator generator = r.getRegionGenerator();
-		if (generator != null) {
-			generator.generateColumn(x, z, sync, true);
-		} else {
-			setIfNotGenerated(x, z, new int[SpoutColumn.BLOCKS.SIZE][SpoutColumn.BLOCKS.SIZE]);
-		}
-
-		column = getColumn(x, z, LoadOption.LOAD_ONLY);
-
-		if (column == null) {
-			throw new IllegalStateException("Unable to generate column " + x + ", " + z);
-		}
-
 		return column;
-	}
-
-	public SpoutColumn setIfNotGenerated(int x, int z, int[][] heightMap) {
-		long key = (((long) x) << 32) | (z & 0xFFFFFFFFL);
-		key = (key % 7919);
-		key &= columnLockMap.length - 1;
-
-		Lock lock = columnLockMap[(int) key];
-		lock.lock();
-		try {
-			SpoutColumn col = getColumn(x, z, LoadOption.NO_LOAD);
-			if (col != null) {
-				return col;
-			}
-			col = loadColumn(x, z);
-			if (col != null) {
-				return col;
-			}
-			return setColumn(x, z, new SpoutColumn(heightMap, this, x, z));
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	public SpoutColumn loadColumn(int x, int z) {
-		InputStream in = getHeightMapInputStream(x, z);
-		if (in == null) {
-			return null;
-		}
-		return setColumn(x, z, new SpoutColumn(in, this, x, z));
 	}
 
 	public SpoutColumn setColumn(int x, int z, SpoutColumn col) {
@@ -962,35 +889,6 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 
 	public SpoutColumn[] getColumns() {
 		return columns.values(new SpoutColumn[0]);
-	}
-
-	protected BAAWrapper getColumnHeightMapBAA(int x, int z) {
-		int cx = x >> Region.CHUNKS.BITS;
-		int cz = z >> Region.CHUNKS.BITS;
-
-		BAAWrapper baa = null;
-
-		baa = heightMapBAAs.get(cx, cz);
-
-		return baa;
-	}
-
-	public InputStream getHeightMapInputStream(int x, int z) {
-
-		BAAWrapper baa = getColumnHeightMapBAA(x, z);
-
-		int key = NibblePairHashed.key(x, z) & 0xFF;
-
-		return baa.getBlockInputStream(key);
-	}
-
-	public OutputStream getHeightMapOutputStream(int x, int z) {
-
-		BAAWrapper baa = getColumnHeightMapBAA(x, z);
-
-		int key = NibblePairHashed.key(x, z) & 0xFF;
-
-		return baa.getBlockOutputStream(key);
 	}
 
 	@Override

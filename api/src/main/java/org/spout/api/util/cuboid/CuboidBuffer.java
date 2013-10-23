@@ -194,11 +194,11 @@ public abstract class CuboidBuffer {
 		}
 	}
 
-	protected int getIndex(int x, int y, int z) {
+	protected int getIndex(final int x, final int y, final int z) {
 		return getIndex(this, x, y, z);
 	}
 
-	protected static int getIndex(CuboidBuffer source, int x, int y, int z) {
+	protected static int getIndex(final CuboidBuffer source, final int x, final int y, final int z) {
 		if (x < source.baseX || x >= source.topX || y < source.baseY || y >= source.topY || z < source.baseZ || z >= source.topZ) {
 			return -1;
 		}

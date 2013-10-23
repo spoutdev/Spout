@@ -805,6 +805,7 @@ public final class SpoutScheduler implements Scheduler {
 					}
 					Spout.info("-----------------------------------------------");
 				}
+				Thread.dumpStack();
 			}
 		}
 	}
@@ -1057,6 +1058,14 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	public void scheduleCoreTask(Runnable r) {
 		coreTaskQueue.add(r);
+	}
+
+	/**
+	 * For internal use only.  This is for tasks that must happen right at the start of the new tick.<br> <br> Tasks are executed in the order that they are received.<br> <br> It is used for region
+	 * unloading
+	 */
+	public void coreAsyncTask(Runnable r) {
+		executorService.submit(r);
 	}
 
 	private void logLongDurationTick(String stage, Iterable<AsyncManager> executors) {

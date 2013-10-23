@@ -27,6 +27,7 @@
 package org.spout.engine.world;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
 
 import org.spout.api.Server;
 import org.spout.api.component.Component;
@@ -43,12 +45,14 @@ import org.spout.api.event.world.EntityExitWorldEvent;
 import org.spout.api.event.world.WorldSaveEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.LoadOption;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.util.StringToUniqueIntegerMap;
+import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.map.WeakValueHashMap;
@@ -140,6 +144,78 @@ public class SpoutServerWorld extends SpoutWorld {
 	}
 
 	@Override
+	protected SpoutColumn getColumn(int x, int z, LoadOption loadopt) {
+		SpoutColumn column = super.getColumn(x, z, loadopt);
+
+		if (column != null || !loadopt.loadIfNeeded()) {
+			return column;
+		}
+
+		column = loadColumn(x, z);
+		if (column != null || !loadopt.generateIfNeeded()) {
+			return column;
+		}
+
+		/*
+		int[][] height = this.getGenerator().getSurfaceHeight(this, x, z);
+
+		int h = (height[7][7] >> Chunk.BLOCKS.BITS);
+
+		SpoutRegion r = getRegionFromChunk(x, h, z, loadopt);
+
+		if (r == null) {
+			throw new IllegalStateException("Unable to generate region for new column and load option " + loadopt);
+		}
+
+		RegionGenerator generator = r.getRegionGenerator();
+		if (generator != null) {
+			generator.generateColumn(x, z, false, true);
+		} else {
+			setIfNotGenerated(x, z, new int[SpoutColumn.BLOCKS.SIZE][SpoutColumn.BLOCKS.SIZE]);
+		}
+		*/
+
+		setIfNotGenerated(x, z, new int[SpoutColumn.BLOCKS.SIZE][SpoutColumn.BLOCKS.SIZE]);
+
+		column = super.getColumn(x, z, LoadOption.NO_LOAD);
+
+		if (column == null) {
+			throw new IllegalStateException("Unable to generate column " + x + ", " + z);
+		}
+
+		return column;
+	}
+
+	public SpoutColumn setIfNotGenerated(int x, int z, int[][] heightMap) {
+		long key = (((long) x) << 32) | (z & 0xFFFFFFFFL);
+		key = (key % 7919);
+		key &= columnLockMap.length - 1;
+
+		Lock lock = columnLockMap[(int) key];
+		lock.lock();
+		try {
+			SpoutColumn col = getColumn(x, z, LoadOption.NO_LOAD);
+			if (col != null) {
+				return col;
+			}
+			col = loadColumn(x, z);
+			if (col != null) {
+				return col;
+			}
+			return setColumn(x, z, new SpoutColumn(heightMap, this, x, z));
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public SpoutColumn loadColumn(int x, int z) {
+		InputStream in = getHeightMapInputStream(x, z);
+		if (in == null) {
+			return null;
+		}
+		return setColumn(x, z, new SpoutColumn(in, this, x, z));
+	}
+
 	protected BAAWrapper getColumnHeightMapBAA(int x, int z) {
 		int cx = x >> Region.CHUNKS.BITS;
 		int cz = z >> Region.CHUNKS.BITS;
@@ -160,6 +236,24 @@ public class SpoutServerWorld extends SpoutWorld {
 		}
 
 		return baa;
+	}
+
+	public InputStream getHeightMapInputStream(int x, int z) {
+
+		BAAWrapper baa = getColumnHeightMapBAA(x, z);
+
+		int key = NibblePairHashed.key(x, z) & 0xFF;
+
+		return baa.getBlockInputStream(key);
+	}
+
+	public OutputStream getHeightMapOutputStream(int x, int z) {
+
+		BAAWrapper baa = getColumnHeightMapBAA(x, z);
+
+		int key = NibblePairHashed.key(x, z) & 0xFF;
+
+		return baa.getBlockOutputStream(key);
 	}
 
 	@Override

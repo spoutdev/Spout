@@ -33,6 +33,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.Platform;
+import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
@@ -101,6 +103,7 @@ public class SpoutColumn {
 		lowestY.set(Integer.MAX_VALUE);
 
 		if (heights == null) {
+			System.out.println("Using input stream data");
 			ColumnFiles.readColumn(in, this, this.lowestY, this.highestY, topmostBlocks);
 		}
 		//Could not load biomes from column, so calculate them
@@ -179,14 +182,19 @@ public class SpoutColumn {
 	}
 
 	public synchronized void syncSave() {
-		OutputStream out = world.getHeightMapOutputStream(x, z);
+		if (Spout.getPlatform() != Platform.SERVER) {
+			return;
+			// TODO throw new UnsupportedOperationException
+		}
+		OutputStream out = ((SpoutServerWorld) world).getHeightMapOutputStream(x, z);
 		try {
-			ColumnFiles.writeColumn(out, this, lowestY, highestY, topmostBlocks);
-		} finally {
 			try {
+				ColumnFiles.writeColumn(out, this, lowestY, highestY, topmostBlocks);
+			} finally {
 				out.close();
-			} catch (IOException e) {
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

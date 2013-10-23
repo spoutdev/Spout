@@ -220,16 +220,15 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return getChunk(x, y, z, LoadOption.LOAD_GEN);
 	}
 
-	@SuppressWarnings ("incomplete-switch")
 	@Override
 	@LiveRead
-	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
-		switch (loadopt) {
-			case LOAD_ONLY:
-				TickStage.checkStage(~TickStage.SNAPSHOT);
-				break;
-			case LOAD_GEN:
-				TickStage.checkStage(~(TickStage.SNAPSHOT | TickStage.PRESNAPSHOT | TickStage.LIGHTING));
+	public SpoutChunk getChunk(int x, int y, int z, final LoadOption loadopt) {
+		// If we're not waiting, then we don't care because it's async anyways
+		if (!loadopt.waitForLoadOrGen()) {
+		} else if (loadopt.generateIfNeeded()) {
+			TickStage.checkStage(~(TickStage.SNAPSHOT | TickStage.PRESNAPSHOT | TickStage.LIGHTING));
+		} else if (loadopt.loadIfNeeded()) {
+			TickStage.checkStage(~TickStage.SNAPSHOT);
 		}
 
 		x &= CHUNKS.MASK;
@@ -255,12 +254,31 @@ public class SpoutRegion extends Region implements AsyncManager {
 			return null;
 		}
 
-		SpoutChunk newChunk = null;
-		ChunkDataForRegion dataForRegion = null;
+
 
 		if (!loadopt.loadIfNeeded()) {
 			return null;
 		}
+		if (loadopt.waitForLoadOrGen()) {
+			return loadOrGenChunkImmediately(x, y, z, loadopt);
+		} else {
+			final int finalX = x;
+			final int finalY = y;
+			final int finalZ = z;
+			((SpoutScheduler) Spout.getScheduler()).coreAsyncTask(new Runnable() {
+				@Override
+				public void run() {
+					loadOrGenChunkImmediately(finalX, finalY, finalZ, loadopt);
+				}
+			});
+		}
+		return null;
+	}
+
+	private SpoutChunk loadOrGenChunkImmediately(int x, int y, int z, final LoadOption loadopt) {
+		SpoutChunk newChunk = null;
+		ChunkDataForRegion dataForRegion = null;
+
 		InputStream stream = this.getChunkInputStream(x, y, z);
 		if (stream != null) {
 			dataForRegion = new ChunkDataForRegion();
@@ -276,15 +294,19 @@ public class SpoutRegion extends Region implements AsyncManager {
 		} catch (IOException e) {}
 
 		if (loadopt.generateIfNeeded() && newChunk == null) {
-			generateColumn(x, z);
-			final SpoutChunk generatedChunk = chunks[x][y][z].get();
-			if (generatedChunk != null) {
-				checkChunkLoaded(generatedChunk, loadopt);
-				return generatedChunk;
+			if (loadopt.waitForLoadOrGen()) {
+				generateColumn(x, z);
+				final SpoutChunk generatedChunk = chunks[x][y][z].get();
+				if (generatedChunk != null) {
+					checkChunkLoaded(generatedChunk, loadopt);
+					return generatedChunk;
+				} else {
+					Spout.getLogger().severe("Chunk failed to generate!  (" + loadopt + ")");
+					Spout.getLogger().info("Region " + this + ", chunk " + (getChunkX() + x) + ", " + (getChunkY() + y) + ", " + (getChunkZ() + z) + " : " + chunks[x][y][z]);
+					Thread.dumpStack();
+				}
 			} else {
-				Spout.getLogger().severe("Chunk failed to generate!  (" + loadopt + ")");
-				Spout.getLogger().info("Region " + this + ", chunk " + (getChunkX() + x) + ", " + (getChunkY() + y) + ", " + (getChunkZ() + z) + " : " + chunks[x][y][z]);
-				Thread.dumpStack();
+				generator.touchChunk(x, y, z);
 			}
 		}
 
