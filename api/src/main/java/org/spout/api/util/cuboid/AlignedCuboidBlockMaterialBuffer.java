@@ -27,7 +27,7 @@
 package org.spout.api.util.cuboid;
 
 import org.spout.math.GenericMath;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class AlignedCuboidBlockMaterialBuffer extends CuboidBlockMaterialBuffer {
 	private final int xMask;
@@ -51,7 +51,7 @@ public class AlignedCuboidBlockMaterialBuffer extends CuboidBlockMaterialBuffer 
 		this((int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ);
 	}
 
-	public AlignedCuboidBlockMaterialBuffer(Vector3 base, Vector3 size) {
+	public AlignedCuboidBlockMaterialBuffer(Vector3f base, Vector3f size) {
 		this(base.getX(), base.getY(), base.getZ(), size.getX(), size.getY(), size.getZ());
 	}
 

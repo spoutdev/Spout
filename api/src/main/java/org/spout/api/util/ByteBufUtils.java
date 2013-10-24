@@ -46,9 +46,9 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector2;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3f;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.Tag;
@@ -256,13 +256,13 @@ public final class ByteBufUtils {
 		return 256;
 	}
 
-	public static Vector2 readVector2(ByteBuf buf) {
+	public static Vector2f readVector2(ByteBuf buf) {
 		float x = buf.readFloat();
 		float z = buf.readFloat();
-		return new Vector2(x, z);
+		return new Vector2f(x, z);
 	}
 
-	public static void writeVector2(ByteBuf buf, Vector2 vec) {
+	public static void writeVector2(ByteBuf buf, Vector2f vec) {
 		buf.writeFloat(vec.getX());
 		buf.writeFloat(vec.getY());
 	}
@@ -302,8 +302,8 @@ public final class ByteBufUtils {
 
 	public static Transform readTransform(ByteBuf buffer) {
 		Point position = readPoint(buffer);
-		Quaternion rotation = readQuaternion(buffer);
-		Vector3 scale = readVector3(buffer);
+		Quaternionf rotation = readQuaternion(buffer);
+		Vector3f scale = readVector3(buffer);
 		return new Transform(position, rotation, scale);
 	}
 
@@ -313,14 +313,14 @@ public final class ByteBufUtils {
 		writeVector3(buffer, transform.getScale());
 	}
 
-	public static Vector3 readVector3(ByteBuf buffer) {
+	public static Vector3f readVector3(ByteBuf buffer) {
 		final float x = buffer.readFloat();
 		final float y = buffer.readFloat();
 		final float z = buffer.readFloat();
-		return new Vector3(x, y, z);
+		return new Vector3f(x, y, z);
 	}
 
-	public static void writeVector3(ByteBuf buffer, Vector3 vec) {
+	public static void writeVector3(ByteBuf buffer, Vector3f vec) {
 		buffer.writeFloat(vec.getX());
 		buffer.writeFloat(vec.getY());
 		buffer.writeFloat(vec.getZ());
@@ -356,15 +356,15 @@ public final class ByteBufUtils {
 		buffer.writeFloat(vec.getZ());
 	}
 
-	public static Quaternion readQuaternion(ByteBuf buffer) {
+	public static Quaternionf readQuaternion(ByteBuf buffer) {
 		final float x = buffer.readFloat();
 		final float y = buffer.readFloat();
 		final float z = buffer.readFloat();
 		final float w = buffer.readFloat();
-		return new Quaternion(x, y, z, w);
+		return new Quaternionf(x, y, z, w);
 	}
 
-	public static void writeQuaternion(ByteBuf buffer, Quaternion quaternion) {
+	public static void writeQuaternion(ByteBuf buffer, Quaternionf quaternion) {
 		buffer.writeFloat(quaternion.getX());
 		buffer.writeFloat(quaternion.getY());
 		buffer.writeFloat(quaternion.getZ());

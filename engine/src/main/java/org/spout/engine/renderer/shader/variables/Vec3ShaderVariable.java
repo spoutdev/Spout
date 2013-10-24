@@ -28,13 +28,13 @@ package org.spout.engine.renderer.shader.variables;
 
 import org.lwjgl.opengl.GL20;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.engine.SpoutRenderer;
 
 public class Vec3ShaderVariable extends ShaderVariable {
-	Vector3 value;
+	Vector3f value;
 
-	public Vec3ShaderVariable(int program, String name, Vector3 value) {
+	public Vec3ShaderVariable(int program, String name, Vector3f value) {
 		super(program, name);
 		this.value = value;
 	}

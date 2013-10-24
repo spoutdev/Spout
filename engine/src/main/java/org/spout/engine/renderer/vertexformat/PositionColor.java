@@ -28,18 +28,18 @@ package org.spout.engine.renderer.vertexformat;
 
 import java.awt.Color;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class PositionColor {
-	private Vector3 position;
+	private Vector3f position;
 	private Color color;
 
-	public PositionColor(Vector3 position, Color c) {
+	public PositionColor(Vector3f position, Color c) {
 		this.position = position;
 		this.color = c;
 	}
 
-	public Vector3 getPosition() {
+	public Vector3f getPosition() {
 		return position;
 	}
 
@@ -47,7 +47,7 @@ public class PositionColor {
 		return color;
 	}
 
-	public void setPosition(Vector3 position) {
+	public void setPosition(Vector3f position) {
 		this.position = position;
 	}
 

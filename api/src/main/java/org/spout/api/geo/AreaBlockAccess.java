@@ -29,7 +29,7 @@ package org.spout.api.geo;
 import org.spout.api.event.Cause;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.thread.annotation.LiveWrite;
@@ -219,7 +219,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @return the Block
 	 */
 	@Threadsafe
-	public Block getBlock(Vector3 position);
+	public Block getBlock(Vector3f position);
 
 	/**
 	 * Atomically sets the cuboid volume to the values inside of the cuboid buffer, if the contents of the buffer's backbuffer matches the world.

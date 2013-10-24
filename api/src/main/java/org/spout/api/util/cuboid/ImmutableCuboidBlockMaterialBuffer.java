@@ -27,7 +27,7 @@
 package org.spout.api.util.cuboid;
 
 import org.spout.api.material.BlockMaterial;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.cuboid.procedure.CuboidBlockMaterialProcedure;
 
 public class ImmutableCuboidBlockMaterialBuffer extends CuboidBuffer {
@@ -56,7 +56,7 @@ public class ImmutableCuboidBlockMaterialBuffer extends CuboidBuffer {
 		this((int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new short[(int) (sizeX * sizeY * sizeZ)], new short[(int) (sizeX * sizeY * sizeZ)]);
 	}
 
-	public ImmutableCuboidBlockMaterialBuffer(Vector3 base, Vector3 size) {
+	public ImmutableCuboidBlockMaterialBuffer(Vector3f base, Vector3f size) {
 		this((int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new short[(int) (size.getX() * size.getY() * size.getZ())], new short[(int) (size.getX() * size.getY() * size.getZ())]);
 	}
 

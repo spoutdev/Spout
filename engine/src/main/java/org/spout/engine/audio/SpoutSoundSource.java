@@ -36,7 +36,7 @@ import org.spout.api.event.audio.SoundBindEvent;
 import org.spout.api.event.audio.SoundDisposeEvent;
 import org.spout.api.event.audio.SoundStateChangeEvent;
 import org.spout.api.geo.discrete.Point;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 import static org.lwjgl.BufferUtils.createFloatBuffer;
 import static org.lwjgl.openal.AL10.AL_BUFFER;
@@ -73,7 +73,7 @@ public class SpoutSoundSource extends SoundSource {
 	public void init() {
 		// cast is safe because of protected constructor and sound manager is only available on client
 		setPosition(((Client) Spout.getEngine()).getPlayer().getPhysics().getPosition());
-		setVelocity(Vector3.ZERO);
+		setVelocity(Vector3f.ZERO);
 		setPitch(1);
 		setGain(1);
 	}
@@ -192,22 +192,22 @@ public class SpoutSoundSource extends SoundSource {
 	}
 
 	@Override
-	public Vector3 getVelocity() {
+	public Vector3f getVelocity() {
 		return getVector3(AL_VELOCITY);
 	}
 
 	@Override
-	public void setVelocity(Vector3 velocity) {
+	public void setVelocity(Vector3f velocity) {
 		setVector3(AL_VELOCITY, velocity);
 	}
 
 	@Override
-	public Vector3 getDirection() {
+	public Vector3f getDirection() {
 		return getVector3(AL_DIRECTION);
 	}
 
 	@Override
-	public void setDirection(Vector3 direction) {
+	public void setDirection(Vector3f direction) {
 		setVector3(AL_DIRECTION, direction);
 	}
 
@@ -251,14 +251,14 @@ public class SpoutSoundSource extends SoundSource {
 		setInteger(k, v ? AL_TRUE : AL_FALSE);
 	}
 
-	private Vector3 getVector3(int k) {
+	private Vector3f getVector3(int k) {
 		assertNotDisposed();
 		FloatBuffer buff = createFloatBuffer(3);
 		alGetSource(id, k, buff);
-		return new Vector3(buff.get(0), buff.get(1), buff.get(2));
+		return new Vector3f(buff.get(0), buff.get(1), buff.get(2));
 	}
 
-	private void setVector3(int k, Vector3 v) {
+	private void setVector3(int k, Vector3f v) {
 		assertNotDisposed();
 		alSource(id, k, (FloatBuffer) createFloatBuffer(3).put(v.toArray()).flip());
 	}

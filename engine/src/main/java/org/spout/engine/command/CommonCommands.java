@@ -53,8 +53,8 @@ import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.Plugin;
 
 import org.spout.engine.SpoutEngine;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 
 public class CommonCommands {
 	private final SpoutEngine engine;
@@ -177,7 +177,7 @@ public class CommonCommands {
 		args.assertCompletelyParsed();
 
 		//Finally set the spawn point
-		point.getWorld().setSpawnPoint(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
+		point.getWorld().setSpawnPoint(new Transform(point, Quaternionf.IDENTITY, Vector3f.ONE));
 		//Notify the source
 		source.sendMessage("Set the spawnpoint of world: " + point.getWorld().getName() + " to x: "
 				+ point.getBlockX() + ", y: " + point.getBlockY() + ", z: " + point.getBlockZ());

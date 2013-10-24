@@ -38,14 +38,14 @@ import org.spout.api.ai.pathfinder.VectorNode;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.concurrent.SpinLock;
 
 public class NavigationComponent extends EntityComponent {
 	private final AStarMachine<VectorNode, Path> astar = AStarMachine.createWithDefaultStorage();
 	private final Lock lock = new SpinLock();
 	private Path plan;
-	private Vector3 vector;
+	private Vector3f vector;
 	private BlockExaminer[] defaultExaminers;
 
 	public void setDefaultExaminers(BlockExaminer... blockExaminers) {

@@ -37,8 +37,8 @@ import org.spout.api.render.RenderMaterial;
 
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
-import org.spout.math.matrix.Matrix4;
-import org.spout.math.vector.Vector3;
+import org.spout.math.matrix.Matrix4f;
+import org.spout.math.vector.Vector3f;
 
 /**
  * Represents a group of chunk meshes to be rendered.
@@ -48,11 +48,11 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	public final static int SIZE_X = 1;
 	public final static int SIZE_Y = 8;
 	public final static int SIZE_Z = 1;
-	public final static Vector3 SIZE = new Vector3(SIZE_X, SIZE_Y, SIZE_Z);
+	public final static Vector3f SIZE = new Vector3f(SIZE_X, SIZE_Y, SIZE_Z);
 	public final static int COUNT = SIZE_X * SIZE_Y * SIZE_Z;
 	private int count = 0;
 	private BatchVertexRenderer renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-	public final static Matrix4 model = Matrix4.IDENTITY;
+	public final static Matrix4f model = Matrix4f.IDENTITY;
 	private final RenderMaterial material;
 	private boolean dataSent = false;
 	private boolean ready = false;
@@ -78,7 +78,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	/**
 	 * Gets the base of a chunk mesh, which is the coord of the ChunkMeshBatchAggregator
 	 */
-	public static Vector3 getBaseFromChunkMesh(ChunkMesh mesh) {
+	public static Vector3f getBaseFromChunkMesh(ChunkMesh mesh) {
 		int localX = (mesh.getChunkX() >= 0 ? mesh.getChunkX() + 1 : Math.abs(mesh.getChunkX())) - 1;
 		int localY = (mesh.getChunkY() >= 0 ? mesh.getChunkY() + 1 : Math.abs(mesh.getChunkY())) - 1;
 		int localZ = (mesh.getChunkZ() >= 0 ? mesh.getChunkZ() + 1 : Math.abs(mesh.getChunkZ())) - 1;
@@ -88,13 +88,13 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		x = (mesh.getChunkX() >= 0 ? x : (-1 * x) - 1);
 		y = (mesh.getChunkY() >= 0 ? y : (-1 * y) - 1);
 		z = (mesh.getChunkZ() >= 0 ? z : (-1 * z) - 1);
-		return new Vector3(x, y, z);
+		return new Vector3f(x, y, z);
 	}
 
 	/**
 	 * Returns the local position of a ChunkMesh with a ChunkMeshBatchAggregator
 	 */
-	public static Vector3 getLocalCoordFromChunkMesh(ChunkMesh mesh) {
+	public static Vector3f getLocalCoordFromChunkMesh(ChunkMesh mesh) {
 		int localX = (mesh.getChunkX() >= 0 ? mesh.getChunkX() + 1 : Math.abs(mesh.getChunkX())) - 1;
 		int localY = (mesh.getChunkY() >= 0 ? mesh.getChunkY() + 1 : Math.abs(mesh.getChunkY())) - 1;
 		int localZ = (mesh.getChunkZ() >= 0 ? mesh.getChunkZ() + 1 : Math.abs(mesh.getChunkZ())) - 1;
@@ -102,7 +102,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		int y = localY % SIZE_Y + 1;
 		int z = localZ % SIZE_Z + 1;
 
-		return new Vector3(x, y, z);
+		return new Vector3f(x, y, z);
 	}
 
 	public ChunkMeshBatchAggregator(World world, int x, int y, int z, RenderMaterial material) {

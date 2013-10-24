@@ -42,7 +42,7 @@ import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.AnimationPlayed;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.engine.mesh.BaseMesh;
-import org.spout.math.matrix.Matrix4;
+import org.spout.math.matrix.Matrix4f;
 
 public class SpoutAnimationComponent extends AnimationComponent {
 	//Depend of the shader
@@ -58,7 +58,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 	/**
 	 * Matrices array at the size of managed skeleton used to fill shader when no animation to play
 	 */
-	private Matrix4[] defaultMatrices = null;
+	private Matrix4f[] defaultMatrices = null;
 
 	/**
 	 * Ask to play a animation on a model of the entity
@@ -79,7 +79,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		AnimationPlayed ac = new AnimationPlayed(animation, loop);
 
 		//Allocate matrices
-		ac.setMatrices(new Matrix4[ALLOWED_BONE_PER_MESH]);
+		ac.setMatrices(new Matrix4f[ALLOWED_BONE_PER_MESH]);
 
 		List<AnimationPlayed> list = animations.get(model);
 
@@ -130,9 +130,9 @@ public class SpoutAnimationComponent extends AnimationComponent {
 				BaseMesh mesh = (BaseMesh) model.getMesh();
 
 				//Register matrices identity to fill when no animation
-				defaultMatrices = new Matrix4[ALLOWED_BONE_PER_MESH];
+				defaultMatrices = new Matrix4f[ALLOWED_BONE_PER_MESH];
 				for (int i = 0; i < defaultMatrices.length; i++) {
-					defaultMatrices[i] = Matrix4.IDENTITY;
+					defaultMatrices[i] = Matrix4f.IDENTITY;
 				}
 
 				if (mesh.getContainer().getBuffers().containsKey(LAYOUT_ID)) {
@@ -243,7 +243,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 				// Send matrices to fill the shader
 				for (; boneCount < ALLOWED_BONE_PER_MESH; boneCount++) {
-					ac.getMatrices()[boneCount] = Matrix4.IDENTITY.transpose();
+					ac.getMatrices()[boneCount] = Matrix4f.IDENTITY.transpose();
 				}
 
 				//Define bone_matrix? (start at 1 in shader)

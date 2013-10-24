@@ -31,7 +31,7 @@ import java.nio.FloatBuffer;
 import org.spout.api.audio.SoundListener;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 import static org.lwjgl.BufferUtils.createFloatBuffer;
 import static org.lwjgl.openal.AL10.AL_ORIENTATION;
@@ -55,24 +55,24 @@ public class SpoutSoundListener implements SoundListener {
 	}
 
 	@Override
-	public void setVelocity(Vector3 vec) {
+	public void setVelocity(Vector3f vec) {
 		setVector3(AL_VELOCITY, vec);
 	}
 
 	@Override
-	public Vector3 getVelocity() {
+	public Vector3f getVelocity() {
 		return getVector3(AL_VELOCITY);
 	}
 
 	@Override
-	public void setOrientation(Vector3 at, Vector3 up) {
+	public void setOrientation(Vector3f at, Vector3f up) {
 		setFloatArray(AL_ORIENTATION, new float[] {
 				at.getX(), at.getY(), at.getZ(), up.getX(), up.getY(), up.getZ()
 		});
 	}
 
 	@Override
-	public void setOrientationAt(Vector3 at) {
+	public void setOrientationAt(Vector3f at) {
 		float[] o = getFloatArray(AL_ORIENTATION, 6);
 		o[0] = at.getX();
 		o[1] = at.getY();
@@ -81,7 +81,7 @@ public class SpoutSoundListener implements SoundListener {
 	}
 
 	@Override
-	public void setOrientationUp(Vector3 up) {
+	public void setOrientationUp(Vector3f up) {
 		float[] o = getFloatArray(AL_ORIENTATION, 6);
 		o[3] = up.getX();
 		o[4] = up.getY();
@@ -90,25 +90,25 @@ public class SpoutSoundListener implements SoundListener {
 	}
 
 	@Override
-	public Vector3 getOrientationAt() {
+	public Vector3f getOrientationAt() {
 		float[] o = getFloatArray(AL_ORIENTATION, 6);
-		return new Vector3(o[0], o[1], o[2]);
+		return new Vector3f(o[0], o[1], o[2]);
 	}
 
 	@Override
-	public Vector3 getOrientationUp() {
+	public Vector3f getOrientationUp() {
 		float[] o = getFloatArray(AL_ORIENTATION, 6);
-		return new Vector3(o[3], o[4], o[5]);
+		return new Vector3f(o[3], o[4], o[5]);
 	}
 
-	private void setVector3(int k, Vector3 v) {
+	private void setVector3(int k, Vector3f v) {
 		alListener(k, (FloatBuffer) createFloatBuffer(3).put(v.toArray()).flip());
 	}
 
-	private Vector3 getVector3(int k) {
+	private Vector3f getVector3(int k) {
 		FloatBuffer buff = createFloatBuffer(3);
 		alGetListener(k, buff);
-		return new Vector3(buff.get(0), buff.get(1), buff.get(2));
+		return new Vector3f(buff.get(0), buff.get(1), buff.get(2));
 	}
 
 	private void setFloatArray(int k, float[] v) {

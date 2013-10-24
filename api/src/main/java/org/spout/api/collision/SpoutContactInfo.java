@@ -28,7 +28,7 @@ package org.spout.api.collision;
 
 import org.spout.api.math.ReactConverter;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.physics.collision.ContactInfo;
 
 public class SpoutContactInfo {
@@ -38,27 +38,27 @@ public class SpoutContactInfo {
 		this.wrapped = wrapped;
 	}
 
-	public Vector3 getFirstContactPoint() {
+	public Vector3f getFirstContactPoint() {
 		return ReactConverter.toSpoutVector3(wrapped.getFirstLocalPoint());
 	}
 
-	public void setFirstContactPoint(final Vector3 vec) {
+	public void setFirstContactPoint(final Vector3f vec) {
 		wrapped.setFirstLocalPoint(ReactConverter.toReactVector3(vec));
 	}
 
-	public Vector3 getSecondContactPoint() {
+	public Vector3f getSecondContactPoint() {
 		return ReactConverter.toSpoutVector3(wrapped.getSecondLocalPoint());
 	}
 
-	public void setSecondContactPoint(final Vector3 vec) {
+	public void setSecondContactPoint(final Vector3f vec) {
 		wrapped.setSecondLocalPoint(ReactConverter.toReactVector3(vec));
 	}
 
-	public Vector3 getNormal() {
+	public Vector3f getNormal() {
 		return ReactConverter.toSpoutVector3(wrapped.getNormal());
 	}
 
-	public void setNormal(final Vector3 vec) {
+	public void setNormal(final Vector3f vec) {
 		wrapped.setNormal(ReactConverter.toReactVector3(vec));
 	}
 

@@ -32,7 +32,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.SpoutToStringStyle;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
@@ -49,7 +49,7 @@ public class CuboidBlockUpdateMessage extends SpoutMessage {
 		this.skyLight = skyLight;
 	}
 
-	public CuboidBlockUpdateMessage(UUID world, Vector3 min, Vector3 max, short[] blockTypes, short[] blockData, byte[] blockLight, byte[] skyLight) {
+	public CuboidBlockUpdateMessage(UUID world, Vector3f min, Vector3f max, short[] blockTypes, short[] blockData, byte[] blockLight, byte[] skyLight) {
 		this(world, min.getFloorX(), min.getFloorY(), min.getFloorZ(),
 				max.getFloorX(), max.getFloorY(), max.getFloorZ(),
 				blockTypes, blockData, blockLight, skyLight);

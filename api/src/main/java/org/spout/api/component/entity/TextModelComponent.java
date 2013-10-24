@@ -31,12 +31,12 @@ import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.render.Font;
 import org.spout.api.render.SpoutRenderMaterials;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class TextModelComponent extends EntityComponent {
 	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKeyImpl<>("entity-text", "(your text here)");
 	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKeyImpl<>("font", SpoutRenderMaterials.DEFAULT_FONT);
-	private Vector3 translation = Vector3.ZERO;
+	private Vector3f translation = Vector3f.ZERO;
 	private boolean lookCamera = true;
 	private boolean dirty = true;
 	private float size = 1;
@@ -76,11 +76,11 @@ public class TextModelComponent extends EntityComponent {
 		dirty = true;
 	}
 
-	public Vector3 getTranslation() {
+	public Vector3f getTranslation() {
 		return translation;
 	}
 
-	public void setTranslation(Vector3 translation) {
+	public void setTranslation(Vector3f translation) {
 		this.translation = translation;
 		dirty = true;
 	}

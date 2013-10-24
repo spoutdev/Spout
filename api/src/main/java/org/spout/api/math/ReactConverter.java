@@ -29,12 +29,12 @@ package org.spout.api.math;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 
 public class ReactConverter {
 	//Spout -> React
-	public static org.spout.physics.math.Vector3 toReactVector3(final Vector3 spoutVector3) {
+	public static org.spout.physics.math.Vector3 toReactVector3(final Vector3f spoutVector3) {
 		return new org.spout.physics.math.Vector3(spoutVector3.getX(), spoutVector3.getY(), spoutVector3.getZ());
 	}
 
@@ -42,7 +42,7 @@ public class ReactConverter {
 		return new org.spout.physics.math.Vector3(x, y, z);
 	}
 
-	public static org.spout.physics.math.Quaternion toReactQuaternion(final Quaternion spoutQuaternion) {
+	public static org.spout.physics.math.Quaternion toReactQuaternion(final Quaternionf spoutQuaternion) {
 		return new org.spout.physics.math.Quaternion(spoutQuaternion.getX(), spoutQuaternion.getY(), spoutQuaternion.getZ(), spoutQuaternion.getW());
 	}
 
@@ -55,15 +55,15 @@ public class ReactConverter {
 	}
 
 	//React -> Spout
-	public static Vector3 toSpoutVector3(final org.spout.physics.math.Vector3 reactVector3) {
-		return new Vector3(reactVector3.getX(), reactVector3.getY(), reactVector3.getZ());
+	public static Vector3f toSpoutVector3(final org.spout.physics.math.Vector3 reactVector3) {
+		return new Vector3f(reactVector3.getX(), reactVector3.getY(), reactVector3.getZ());
 	}
 
-	public static Quaternion toSpoutQuaternion(final org.spout.physics.math.Quaternion reactQuaternion) {
-		return new Quaternion(reactQuaternion.getX(), reactQuaternion.getY(), reactQuaternion.getZ(), reactQuaternion.getW());
+	public static Quaternionf toSpoutQuaternion(final org.spout.physics.math.Quaternion reactQuaternion) {
+		return new Quaternionf(reactQuaternion.getX(), reactQuaternion.getY(), reactQuaternion.getZ(), reactQuaternion.getW());
 	}
 
-	public static Transform toSpoutTransform(final org.spout.physics.math.Transform reactTransform, final World world, final Vector3 scale) {
-		return new Transform(new Point(toSpoutVector3(reactTransform.getPosition()), world), new Quaternion(toSpoutQuaternion(reactTransform.getOrientation())), scale);
+	public static Transform toSpoutTransform(final org.spout.physics.math.Transform reactTransform, final World world, final Vector3f scale) {
+		return new Transform(new Point(toSpoutVector3(reactTransform.getPosition()), world), new Quaternionf(toSpoutQuaternion(reactTransform.getOrientation())), scale);
 	}
 }

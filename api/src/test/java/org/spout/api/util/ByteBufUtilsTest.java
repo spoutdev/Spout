@@ -44,9 +44,9 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.BlockMaterial;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector2;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3f;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -114,9 +114,9 @@ public class ByteBufUtilsTest {
 
 	@Test
 	public void testVector3() throws IllegalAccessException {
-		for (Field field : Vector3.class.getFields()) {
-			if (Modifier.isStatic(field.getModifiers()) && Vector2.class.isAssignableFrom(field.getType())) {
-				Vector3 vec = (Vector3) field.get(null);
+		for (Field field : Vector3f.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers()) && Vector2f.class.isAssignableFrom(field.getType())) {
+				Vector3f vec = (Vector3f) field.get(null);
 				ByteBuf buf = Unpooled.buffer(12);
 				writeVector3(buf, vec);
 				assertEquals(vec, readVector3(buf));
@@ -126,7 +126,7 @@ public class ByteBufUtilsTest {
 
 	private static final World TEST_WORLD = WorldFaker.setupWorld();
 	private static final Point TEST_POINT = new Point(TEST_WORLD, 0, 0, 0);
-	private static final Transform TEST_TRANSFORM = new Transform(TEST_POINT, Quaternion.IDENTITY, Vector3.ZERO);
+	private static final Transform TEST_TRANSFORM = new Transform(TEST_POINT, Quaternionf.IDENTITY, Vector3f.ZERO);
 
 	@Test
 	public void testTransform() throws IllegalAccessException {
@@ -145,8 +145,8 @@ public class ByteBufUtilsTest {
 	@Test
 	public void testQuaternion() throws IllegalAccessException {
 		ByteBuf buf = Unpooled.buffer();
-		writeQuaternion(buf, Quaternion.IDENTITY);
-		assertEquals(Quaternion.IDENTITY, readQuaternion(buf));
+		writeQuaternion(buf, Quaternionf.IDENTITY);
+		assertEquals(Quaternionf.IDENTITY, readQuaternion(buf));
 	}
 
 	private static final String[] TEST_STRING_ARRAY = {"One", "Two", "Three"};
@@ -168,9 +168,9 @@ public class ByteBufUtilsTest {
 
 	@Test
 	public void testVector2() throws IllegalAccessException {
-		for (Field field : Vector2.class.getFields()) {
-			if (Modifier.isStatic(field.getModifiers()) && Vector2.class.isAssignableFrom(field.getType())) {
-				Vector2 vec = (Vector2) field.get(null);
+		for (Field field : Vector2f.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers()) && Vector2f.class.isAssignableFrom(field.getType())) {
+				Vector2f vec = (Vector2f) field.get(null);
 				ByteBuf buf = Unpooled.buffer(8);
 				writeVector2(buf, vec);
 				assertEquals(vec, readVector2(buf));

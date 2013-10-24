@@ -33,8 +33,8 @@ import java.util.Scanner;
 import java.util.Set;
 
 import org.spout.api.material.block.BlockFace;
-import org.spout.math.vector.Vector2;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.model.mesh.OrientedMesh;
 import org.spout.api.model.mesh.OrientedMeshFace;
 import org.spout.api.model.mesh.Vertex;
@@ -48,9 +48,9 @@ public class BlockMeshLoader extends ResourceLoader {
 	private static OrientedMesh loadObj(InputStream stream) {
 		ArrayList<OrientedMeshFace> faces;
 		try (Scanner scan = new Scanner(stream)) {
-			ArrayList<Vector3> verticies = new ArrayList<>();
-			ArrayList<Vector3> normals = new ArrayList<>();
-			ArrayList<Vector2> uvs = new ArrayList<>();
+			ArrayList<Vector3f> verticies = new ArrayList<>();
+			ArrayList<Vector3f> normals = new ArrayList<>();
+			ArrayList<Vector2f> uvs = new ArrayList<>();
 			faces = new ArrayList<>();
 			while (scan.hasNext()) {
 				String s = scan.nextLine();
@@ -59,15 +59,15 @@ public class BlockMeshLoader extends ResourceLoader {
 				}
 				if (s.startsWith("v ")) { // Space is important !!
 					String[] sp = s.split(" ");
-					verticies.add(new Vector3(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));
+					verticies.add(new Vector3f(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));
 				}
 				if (s.startsWith("vn ")) {
 					String[] sp = s.split(" ");
-					normals.add(new Vector3(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));
+					normals.add(new Vector3f(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));
 				}
 				if (s.startsWith("vt ")) {
 					String[] sp = s.split(" ");
-					uvs.add(new Vector2(Float.parseFloat(sp[1]), 1 - Float.parseFloat(sp[2])));
+					uvs.add(new Vector2f(Float.parseFloat(sp[1]), 1 - Float.parseFloat(sp[2])));
 				}
 				if (s.startsWith("f ")) {
 					String[] sp = s.split(" ");

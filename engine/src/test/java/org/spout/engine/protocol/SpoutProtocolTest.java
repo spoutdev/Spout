@@ -38,7 +38,8 @@ import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.event.EntityUpdateEvent.UpdateAction;
 import org.spout.api.protocol.reposition.NullRepositionManager;
@@ -59,7 +60,6 @@ import org.spout.engine.protocol.builtin.message.ReadyMessage;
 import org.spout.engine.protocol.builtin.message.SyncedMapMessage;
 import org.spout.engine.protocol.builtin.message.UpdateEntityMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
-import org.spout.math.imaginary.Quaternion;
 
 public class SpoutProtocolTest extends BaseProtocolTest {
 	static {
@@ -79,7 +79,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 	static final byte[] biomeData2 = new byte[256];
 	private static final World TEST_WORLD = WorldFaker.setupWorld();
 	private static final Point TEST_POINT = new Point(TEST_WORLD, 0, 0, 0);
-	private static final Transform TEST_TRANSFORM = new Transform(TEST_POINT, Quaternion.IDENTITY, Vector3.ZERO);
+	private static final Transform TEST_TRANSFORM = new Transform(TEST_POINT, Quaternionf.IDENTITY, Vector3f.ZERO);
 	static final byte[] TEST_SERIALIZED_DATA = new ManagedHashMap().serialize();
 	private static final Message[] TEST_MESSAGES = new Message[] {
 			new BlockUpdateMessage(0, 0, 0, (short) 0, (short) 0),
@@ -87,7 +87,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 			new ClickRequestMessage((byte) 0, (byte) 0, ClickRequestMessage.Action.LEFT),
 			new ClickResponseMessage((byte) 0, (byte) 0, ClickResponseMessage.Response.ALLOW),
 			new CommandMessage("test", "hi"),
-			new CuboidBlockUpdateMessage(TEST_WORLD.getUID(), Vector3.ZERO, Vector3.UP, new short[0], new short[0], new byte[0], new byte[0]),
+			new CuboidBlockUpdateMessage(TEST_WORLD.getUID(), Vector3f.ZERO, Vector3f.UP, new short[0], new short[0], new byte[0], new byte[0]),
 			new EntityDatatableMessage(0, TEST_SERIALIZED_DATA, DeltaMap.DeltaType.SET),
 			new LoginMessage("Spouty", 0),
 			new SyncedMapMessage(0, SyncedMapEvent.Action.ADD, new ArrayList<Pair<Integer, String>>()),

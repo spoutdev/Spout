@@ -28,12 +28,12 @@ package org.spout.api.ai.pathfinder;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.cuboid.Block;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public interface PathPoint {
 	void addCallback(PathCallback callback);
 
-	Vector3 getVector();
+	Vector3f getVector();
 
 	public static interface PathCallback {
 		void run(Entity entity, Block point);

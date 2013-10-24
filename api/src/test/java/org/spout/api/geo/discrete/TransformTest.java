@@ -30,8 +30,8 @@ import org.junit.Test;
 import org.powermock.api.mockito.PowerMockito;
 
 import org.spout.api.geo.World;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 
 import static org.junit.Assert.assertEquals;
 
@@ -40,8 +40,8 @@ public class TransformTest {
 	public void test() {
 		World mock = PowerMockito.mock(World.class);
 		Point p = new Point(mock, 0, 0, 0);
-		Quaternion q = new Quaternion(1, 0, 0, 0);
-		Vector3 s = new Vector3(0, 0, 0);
+		Quaternionf q = new Quaternionf(1, 0, 0, 0);
+		Vector3f s = new Vector3f(0, 0, 0);
 		Transform transform = new Transform(p, q, s);
 		assertEquals("Transform point values did not match", transform.getPosition(), p);
 		assertEquals("Transform quaternion values did not match", transform.getRotation(), q);
@@ -51,7 +51,7 @@ public class TransformTest {
 		transform.setPosition(p);
 		assertEquals("Transform point values did not match", transform.getPosition(), p);
 
-		q = Quaternion.fromAngleDegAxis(45.0f, 0, 1, 0);
+		q = Quaternionf.fromAngleDegAxis(45.0f, 0, 1, 0);
 		transform.setRotation(q);
 		assertEquals("Transform quaternion values did not match", transform.getRotation(), q);
 
@@ -60,14 +60,14 @@ public class TransformTest {
 		assertEquals("Transform scale values did not match", transform.getScale(), s);
 
 		p = p.mul(5);
-		q = Quaternion.fromAngleDegAxis(-45.0f, 1, 0, 0);
+		q = Quaternionf.fromAngleDegAxis(-45.0f, 1, 0, 0);
 		s = s.div(0.85F);
 		transform.set(p, q, s);
 		assertEquals("Transform point values did not match", transform.getPosition(), p);
 		assertEquals("Transform quaternion values did not match", transform.getRotation(), q);
 		assertEquals("Transform scale values did not match", transform.getScale(), s);
 
-		Transform copy = new Transform(new Point(p), new Quaternion(q), new Vector3(s));
+		Transform copy = new Transform(new Point(p), new Quaternionf(q), new Vector3f(s));
 		assertEquals("Copy of transform failed equals test", transform, copy);
 		assertEquals("Copy of transform failed reverse-equals test", copy, transform);
 		assertEquals("Copy of transform hashcodes do not match", transform.hashCode(), copy.hashCode());

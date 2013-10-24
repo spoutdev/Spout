@@ -48,12 +48,12 @@ import org.spout.api.render.shader.Shader;
 
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.shader.SpoutShader;
-import org.spout.math.matrix.Matrix2;
-import org.spout.math.matrix.Matrix3;
-import org.spout.math.matrix.Matrix4;
-import org.spout.math.vector.Vector2;
-import org.spout.math.vector.Vector3;
-import org.spout.math.vector.Vector4;
+import org.spout.math.matrix.Matrix2f;
+import org.spout.math.matrix.Matrix3f;
+import org.spout.math.matrix.Matrix4f;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3f;
+import org.spout.math.vector.Vector4f;
 
 public class ClientRenderMaterial extends RenderMaterial {
 	SpoutShader shader;
@@ -93,20 +93,20 @@ public class ClientRenderMaterial extends RenderMaterial {
 					shader.setUniform(entry.getKey(), ((Double) entry.getValue()).floatValue());
 				} else if (entry.getValue() instanceof ClientTexture) {
 					shader.setUniform(entry.getKey(), (ClientTexture) entry.getValue());
-				} else if (entry.getValue() instanceof Vector2) {
-					shader.setUniform(entry.getKey(), (Vector2) entry.getValue());
-				} else if (entry.getValue() instanceof Vector3) {
-					shader.setUniform(entry.getKey(), (Vector3) entry.getValue());
-				} else if (entry.getValue() instanceof Vector4) {
-					shader.setUniform(entry.getKey(), (Vector4) entry.getValue());
+				} else if (entry.getValue() instanceof Vector2f) {
+					shader.setUniform(entry.getKey(), (Vector2f) entry.getValue());
+				} else if (entry.getValue() instanceof Vector3f) {
+					shader.setUniform(entry.getKey(), (Vector3f) entry.getValue());
+				} else if (entry.getValue() instanceof Vector4f) {
+					shader.setUniform(entry.getKey(), (Vector4f) entry.getValue());
 				} else if (entry.getValue() instanceof Color) {
 					shader.setUniform(entry.getKey(), (Color) entry.getValue());
-				} else if (entry.getValue() instanceof Matrix2) {
-					shader.setUniform(entry.getKey(), (Matrix2) entry.getValue());
-				} else if (entry.getValue() instanceof Matrix3) {
-					shader.setUniform(entry.getKey(), (Matrix3) entry.getValue());
-				} else if (entry.getValue() instanceof Matrix4) {
-					shader.setUniform(entry.getKey(), (Matrix4) entry.getValue());
+				} else if (entry.getValue() instanceof Matrix2f) {
+					shader.setUniform(entry.getKey(), (Matrix2f) entry.getValue());
+				} else if (entry.getValue() instanceof Matrix3f) {
+					shader.setUniform(entry.getKey(), (Matrix3f) entry.getValue());
+				} else if (entry.getValue() instanceof Matrix4f) {
+					shader.setUniform(entry.getKey(), (Matrix4f) entry.getValue());
 				}
 			}
 			shader.setMaterialAssigned(this);

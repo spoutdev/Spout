@@ -53,7 +53,7 @@ import org.spout.api.util.map.TInt21TripleObjectHashMapOfMaps;
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.world.SpoutClientWorld;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class WorldRenderer {
 	public static final long TIME_LIMIT = 2;
@@ -177,7 +177,7 @@ public class WorldRenderer {
 	 * Remove all batch at the specified position
 	 */
 	private void cleanBatchAggregator(World world, ChunkMesh chunkMesh) {
-		Vector3 position = ChunkMeshBatchAggregator.getBaseFromChunkMesh(chunkMesh);
+		Vector3f position = ChunkMeshBatchAggregator.getBaseFromChunkMesh(chunkMesh);
 		Map<RenderMaterial, ChunkMeshBatchAggregator> aggregatorPerMaterial = chunkRenderersByPositions.get(position.getFloorX(), position.getFloorY(), position.getFloorZ());
 
 		//Can be null if the thread receive a unload model of a model which has been send previously to load be not done
@@ -195,7 +195,7 @@ public class WorldRenderer {
 			if (batch.getWorld() != world) {
 				continue;
 			}
-			Vector3 local = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(chunkMesh);
+			Vector3f local = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(chunkMesh);
 			batch.setSubBatch(null, local.getFloorX(), local.getFloorY(), local.getFloorZ());
 			if (!batch.isEmpty()) {
 				continue;
@@ -254,7 +254,7 @@ public class WorldRenderer {
 
 		private void addMeshToBatch(ChunkMesh mesh, RenderMaterial material, BufferContainer batchVertex) {
 			// In chunk coords
-			Vector3 base = ChunkMeshBatchAggregator.getBaseFromChunkMesh(mesh);
+			Vector3f base = ChunkMeshBatchAggregator.getBaseFromChunkMesh(mesh);
 			ChunkMeshBatchAggregator batch = chunkRenderersByPositions.get(base.getFloorX(), base.getFloorY(), base.getFloorZ(), material);
 			if (batch == null) {
 				batch = new ChunkMeshBatchAggregator(mesh.getWorld(), base.getFloorX(), base.getFloorY(), base.getFloorZ(), material);
@@ -262,7 +262,7 @@ public class WorldRenderer {
 				chunkRenderers.put(batch.getMaterial(), batch);
 				chunkRenderersByPositions.put(base.getFloorX(), base.getFloorY(), base.getFloorZ(), batch.getMaterial(), batch);
 			}
-			Vector3 localCoord = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(mesh);
+			Vector3f localCoord = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(mesh);
 
 			batch.setSubBatch(batchVertex, localCoord.getFloorX(), localCoord.getFloorY(), localCoord.getFloorZ());
 

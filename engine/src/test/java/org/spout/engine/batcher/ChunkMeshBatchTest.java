@@ -28,7 +28,7 @@ package org.spout.engine.batcher;
 
 import org.junit.Test;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
@@ -40,50 +40,50 @@ import static org.junit.Assert.assertEquals;
 public class ChunkMeshBatchTest {
 	@Test
 	public void testGetBaseCoordinates() {
-		Vector3 batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(0, 0, 0)));
-		assertEquals(new Vector3(0, 0, 0), batchCoords);
+		Vector3f batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3f(0, 0, 0)));
+		assertEquals(new Vector3f(0, 0, 0), batchCoords);
 
-		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(-1, 0, 0)));
-		assertEquals(new Vector3(-1, 0, 0), batchCoords);
+		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3f(-1, 0, 0)));
+		assertEquals(new Vector3f(-1, 0, 0), batchCoords);
 
-		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(-1, 5, 0)));
-		assertEquals(new Vector3(-1, 0, 0), batchCoords);
+		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3f(-1, 5, 0)));
+		assertEquals(new Vector3f(-1, 0, 0), batchCoords);
 
-		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(1, 7, 0)));
-		assertEquals(new Vector3(1, 0, 0), batchCoords);
+		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3f(1, 7, 0)));
+		assertEquals(new Vector3f(1, 0, 0), batchCoords);
 
-		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(1, 8, 0)));
-		assertEquals(new Vector3(1, 8, 0), batchCoords);
+		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3f(1, 8, 0)));
+		assertEquals(new Vector3f(1, 8, 0), batchCoords);
 
-		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(1, -1, 0)));
-		assertEquals(new Vector3(1, -1, 0), batchCoords);
+		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3f(1, -1, 0)));
+		assertEquals(new Vector3f(1, -1, 0), batchCoords);
 
-		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(1, -7, 0)));
-		assertEquals(new Vector3(1, -1, 0), batchCoords);
+		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3f(1, -7, 0)));
+		assertEquals(new Vector3f(1, -1, 0), batchCoords);
 
-		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(1, -8, 0)));
-		assertEquals(new Vector3(1, -1, 0), batchCoords);
+		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3f(1, -8, 0)));
+		assertEquals(new Vector3f(1, -1, 0), batchCoords);
 
-		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3(-4, -9, 0)));
-		assertEquals(new Vector3(-4, -9, 0), batchCoords);
+		batchCoords = ChunkMeshBatchAggregator.getBaseFromChunkMesh(of(new Vector3f(-4, -9, 0)));
+		assertEquals(new Vector3f(-4, -9, 0), batchCoords);
 	}
 
 	@Test
 	public void testGetLocalCoordinates() {
-		Vector3 chunkCoords = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(of(new Vector3(0, 0, 0)));
-		assertEquals(new Vector3(1, 1, 1), chunkCoords);
+		Vector3f chunkCoords = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(of(new Vector3f(0, 0, 0)));
+		assertEquals(new Vector3f(1, 1, 1), chunkCoords);
 
-		chunkCoords = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(of(new Vector3(-1, 0, 0)));
-		assertEquals(new Vector3(1, 1, 1), chunkCoords);
+		chunkCoords = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(of(new Vector3f(-1, 0, 0)));
+		assertEquals(new Vector3f(1, 1, 1), chunkCoords);
 
-		chunkCoords = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(of(new Vector3(-1, -4, 0)));
-		assertEquals(new Vector3(1, 4, 1), chunkCoords);
+		chunkCoords = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(of(new Vector3f(-1, -4, 0)));
+		assertEquals(new Vector3f(1, 4, 1), chunkCoords);
 
-		chunkCoords = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(of(new Vector3(-4, -1, 4)));
-		assertEquals(new Vector3(1, 1, 1), chunkCoords);
+		chunkCoords = ChunkMeshBatchAggregator.getLocalCoordFromChunkMesh(of(new Vector3f(-4, -1, 4)));
+		assertEquals(new Vector3f(1, 1, 1), chunkCoords);
 	}
 
-	private static ChunkMesh of(Vector3 of) {
+	private static ChunkMesh of(Vector3f of) {
 		return new ChunkMesh(new SpoutChunkSnapshotModel(null, of.getFloorX(), of.getFloorY(), of.getFloorZ(), true, 0));
 	}
 }

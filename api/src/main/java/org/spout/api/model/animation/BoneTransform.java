@@ -26,20 +26,20 @@
  */
 package org.spout.api.model.animation;
 
-import org.spout.math.matrix.Matrix4;
-import org.spout.math.matrix.MatrixN;
+import org.spout.math.matrix.Matrix4f;
+import org.spout.math.matrix.MatrixNf;
 
 public class BoneTransform {
-	private final Matrix4 matrix;
+	private final Matrix4f matrix;
 
 	//TODO : If we don't need BoneTransform to make interpolation or other things,
 	//we should remove it and store matrix directly in animation class
 
 	public BoneTransform(float[] matrix) {
-		this.matrix = new MatrixN(matrix).toMatrix4().transpose();
+		this.matrix = new MatrixNf(matrix).toMatrix4().transpose();
 	}
 
-	public Matrix4 getMatrix() {
+	public Matrix4f getMatrix() {
 		return matrix;
 	}
 

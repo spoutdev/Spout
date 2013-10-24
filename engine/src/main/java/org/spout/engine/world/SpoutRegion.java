@@ -101,7 +101,7 @@ import org.spout.engine.world.collision.SpoutLinkedWorldInfo;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
 import org.spout.math.GenericMath;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.physics.body.RigidBody;
 import org.spout.physics.collision.shape.CollisionShape;
 import org.spout.physics.engine.linked.LinkedDynamicsWorld;
@@ -294,12 +294,12 @@ public class SpoutRegion extends Region implements AsyncManager {
 	}
 
 	@Override
-	public SpoutChunk getChunkFromBlock(Vector3 position) {
+	public SpoutChunk getChunkFromBlock(Vector3f position) {
 		return this.getChunkFromBlock(position, LoadOption.LOAD_GEN);
 	}
 
 	@Override
-	public SpoutChunk getChunkFromBlock(Vector3 position, LoadOption loadopt) {
+	public SpoutChunk getChunkFromBlock(Vector3f position, LoadOption loadopt) {
 		return this.getChunkFromBlock(position.getFloorX(), position.getFloorY(), position.getFloorZ(), loadopt);
 	}
 
@@ -614,7 +614,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 							Chunk c = getWorld().getChunk(nxx, nyy, nzz, LoadOption.LOAD_ONLY);
 							if (c == null) {
 								surrounded = false;
-								getWorld().queueChunkForGeneration(new Vector3(nxx, nyy, nzz));
+								getWorld().queueChunkForGeneration(new Vector3f(nxx, nyy, nzz));
 							}
 						}
 					}
@@ -754,10 +754,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 		if (chunk.isDirtyOverflow()) {    /* If overflow, notify for whole chunk */
 			evt = new ChunkUpdatedEvent(chunk, null);
 		} else {
-			ArrayList<Vector3> lst = new ArrayList<>();
+			ArrayList<Vector3f> lst = new ArrayList<>();
 			boolean done = false;
 			for (int i = 0; !done; i++) {
-				Vector3 v = chunk.getDirtyBlock(i);
+				Vector3f v = chunk.getDirtyBlock(i);
 				if (v != null) {
 					lst.add(v);
 				} else {
@@ -980,7 +980,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			} else {
 				int dirtyBlocks = c.getDirtyBlocks();
 				for (int i = 0; i < dirtyBlocks; i++) {
-					Vector3 v = c.getDirtyBlock(i);
+					Vector3f v = c.getDirtyBlock(i);
 					x[blocks] = c.getBlockX() + (v.getFloorX() & Chunk.BLOCKS.MASK);
 					y[blocks] = c.getBlockY() + (v.getFloorY() & Chunk.BLOCKS.MASK);
 					z[blocks] = c.getBlockZ() + (v.getFloorZ() & Chunk.BLOCKS.MASK);
@@ -1235,7 +1235,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	}
 
 	@Override
-	public Block getBlock(Vector3 position) {
+	public Block getBlock(Vector3f position) {
 		return this.getWorld().getBlock(position);
 	}
 
@@ -1380,7 +1380,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public SpoutRegion getLocalRegion(BlockFace face, LoadOption loadopt) {
-		Vector3 offset = face.getOffset();
+		Vector3f offset = face.getOffset();
 		return getLocalRegion(offset.getFloorX() + 1, offset.getFloorY() + 1, offset.getFloorZ() + 1, loadopt);
 	}
 
@@ -1400,7 +1400,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public SpoutChunk getLocalChunk(Chunk c, BlockFace face, LoadOption loadopt) {
-		Vector3 offset = face.getOffset();
+		Vector3f offset = face.getOffset();
 		return getLocalChunk(c, offset.getFloorX(), offset.getFloorY(), offset.getFloorZ(), loadopt);
 	}
 
@@ -1467,7 +1467,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	}
 
 	private SpoutChunk[][][] getChunks(int x, int y, int z, CuboidBlockMaterialBuffer buffer) {
-		Vector3 size = buffer.getSize();
+		Vector3f size = buffer.getSize();
 
 		int startX = Math.max(x, getBlockX());
 		int startY = Math.max(y, getBlockY());
@@ -1509,7 +1509,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-		Vector3 base = buffer.getBase();
+		Vector3f base = buffer.getBase();
 		int x = base.getFloorX();
 		int y = base.getFloorY();
 		int z = base.getFloorZ();
@@ -1519,7 +1519,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-		Vector3 base = buffer.getBase();
+		Vector3f base = buffer.getBase();
 		setCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer, cause);
 	}
 
@@ -1530,7 +1530,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public void getCuboid(CuboidBlockMaterialBuffer buffer) {
-		Vector3 base = buffer.getBase();
+		Vector3f base = buffer.getBase();
 		getCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer);
 	}
 
@@ -1591,14 +1591,14 @@ public class SpoutRegion extends Region implements AsyncManager {
 	}
 
 	@Override
-	public void queueChunksForGeneration(List<Vector3> chunks) {
-		for (Vector3 v : chunks) {
+	public void queueChunksForGeneration(List<Vector3f> chunks) {
+		for (Vector3f v : chunks) {
 			queueChunkForGeneration(v);
 		}
 	}
 
 	@Override
-	public void queueChunkForGeneration(Vector3 chunk) {
+	public void queueChunkForGeneration(Vector3f chunk) {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new UnsupportedOperationException("Cannot queue chunks for generation if not in server mode!");
 		}

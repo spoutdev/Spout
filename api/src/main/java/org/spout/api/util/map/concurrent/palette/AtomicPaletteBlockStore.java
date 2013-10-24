@@ -33,7 +33,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.IntVector3;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 
 public class AtomicPaletteBlockStore implements AtomicBlockStore {
@@ -259,12 +259,12 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	}
 
 	@Override
-	public Vector3 getDirtyBlock(int i) {
+	public Vector3f getDirtyBlock(int i) {
 		if (i >= dirtyBlocks.get()) {
 			return null;
 		}
 
-		return new Vector3(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
+		return new Vector3f(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
 	}
 
 	@Override

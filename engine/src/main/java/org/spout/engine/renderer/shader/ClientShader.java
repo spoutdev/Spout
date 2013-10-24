@@ -57,13 +57,12 @@ import org.spout.engine.renderer.shader.variables.Vec2ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec3ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec4ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vector3ArrayShaderVariable;
-import org.spout.math.matrix.Matrix;
-import org.spout.math.matrix.Matrix2;
-import org.spout.math.matrix.Matrix3;
-import org.spout.math.matrix.Matrix4;
-import org.spout.math.vector.Vector2;
-import org.spout.math.vector.Vector3;
-import org.spout.math.vector.Vector4;
+import org.spout.math.matrix.*;
+import org.spout.math.matrix.Matrix4f;
+import org.spout.math.matrix.Matrixf;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3f;
+import org.spout.math.vector.Vector4f;
 
 /**
  * Represents a Shader Object in OpenGL
@@ -271,7 +270,7 @@ public class ClientShader implements SpoutShader {
 	}
 
 	@Override
-	public void setUniform(String name, Vector2 value) {
+	public void setUniform(String name, Vector2f value) {
 		variables.put(name, new Vec2ShaderVariable(program, name, value));
 		if (assigned == this) {
 			dirtyVariables.add(name);
@@ -279,7 +278,7 @@ public class ClientShader implements SpoutShader {
 	}
 
 	@Override
-	public void setUniform(String name, Matrix4[] value) {
+	public void setUniform(String name, Matrix4f[] value) {
 		variables.put(name, new Mat4ArrayShaderVariable(program, name, value));
 		if (assigned == this) {
 			dirtyVariables.add(name);
@@ -287,7 +286,7 @@ public class ClientShader implements SpoutShader {
 	}
 
 	@Override
-	public void setUniform(String name, Vector3 value) {
+	public void setUniform(String name, Vector3f value) {
 		variables.put(name, new Vec3ShaderVariable(program, name, value));
 		if (assigned == this) {
 			dirtyVariables.add(name);
@@ -295,7 +294,7 @@ public class ClientShader implements SpoutShader {
 	}
 
 	@Override
-	public void setUniform(String name, Vector3[] value) {
+	public void setUniform(String name, Vector3f[] value) {
 		variables.put(name, new Vector3ArrayShaderVariable(program, name, value));
 		if (assigned == this) {
 			dirtyVariables.add(name);
@@ -303,7 +302,7 @@ public class ClientShader implements SpoutShader {
 	}
 
 	@Override
-	public void setUniform(String name, Vector4 value) {
+	public void setUniform(String name, Vector4f value) {
 		variables.put(name, new Vec4ShaderVariable(program, name, value));
 		if (assigned == this) {
 			dirtyVariables.add(name);
@@ -311,7 +310,7 @@ public class ClientShader implements SpoutShader {
 	}
 
 	@Override
-	public void setUniform(String name, Matrix2 value) {
+	public void setUniform(String name, Matrix2f value) {
 		variables.put(name, new Mat2ShaderVariable(program, name, value));
 		if (assigned == this) {
 			dirtyVariables.add(name);
@@ -319,7 +318,7 @@ public class ClientShader implements SpoutShader {
 	}
 
 	@Override
-	public void setUniform(String name, Matrix3 value) {
+	public void setUniform(String name, Matrix3f value) {
 		variables.put(name, new Mat3ShaderVariable(program, name, value));
 		if (assigned == this) {
 			dirtyVariables.add(name);
@@ -327,7 +326,7 @@ public class ClientShader implements SpoutShader {
 	}
 
 	@Override
-	public void setUniform(String name, Matrix4 value) {
+	public void setUniform(String name, Matrix4f value) {
 		variables.put(name, new Mat4ShaderVariable(program, name, value));
 		if (assigned == this) {
 			dirtyVariables.add(name);
@@ -335,13 +334,13 @@ public class ClientShader implements SpoutShader {
 	}
 
 	@Override
-	public void setUniform(String name, Matrix value) {
-		if (value instanceof Matrix2) {
-			setUniform(name, (Matrix2) value);
-		} else if (value instanceof Matrix3) {
-			setUniform(name, (Matrix3) value);
-		} else if (value instanceof Matrix4) {
-			setUniform(name, (Matrix4) value);
+	public void setUniform(String name, Matrixf value) {
+		if (value instanceof Matrix2f) {
+			setUniform(name, (Matrix2f) value);
+		} else if (value instanceof Matrix3f) {
+			setUniform(name, (Matrix3f) value);
+		} else if (value instanceof Matrix4f) {
+			setUniform(name, (Matrix4f) value);
 		}
 	}
 

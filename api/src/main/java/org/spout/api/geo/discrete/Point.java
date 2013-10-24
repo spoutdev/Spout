@@ -37,14 +37,14 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.util.StringUtil;
 
 /**
  * Represents a position in a World
  */
-public class Point extends Vector3 implements WorldSource {
+public class Point extends Vector3f implements WorldSource {
 	private static final long serialVersionUID = 1L;
 	protected final World world;
 	public static final Point invalid = new Point(null, 0, 0, 0);
@@ -59,7 +59,7 @@ public class Point extends Vector3 implements WorldSource {
 		world = point.getWorld();
 	}
 
-	public Point(Vector3 vector, World w) {
+	public Point(Vector3f vector, World w) {
 		super(vector);
 		world = w;
 	}
@@ -80,7 +80,7 @@ public class Point extends Vector3 implements WorldSource {
 	}
 
 	@Override
-	public Point div(Vector3 other) {
+	public Point div(Vector3f other) {
 		return new Point(super.div(other), world);
 	}
 
@@ -105,7 +105,7 @@ public class Point extends Vector3 implements WorldSource {
 	}
 
 	@Override
-	public Point mul(Vector3 other) {
+	public Point mul(Vector3f other) {
 		return new Point(super.mul(other), world);
 	}
 
@@ -127,7 +127,7 @@ public class Point extends Vector3 implements WorldSource {
 	}
 
 	@Override
-	public Point add(Vector3 other) {
+	public Point add(Vector3f other) {
 		return new Point(super.add(other), world);
 	}
 
@@ -142,7 +142,7 @@ public class Point extends Vector3 implements WorldSource {
 	}
 
 	@Override
-	public Point sub(Vector3 other) {
+	public Point sub(Vector3f other) {
 		return new Point(super.sub(other), world);
 	}
 
@@ -315,15 +315,15 @@ public class Point extends Vector3 implements WorldSource {
 		try {
 			Field field;
 
-			field = Vector3.class.getDeclaredField("x");
+			field = Vector3f.class.getDeclaredField("x");
 			field.setAccessible(true);
 			field.set(this, x);
 
-			field = Vector3.class.getDeclaredField("y");
+			field = Vector3f.class.getDeclaredField("y");
 			field.setAccessible(true);
 			field.set(this, y);
 
-			field = Vector3.class.getDeclaredField("z");
+			field = Vector3f.class.getDeclaredField("z");
 			field.setAccessible(true);
 			field.set(this, z);
 

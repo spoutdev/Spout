@@ -32,8 +32,8 @@ import org.spout.api.Spout;
 import org.spout.api.component.Component;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 
 public class SpoutFallbackMovementComponent extends Component {
 
@@ -50,7 +50,7 @@ public class SpoutFallbackMovementComponent extends Component {
 		final Transform playerTransform = client.getPlayer().getPhysics().getTransform();
 		final PlayerInputState state = client.getPlayer().input();
 		final float speed = 50f;
-		Vector3 motion = Vector3.ZERO;
+		Vector3f motion = Vector3f.ZERO;
 		if (state.getForward()) {
 			motion = motion.add(playerTransform.forwardVector().mul(speed * -dt));
 		}
@@ -70,9 +70,9 @@ public class SpoutFallbackMovementComponent extends Component {
 			motion = motion.add(playerTransform.upVector().mul(speed * -dt));
 		}
 
-		client.getPlayer().getPhysics().setRotation(Quaternion.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
+		client.getPlayer().getPhysics().setRotation(Quaternionf.fromAxesAnglesDeg(state.pitch(), state.yaw(), playerTransform.getRotation().getAxesAngleDeg().getZ()));
 		
-		if (!motion.equals(Vector3.ZERO)) {
+		if (!motion.equals(Vector3f.ZERO)) {
 			client.getPlayer().getPhysics().translate(motion);
 		}
 

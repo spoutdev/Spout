@@ -35,28 +35,28 @@ import org.spout.api.util.StringUtil;
 import org.spout.api.util.concurrent.SpinLock;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.matrix.Matrix3;
-import org.spout.math.matrix.Matrix4;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.matrix.Matrix3f;
+import org.spout.math.matrix.Matrix4f;
+import org.spout.math.vector.Vector3f;
 
 @Threadsafe
 public final class Transform implements Serializable {
 	private static final long serialVersionUID = 2L;
 	private final transient SpinLock lock = new SpinLock();
 	private Point position;
-	private Quaternion rotation;
-	private Vector3 scale;
+	private Quaternionf rotation;
+	private Vector3f scale;
 
 	public Transform() {
-		this(Point.invalid, Quaternion.IDENTITY, new Vector3(1, 1, 1));
+		this(Point.invalid, Quaternionf.IDENTITY, new Vector3f(1, 1, 1));
 	}
 
 	public Transform(Transform transform) {
 		set(transform);
 	}
 
-	public Transform(Point position, Quaternion rotation, Vector3 scale) {
+	public Transform(Point position, Quaternionf rotation, Vector3f scale) {
 		this.position = position;
 		this.rotation = rotation;
 		this.scale = scale;
@@ -82,10 +82,10 @@ public final class Transform implements Serializable {
 	}
 
 	public Transform translate(float x, float y, float z) {
-		return translate(new Vector3(x, y, z));
+		return translate(new Vector3f(x, y, z));
 	}
 
-	public Transform translate(Vector3 offset) {
+	public Transform translate(Vector3f offset) {
 		try {
 			lock.lock();
 			this.position = this.position.add(offset);
@@ -95,7 +95,7 @@ public final class Transform implements Serializable {
 		return this;
 	}
 
-	public Transform rotate(Quaternion offset) {
+	public Transform rotate(Quaternionf offset) {
 		try {
 			lock.lock();
 			this.rotation = offset.mul(rotation);
@@ -105,7 +105,7 @@ public final class Transform implements Serializable {
 		return this;
 	}
 
-	public Transform scale(Vector3 offset) {
+	public Transform scale(Vector3f offset) {
 		try {
 			lock.lock();
 			this.scale = this.scale.add(offset);
@@ -115,7 +115,7 @@ public final class Transform implements Serializable {
 		return this;
 	}
 
-	public Transform translateAndSetRotation(Vector3 offset, Quaternion rotation) {
+	public Transform translateAndSetRotation(Vector3f offset, Quaternionf rotation) {
 		try {
 			lock.lock();
 			this.position = this.position.add(offset);
@@ -126,7 +126,7 @@ public final class Transform implements Serializable {
 		return this;
 	}
 
-	public Quaternion getRotation() {
+	public Quaternionf getRotation() {
 		try {
 			lock.lock();
 			return rotation;
@@ -135,7 +135,7 @@ public final class Transform implements Serializable {
 		}
 	}
 
-	public Transform setRotation(Quaternion rotation) {
+	public Transform setRotation(Quaternionf rotation) {
 		try {
 			lock.lock();
 			this.rotation = rotation;
@@ -145,7 +145,7 @@ public final class Transform implements Serializable {
 		return this;
 	}
 
-	public Vector3 getScale() {
+	public Vector3f getScale() {
 		try {
 			lock.lock();
 			return scale;
@@ -154,7 +154,7 @@ public final class Transform implements Serializable {
 		}
 	}
 
-	public Transform setScale(Vector3 scale) {
+	public Transform setScale(Vector3f scale) {
 		try {
 			lock.lock();
 			this.scale = scale;
@@ -203,7 +203,7 @@ public final class Transform implements Serializable {
 	 */
 	@Threadsafe
 	public Transform set(World world, float px, float py, float pz, float rx, float ry, float rz, float rw, float sx, float sy, float sz) {
-		return this.set(new Point(world, px, py, pz), new Quaternion(rx, ry, rz, rw), new Vector3(sx, sy, sz));
+		return this.set(new Point(world, px, py, pz), new Quaternionf(rx, ry, rz, rw), new Vector3f(sx, sy, sz));
 	}
 
 	/**
@@ -212,7 +212,7 @@ public final class Transform implements Serializable {
 	 * @return this transform
 	 */
 	@Threadsafe
-	public Transform set(Point p, Quaternion r, Vector3 s) {
+	public Transform set(Point p, Quaternionf r, Vector3f s) {
 		try {
 			lock.lock();
 			setUnsafe(p, r, s);
@@ -222,7 +222,7 @@ public final class Transform implements Serializable {
 		return this;
 	}
 
-	private void setUnsafe(Point p, Quaternion r, Vector3 s) {
+	private void setUnsafe(Point p, Quaternionf r, Vector3f s) {
 		this.position = p;
 		this.rotation = r;
 		this.scale = s;
@@ -284,44 +284,44 @@ public final class Transform implements Serializable {
 	/**
 	 * Returns the 4x4 matrix that represents this transform object
 	 */
-	public Matrix4 toMatrix() {
-		Matrix4 translate = Matrix4.createTranslation(getPosition());
-		Matrix4 rotate = Matrix4.createRotation(getRotation());
-		Matrix4 scale = Matrix4.createScaling(getScale().toVector4(1));
+	public Matrix4f toMatrix() {
+		Matrix4f translate = Matrix4f.createTranslation(getPosition());
+		Matrix4f rotate = Matrix4f.createRotation(getRotation());
+		Matrix4f scale = Matrix4f.createScaling(getScale().toVector4(1));
 		return scale.mul(rotate).mul(translate);
 	}
 
 	/**
 	 * Returns a unit vector that points in the forward direction of this transform
 	 */
-	public Vector3 forwardVector() {
-		return Matrix3.createRotation(getRotation()).transform(Vector3.FORWARD);
+	public Vector3f forwardVector() {
+		return Matrix3f.createRotation(getRotation()).transform(Vector3f.FORWARD);
 	}
 
 	/**
 	 * Returns a unit vector that points right in relation to this transform
 	 */
-	public Vector3 rightVector() {
-		return Matrix3.createRotation(getRotation()).transform(Vector3.RIGHT);
+	public Vector3f rightVector() {
+		return Matrix3f.createRotation(getRotation()).transform(Vector3f.RIGHT);
 	}
 
 	/**
 	 * Returns a unit vector that points up in relation to this transform
 	 */
-	public Vector3 upVector() {
-		return Matrix3.createRotation(getRotation()).transform(Vector3.UP);
+	public Vector3f upVector() {
+		return Matrix3f.createRotation(getRotation()).transform(Vector3f.UP);
 	}
 
 	/**
-	 * Returns if this Transform is "empty" <p> Empty is defined by Position, {@link Point}, of the transform equaling {@link Point#invalid}, Rotation, {@link Quaternion}, of the transform equaling
-	 * {@link Quaternion#IDENTITY}, and Scale, {@link Vector3}, equaling {@link Vector3#ONE}.
+	 * Returns if this Transform is "empty" <p> Empty is defined by Position, {@link Point}, of the transform equaling {@link Point#invalid}, Rotation, {@link org.spout.math.imaginary.Quaternionf}, of the transform equaling
+	 * {@link org.spout.math.imaginary.Quaternionf#IDENTITY}, and Scale, {@link org.spout.math.vector.Vector3f}, equaling {@link org.spout.math.vector.Vector3f#ONE}.
 	 *
 	 * @return True if empty, false if not
 	 */
 	public boolean isEmpty() {
 		try {
 			lock.lock();
-			return position.equals(Point.invalid) && rotation.equals(Quaternion.IDENTITY) && scale.equals(Vector3.ONE);
+			return position.equals(Point.invalid) && rotation.equals(Quaternionf.IDENTITY) && scale.equals(Vector3f.ONE);
 		} finally {
 			lock.unlock();
 		}

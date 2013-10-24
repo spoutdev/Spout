@@ -45,7 +45,7 @@ import org.spout.api.exception.ArgumentParseException;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.plugin.Plugin;
 
 /**
@@ -444,13 +444,13 @@ public class CommandArguments {
 	}
 
 	/**
-	 * Pop a {@link Vector3}. Accepts either x y z or x,y,z syntax TODO support relative syntax
+	 * Pop a {@link org.spout.math.vector.Vector3f}. Accepts either x y z or x,y,z syntax TODO support relative syntax
 	 *
 	 * @param argName The name of the argument
 	 * @return A parsed vector
 	 * @throws ArgumentParseException if not enough coordinates are provided or the coordinates are not floats
 	 */
-	public Vector3 popVector3(String argName) throws ArgumentParseException {
+	public Vector3f popVector3(String argName) throws ArgumentParseException {
 		try {
 			float x, y, z;
 			if (currentArgument(argName).contains(",")) {
@@ -466,13 +466,13 @@ public class CommandArguments {
 				y = popFloat(null);
 				z = popFloat(null);
 			}
-			return success(argName, new Vector3(x, y, z));
+			return success(argName, new Vector3f(x, y, z));
 		} catch (ArgumentParseException e) {
 			throw failure(argName, e.getReason(), e.isSilenceable(), e.getCompletions());
 		}
 	}
 
-	public Vector3 popVector3(String argName, Vector3 def) throws ArgumentParseException {
+	public Vector3f popVector3(String argName, Vector3f def) throws ArgumentParseException {
 		try {
 			return popVector3(argName);
 		} catch (ArgumentParseException e) {
@@ -491,7 +491,7 @@ public class CommandArguments {
 	public Point popPoint(String argName, CommandSource source) throws ArgumentParseException {
 		try {
 			World world = popWorld(null, source);
-			Vector3 vec = popVector3(null);
+			Vector3f vec = popVector3(null);
 			return success(argName, new Point(vec, world));
 		} catch (ArgumentParseException e) {
 			throw failure(argName, e.getReason(), e.isSilenceable(), e.getCompletions());

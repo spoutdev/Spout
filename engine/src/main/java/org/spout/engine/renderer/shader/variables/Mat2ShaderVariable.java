@@ -31,13 +31,13 @@ import java.nio.FloatBuffer;
 import org.lwjgl.opengl.GL20;
 
 import org.spout.engine.SpoutRenderer;
-import org.spout.math.matrix.Matrix2;
+import org.spout.math.matrix.Matrix2f;
 
 public class Mat2ShaderVariable extends ShaderVariable {
 	public static final FloatBuffer buffer = FloatBuffer.allocate(4);
-	Matrix2 value;
+	Matrix2f value;
 
-	public Mat2ShaderVariable(int program, String name, Matrix2 value) {
+	public Mat2ShaderVariable(int program, String name, Matrix2f value) {
 		super(program, name);
 		this.value = value;
 	}

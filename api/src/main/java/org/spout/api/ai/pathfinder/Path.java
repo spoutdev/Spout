@@ -35,7 +35,7 @@ import org.spout.api.ai.pathfinder.PathPoint.PathCallback;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class Path implements Plan<Entity> {
 	private int index = 0;
@@ -52,13 +52,13 @@ public class Path implements Plan<Entity> {
 			if (node.callbacks != null) {
 				continue;
 			}
-			Vector3 vector = node.location;
+			Vector3f vector = node.location;
 			path.add(new PathEntry(vector, node.callbacks));
 		}
 		return path.toArray(new PathEntry[path.size()]);
 	}
 
-	public Vector3 getCurrentVector() {
+	public Vector3f getCurrentVector() {
 		return path[index].point;
 	}
 
@@ -84,9 +84,9 @@ public class Path implements Plan<Entity> {
 
 	private static class PathEntry {
 		final Iterable<PathCallback> callbacks;
-		final Vector3 point;
+		final Vector3f point;
 
-		private PathEntry(Vector3 point, List<PathCallback> callbacks) {
+		private PathEntry(Vector3f point, List<PathCallback> callbacks) {
 			this.point = point;
 			this.callbacks = callbacks;
 		}

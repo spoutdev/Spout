@@ -43,7 +43,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.OrientedMesh;
 import org.spout.api.model.mesh.OrientedMeshFace;
@@ -137,9 +137,9 @@ public class ChunkMesh {
 		}
 	}
 
-	public List<MeshFace> buildBlock(ChunkSnapshotModel chunkSnapshotModel, Material blockMaterial, Vector3 position, boolean toRender[], OrientedMesh mesh) {
+	public List<MeshFace> buildBlock(ChunkSnapshotModel chunkSnapshotModel, Material blockMaterial, Vector3f position, boolean toRender[], OrientedMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<>();
-		Vector3 model = new Vector3(position.getX(), position.getY(), position.getZ());
+		Vector3f model = new Vector3f(position.getX(), position.getY(), position.getZ());
 		for (OrientedMeshFace meshFace : mesh) {
 
 			if (!meshFace.canRender(toRender)) {
@@ -175,13 +175,13 @@ public class ChunkMesh {
 			return;
 		}
 
-		Vector3 position = new Vector3(x, y, z);
+		Vector3f position = new Vector3f(x, y, z);
 
 		boolean toRender[] = new boolean[OrientedMeshFace.shouldRender.length];
 		boolean fullyOccluded = true;
 		for (int i = 0; i < OrientedMeshFace.shouldRender.length; i++) {
 			BlockFace face = OrientedMeshFace.shouldRender[i];
-			Vector3 facePos = position.add(face.getOffset());
+			Vector3f facePos = position.add(face.getOffset());
 			int x1 = facePos.getFloorX();
 			int y1 = facePos.getFloorY();
 			int z1 = facePos.getFloorZ();

@@ -26,7 +26,7 @@
  */
 package org.spout.api.render;
 
-import org.spout.math.matrix.Matrix4;
+import org.spout.math.matrix.Matrix4f;
 
 /**
  * Represents a Camera to be used for rendering.
@@ -37,12 +37,12 @@ public interface Camera {
 	 *
 	 * @return 4x4 matrix representing the projection
 	 */
-	public Matrix4 getProjection();
+	public Matrix4f getProjection();
 
 	/**
 	 * Gets the view matrix
 	 */
-	public Matrix4 getView();
+	public Matrix4f getView();
 
 	/**
 	 * Update the view matrix.
@@ -59,5 +59,5 @@ public interface Camera {
 	 */
 	public ViewFrustum getFrustum();
 
-	public Matrix4 getRotation();
+	public Matrix4f getRotation();
 }

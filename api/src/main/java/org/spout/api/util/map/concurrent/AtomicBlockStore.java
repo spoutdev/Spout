@@ -30,7 +30,7 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.IntVector3;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 /**
  * This store stores block data for each chunk. Each block can either store a short id, or a short id, a short data value and a reference to a &lt;T&gt; object.
@@ -244,7 +244,7 @@ public interface AtomicBlockStore {
 	 * Gets the position of the dirty block at a given index.<br> <br> If there is no block at that index, then the method return null.<br> <br> Note: the x, y and z values returned are the chunk
 	 * coordinates, not the world coordinates and the method has no effect on the world field of the block.<br>
 	 */
-	public Vector3 getDirtyBlock(int i);
+	public Vector3f getDirtyBlock(int i);
 
 	/**
 	 * Gets the old state for the dirty block at a given index.<br> <br> If there is no block at that index, then the method return null.<br>

@@ -54,7 +54,7 @@ import org.spout.api.math.IntVector3;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.OutwardIterator;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 /**
  * The networking behind {@link org.spout.api.entity.Entity}s.
@@ -303,7 +303,7 @@ public class NetworkComponent extends EntityComponent {
 	@ServerOnly
 	protected void updateObserver() {
 		first = false;
-		List<Vector3> ungenerated = new ArrayList<>();
+		List<Vector3f> ungenerated = new ArrayList<>();
 		final int syncDistance = getSyncDistance();
 		World w = getOwner().getWorld();
 		Transform t = getOwner().getPhysics().getTransform();

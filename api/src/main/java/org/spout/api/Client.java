@@ -33,7 +33,7 @@ import org.spout.api.gui.ScreenStack;
 import org.spout.api.input.InputManager;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.render.RenderMode;
-import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector2f;
 
 /**
  * Represents the client-specific component of the Spout platform.
@@ -88,7 +88,7 @@ public interface Client extends Engine {
 	 *
 	 * @return the resolution of the window.
 	 */
-	public Vector2 getResolution();
+	public Vector2f getResolution();
 
 	/**
 	 * Returns the aspect ratio of the client, in pixels. <p> Ratio = (screen width / screen height)

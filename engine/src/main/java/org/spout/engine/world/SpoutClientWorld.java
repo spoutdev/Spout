@@ -46,7 +46,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.entity.SpoutClientPlayer;
@@ -171,12 +171,12 @@ public class SpoutClientWorld extends SpoutWorld {
 	}
 
 	@Override
-	public void queueChunksForGeneration(List<Vector3> chunks) {
+	public void queueChunksForGeneration(List<Vector3f> chunks) {
 		throw new UnsupportedOperationException("Client is not allowed to queue chunks for generation");
 	}
 
 	@Override
-	public void queueChunkForGeneration(Vector3 chunk) {
+	public void queueChunkForGeneration(Vector3f chunk) {
 		throw new UnsupportedOperationException("Client is not allowed to queue chunks for generation");
 	}
 

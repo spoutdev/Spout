@@ -107,8 +107,8 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.engine.world.SpoutServerWorld;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	/**
@@ -157,7 +157,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			if (SpoutConfiguration.CREATE_FALLBACK_WORLD.getBoolean() && loadedWorlds.getLive().isEmpty()) {
 				Spout.info("No worlds detected. Creating fallback world.");
 				World world = loadWorld("fallback_world", new FlatWorldGenerator());
-				world.setSpawnPoint(new Transform(new Point(world, 0, 5, 0), Quaternion.IDENTITY, Vector3.ONE));
+				world.setSpawnPoint(new Transform(new Point(world, 0, 5, 0), Quaternionf.IDENTITY, Vector3f.ONE));
 				this.setDefaultWorld(world);
 			} else {
 				// Pick the default world from the configuration

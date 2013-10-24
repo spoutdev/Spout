@@ -82,7 +82,8 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.material.BlockMaterial;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
@@ -95,7 +96,6 @@ import org.spout.engine.component.entity.SpoutModelComponent;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.world.SpoutChunk;
-import org.spout.math.imaginary.Quaternion;
 
 public class TestCommands {
 	private final SpoutEngine engine;
@@ -344,14 +344,14 @@ public class TestCommands {
 	public void rotateEntity(CommandSource source, CommandArguments args) throws CommandException {
 		int id = args.popInteger("id");
 		World world = args.popWorld("world");
-		Vector3 rot = args.popVector3("rot");
+		Vector3f rot = args.popVector3("rot");
 		args.assertCompletelyParsed();
 
 		Entity e = world.getEntity(id);
 		if (e == null) {
 			throw new CommandException("Unknown entity " + id + " in world " + world + "!");
 		}
-		e.getPhysics().setRotation(e.getPhysics().getRotation().mul(Quaternion.fromRotationTo(Vector3.FORWARD, rot)));
+		e.getPhysics().setRotation(e.getPhysics().getRotation().mul(Quaternionf.fromRotationTo(Vector3f.FORWARD, rot)));
 
 		engine.getLogger().info("Entity " + id + " rotate to " + rot.getX() + " " + rot.getY() + " " + rot.getZ());
 	}
@@ -360,7 +360,7 @@ public class TestCommands {
 	public void scaleEntity(CommandSource source, CommandArguments args) throws CommandException {
 		int id = args.popInteger("id");
 		World world = args.popWorld("world");
-		Vector3 scale = args.popVector3("scale");
+		Vector3f scale = args.popVector3("scale");
 		args.assertCompletelyParsed();
 
 		Entity e = world.getEntity(id);

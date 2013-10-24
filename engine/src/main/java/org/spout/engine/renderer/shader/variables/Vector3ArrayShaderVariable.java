@@ -31,12 +31,12 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class Vector3ArrayShaderVariable extends ShaderVariable {
-	Vector3[] value;
+	Vector3f[] value;
 
-	public Vector3ArrayShaderVariable(int program, String name, Vector3[] array) {
+	public Vector3ArrayShaderVariable(int program, String name, Vector3f[] array) {
 		super(program, name);
 		value = array;
 	}

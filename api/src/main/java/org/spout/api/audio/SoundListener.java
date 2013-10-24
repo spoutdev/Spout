@@ -27,7 +27,7 @@
 package org.spout.api.audio;
 
 import org.spout.api.geo.discrete.Point;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 /**
  * Listens for Sounds.
@@ -55,7 +55,7 @@ public interface SoundListener {
 	 * @param vec velocity of listener
 	 * @see #getVelocity
 	 */
-	public void setVelocity(Vector3 vec);
+	public void setVelocity(Vector3f vec);
 
 	/**
 	 * Returns velocity of this SoundListener. Used for doppler effects.
@@ -63,7 +63,7 @@ public interface SoundListener {
 	 * @return velocity
 	 * @see #setVelocity
 	 */
-	public Vector3 getVelocity();
+	public Vector3f getVelocity();
 
 	/**
 	 * Sets the orientation of this SoundListener.
@@ -71,7 +71,7 @@ public interface SoundListener {
 	 * @param at position of the listening point relative to {@link #getPosition()}
 	 * @param up up value
 	 */
-	public void setOrientation(Vector3 at, Vector3 up);
+	public void setOrientation(Vector3f at, Vector3f up);
 
 	/**
 	 * Sets the at value of this SoundListener's orientation.
@@ -79,7 +79,7 @@ public interface SoundListener {
 	 * @param at position of the listening point relative to {@link #getPosition()}
 	 * @see #getOrientationAt
 	 */
-	public void setOrientationAt(Vector3 at);
+	public void setOrientationAt(Vector3f at);
 
 	/**
 	 * Sets the up value of this SoundListener's orientation.
@@ -87,7 +87,7 @@ public interface SoundListener {
 	 * @param up up value
 	 * @see #getOrientationUp
 	 */
-	public void setOrientationUp(Vector3 up);
+	public void setOrientationUp(Vector3f up);
 
 	/**
 	 * Returns the at value of this SoundListener's orientation.
@@ -95,7 +95,7 @@ public interface SoundListener {
 	 * @return position of the listening point relative to {@link #getPosition()}
 	 * @see #setOrientationAt
 	 */
-	public Vector3 getOrientationAt();
+	public Vector3f getOrientationAt();
 
 	/**
 	 * Returns the up value of the SoundListener's orientation.
@@ -103,5 +103,5 @@ public interface SoundListener {
 	 * @return up value
 	 * @see #setOrientationUp
 	 */
-	public Vector3 getOrientationUp();
+	public Vector3f getOrientationUp();
 }

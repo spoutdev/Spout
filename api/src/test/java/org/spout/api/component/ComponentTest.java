@@ -72,7 +72,7 @@ import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
@@ -619,7 +619,7 @@ public final class ComponentTest {
 		}
 
 		@Override
-		public Block getBlock(Vector3 position) {
+		public Block getBlock(Vector3f position) {
 			return null;
 		}
 
@@ -719,12 +719,12 @@ public final class ComponentTest {
 		}
 
 		@Override
-		public Region getRegionFromBlock(Vector3 position) {
+		public Region getRegionFromBlock(Vector3f position) {
 			return null;
 		}
 
 		@Override
-		public Region getRegionFromBlock(Vector3 position, LoadOption loadopt) {
+		public Region getRegionFromBlock(Vector3f position, LoadOption loadopt) {
 			return null;
 		}
 
@@ -754,12 +754,12 @@ public final class ComponentTest {
 		}
 
 		@Override
-		public Chunk getChunkFromBlock(Vector3 position) {
+		public Chunk getChunkFromBlock(Vector3f position) {
 			return null;
 		}
 
 		@Override
-		public Chunk getChunkFromBlock(Vector3 position, LoadOption loadopt) {
+		public Chunk getChunkFromBlock(Vector3f position, LoadOption loadopt) {
 			return null;
 		}
 
@@ -789,12 +789,12 @@ public final class ComponentTest {
 		}
 
 		@Override
-		public void queueChunksForGeneration(List<Vector3> chunks) {
+		public void queueChunksForGeneration(List<Vector3f> chunks) {
 
 		}
 
 		@Override
-		public void queueChunkForGeneration(Vector3 chunk) {
+		public void queueChunkForGeneration(Vector3f chunk) {
 
 		}
 

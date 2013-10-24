@@ -61,8 +61,8 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 
 public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = Integer.MIN_VALUE;
@@ -86,7 +86,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	public SpoutEntity(Engine engine, Point point) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
+		this(engine, new Transform(point, Quaternionf.IDENTITY, Vector3f.ONE));
 	}
 
 	public SpoutEntity(Engine engine, SpoutEntitySnapshot snapshot) {
@@ -94,7 +94,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	public SpoutEntity(Engine engine, Point point, Class<? extends Component>... components) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), null, (byte[]) null, components);
+		this(engine, new Transform(point, Quaternionf.IDENTITY, Vector3f.ONE), null, (byte[]) null, components);
 	}
 
 	public SpoutEntity(Engine engine, Transform transform, UUID uid, byte[] dataMap, Class<? extends Component>... components) {

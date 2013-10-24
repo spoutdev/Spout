@@ -32,7 +32,7 @@ import java.util.Random;
 
 import gnu.trove.map.hash.TByteObjectHashMap;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.bytebit.ByteBitMask;
 
 /**
@@ -49,7 +49,7 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 				for (BlockFace face3 : new BlockFace[] {BlockFace.THIS,
 						BlockFace.NORTH, BlockFace.SOUTH}) {
 					BlockFaces faces = new BlockFaces(face1, face2, face3);
-					Vector3 offset = faces.getOffset();
+					Vector3f offset = faces.getOffset();
 					byte hash = getOffsetHash(offset);
 					offsetHash.put(hash, faces);
 				}
@@ -159,12 +159,12 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 	public static final BlockFaces NONE = new BlockFaces();
 	private final byte mask;
 	private final BlockFace[] faces;
-	private final Vector3 offset;
+	private final Vector3f offset;
 
 	public BlockFaces(BlockFace... blockfaces) {
 		this.faces = blockfaces;
 		byte mask = 0;
-		Vector3 offsetc = Vector3.ZERO;
+		Vector3f offsetc = Vector3f.ZERO;
 		for (BlockFace face : this.faces) {
 			offsetc = offsetc.add(face.getOffset());
 			mask |= face.getMask();
@@ -178,7 +178,7 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 		return this.mask;
 	}
 
-	public Vector3 getOffset() {
+	public Vector3f getOffset() {
 		return offset;
 	}
 
@@ -351,7 +351,7 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 		return Arrays.copyOf(this.faces, this.faces.length);
 	}
 
-	private static byte getOffsetHash(Vector3 offset) {
+	private static byte getOffsetHash(Vector3f offset) {
 		offset = offset.normalize();
 		offset = offset.round();
 		int x = offset.getFloorX();
@@ -363,7 +363,7 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 		return (byte) (x | y << 2 | z << 4);
 	}
 
-	public static BlockFaces fromOffset(Vector3 offset) {
+	public static BlockFaces fromOffset(Vector3f offset) {
 		return offsetHash.get(getOffsetHash(offset));
 	}
 }

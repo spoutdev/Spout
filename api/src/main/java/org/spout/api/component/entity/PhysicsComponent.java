@@ -29,10 +29,10 @@ package org.spout.api.component.entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
-import org.spout.math.imaginary.Quaternion;
 import org.spout.physics.collision.shape.CollisionShape;
 
 /**
@@ -129,23 +129,23 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract boolean isPositionDirty();
 
 	/**
-	 * Gets the {@link Quaternion} representing the rotation of the {@link org.spout.api.entity.Entity}. <p/> The Quaternion is guaranteed to always be valid.
+	 * Gets the {@link org.spout.math.imaginary.Quaternionf} representing the rotation of the {@link org.spout.api.entity.Entity}. <p/> The Quaternion is guaranteed to always be valid.
 	 *
 	 * @return The Quaternion
 	 */
 	@SnapshotRead
 	@Threadsafe
-	public abstract Quaternion getRotation();
+	public abstract Quaternionf getRotation();
 
 	/**
-	 * Sets the {@link Quaternion} for this {@link org.spout.api.entity.Entity}. <p> This functions sets the live state of the entity's quaternion (rotation), not the snapshot state. As such, its advised
+	 * Sets the {@link org.spout.math.imaginary.Quaternionf} for this {@link org.spout.api.entity.Entity}. <p> This functions sets the live state of the entity's quaternion (rotation), not the snapshot state. As such, its advised
 	 * to set the quaternion lastly else retrieving the quaternion afterwards within the same tick will not return expected values (due to potential other plugin changes as well as {@link #getRotation())
 	 * returning snapshot state). This method always syncs the change to the client.
 	 *
 	 * @param rotation The new live quaternion (rotation) of this entity.
 	 * @return This component, for chaining.
 	 */
-	public abstract PhysicsComponent setRotation(Quaternion rotation);
+	public abstract PhysicsComponent setRotation(Quaternionf rotation);
 
 	/**
 	 * Determines if this {@link org.spout.api.entity.Entity} has a dirty rotation. <p> A dirty rotation is when the snapshot rotation (last tick) and live rotation are not equal.
@@ -155,23 +155,23 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract boolean isRotationDirty();
 
 	/**
-	 * Gets the {@link Vector3} representing the scale of the {@link org.spout.api.entity.Entity}. <p/> The Scale is guaranteed to always be valid.
+	 * Gets the {@link org.spout.math.vector.Vector3f} representing the scale of the {@link org.spout.api.entity.Entity}. <p/> The Scale is guaranteed to always be valid.
 	 *
 	 * @return The Scale (Vector3).
 	 */
 	@SnapshotRead
 	@Threadsafe
-	public abstract Vector3 getScale();
+	public abstract Vector3f getScale();
 
 	/**
-	 * Sets the {@link Vector3} representing the scale of the {@link org.spout.api.entity.Entity}. <p> This functions sets the live state of the entity's scale, not the snapshot state. As such, its
+	 * Sets the {@link org.spout.math.vector.Vector3f} representing the scale of the {@link org.spout.api.entity.Entity}. <p> This functions sets the live state of the entity's scale, not the snapshot state. As such, its
 	 * advised to set the scale lastly else retrieving the scale afterwards within the same tick will not return expected values (due to potential other plugin changes as well as {@link #getScale())
 	 * returning snapshot state). This method always syncs the change to the client.
 	 *
 	 * @param scale The new live scale of this entity.
 	 * @return This component, for chaining.
 	 */
-	public abstract PhysicsComponent setScale(Vector3 scale);
+	public abstract PhysicsComponent setScale(Vector3f scale);
 
 	/**
 	 * Determines if this {@link org.spout.api.entity.Entity} has a dirty scale. <p> A dirty scale is when the snapshot scale (last tick) and live scale are not equal.
@@ -197,32 +197,32 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract boolean isWorldDirty();
 
 	/**
-	 * Translates this {@link org.spout.api.entity.Entity} from its current {@link Point} to the Point that is the addition of the {@link Vector3} provided. <p> For example, if I want to move an Entity
+	 * Translates this {@link org.spout.api.entity.Entity} from its current {@link Point} to the Point that is the addition of the {@link org.spout.math.vector.Vector3f} provided. <p> For example, if I want to move an Entity
 	 * up one (Up being the y-axis), I would do a {@code translate(new Vector3(0, 1, 0));}. This method always syncs the change to the client.
 	 *
 	 * @param translation A Vector3 which will be added to the current Point (position).
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent translate(Vector3 translation);
+	public abstract PhysicsComponent translate(Vector3f translation);
 
 	/**
-	 * Rotates this {@link org.spout.api.entity.Entity} from its current {@link org.spout.math.imaginary.Quaternion} to the Quaternion that is the addition of the Quaternion provided. <p/> For example, if I
+	 * Rotates this {@link org.spout.api.entity.Entity} from its current {@link org.spout.math.imaginary.Quaternionf} to the Quaternion that is the addition of the Quaternion provided. <p/> For example, if I
 	 * want to rotate an Entity upwards (which is moving its yaw), I would do a rotate(new Quaternion(0, 1, 0, 0)); <p> Bear in mind, doing a rotate does so without physics and instead the rotation of
 	 * the Entity will be directly set within its physics transform. This method always syncs the change to the client.
 	 *
 	 * @param rotate A Quaternion which will be added to the current Quaternion (rotation).
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent rotate(Quaternion rotate);
+	public abstract PhysicsComponent rotate(Quaternionf rotate);
 
 	/**
-	 * Scales this {@link org.spout.api.entity.Entity} from its current scale to the {@link Vector3} representing the new scale which is an addition of the Vector3 provided. <p/> For example, if I want
+	 * Scales this {@link org.spout.api.entity.Entity} from its current scale to the {@link org.spout.math.vector.Vector3f} representing the new scale which is an addition of the Vector3 provided. <p/> For example, if I want
 	 * to scale an Entity to be taller (which is scaling its y-factor), I would do a {@code scale(new Vector3(0, 1, 0));}. This method always syncs the change to the client.
 	 *
 	 * @param scale A Vector3 which will be added to the current Vector3 (scale).
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent scale(Vector3 scale);
+	public abstract PhysicsComponent scale(Vector3f scale);
 
 	// Physics
 
@@ -236,7 +236,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 	 * @param offset The offset within the world to apply the impulse from.
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent impulse(Vector3 impulse, Vector3 offset);
+	public abstract PhysicsComponent impulse(Vector3f impulse, Vector3f offset);
 
 	/**
 	 * Impulse is a force across delta time (since last simulation tick). A few rules apply. <p/> - The entity must have a mass > 0 (ie not a static object). - The offset is in world space. This means
@@ -247,7 +247,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 	 * @param impulse The Vector3 impulse (force) to apply.
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent impulse(Vector3 impulse);
+	public abstract PhysicsComponent impulse(Vector3f impulse);
 
 	/**
 	 * Force is, as it sounds, an instant force to the Entity. A few rules apply. <p/> - The entity must be mobile (mass > 0) - Entities of higher masses need greater forces to move <p/> Can't get
@@ -257,7 +257,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 	 * @param ignoreGravity True to force without gravity, false to have gravity affect the force
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent force(Vector3 force, boolean ignoreGravity);
+	public abstract PhysicsComponent force(Vector3f force, boolean ignoreGravity);
 
 	/**
 	 * Force is, as it sounds, an instant force to the Entity. A few rules apply. <p/> - The entity must be mobile (mass > 0) - Entities of higher masses need greater forces to move <p/> Can't get
@@ -266,26 +266,26 @@ public abstract class PhysicsComponent extends EntityComponent {
 	 * @param force The Vector3 force to apply.
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent force(Vector3 force);
+	public abstract PhysicsComponent force(Vector3f force);
 
 	/**
-	 * Torque performs a rotation of the {@link org.spout.api.entity.Entity} by the {@link Vector3}. <p> The Vector3 is (yaw, pitch, roll) and is an instant change to rotation. <p> For example, if I want
+	 * Torque performs a rotation of the {@link org.spout.api.entity.Entity} by the {@link org.spout.math.vector.Vector3f}. <p> The Vector3 is (yaw, pitch, roll) and is an instant change to rotation. <p> For example, if I want
 	 * to rotate the entity to the right, I would do the following. <p> //Vector3.RIGHT = 1, 0, 0 scene.torque(Vector3.RIGHT); //The above rotates the Entity to the right instantly.
 	 *
 	 * @param torque The Vector3 torque to apply
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent torque(Vector3 torque);
+	public abstract PhysicsComponent torque(Vector3f torque);
 
 	/**
-	 * Impulse Torque performs a rotation over a delta of the {@link org.spout.api.entity.Entity} by the {@link Vector3}. <p> The Vector3 is (yaw, pitch, roll) and is a change in rotation spread over
+	 * Impulse Torque performs a rotation over a delta of the {@link org.spout.api.entity.Entity} by the {@link org.spout.math.vector.Vector3f}. <p> The Vector3 is (yaw, pitch, roll) and is a change in rotation spread over
 	 * delta time (since last simulation). <p> For example, if I want to rotate the entity to the right over time, I would do the following. <p> //Vector3.RIGHT = 1, 0, 0
 	 * scene.impulseTorque(Vector3.RIGHT) //The above rotates the Entity over time to the right.
 	 *
 	 * @param torque Tne Vector3 torque to apply.
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent impulseTorque(Vector3 torque);
+	public abstract PhysicsComponent impulseTorque(Vector3f torque);
 
 	/**
 	 * Dampens the {@link org.spout.api.entity.Entity}'s movement velocity by the factor provided. <p> 0.0f = no dampening, 1.0f = full velocity stop. Any values outside this range will be clamped to the
@@ -358,32 +358,32 @@ public abstract class PhysicsComponent extends EntityComponent {
 	/**
 	 * Gets the movement velocity of this {@link org.spout.api.entity.Entity}.
 	 *
-	 * @return the current velocity as a {@link Vector3}.
+	 * @return the current velocity as a {@link org.spout.math.vector.Vector3f}.
 	 */
-	public abstract Vector3 getMovementVelocity();
+	public abstract Vector3f getMovementVelocity();
 
 	/**
 	 * Sets the movement velocity for this {@link org.spout.api.entity.Entity}.
 	 *
-	 * @param velocity The {@link Vector3} velocity to apply to movement.
+	 * @param velocity The {@link org.spout.math.vector.Vector3f} velocity to apply to movement.
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent setMovementVelocity(Vector3 velocity);
+	public abstract PhysicsComponent setMovementVelocity(Vector3f velocity);
 
 	/**
 	 * Gets rotation velocity of this {@link org.spout.api.entity.Entity}.
 	 *
-	 * @return the current velocity as a {@link Vector3}.
+	 * @return the current velocity as a {@link org.spout.math.vector.Vector3f}.
 	 */
-	public abstract Vector3 getRotationVelocity();
+	public abstract Vector3f getRotationVelocity();
 
 	/**
 	 * Sets the rotation velocity for this {@link org.spout.api.entity.Entity}.
 	 *
-	 * @param velocity The {@link Vector3} velocity to apply to rotation.
+	 * @param velocity The {@link org.spout.math.vector.Vector3f} velocity to apply to rotation.
 	 * @return This component, so you can chain.
 	 */
-	public abstract PhysicsComponent setRotationVelocity(Vector3 velocity);
+	public abstract PhysicsComponent setRotationVelocity(Vector3f velocity);
 
 	/**
 	 * Returns the {@link CollisionShape} this {@link org.spout.api.entity.Entity} has
