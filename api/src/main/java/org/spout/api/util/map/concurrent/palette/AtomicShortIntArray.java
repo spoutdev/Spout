@@ -58,6 +58,15 @@ public class AtomicShortIntArray {
 		store.set(new AtomicShortIntUniformBackingArray(length));
 	}
 
+	public AtomicShortIntArray(int length, int[] initial, boolean compress) {
+		this.length = length;
+		if (compress) {
+			set(initial);
+		} else {
+			uncompressedSet(initial);
+		}
+	}
+
 	/**
 	 * Gets the width of the internal array, in bits
 	 *

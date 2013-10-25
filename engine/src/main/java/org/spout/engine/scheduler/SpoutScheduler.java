@@ -37,11 +37,9 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -361,6 +359,7 @@ public final class SpoutScheduler implements Scheduler {
 
 				if (currentTime < expectedTime) {
 					try {
+						System.out.println("Surplus of " + (expectedTime - currentTime));
 						Thread.sleep(expectedTime - currentTime);
 					} catch (InterruptedException e) {
 						shutdown = true;
@@ -805,7 +804,7 @@ public final class SpoutScheduler implements Scheduler {
 					}
 					Spout.info("-----------------------------------------------");
 				}
-				Thread.dumpStack();
+				AsyncExecutorUtils.dumpAllStacks();
 			}
 		}
 	}

@@ -200,7 +200,7 @@ public abstract class CuboidBuffer {
 
 	protected static int getIndex(final CuboidBuffer source, final int x, final int y, final int z) {
 		if (x < source.baseX || x >= source.topX || y < source.baseY || y >= source.topY || z < source.baseZ || z >= source.topZ) {
-			return -1;
+			throw new IllegalArgumentException("coordinates were outside the bounds of the CuboidBuffer!");
 		}
 
 		return (y - source.baseY) * source.Yinc + (z - source.baseZ) * source.Zinc + (x - source.baseX) * source.Xinc;

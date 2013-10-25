@@ -245,7 +245,7 @@ public abstract class CommonFileSystem implements FileSystem {
 	}
 
 	@Override
-	public void loadResource(URI uri) throws LoaderNotFoundException, ResourceNotFoundException, IOException {
+	public Object loadResource(URI uri) throws LoaderNotFoundException, ResourceNotFoundException, IOException {
 		// find the loader
 		// this needs to be thrown first, so we can use a fallback loader and know it exists
 		String scheme = uri.getScheme();
@@ -265,13 +265,14 @@ public abstract class CommonFileSystem implements FileSystem {
 				throw new IllegalStateException("Loader for scheme '" + scheme + "' returned a null resource.");
 			}
 			loadedResources.put(uri, resource);
+			return resource;
 		}
 	}
 
 	@Override
-	public void loadResource(String uri) throws LoaderNotFoundException, ResourceNotFoundException, IOException {
+	public Object loadResource(String uri) throws LoaderNotFoundException, ResourceNotFoundException, IOException {
 		try {
-			loadResource(new URI(uri));
+			return loadResource(new URI(uri));
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException("Specified URI is not valid.");
 		}
@@ -295,7 +296,7 @@ public abstract class CommonFileSystem implements FileSystem {
 
 		try {
 			// not loaded yet
-			loadResource(uri);
+			return tryCast(loadResource(uri), uri.getScheme());
 		} catch (LoaderNotFoundException e) {
 			// scheme has not loader
 			throw new IllegalArgumentException("No loader found for scheme " + uri.getScheme(), e);
@@ -307,8 +308,7 @@ public abstract class CommonFileSystem implements FileSystem {
 			Spout.getLogger().warning("No resource found at " + uri.toString() + ", loading fallback...");
 			String fallback = getLoader(uri.getScheme()).getFallback(); // assumption: loader is never null here
 			if (fallback == null) {
-				Spout.getLogger().warning("No resource found at " + uri.toString() + " and has no fallback resource.");
-				return null;
+				throw new IllegalStateException("No resource found at " + uri.toString() + " and has no fallback resource.");
 			}
 
 			try {
@@ -317,8 +317,6 @@ public abstract class CommonFileSystem implements FileSystem {
 				throw new IllegalStateException("Fallback name for scheme " + uri.getScheme() + " is invalid.", e);
 			}
 		}
-
-		return tryCast(loadedResources.get(uri), uri.getScheme());
 	}
 
 	@Override

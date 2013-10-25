@@ -91,21 +91,23 @@ public interface FileSystem {
 	 * Adds the resource at the specified location to the system's resource cache.
 	 *
 	 * @param uri to load resource at
+	 * @return the loaded resource
 	 * @throws LoaderNotFoundException if there is no loader for the specified scheme
 	 * @throws ResourceNotFoundException if there is no resource at the specified path
 	 * @throws IOException if there was a problem obtaining/disposing the input stream
 	 */
-	public void loadResource(URI uri) throws LoaderNotFoundException, ResourceNotFoundException, IOException;
+	public Object loadResource(URI uri) throws LoaderNotFoundException, ResourceNotFoundException, IOException;
 
 	/**
 	 * Adds the resource at the specified location to the system's resource cache.
 	 *
 	 * @param uri to load resource at
+	 * @return the loaded resource
 	 * @throws LoaderNotFoundException if there is no loader for the specified scheme
 	 * @throws ResourceNotFoundException if there is no resource at the specified path
 	 * @throws IOException if there was a problem obtaining/disposing the input stream
 	 */
-	public void loadResource(String uri) throws LoaderNotFoundException, ResourceNotFoundException, IOException;
+	public Object loadResource(String uri) throws LoaderNotFoundException, ResourceNotFoundException, IOException;
 
 	/**
 	 * Returns the resource at the specified path with an inferred type. If this resource is not loaded when this is called, it will be automatically loaded and cached before returning the resource. This

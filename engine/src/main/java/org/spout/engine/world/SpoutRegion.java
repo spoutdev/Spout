@@ -154,8 +154,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private int lightingUpdates = 0;
-	private LocalRegionChunkHeightMapBufferWrapper heightMapBuffer = null;
-	private LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMaterialBuffer = null;
 	private ChunkCuboidLightBufferWrapper<?>[] lightBuffers = null;
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
 	private final LinkedDynamicsWorld simulation;
@@ -928,17 +926,12 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 
 		LightingManager<?>[] managers = getWorld().getLightingManagers();
+		LocalRegionChunkHeightMapBufferWrapper heightMapBuffer = new LocalRegionChunkHeightMapBufferWrapper(this, LoadOption.LOAD_ONLY);
+		LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMaterialBuffer = new LocalRegionChunkCuboidBlockMaterialBufferWrapper(this, LoadOption.LOAD_ONLY, BlockMaterial.UNGENERATED);
 
-		if (blockMaterialBuffer == null) {
-			blockMaterialBuffer = new LocalRegionChunkCuboidBlockMaterialBufferWrapper(this, LoadOption.LOAD_ONLY, BlockMaterial.UNGENERATED);
-		}
 
 		if (lightBuffers == null || lightBuffers.length != managers.length) {
 			lightBuffers = new ChunkCuboidLightBufferWrapper[managers.length];
-		}
-
-		if (heightMapBuffer == null) {
-			heightMapBuffer = new LocalRegionChunkHeightMapBufferWrapper(this, LoadOption.LOAD_ONLY);
 		}
 
 		for (int i = 0; i < lightBuffers.length; i++) {
@@ -981,7 +974,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 
 			if (pos > 0) {
-				resolveColumns(colX, colZ, oldH, newH, managers, pos);
+				resolveColumns(colX, colZ, oldH, newH, managers, pos, heightMapBuffer, blockMaterialBuffer);
 			}
 		}
 		for (SpoutChunk c : this.dirtyChunkQueue) {
@@ -1022,20 +1015,18 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 
 		if (newChunksArray.length > 0) {
-			resolveCuboids(newChunksArray, managers, true);
+			resolveCuboids(newChunksArray, managers, true, heightMapBuffer, blockMaterialBuffer);
 		}
 
 		if (dirtyChunks.length > 0) {
-			resolveCuboids(dirtyChunks, managers, false);
+			resolveCuboids(dirtyChunks, managers, false, heightMapBuffer, blockMaterialBuffer);
 		}
 		if (x.length > 0) {
-			resolveBlocks(x, y, z, managers);
+			resolveBlocks(x, y, z, managers, heightMapBuffer, blockMaterialBuffer);
 		}
 
 		scheduler.addUpdates(lightingUpdates);
 		lightingUpdates = 0;
-
-		blockMaterialBuffer.clear();
 
 		for (i = 0; i < lightBuffers.length; i++) {
 			if (lightBuffers[i] != null) {
@@ -1043,10 +1034,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 		}
 
-		heightMapBuffer.clear();
 	}
 
-	private void resolveCuboids(SpoutChunk[] chunks, LightingManager<?>[] managers, boolean init) {
+	private void resolveCuboids(SpoutChunk[] chunks, LightingManager<?>[] managers, boolean init, LocalRegionChunkHeightMapBufferWrapper heightMap, LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMap) {
 		int cuboids = chunks.length;
 		int[] bx = new int[cuboids];
 		int[] by = new int[cuboids];
@@ -1059,7 +1049,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 				bz[i] = chunk.getBlockZ();
 			}
 			for (int i = 0; i < managers.length; i++) {
-				managers[i].initChunksUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, chunks);
+				managers[i].initChunksUnchecked(lightBuffers[i], blockMap, heightMap, chunks);
 			}
 		} else {
 			int[] tx = new int[cuboids];
@@ -1077,20 +1067,20 @@ public class SpoutRegion extends Region implements AsyncManager {
 				tz[i] = chunk.getBlockZ() + max.getZ() + 1;
 			}
 			for (int i = 0; i < managers.length; i++) {
-				managers[i].resolveChunksUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, bx, by, bz, tx, ty, tz, cuboids);
+				managers[i].resolveChunksUnchecked(lightBuffers[i], blockMap, heightMap, bx, by, bz, tx, ty, tz, cuboids);
 			}
 		}
 	}
 
-	private void resolveBlocks(int[] x, int[] y, int[] z, LightingManager<?>[] managers) {
+	private void resolveBlocks(int[] x, int[] y, int[] z, LightingManager<?>[] managers, LocalRegionChunkHeightMapBufferWrapper heightMap, LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMap) {
 		for (int i = 0; i < managers.length; i++) {
-			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, x, y, z, x.length);
+			managers[i].resolveUnchecked(lightBuffers[i], blockMap, heightMap, x, y, z, x.length);
 		}
 	}
 
-	private void resolveColumns(int[] hx, int[] hz, int[] oldHy, int[] newHy, LightingManager<?>[] managers, int changedColumns) {
+	private void resolveColumns(int[] hx, int[] hz, int[] oldHy, int[] newHy, LightingManager<?>[] managers, int changedColumns, LocalRegionChunkHeightMapBufferWrapper heightMap, LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMap) {
 		for (int i = 0; i < managers.length; i++) {
-			managers[i].resolveColumnsUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, hx, hz, oldHy, newHy, changedColumns);
+			managers[i].resolveColumnsUnchecked(lightBuffers[i], blockMap, heightMap, hx, hz, oldHy, newHy, changedColumns);
 		}
 	}
 

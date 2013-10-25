@@ -98,6 +98,13 @@ public interface ComponentOwner {
 	public Collection<Component> values();
 
 	/**
+	 * Returns true if the this ComponentOwner has components. May be less expensive than {@code values()}
+	 *
+	 * @return true if there are components
+	 */
+	public boolean hasComponents();
+
+	/**
 	 * Gets the {@link ManagedMap} of the owner.
 	 *
 	 * @return datatable component

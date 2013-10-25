@@ -354,6 +354,11 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
+	public boolean hasComponents() {
+		return getChunk().getBlockComponentOwner(x, y, z, true).hasComponents();
+	}
+
+	@Override
 	public ManagedMap getData() {
 		BlockComponentOwner owner = getChunk().getBlockComponentOwner(x, y, z, false);
 		if (owner == null) {

@@ -64,12 +64,18 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	}
 
 	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize) {
+		this(shift, storeState, compress, dirtySize, null, null);
+	}
+
+	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, short[] initial) {
+		this(shift, storeState, compress, dirtySize, initial, null);
+	}
+
+	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, short[] blocks, short[] data) {
 		this.side = 1 << shift;
 		this.shift = shift;
 		this.doubleShift = shift << 1;
-		int size = side * side * side;
-		store = new AtomicShortIntArray(size);
-		this.length = size;
+		this.length = side * side * side;
 		dirtyX = new byte[dirtySize];
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
@@ -80,25 +86,15 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 			oldState = null;
 			newState = null;
 		}
-	}
-
-	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, short[] initial) {
-		this(shift, storeState, compress, dirtySize, initial, null);
-	}
-
-	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, short[] blocks, short[] data) {
-		this(shift, storeState, compress, dirtySize);
 		if (blocks != null) {
 			int[] initial = new int[Math.min(blocks.length, this.length)];
 			for (int i = 0; i < blocks.length; i++) {
 				short d = data != null ? data[i] : 0;
 				initial[i] = BlockFullState.getPacked(blocks[i], d);
 			}
-			if (compress) {
-				store.set(initial);
-			} else {
-				store.uncompressedSet(initial);
-			}
+			store = new AtomicShortIntArray(length, initial, true);
+		} else {
+			store = new AtomicShortIntArray(length);
 		}
 	}
 

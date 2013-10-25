@@ -1254,8 +1254,10 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 				age.set(age.get() + delta);
 				parallelTaskManager.heartbeat(delta);
 				taskManager.heartbeat(delta);
-				for (Component component : values()) {
-					component.tick(delta);
+				if (hasComponents()) {
+					for (Component component : values()) {
+						component.tick(delta);
+					}
 				}
 				break;
 			}

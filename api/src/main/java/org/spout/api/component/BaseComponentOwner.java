@@ -236,6 +236,13 @@ public class BaseComponentOwner implements ComponentOwner {
 	}
 
 	@Override
+	public boolean hasComponents() {
+		synchronized (components) {
+			return components.isEmpty();
+		}
+	}
+
+	@Override
 	public ManagedHashMap getData() {
 		return data;
 	}

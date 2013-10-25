@@ -47,7 +47,7 @@ import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 
 public class RegionSource implements Iterable<Region> {
-	private final static int REGION_MAP_BITS = 5;
+	private final static int REGION_MAP_BITS = 6;
 	private final static AtomicInteger regionsLoaded = new AtomicInteger(0);
 	private final static AtomicInteger warnThreshold = new AtomicInteger(Integer.MAX_VALUE);
 	/**
@@ -62,7 +62,7 @@ public class RegionSource implements Iterable<Region> {
 	public RegionSource(SpoutWorld world) {
 		this.world = world;
 		//loadedRegions = new TripleIntObjectReferenceArrayMap<>(REGION_MAP_BITS);
-		loadedRegions = new TSyncInt21TripleObjectHashMap<>(16 * 16 * 16);
+		loadedRegions = new TSyncInt21TripleObjectHashMap<>();
 	}
 
 	@DelayedWrite
@@ -128,7 +128,7 @@ public class RegionSource implements Iterable<Region> {
 	@LiveRead
 	// TODO RegionSource no longer generates regions; make this more of a client/server mold
 	public SpoutRegion getRegion(final int x, final int y, final int z, final LoadOption loadopt) {
-		if (loadopt.loadIfNeeded()) {
+		if (loadopt.loadIfNeeded() && loadopt.waitForLoadOrGen()) {
 			TickStage.checkStage(~TickStage.SNAPSHOT);
 		}
 

@@ -104,6 +104,7 @@ public class SpoutColumn {
 
 		if (heights == null) {
 			System.out.println("Using input stream data");
+			Thread.dumpStack();
 			ColumnFiles.readColumn(in, this, this.lowestY, this.highestY, topmostBlocks);
 		}
 		//Could not load biomes from column, so calculate them

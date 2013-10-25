@@ -61,10 +61,10 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 		this.cSx = sx >> Chunk.BLOCKS.BITS;
 		this.cSy = sy >> Chunk.BLOCKS.BITS;
 		this.cSz = sz >> Chunk.BLOCKS.BITS;
-		cache = new ImmutableCuboidBlockMaterialBuffer[cSx][cSy][cSz];
 		this.r = r;
 		this.loadOpt = loadOpt;
 		this.nullMaterial = nullMaterial;
+		cache = new ImmutableCuboidBlockMaterialBuffer[cSx][cSy][cSz];
 	}
 
 	/**

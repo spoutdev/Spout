@@ -246,12 +246,19 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 					removeObserver(p);
 				}
 			}
+			// Check from previous tick
+			checkObserverUpdateQueue();
+			// Then add new ones
 			for (Point p : chunkInitQueue) {
 				if (!initializedChunks.contains(p)) {
-					observe(p);
+					Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.NO_LOAD);
+					if (c != null) {
+						observe(c);
+					} else {
+						chunksToObserve.add(p);
+					}
 				}
 			}
-			checkObserverUpdateQueue();
 		}
 	}
 
@@ -416,15 +423,6 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 					i.remove();
 				}
 			}
-		}
-	}
-
-	private void observe(Point p) {
-		Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.NO_LOAD);
-		if (c != null) {
-			observe(c);
-		} else {
-			chunksToObserve.add(p);
 		}
 	}
 
