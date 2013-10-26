@@ -152,7 +152,7 @@ public class CommonCommands {
 		args.assertCompletelyParsed();
 		List<Plugin> plugins = getEngine().getPluginManager().getPlugins();
 		StringBuilder pluginListString = new StringBuilder();
-		pluginListString.append(Arrays.<Object>asList("Plugins (", plugins.size() - 1, "): "));
+		pluginListString.append("Plugins (" + (plugins.size() - 1) + "): ");
 
 		for (int i = 0; i < plugins.size(); i++) {
 			Plugin plugin = plugins.get(i);
@@ -160,12 +160,11 @@ public class CommonCommands {
 				continue;
 			}
 
-			/*pluginListString.append(plugin.isEnabled() ? ChatStyle.BRIGHT_GREEN : ChatStyle.RED)
-					.append(plugin.getName());*/
+			pluginListString.append(plugin.getName());
 
-			/*if (i != plugins.size() - 1) {
-				pluginListString.append(ChatStyle.RESET).append(", ");
-			}*/
+			if (i != plugins.size() - 1) {
+				pluginListString.append(", ");
+			}
 		}
 		source.sendMessage(pluginListString.toString());
 	}
