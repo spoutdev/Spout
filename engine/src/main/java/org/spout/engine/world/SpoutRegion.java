@@ -154,7 +154,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private int lightingUpdates = 0;
-	private ChunkCuboidLightBufferWrapper<?>[] lightBuffers = null;
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
 	private final LinkedDynamicsWorld simulation;
 
@@ -921,11 +920,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		LightingManager<?>[] managers = getWorld().getLightingManagers();
 		LocalRegionChunkHeightMapBufferWrapper heightMapBuffer = new LocalRegionChunkHeightMapBufferWrapper(this, LoadOption.LOAD_ONLY);
 		LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMaterialBuffer = new LocalRegionChunkCuboidBlockMaterialBufferWrapper(this, LoadOption.LOAD_ONLY, BlockMaterial.UNGENERATED);
-
-
-		if (lightBuffers == null || lightBuffers.length != managers.length) {
-			lightBuffers = new ChunkCuboidLightBufferWrapper[managers.length];
-		}
+		ChunkCuboidLightBufferWrapper<?>[] lightBuffers = lightBuffers = new ChunkCuboidLightBufferWrapper[managers.length];
 
 		for (int i = 0; i < lightBuffers.length; i++) {
 			short managerId = managers[i].getId();
@@ -967,7 +962,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 
 			if (pos > 0) {
-				resolveColumns(colX, colZ, oldH, newH, managers, pos, heightMapBuffer, blockMaterialBuffer);
+				resolveColumns(colX, colZ, oldH, newH, managers, pos, heightMapBuffer, blockMaterialBuffer, lightBuffers);
 			}
 		}
 		for (SpoutChunk c : this.dirtyChunkQueue) {
@@ -1008,28 +1003,21 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 
 		if (newChunksArray.length > 0) {
-			resolveCuboids(newChunksArray, managers, true, heightMapBuffer, blockMaterialBuffer);
+			resolveCuboids(newChunksArray, managers, true, heightMapBuffer, blockMaterialBuffer, lightBuffers);
 		}
 
 		if (dirtyChunks.length > 0) {
-			resolveCuboids(dirtyChunks, managers, false, heightMapBuffer, blockMaterialBuffer);
+			resolveCuboids(dirtyChunks, managers, false, heightMapBuffer, blockMaterialBuffer, lightBuffers);
 		}
 		if (x.length > 0) {
-			resolveBlocks(x, y, z, managers, heightMapBuffer, blockMaterialBuffer);
+			resolveBlocks(x, y, z, managers, heightMapBuffer, blockMaterialBuffer, lightBuffers);
 		}
 
 		scheduler.addUpdates(lightingUpdates);
 		lightingUpdates = 0;
-
-		for (i = 0; i < lightBuffers.length; i++) {
-			if (lightBuffers[i] != null) {
-				lightBuffers[i].clear();
-			}
-		}
-
 	}
 
-	private void resolveCuboids(SpoutChunk[] chunks, LightingManager<?>[] managers, boolean init, LocalRegionChunkHeightMapBufferWrapper heightMap, LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMap) {
+	private void resolveCuboids(SpoutChunk[] chunks, LightingManager<?>[] managers, boolean init, LocalRegionChunkHeightMapBufferWrapper heightMap, LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMap, ChunkCuboidLightBufferWrapper<?>[] lightBuffers) {
 		int cuboids = chunks.length;
 		int[] bx = new int[cuboids];
 		int[] by = new int[cuboids];
@@ -1065,13 +1053,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 	}
 
-	private void resolveBlocks(int[] x, int[] y, int[] z, LightingManager<?>[] managers, LocalRegionChunkHeightMapBufferWrapper heightMap, LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMap) {
+	private void resolveBlocks(int[] x, int[] y, int[] z, LightingManager<?>[] managers, LocalRegionChunkHeightMapBufferWrapper heightMap, LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMap, ChunkCuboidLightBufferWrapper<?>[] lightBuffers) {
 		for (int i = 0; i < managers.length; i++) {
 			managers[i].resolveUnchecked(lightBuffers[i], blockMap, heightMap, x, y, z, x.length);
 		}
 	}
 
-	private void resolveColumns(int[] hx, int[] hz, int[] oldHy, int[] newHy, LightingManager<?>[] managers, int changedColumns, LocalRegionChunkHeightMapBufferWrapper heightMap, LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMap) {
+	private void resolveColumns(int[] hx, int[] hz, int[] oldHy, int[] newHy, LightingManager<?>[] managers, int changedColumns, LocalRegionChunkHeightMapBufferWrapper heightMap, LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMap, ChunkCuboidLightBufferWrapper<?>[] lightBuffers) {
 		for (int i = 0; i < managers.length; i++) {
 			managers[i].resolveColumnsUnchecked(lightBuffers[i], blockMap, heightMap, hx, hz, oldHy, newHy, changedColumns);
 		}

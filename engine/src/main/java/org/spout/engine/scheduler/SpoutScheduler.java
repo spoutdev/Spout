@@ -359,7 +359,7 @@ public final class SpoutScheduler implements Scheduler {
 
 				if (currentTime < expectedTime) {
 					try {
-						System.out.println("Surplus of " + (expectedTime - currentTime));
+						//System.out.println("Surplus of " + (expectedTime - currentTime));
 						Thread.sleep(expectedTime - currentTime);
 					} catch (InterruptedException e) {
 						shutdown = true;
