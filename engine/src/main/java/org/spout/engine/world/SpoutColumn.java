@@ -133,7 +133,7 @@ public class SpoutColumn {
 			for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
 				for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
 					if (getDirtyFlag(xx, zz).compareAndSet(true, false)) {
-						int y = getAtomicInteger(xx, zz).get();
+						int y = getHeightAtomicInteger(xx, zz).get();
 						int wxx = wx + xx;
 						int wzz = wz + zz;
 						Chunk c = world.getChunkFromBlock(wxx, y, wzz, LoadOption.LOAD_ONLY);
@@ -204,7 +204,7 @@ public class SpoutColumn {
 	}
 
 	public int getSurfaceHeight(int x, int z) {
-		final int height = getAtomicInteger(x, z).get();
+		final int height = getHeightAtomicInteger(x, z).get();
 		if (height != Integer.MIN_VALUE) {
 			// height known
 			return height;
@@ -235,33 +235,30 @@ public class SpoutColumn {
 	}
 
 	public void notifyChunkAdded(Chunk c, int x, int z) {
-		int y = c.getBlockY();
-		int maxY = y + Chunk.BLOCKS.SIZE - 1;
-		AtomicInteger v = getAtomicInteger(x, z);
+		int chunkMinY = c.getBlockY();
+		int chunkMaxY = chunkMinY + Chunk.BLOCKS.SIZE - 1;
+		AtomicInteger currentHeight = getHeightAtomicInteger(x, z);
 
-		if (maxY < v.get()) {
+		if (chunkMaxY < currentHeight.get()) {
 			return;
 		}
 
 		if (((SpoutChunk) c).isBlockUniform()) {
-			//simplified version
-			if (!isAir(c, x, maxY, z)) {
-				notifyBlockChange(v, x, maxY, z);
-			}
+			//simplified version, if the top is air, all of it is air
+			notifyBlockChange(currentHeight, c, x, chunkMaxY, z);
 			return;
 		}
 
-		for (int yy = maxY; yy >= y; yy--) {
-			if (!isAir(c, x, yy, z)) {
-				notifyBlockChange(v, x, yy, z);
+		for (int yy = chunkMaxY; yy >= chunkMinY; yy--) {
+			if (notifyBlockChange(currentHeight, c, x, yy, z)) {
 				return;
 			}
 		}
 	}
 
-	public void notifyBlockChange(int x, int y, int z) {
-		AtomicInteger v = getAtomicInteger(x, z);
-		notifyBlockChange(v, x, y, z);
+	public void notifyBlockChange(Chunk c, int x, int y, int z) {
+		AtomicInteger v = getHeightAtomicInteger(x, z);
+		notifyBlockChange(v, c, x, y, z);
 	}
 
 	public int getX() {
@@ -276,63 +273,21 @@ public class SpoutColumn {
 		return world;
 	}
 
-	private void notifyBlockChange(AtomicInteger v, int x, int y, int z) {
+	private boolean notifyBlockChange(AtomicInteger height, Chunk c, int x, int y, int z) {
 		while (true) {
-			int value = v.get();
-			if (y < value) {
-				return;
-			} else if (y == value) {
-				falling(x, v, z);
-				return;
-			} else {
-				if (!isAir(x, y, z)) {
-					if (!v.compareAndSet(value, y)) {
-						continue;
-					}
-					setDirty(x, z);
-					falling(x, v, z);
-					return;
-				} else {
-					return;
-				}
+			int value = height.get();
+			if (y <= value || isAir(c, x, y, z)) {
+				return false;
 			}
-		}
-	}
-
-	private void falling(int x, AtomicInteger v, int z) {
-		boolean dirty = false;
-		try {
-			while (true) {
-				int value = v.get();
-				if (!isAir(x, value, z)) {
-					return;
-				}
-
-				if (v.compareAndSet(value, value - 1)) {
-					dirty = true;
-				}
-			}
-		} finally {
-			if (dirty) {
+			if (height.compareAndSet(value, y)) {
 				setDirty(x, z);
+				return true;
 			}
-		}
-	}
-
-	private boolean isAir(int x, int y, int z) {
-		int xx = (this.x << BLOCKS.BITS) + (x & BLOCKS.MASK);
-		int yy = y;
-		int zz = (this.z << BLOCKS.BITS) + (z & BLOCKS.MASK);
-		LoadOption opt = LoadOption.LOAD_ONLY;
-		Chunk c = world.getChunkFromBlock(xx, yy, zz, opt);
-		if (c == null) {
-			return false;
-		} else {
-			return isAir(c.getBlockFullState(xx, yy, zz));
 		}
 	}
 
 	private boolean isAir(Chunk c, int x, int y, int z) {
+		if (c == null) return false;
 		return isAir(c.getBlockFullState(x, y, z));
 	}
 
@@ -341,7 +296,7 @@ public class SpoutColumn {
 		return !material.isSurface();
 	}
 
-	public AtomicInteger getAtomicInteger(int x, int z) {
+	public AtomicInteger getHeightAtomicInteger(int x, int z) {
 		return heightMap[x & BLOCKS.MASK][z & BLOCKS.MASK];
 	}
 

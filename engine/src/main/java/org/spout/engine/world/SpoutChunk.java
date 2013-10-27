@@ -1843,7 +1843,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 
 		int wy = y + this.getBlockY();
-		column.notifyBlockChange(x, wy, z);
+		column.notifyBlockChange(this, x, wy, z);
 
 		setModified();
 	}

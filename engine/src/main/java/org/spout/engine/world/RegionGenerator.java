@@ -104,42 +104,41 @@ public class RegionGenerator implements Named {
 		this.cz = region.getChunkZ();
 	}
 
-	public void generateColumn(final int chunkX, final int chunkZ) {
-		generateColumn(chunkX, chunkZ, true, true);
-	}
-
-	public Lock getColumnLock(int chunkX, int chunkZ) {
-		final int x = (chunkX & (~mask)) & Region.CHUNKS.MASK;
-		final int z = (chunkZ & (~mask)) & Region.CHUNKS.MASK;
-
-		return columnLocks[x >> shift][z >> shift];
-	}
-
-	public void generateColumn(final int chunkX, final int chunkZ, boolean sync, boolean wait) {
-
-		if (sync && !wait) {
-			throw new IllegalArgumentException("Generate column must be set to wait when in sync mode");
+	/**
+	 * 
+	 * @param chunkX
+	 * @param chunkZ
+	 * @param wait whether to wait or not
+	 */
+	public void generateColumn(final int chunkX, final int chunkZ, boolean wait) {
+		if (!wait) {
+			pool.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						generateColumn0(chunkX, chunkZ, false);	
+					} catch (Exception e) {
+						Spout.warn("Error when generating column", e);
+					}
+				}
+			});
+		} else {
+			generateColumn0(chunkX, chunkZ, wait);
 		}
+	}
 
+	private void generateColumn0(final int chunkX, final int chunkZ, boolean wait) {
 		final int x = (chunkX & (~mask)) & Region.CHUNKS.MASK;
 		final int z = (chunkZ & (~mask)) & Region.CHUNKS.MASK;
 
 		AtomicReference<GenerateState> generated = generatedColumns[x >> shift][z >> shift];
-		if (generated.get().done(sync)) {
+		if (generated.get().isDone()) {
 			return;
 		}
 
-		int generationIndex = generationCounter.getAndIncrement();
-
-		while (generationIndex == -1) {
-			Spout.getLogger().info("Ran out of generation index ids, starting again");
-			generationIndex = generationCounter.getAndIncrement();
-		}
-
-		final Lock colLock = getColumnLock(chunkX, chunkZ);
-
-		if (sync) {
-			if (((SpoutScheduler) Spout.getScheduler()).getSnapshotLock().isWriteLocked()) {
+		if (wait) {
+			// If someone besides another generator holds the snapshot lock, we know it won't be released
+			if (((SpoutScheduler) Spout.getScheduler()).getSnapshotLock().isWriteLocked()/* && generated.get() != GenerateState.COPYING*/) {
 				// This is a really really bad place to be. It means we're waiting for the region to finish generating when it can't set the region.
 				// It's either this error or a deadlock
 				throw new IllegalStateException("Attempt to sync generate a chunk during snapshot lock");
@@ -149,8 +148,12 @@ public class RegionGenerator implements Named {
 				// TODO - simplify this method, assuming no thread can hold a snapshot lock before it is called
 				// generated.compareAndSet(GenerateState.IN_PROGRESS_ASYNC, GenerateState.IN_PROGRESS_SYNC);
 			}
-			colLock.lock();
-		} else if (wait) {
+		}
+
+		// TODO - optimize this by checking if !wait && generated.get().isInProgress()
+		final Lock colLock = columnLocks[x >> shift][z >> shift];
+
+		if (wait) {
 			colLock.lock();
 		} else {
 			if (!colLock.tryLock()) {
@@ -159,30 +162,23 @@ public class RegionGenerator implements Named {
 		}
 
 		try {
-			if (generated.get().done(sync)) {
+			if (generated.get().isDone()) {
 				return;
 			}
 
-			if (!sync && generated.get().isAsyncInProgress()) {
-				return;
+			int generationIndex = generationCounter.getAndIncrement();
+
+			while (generationIndex == -1) {
+				Spout.getLogger().info("Ran out of generation index ids, starting again");
+				generationIndex = generationCounter.getAndIncrement();
 			}
 
 			LightingManager<?>[] managers = world.getLightingManagers();
 
 			CuboidLightBuffer[][][][] buffers = new CuboidLightBuffer[managers.length][][][];
 
-			boolean success = false;
-			success |= generated.compareAndSet(GenerateState.NONE, sync ? GenerateState.IN_PROGRESS_SYNC : GenerateState.IN_PROGRESS_ASYNC);
-
-			if (sync && !success) {
-				success |= generated.compareAndSet(GenerateState.IN_PROGRESS_SYNC, GenerateState.IN_PROGRESS_SYNC);
-				if (!success) {
-					success |= generated.compareAndSet(GenerateState.IN_PROGRESS_ASYNC, GenerateState.IN_PROGRESS_SYNC);
-				}
-			}
-
-			if (!success) {
-				throw new IllegalStateException("Unable to set generate state for column " + x + ", " + z + " int region " + region.getBase().toBlockString() + " to in progress, state is " + generated.get() + " sync is " + sync);
+			if (!generated.compareAndSet(GenerateState.NONE, GenerateState.IN_PROGRESS)) {
+				throw new IllegalStateException("Unable to set generate state for column " + x + ", " + z + " int region " + region.getBase().toBlockString() + " to in progress, state is " + generated.get() + " wait is " + wait);
 			}
 
 			int cxx = cx + x;
@@ -193,16 +189,21 @@ public class RegionGenerator implements Named {
 
 			int[][] heights = new int[Chunk.BLOCKS.SIZE << shift][Chunk.BLOCKS.SIZE << shift];
 
+			int[][][][] colHeights = null;
+			// We need the column before we gen anything
 			for (int colX = 0; colX < width; colX++) {
 				int colWorldX = colX + cxx;
 				for (int colZ = 0; colZ < width; colZ++) {
 					int colWorldZ = colZ + czz;
 					SpoutColumn col = world.getColumn(colWorldX, colWorldZ, LoadOption.LOAD_ONLY);
+					int[][] generatedHeights = new int[Chunk.BLOCKS.SIZE][Chunk.BLOCKS.SIZE];
 					if (col == null) {
+						if (colHeights == null) {
+							colHeights = new int[width][width][][];
+						}
 						int[][] genHeights = world.getGenerator().getSurfaceHeight(world, colWorldX, colWorldZ);
 						int regionHeight = (genHeights[7][7] >> Region.BLOCKS.BITS);
 						if (regionHeight == region.getY()) {
-							int[][] generatedHeights = new int[Chunk.BLOCKS.SIZE][Chunk.BLOCKS.SIZE];
 							for (int blockX = 0; blockX < Chunk.BLOCKS.SIZE; blockX++) {
 								int blWorldX = blockX + (colWorldX << Chunk.BLOCKS.BITS);
 								for (int blockZ = 0; blockZ < Chunk.BLOCKS.SIZE; blockZ++) {
@@ -219,30 +220,40 @@ public class RegionGenerator implements Named {
 									}
 								}
 							}
-							SnapshotLock lock = ((SpoutScheduler) Spout.getScheduler()).getSnapshotLock();
-							lock.readLock(colLock);
-							try {
-								world.setIfNotGenerated(colWorldX, colWorldZ, generatedHeights);
-							} finally {
-								lock.readUnlock(colLock);
-							}
-						}
 
-						col = world.getColumn(colWorldX, colWorldZ, LoadOption.LOAD_GEN);
-						if (col == null) {
-							throw new IllegalStateException("Column generation failed, " + colWorldX + ", " + colWorldZ + " chunk: " + chunkX + ", " + chunkZ + " region (chunk coords): " + region.getBase().toChunkString());
+							colHeights[colX][colZ] = generatedHeights;
 						}
 					}
+
 
 					for (int blockX = 0; blockX < Chunk.BLOCKS.SIZE; blockX++) {
 						int indexX = (colX << Chunk.BLOCKS.BITS) + blockX;
 						for (int blockZ = 0; blockZ < Chunk.BLOCKS.SIZE; blockZ++) {
 							int indexZ = (colZ << Chunk.BLOCKS.BITS) + blockZ;
-							int h = col.getSurfaceHeight(blockX, blockZ);
+							int h = col == null ? generatedHeights[colX][colZ] : col.getSurfaceHeight(blockX, blockZ);
 							heights[indexX][indexZ] = h;
-							//Spout.getLogger().info(col.getWorld().getName() + ") Height for " + ((colWorldX << Chunk.BLOCKS.BITS) + blockX) + ", " + ((colWorldZ << Chunk.BLOCKS.BITS) + blockZ) + " " + h);
 						}
 					}
+				}
+
+			}
+
+			SnapshotLock snapshotLock = ((SpoutScheduler) Spout.getScheduler()).getSnapshotLock();
+			if (colHeights != null) {
+				snapshotLock.readLock(colLock);
+				try {
+					for (int colX = 0; colX < width; colX++) {
+						int colWorldX = colX + cxx;
+						for (int colZ = 0; colZ < width; colZ++) {
+							int colWorldZ = colZ + czz;
+							int[][] cur = colHeights[colX][colZ];
+							if (cur != null) {
+								world.setIfNotGenerated(colWorldX, colWorldZ, cur);
+							}
+						}
+					}
+				} finally {
+					snapshotLock.readUnlock(colLock);
 				}
 			}
 
@@ -250,8 +261,8 @@ public class RegionGenerator implements Named {
 				buffers[i] = managers[i].bulkInitializeUnchecked(buffer, heights);
 			}
 
-			AtomicBlockStore[][][] blockStores = new AtomicBlockStore[width][Region.CHUNKS.SIZE][width];
-
+			// Since creating SpoutChunks is very resource intensive and slow, we want to do this outside the snapshot lock if we're not waiting
+			SpoutChunk[][][] chunks = new SpoutChunk[width][Region.CHUNKS.SIZE][width];
 			for (int xx = 0; xx < width; xx++) {
 				cxx = cx + x + xx;
 				for (int zz = 0; zz < width; zz++) {
@@ -260,17 +271,22 @@ public class RegionGenerator implements Named {
 						int cyy = cy + yy;
 						final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cyy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 						chunk.write(buffer);
-						blockStores[xx][yy][zz] = new AtomicPaletteBlockStore(Chunk.BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, chunk.getRawId(), chunk.getRawData());
+						SpoutChunk newChunk = new SpoutChunk(world, region, cxx, cyy, czz, new AtomicPaletteBlockStore(Chunk.BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, chunk.getRawId(), chunk.getRawData()), null);
+						newChunk.setGenerationIndex(generationIndex);
+						chunks[xx][yy][zz] = newChunk;
 					}
-					if (generated.get().done(sync)) {
-						return;
-					}
+
 				}
 			}
+			if (generated.get().isDone()) {
+				throw new IllegalStateException("Expected IN_PROGESS got COPIED");
+			}
 
-			SnapshotLock lock = ((SpoutScheduler) Spout.getScheduler()).getSnapshotLock();
+			snapshotLock.readLock(colLock);
+			if (!generated.compareAndSet(GenerateState.IN_PROGRESS, GenerateState.COPYING)) {
+				throw new IllegalStateException("Unable to set generate state for column " + x + ", " + z + " int region " + region.getBase().toBlockString() + " to copying, state is " + generated.get() + " wait is " + wait);
+			}
 
-			lock.readLock(colLock);
 			try {
 				for (int xx = 0; xx < width; xx++) {
 					cxx = cx + x + xx;
@@ -278,8 +294,7 @@ public class RegionGenerator implements Named {
 						czz = cz + z + zz;
 						for (int yy = Region.CHUNKS.SIZE - 1; yy >= 0; yy--) {
 							int cyy = cy + yy;
-							SpoutChunk newChunk = new SpoutChunk(world, region, cxx, cyy, czz, blockStores[xx][yy][zz], null);
-							newChunk.setGenerationIndex(generationIndex);
+							SpoutChunk newChunk = chunks[xx][yy][zz];
 
 							for (int i = 0; i < managers.length; i++) {
 								CuboidLightBuffer lightBuffer = buffers[i][xx][yy][zz];
@@ -296,23 +311,20 @@ public class RegionGenerator implements Named {
 						}
 					}
 				}
+
+				// We need to set the generated state before we unlock the readLock so waiting generators get the state immediately
+				if (!generated.compareAndSet(GenerateState.COPYING, GenerateState.COPIED)) {
+					throw new IllegalStateException("Column " + x + ", " + z + " rY=" + region.getChunkY() + " int region " + region.getBase().toBlockString() + " copied twice after generation, generation state is " + generated + " wait is " + wait);
+				}
 			} finally {
-				lock.readUnlock(colLock);
-			}
-
-			success = generated.compareAndSet(GenerateState.IN_PROGRESS_SYNC, GenerateState.COPIED);
-
-			if (!sync) {
-				success = generated.compareAndSet(GenerateState.IN_PROGRESS_ASYNC, GenerateState.COPIED);
-			}
-			if (!success) {
-				throw new IllegalStateException("Column " + x + ", " + z + " rY=" + region.getChunkY() + " int region " + region.getBase().toBlockString() + " copied twice after generation, generation state is " + generated + " sync is " + sync);
+				snapshotLock.readUnlock(colLock);
 			}
 		} finally {
 			colLock.unlock();
 		}
 
-		if (sync) {
+		// TODO - what is this for?
+		if (wait) {//sync?
 			touchChunk(chunkX, 0, chunkZ);
 		}
 	}
@@ -413,28 +425,23 @@ public class RegionGenerator implements Named {
 				if (c != null) {
 					return;
 				}
-				generateColumn(x & mask, z & mask, false, false);
+				generateColumn(x & mask, z & mask, false);
 			}
 		}, true);
 	}
 
 	private static enum GenerateState {
-
 		NONE,
-		IN_PROGRESS_ASYNC,
-		IN_PROGRESS_SYNC,
+		IN_PROGRESS,
+		COPYING,
 		COPIED;
 
-		public boolean done(boolean sync) {
-			if (!sync) {
-				return this == IN_PROGRESS_SYNC || this == COPIED;
-			} else {
-				return this == COPIED;
-			}
+		public boolean isDone() {
+			return this == COPIED;
 		}
 
-		public boolean isAsyncInProgress() {
-			return this == IN_PROGRESS_ASYNC;
+		public boolean isInProgress() {
+			return this == IN_PROGRESS || this == COPYING;
 		}
 
 	}

@@ -292,8 +292,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 		} catch (IOException e) {}
 
 		if (loadopt.generateIfNeeded() && newChunk == null) {
+			// TODO - clean this up becuase gross
+			// If this is called when snapshot lock is locked, then this will throw exceptions
 			if (loadopt.waitForLoadOrGen()) {
-				generateColumn(x, z);
+				generator.generateColumn(x, z, true);
 				final SpoutChunk generatedChunk = chunks[x][y][z].get();
 				if (generatedChunk != null) {
 					checkChunkLoaded(generatedChunk, loadopt);
@@ -335,10 +337,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@Override
 	public SpoutChunk getChunkFromBlock(int x, int y, int z, LoadOption loadopt) {
 		return this.getChunk(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS, loadopt);
-	}
-
-	private void generateColumn(int x, int z) {
-		generator.generateColumn(x, z);
 	}
 
 	// Method should only be called from the region generator

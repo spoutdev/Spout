@@ -116,7 +116,7 @@ public class ColumnFiles {
 
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
 			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
-				column.getAtomicInteger(x, z).set(heights[NibblePairHashed.intKey(x, z)]);
+				column.getHeightAtomicInteger(x, z).set(heights[NibblePairHashed.intKey(x, z)]);
 			}
 		}
 
@@ -187,7 +187,7 @@ public class ColumnFiles {
 		//The inputstream is null because no height map data exists
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
 			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
-				column.getAtomicInteger(x, z).set(Integer.MIN_VALUE);
+				column.getHeightAtomicInteger(x, z).set(Integer.MIN_VALUE);
 				topmostBlocks[x][z] = null;
 				column.setDirty(x, z);
 			}
@@ -228,7 +228,7 @@ public class ColumnFiles {
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
 			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
 				int key = NibblePairHashed.intKey(x, z);
-				heights[key] = column.getAtomicInteger(x, z).get();
+				heights[key] = column.getHeightAtomicInteger(x, z).get();
 			}
 		}
 

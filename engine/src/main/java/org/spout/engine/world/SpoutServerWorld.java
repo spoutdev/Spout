@@ -156,9 +156,11 @@ public class SpoutServerWorld extends SpoutWorld {
 			return column;
 		}
 
-		/*
+		
 		int[][] height = this.getGenerator().getSurfaceHeight(this, x, z);
+		setIfNotGenerated(x, z, height);
 
+		/*
 		int h = (height[7][7] >> Chunk.BLOCKS.BITS);
 
 		SpoutRegion r = getRegionFromChunk(x, h, z, loadopt);
@@ -174,8 +176,6 @@ public class SpoutServerWorld extends SpoutWorld {
 			setIfNotGenerated(x, z, new int[SpoutColumn.BLOCKS.SIZE][SpoutColumn.BLOCKS.SIZE]);
 		}
 		*/
-
-		setIfNotGenerated(x, z, new int[SpoutColumn.BLOCKS.SIZE][SpoutColumn.BLOCKS.SIZE]);
 
 		column = super.getColumn(x, z, LoadOption.NO_LOAD);
 
