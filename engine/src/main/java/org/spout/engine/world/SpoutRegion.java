@@ -653,9 +653,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@ServerOnly
 	private void unloadChunks() {
-		SpoutChunk toUnload = unloadQueue.poll();
 		int unloadAmt = SpoutConfiguration.UNLOAD_CHUNKS_PER_TICK.getInt();
-		while (toUnload != null) {
+		SpoutChunk toUnload;
+		while (unloadAmt > 0 && (toUnload = unloadQueue.poll()) != null) {
 			unloadAmt--;
 			boolean do_unload = true;
 			if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
@@ -666,11 +666,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 			if (do_unload) {
 				toUnload.unload(true);
-			}
-			if (unloadAmt > 0) {
-				toUnload = unloadQueue.poll();
-			} else {
-				break;
 			}
 		}
 	}

@@ -634,11 +634,17 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	@Override
+	/**
+	 * This doesn't actually unload the chunk at this time, but instead sets it as "unloaded" and marks it for being saved and unloaded during copySnapshot.
+	 */
 	public void unload(boolean save) {
 		unloadNoMark(save);
 		markForSaveUnload();
 	}
 
+	/**
+	 * This sets this chunk as "unloaded"
+	 */
 	public void unloadNoMark(boolean save) {
 		SaveState.unload(saveState, save);
 	}
@@ -803,6 +809,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		if (!isPopulated()) {
 			queueForPopulation(false);
 		}
+
 		boolean wasEmpty = observers.isEmpty();
 		if (observers.add((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.add((SpoutPlayer) entity);

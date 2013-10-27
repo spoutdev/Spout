@@ -103,8 +103,7 @@ public class SpoutColumn {
 		lowestY.set(Integer.MAX_VALUE);
 
 		if (heights == null) {
-			System.out.println("Using input stream data");
-			Thread.dumpStack();
+			// TODO - something is wonky; columns are being loaded from disk on first gen without moving
 			ColumnFiles.readColumn(in, this, this.lowestY, this.highestY, topmostBlocks);
 		}
 		//Could not load biomes from column, so calculate them

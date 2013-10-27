@@ -289,14 +289,15 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("SpoutEntity {id= " + getId() + ", {" + physics + "}}");
-		builder.append("\n\n");
-		builder.append("Printing out components...\n");
-		for (Component component : values()) {
-			builder.append(component + "\n");
-		}
-		return builder.toString();
+		//final StringBuilder builder = new StringBuilder();
+		//builder.append("SpoutEntity {id= " + getId() + ", {" + physics + "}}");
+		//builder.append("\n\n");
+		//builder.append("Printing out components...\n");
+		//for (Component component : values()) {
+		//	builder.append(component + "\n");
+		//}
+		//return builder.toString();
+		return "SpoutEntity {id= " + getId() + ", {" + physics + "}}";
 	}
 
 	@Override
