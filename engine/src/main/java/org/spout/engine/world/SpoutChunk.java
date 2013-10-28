@@ -120,6 +120,7 @@ import org.spout.engine.world.physics.UpdateQueue;
 import org.spout.math.GenericMath;
 import org.spout.math.vector.Vector3;
 
+// TODO add a "reference" to the SpoutRegion that stores this
 public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<>(null);
 	//Not static to allow the engine to parse values first
@@ -1318,7 +1319,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 		populationState.set(PopulationState.POPULATED);
 
-		notifyColumn();
+		notifyColumnChunkAdded();
 		parentRegion.onChunkPopulated(this);
 		resetDynamicBlocks();
 		setModified();
@@ -1460,15 +1461,15 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		return !isObserved();
 	}
 
-	public void notifyColumn() {
+	public void notifyColumnChunkAdded() {
 		for (int x = 0; x < BLOCKS.SIZE; x++) {
 			for (int z = 0; z < BLOCKS.SIZE; z++) {
-				notifyColumn(x, z);
+				notifyColumnChunkAdded(x, z);
 			}
 		}
 	}
 
-	private void notifyColumn(int x, int z) {
+	private void notifyColumnChunkAdded(int x, int z) {
 		if (columnRegistered.get()) {
 			column.notifyChunkAdded(this, x, z);
 		}

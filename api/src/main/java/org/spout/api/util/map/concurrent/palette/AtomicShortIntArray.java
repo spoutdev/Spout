@@ -311,13 +311,8 @@ public class AtomicShortIntArray {
 
 	private static int getUnique(int[] initial) {
 		TIntHashSet inUse = new TIntHashSet();
-		int unique = 0;
-		for (int i = 0; i < initial.length; i++) {
-			if (inUse.add(initial[i])) {
-				unique++;
-			}
-		}
-		return unique;
+		inUse.addAll(initial);
+		return inUse.size();
 	}
 
 	/**

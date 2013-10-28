@@ -71,9 +71,9 @@ public class RegionGenerator implements Named {
 	private final int width;
 	private final int mask;
 	private final static AtomicInteger generationCounter = new AtomicInteger(1);
-	private final int cx;
-	private final int cy;
-	private final int cz;
+	private final int baseChunkX;
+	private final int baseChunkY;
+	private final int baseChunkZ;
 
 	@SuppressWarnings ("unchecked")
 	@ServerOnly
@@ -99,9 +99,9 @@ public class RegionGenerator implements Named {
 		this.shift = GenericMath.multiplyToShift(width);
 		this.region = region;
 		this.world = (SpoutServerWorld) region.getWorld();
-		this.cx = region.getChunkX();
-		this.cy = region.getChunkY();
-		this.cz = region.getChunkZ();
+		this.baseChunkX = region.getChunkX();
+		this.baseChunkY = region.getChunkY();
+		this.baseChunkZ = region.getChunkZ();
 	}
 
 	/**
@@ -127,18 +127,19 @@ public class RegionGenerator implements Named {
 		}
 	}
 
-	private void generateColumn0(final int chunkX, final int chunkZ, boolean wait) {
-		final int x = (chunkX & (~mask)) & Region.CHUNKS.MASK;
-		final int z = (chunkZ & (~mask)) & Region.CHUNKS.MASK;
+	private void generateColumn0(final int chunkXWorld, final int chunkZWorld, boolean wait) {
+		final int chunkXLocal = (chunkXWorld & (~mask)) & Region.CHUNKS.MASK;
+		final int chunkZLocal = (chunkZWorld & (~mask)) & Region.CHUNKS.MASK;
 
-		AtomicReference<GenerateState> generated = generatedColumns[x >> shift][z >> shift];
+		AtomicReference<GenerateState> generated = generatedColumns[chunkXLocal >> shift][chunkZLocal >> shift];
 		if (generated.get().isDone()) {
 			return;
 		}
 
 		if (wait) {
 			// If someone besides another generator holds the snapshot lock, we know it won't be released
-			if (((SpoutScheduler) Spout.getScheduler()).getSnapshotLock().isWriteLocked()/* && generated.get() != GenerateState.COPYING*/) {
+			// If gen state is copying, we know we hold the lock
+			if (((SpoutScheduler) Spout.getScheduler()).getSnapshotLock().isWriteLocked() && generated.get() != GenerateState.COPYING) {
 				// This is a really really bad place to be. It means we're waiting for the region to finish generating when it can't set the region.
 				// It's either this error or a deadlock
 				throw new IllegalStateException("Attempt to sync generate a chunk during snapshot lock");
@@ -151,7 +152,7 @@ public class RegionGenerator implements Named {
 		}
 
 		// TODO - optimize this by checking if !wait && generated.get().isInProgress()
-		final Lock colLock = columnLocks[x >> shift][z >> shift];
+		final Lock colLock = columnLocks[chunkXLocal >> shift][chunkZLocal >> shift];
 
 		if (wait) {
 			colLock.lock();
@@ -178,75 +179,62 @@ public class RegionGenerator implements Named {
 			CuboidLightBuffer[][][][] buffers = new CuboidLightBuffer[managers.length][][][];
 
 			if (!generated.compareAndSet(GenerateState.NONE, GenerateState.IN_PROGRESS)) {
-				throw new IllegalStateException("Unable to set generate state for column " + x + ", " + z + " int region " + region.getBase().toBlockString() + " to in progress, state is " + generated.get() + " wait is " + wait);
+				throw new IllegalStateException("Unable to set generate state for column " + chunkXLocal + ", " + chunkZLocal + " int region " + region.getBase().toBlockString() + " to in progress, state is " + generated.get() + " wait is " + wait);
 			}
 
-			int cxx = cx + x;
-			int czz = cz + z;
+			int cxx = baseChunkX + chunkXLocal;
+			int czz = baseChunkZ + chunkZLocal;
 
-			final CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE << shift, Region.BLOCKS.SIZE, Chunk.BLOCKS.SIZE << shift);
+			final CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, baseChunkY << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE << shift, Region.BLOCKS.SIZE, Chunk.BLOCKS.SIZE << shift);
 			world.getGenerator().generate(buffer, world);
 
+			// TODO - world wants this as a int[][] for each chunk but lighting wants this as int[][] for the whole region; unify these
+			int[][][][] colGen = new int[width][width][Chunk.BLOCKS.SIZE][Chunk.BLOCKS.SIZE];
+			// Chunk.BLOCKS.SIZE << shift = number of blocks in the cuboid
 			int[][] heights = new int[Chunk.BLOCKS.SIZE << shift][Chunk.BLOCKS.SIZE << shift];
 
-			int[][][][] colHeights = null;
-			// We need the column before we gen anything
 			for (int colX = 0; colX < width; colX++) {
 				int colWorldX = colX + cxx;
 				for (int colZ = 0; colZ < width; colZ++) {
 					int colWorldZ = colZ + czz;
+
 					SpoutColumn col = world.getColumn(colWorldX, colWorldZ, LoadOption.LOAD_ONLY);
-					int[][] generatedHeights = new int[Chunk.BLOCKS.SIZE][Chunk.BLOCKS.SIZE];
-					if (col == null) {
-						if (colHeights == null) {
-							colHeights = new int[width][width][][];
-						}
-						int[][] genHeights = world.getGenerator().getSurfaceHeight(world, colWorldX, colWorldZ);
-						int regionHeight = (genHeights[7][7] >> Region.BLOCKS.BITS);
-						if (regionHeight == region.getY()) {
-							for (int blockX = 0; blockX < Chunk.BLOCKS.SIZE; blockX++) {
-								int blWorldX = blockX + (colWorldX << Chunk.BLOCKS.BITS);
-								for (int blockZ = 0; blockZ < Chunk.BLOCKS.SIZE; blockZ++) {
-									int blWorldZ = blockZ + (colWorldZ << Chunk.BLOCKS.BITS);
-									int topY = (int) buffer.getTop().getY();
-									int botY = (int) buffer.getBase().getY();
-									generatedHeights[blockX][blockZ] = region.getBlockY() - 1;
-									for (int blY = topY - 1; blY >= botY; blY--) {
-										BlockMaterial m = buffer.get(blWorldX, blY, blWorldZ);
-										if (m.isSurface()) {
-											generatedHeights[blockX][blockZ] = blY;
-											break;
-										}
+
+					int topY = (int) buffer.getTop().getY();
+					int botY = (int) buffer.getBase().getY();
+					for (int blockX = 0; blockX < Chunk.BLOCKS.SIZE; blockX++) {	
+						int blCuboidX = (colX << Chunk.BLOCKS.BITS) + blockX;
+						for (int blockZ = 0; blockZ < Chunk.BLOCKS.SIZE; blockZ++) {
+							int blCuboidZ = (colZ << Chunk.BLOCKS.BITS) + blockZ;
+
+							int prev = col == null ? region.getBlockY() - 1 : col.getSurfaceHeight(blockX, blockZ);
+							heights[blCuboidX][blCuboidZ] = prev;
+							colGen[colX][colZ][blockX][blockZ] = prev;
+
+							if (heights[blCuboidX][blCuboidZ] < botY) {								
+								for (int blY = topY - 1; blY >= botY; blY--) {
+									BlockMaterial m = buffer.get(blCuboidX + buffer.getBase().getFloorX(), blY, blCuboidZ + buffer.getBase().getFloorZ());
+									if (m.isSurface()) {
+										heights[blCuboidX][blCuboidZ] = blY;
+										colGen[colX][colZ][blockX][blockZ] = blY;
+										break;
 									}
 								}
 							}
-
-							colHeights[colX][colZ] = generatedHeights;
-						}
-					}
-
-
-					for (int blockX = 0; blockX < Chunk.BLOCKS.SIZE; blockX++) {
-						int indexX = (colX << Chunk.BLOCKS.BITS) + blockX;
-						for (int blockZ = 0; blockZ < Chunk.BLOCKS.SIZE; blockZ++) {
-							int indexZ = (colZ << Chunk.BLOCKS.BITS) + blockZ;
-							int h = col == null ? generatedHeights[colX][colZ] : col.getSurfaceHeight(blockX, blockZ);
-							heights[indexX][indexZ] = h;
 						}
 					}
 				}
-
 			}
 
 			SnapshotLock snapshotLock = ((SpoutScheduler) Spout.getScheduler()).getSnapshotLock();
-			if (colHeights != null) {
+			/*if (colGen != null) {
 				snapshotLock.readLock(colLock);
 				try {
 					for (int colX = 0; colX < width; colX++) {
 						int colWorldX = colX + cxx;
 						for (int colZ = 0; colZ < width; colZ++) {
 							int colWorldZ = colZ + czz;
-							int[][] cur = colHeights[colX][colZ];
+							int[][] cur = colGen[colX][colZ];
 							if (cur != null) {
 								world.setIfNotGenerated(colWorldX, colWorldZ, cur);
 							}
@@ -255,7 +243,7 @@ public class RegionGenerator implements Named {
 				} finally {
 					snapshotLock.readUnlock(colLock);
 				}
-			}
+			}*/
 
 			for (int i = 0; i < managers.length; i++) {
 				buffers[i] = managers[i].bulkInitializeUnchecked(buffer, heights);
@@ -264,11 +252,11 @@ public class RegionGenerator implements Named {
 			// Since creating SpoutChunks is very resource intensive and slow, we want to do this outside the snapshot lock if we're not waiting
 			SpoutChunk[][][] chunks = new SpoutChunk[width][Region.CHUNKS.SIZE][width];
 			for (int xx = 0; xx < width; xx++) {
-				cxx = cx + x + xx;
+				cxx = baseChunkX + chunkXLocal + xx;
 				for (int zz = 0; zz < width; zz++) {
-					czz = cz + z + zz;
+					czz = baseChunkZ + chunkZLocal + zz;
 					for (int yy = Region.CHUNKS.SIZE - 1; yy >= 0; yy--) {
-						int cyy = cy + yy;
+						int cyy = baseChunkY + yy;
 						final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cyy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 						chunk.write(buffer);
 						SpoutChunk newChunk = new SpoutChunk(world, region, cxx, cyy, czz, new AtomicPaletteBlockStore(Chunk.BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, chunk.getRawId(), chunk.getRawData()), null);
@@ -284,37 +272,42 @@ public class RegionGenerator implements Named {
 
 			snapshotLock.readLock(colLock);
 			if (!generated.compareAndSet(GenerateState.IN_PROGRESS, GenerateState.COPYING)) {
-				throw new IllegalStateException("Unable to set generate state for column " + x + ", " + z + " int region " + region.getBase().toBlockString() + " to copying, state is " + generated.get() + " wait is " + wait);
+				throw new IllegalStateException("Unable to set generate state for column " + chunkXLocal + ", " + chunkZLocal + " int region " + region.getBase().toBlockString() + " to copying, state is " + generated.get() + " wait is " + wait);
 			}
 
 			try {
-				for (int xx = 0; xx < width; xx++) {
-					cxx = cx + x + xx;
-					for (int zz = 0; zz < width; zz++) {
-						czz = cz + z + zz;
-						for (int yy = Region.CHUNKS.SIZE - 1; yy >= 0; yy--) {
-							int cyy = cy + yy;
-							SpoutChunk newChunk = chunks[xx][yy][zz];
+				for (int colX = 0; colX < width; colX++) {
+					int worldChunkX = colX + cxx;
+					for (int colZ = 0; colZ < width; colZ++) {
+						int worldChunkZ = colZ + czz;
+
+						for (int chunkY = Region.CHUNKS.SIZE - 1; chunkY >= 0; chunkY--) {
+							SpoutChunk newChunk = chunks[colX][chunkY][colZ];
 
 							for (int i = 0; i < managers.length; i++) {
-								CuboidLightBuffer lightBuffer = buffers[i][xx][yy][zz];
+								CuboidLightBuffer lightBuffer = buffers[i][colX][chunkY][colZ];
 								if (newChunk.setIfAbsentLightBuffer(lightBuffer.getManagerId(), lightBuffer) != lightBuffer) {
 									Spout.getLogger().info("Unable to set light buffer for new chunk " + newChunk + " as the id is already in use, " + lightBuffer.getManagerId());
 								}
 							}
 
-							boolean chunkSet = region.setChunkIfNotGeneratedWithoutLock(newChunk, x + xx, yy, z + zz);
+							boolean chunkSet = region.setChunkIfNotGeneratedWithoutLock(newChunk, chunkXLocal + colX, chunkY, chunkZLocal + colZ);
 
 							if (chunkSet) {
 								newChunk.setModified();
 							}
 						}
+
+						world.setHeightsRaw(worldChunkX, worldChunkZ, colGen[colX][colZ]);
 					}
 				}
+				
+				
+				
 
 				// We need to set the generated state before we unlock the readLock so waiting generators get the state immediately
 				if (!generated.compareAndSet(GenerateState.COPYING, GenerateState.COPIED)) {
-					throw new IllegalStateException("Column " + x + ", " + z + " rY=" + region.getChunkY() + " int region " + region.getBase().toBlockString() + " copied twice after generation, generation state is " + generated + " wait is " + wait);
+					throw new IllegalStateException("Column " + chunkXLocal + ", " + chunkZLocal + " rY=" + region.getChunkY() + " int region " + region.getBase().toBlockString() + " copied twice after generation, generation state is " + generated + " wait is " + wait);
 				}
 			} finally {
 				snapshotLock.readUnlock(colLock);
@@ -325,7 +318,7 @@ public class RegionGenerator implements Named {
 
 		// TODO - what is this for?
 		if (wait) {//sync?
-			touchChunk(chunkX, 0, chunkZ);
+			touchChunk(chunkXWorld, 0, chunkZWorld);
 		}
 	}
 

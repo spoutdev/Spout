@@ -78,6 +78,7 @@ public abstract class CuboidBuffer {
 
 		this.base = new Vector3(baseX, baseY, baseZ);
 
+		// TODO verify we know that top is not part of the cuboid
 		this.topX = baseX + sizeX;
 		this.topY = baseY + sizeY;
 		this.topZ = baseZ + sizeZ;
@@ -200,7 +201,7 @@ public abstract class CuboidBuffer {
 
 	protected static int getIndex(final CuboidBuffer source, final int x, final int y, final int z) {
 		if (x < source.baseX || x >= source.topX || y < source.baseY || y >= source.topY || z < source.baseZ || z >= source.topZ) {
-			throw new IllegalArgumentException("coordinates were outside the bounds of the CuboidBuffer!");
+			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer defined by: " + source);
 		}
 
 		return (y - source.baseY) * source.Yinc + (z - source.baseZ) * source.Zinc + (x - source.baseX) * source.Xinc;

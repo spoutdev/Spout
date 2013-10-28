@@ -53,10 +53,10 @@ public class SpoutColumn {
 	/**
 	 * Stores the size of the amount of blocks in this Column
 	 */
-	public static BitSize BLOCKS = Chunk.BLOCKS;
+	public static final BitSize BLOCKS = Chunk.BLOCKS;
 	private final SpoutWorld world;
-	private final int x;
-	private final int z;
+	private final int baseWorldChunkX;
+	private final int baseWorldChunkZ;
 	private final AtomicInteger activeChunks = new AtomicInteger(0);
 	private final AtomicInteger[][] heightMap;
 	private final int[][] heightMapSnapshot = new int[BLOCKS.SIZE][BLOCKS.SIZE];
@@ -69,6 +69,14 @@ public class SpoutColumn {
 	private final BlockMaterial[][] topmostBlocks;
 	private final AtomicReference<BiomeManager> biomes = new AtomicReference<>();
 	private final SetQueueElement<SpoutColumn> heightDirtyQueue;
+	public static final int[][] MIN_HEIGHTS = new int[BLOCKS.SIZE][BLOCKS.SIZE];
+	static {
+		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
+			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
+				MIN_HEIGHTS[xx][zz] = Integer.MIN_VALUE;
+			}
+		}
+	}
 
 	public SpoutColumn(InputStream in, SpoutWorld world, int x, int z) {
 		this(in, null, world, x, z);
@@ -78,24 +86,23 @@ public class SpoutColumn {
 		this(null, heights, world, x, z);
 	}
 
-	private SpoutColumn(InputStream in, int[][] heights, SpoutWorld world, int x, int z) {
-
+	private SpoutColumn(InputStream in, int[][] heights, SpoutWorld world, int baseWorldChunkX, int baseWorldChunkZ) {
 		if (heights != null && in != null) {
 			throw new IllegalArgumentException("Both heights and input stream were non-null");
 		}
 
 		this.world = world;
-		this.x = x;
-		this.z = z;
+		this.baseWorldChunkX = baseWorldChunkX;
+		this.baseWorldChunkZ = baseWorldChunkZ;
 		this.heightMap = new AtomicInteger[BLOCKS.SIZE][BLOCKS.SIZE];
 		this.dirtyArray = new AtomicBoolean[BLOCKS.SIZE][BLOCKS.SIZE];
 		this.topmostBlocks = new BlockMaterial[BLOCKS.SIZE][BLOCKS.SIZE];
 
-		this.heightDirtyQueue = new ColumnSetQueueElement(world.getColumnDirtyQueue(x >> Region.CHUNKS.BITS, z >> Region.CHUNKS.BITS), this);
+		this.heightDirtyQueue = new ColumnSetQueueElement(world.getColumnDirtyQueue(baseWorldChunkX >> Region.CHUNKS.BITS, baseWorldChunkZ >> Region.CHUNKS.BITS), this);
 
 		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
 			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
-				heightMap[xx][zz] = new AtomicInteger(heights == null ? 0 : heights[xx][zz]);
+				heightMap[xx][zz] = new AtomicInteger(heights == null ? Integer.MIN_VALUE : heights[xx][zz]);
 				dirtyArray[xx][zz] = new AtomicBoolean(false);
 			}
 		}
@@ -110,7 +117,7 @@ public class SpoutColumn {
 		if (biomes.get() == null) {
 			if (world.getGenerator() instanceof BiomeGenerator) {
 				BiomeGenerator generator = (BiomeGenerator) world.getGenerator();
-				setBiomeManager(generator.generateBiomes(x, z, world));
+				setBiomeManager(generator.generateBiomes(baseWorldChunkX, baseWorldChunkZ, world));
 			}
 		}
 		copySnapshot();
@@ -127,20 +134,20 @@ public class SpoutColumn {
 	public void onFinalize() {
 		TickStage.checkStage(TickStage.FINALIZE);
 		if (dirty.compareAndSet(true, false)) {
-			int wx = (this.x << BLOCKS.BITS);
-			int wz = (this.z << BLOCKS.BITS);
-			for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
-				for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
-					if (getDirtyFlag(xx, zz).compareAndSet(true, false)) {
-						int y = getHeightAtomicInteger(xx, zz).get();
-						int wxx = wx + xx;
-						int wzz = wz + zz;
-						Chunk c = world.getChunkFromBlock(wxx, y, wzz, LoadOption.LOAD_ONLY);
+			int baseWorldBlockX = (this.baseWorldChunkX << BLOCKS.BITS);
+			int baseWorldBlockZ = (this.baseWorldChunkZ << BLOCKS.BITS);
+			for (int chunkBlockX = 0; chunkBlockX < BLOCKS.SIZE; chunkBlockX++) {
+				for (int chunkBlockZ = 0; chunkBlockZ < BLOCKS.SIZE; chunkBlockZ++) {
+					if (getDirtyFlag(chunkBlockX, chunkBlockZ).compareAndSet(true, false)) {
+						int worldBlockY = getHeightAtomicInteger(chunkBlockX, chunkBlockZ).get();
+						int worldBlockX = baseWorldBlockX + chunkBlockX;
+						int worldBlockZ = baseWorldBlockZ + chunkBlockZ;
+						Chunk c = world.getChunkFromBlock(worldBlockX, worldBlockY, worldBlockZ, LoadOption.LOAD_ONLY);
 						BlockMaterial bm = null;
 						if (c != null) {
-							bm = c.getBlockMaterial(wx + xx, y, wz + zz);
+							bm = c.getBlockMaterial(worldBlockX, worldBlockY, worldBlockZ);
 						}
-						topmostBlocks[xx][zz] = bm;
+						topmostBlocks[chunkBlockX][chunkBlockZ] = bm;
 					}
 				}
 			}
@@ -174,7 +181,7 @@ public class SpoutColumn {
 			TickStage.checkStage(TickStage.SNAPSHOT);
 			if (activeChunks.decrementAndGet() == 0) {
 				syncSave();
-				world.removeColumn(x, z, this);
+				world.removeColumn(baseWorldChunkX, baseWorldChunkZ, this);
 			}
 		} else {
 			activeChunks.decrementAndGet();
@@ -186,7 +193,7 @@ public class SpoutColumn {
 			return;
 			// TODO throw new UnsupportedOperationException
 		}
-		OutputStream out = ((SpoutServerWorld) world).getHeightMapOutputStream(x, z);
+		OutputStream out = ((SpoutServerWorld) world).getHeightMapOutputStream(baseWorldChunkX, baseWorldChunkZ);
 		try {
 			try {
 				ColumnFiles.writeColumn(out, this, lowestY, highestY, topmostBlocks);
@@ -222,7 +229,7 @@ public class SpoutColumn {
 	private int getGeneratorHeight(int x, int z) {
 		int[][] h = heights.get();
 		if (h == null) {
-			h = world.getGenerator().getSurfaceHeight(world, this.x, this.z);
+			h = world.getGenerator().getSurfaceHeight(world, this.baseWorldChunkX, this.baseWorldChunkZ);
 			heights.set(h);
 		}
 
@@ -261,11 +268,11 @@ public class SpoutColumn {
 	}
 
 	public int getX() {
-		return x;
+		return baseWorldChunkX;
 	}
 
 	public int getZ() {
-		return z;
+		return baseWorldChunkZ;
 	}
 
 	public SpoutWorld getWorld() {
@@ -357,6 +364,16 @@ public class SpoutColumn {
 
 	public ImmutableHeightMapBuffer getHeightMapBuffer() {
 		return new ImmutableHeightMapBuffer(getX() << BLOCKS.BITS, getZ() << BLOCKS.BITS, SpoutColumn.BLOCKS.SIZE, SpoutColumn.BLOCKS.SIZE, heightMap);
+	}
+
+	public void setHeights(int[][] heights) {
+		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
+			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
+				dirtyArray[xx][zz].set(heights[xx][zz] == heightMap[xx][zz].get());
+				heightMap[xx][zz] = new AtomicInteger(heights[xx][zz]);
+				
+			}
+		}
 	}
 
 	@Override

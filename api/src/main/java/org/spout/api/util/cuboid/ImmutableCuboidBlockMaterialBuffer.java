@@ -71,27 +71,16 @@ public class ImmutableCuboidBlockMaterialBuffer extends CuboidBuffer {
 
 	public BlockMaterial get(int x, int y, int z) {
 		int index = getIndex(x, y, z);
-		if (index < 0) {
-			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
-		}
-
 		return BlockMaterial.get(id[index], data[index]);
 	}
 
 	public short getId(int x, int y, int z) {
 		int index = getIndex(x, y, z);
-		if (index < 0) {
-			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
-		}
 		return id[index];
 	}
 
 	public short getData(int x, int y, int z) {
 		int index = getIndex(x, y, z);
-		if (index < 0) {
-			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
-		}
-
 		return data[index];
 	}
 

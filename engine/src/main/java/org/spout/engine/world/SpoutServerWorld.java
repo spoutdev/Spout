@@ -144,21 +144,20 @@ public class SpoutServerWorld extends SpoutWorld {
 	}
 
 	@Override
-	protected SpoutColumn getColumn(int x, int z, LoadOption loadopt) {
-		SpoutColumn column = super.getColumn(x, z, loadopt);
+	protected SpoutColumn getColumn(int chunkWorldX, int chunkWorldZ, LoadOption loadopt) {
+		SpoutColumn column = super.getColumn(chunkWorldX, chunkWorldZ, loadopt);
 
 		if (column != null || !loadopt.loadIfNeeded()) {
 			return column;
 		}
 
-		column = loadColumn(x, z);
+		column = loadColumn(chunkWorldX, chunkWorldZ);
 		if (column != null || !loadopt.generateIfNeeded()) {
 			return column;
 		}
 
-		
-		int[][] height = this.getGenerator().getSurfaceHeight(this, x, z);
-		setIfNotGenerated(x, z, height);
+		// TODO - not good; make it explicitly null
+		setIfNotGenerated(chunkWorldX, chunkWorldZ, SpoutColumn.MIN_HEIGHTS);
 
 		/*
 		int h = (height[7][7] >> Chunk.BLOCKS.BITS);
@@ -177,32 +176,52 @@ public class SpoutServerWorld extends SpoutWorld {
 		}
 		*/
 
-		column = super.getColumn(x, z, LoadOption.NO_LOAD);
+		column = super.getColumn(chunkWorldX, chunkWorldZ, LoadOption.NO_LOAD);
 
 		if (column == null) {
-			throw new IllegalStateException("Unable to generate column " + x + ", " + z);
+			throw new IllegalStateException("Unable to generate column " + chunkWorldX + ", " + chunkWorldZ);
 		}
 
 		return column;
 	}
 
-	public SpoutColumn setIfNotGenerated(int x, int z, int[][] heightMap) {
-		long key = (((long) x) << 32) | (z & 0xFFFFFFFFL);
+	public void setHeightsRaw(int chunkWorldX, int chunkWorldZ, int[][] heightMap) {
+		long key = (((long) chunkWorldX) << 32) | (chunkWorldZ & 0xFFFFFFFFL);
 		key = (key % 7919);
 		key &= columnLockMap.length - 1;
 
 		Lock lock = columnLockMap[(int) key];
 		lock.lock();
 		try {
-			SpoutColumn col = getColumn(x, z, LoadOption.NO_LOAD);
+			SpoutColumn col = getColumn(chunkWorldX, chunkWorldZ, LoadOption.LOAD_ONLY);
+			if (col == null) {
+				col = new SpoutColumn(heightMap, this, chunkWorldX, chunkWorldZ);
+				setColumn(chunkWorldX, chunkWorldZ, col);
+			} else {
+				col.setHeights(heightMap);
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public SpoutColumn setIfNotGenerated(int chunkWorldX, int chunkWorldZ, int[][] heightMap) {
+		long key = (((long) chunkWorldX) << 32) | (chunkWorldZ & 0xFFFFFFFFL);
+		key = (key % 7919);
+		key &= columnLockMap.length - 1;
+
+		Lock lock = columnLockMap[(int) key];
+		lock.lock();
+		try {
+			SpoutColumn col = getColumn(chunkWorldX, chunkWorldZ, LoadOption.NO_LOAD);
 			if (col != null) {
 				return col;
 			}
-			col = loadColumn(x, z);
+			col = loadColumn(chunkWorldX, chunkWorldZ);
 			if (col != null) {
 				return col;
 			}
-			return setColumn(x, z, new SpoutColumn(heightMap, this, x, z));
+			return setColumn(chunkWorldX, chunkWorldZ, new SpoutColumn(heightMap, this, chunkWorldX, chunkWorldZ));
 		} finally {
 			lock.unlock();
 		}

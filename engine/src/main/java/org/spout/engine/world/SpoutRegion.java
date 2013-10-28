@@ -313,7 +313,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			return null;
 		}
 
-		SpoutChunk c = setChunk(newChunk, x, y, z, dataForRegion, false);
+		SpoutChunk c = setChunk(newChunk, x, y, z, dataForRegion, false, false);
 		checkChunkLoaded(c, loadopt);
 		return c;
 	}
@@ -349,15 +349,17 @@ public class SpoutRegion extends Region implements AsyncManager {
 			return false;
 		}
 		// chunk has not been generated
-		return setChunk(newChunk, x, y, z, null, true) == newChunk;
+		return setChunk(newChunk, x, y, z, null, true, false) == newChunk;
 	}
 
-	private SpoutChunk setChunk(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated) {
+	private SpoutChunk setChunk(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated, boolean notifyColumn) {
 		final AtomicReference<SpoutChunk> chunkReference = chunks[x][y][z];
 		while (true) {
 			if (chunkReference.compareAndSet(null, newChunk)) {
 				if (generated) {
-					newChunk.notifyColumn();
+					if (notifyColumn) {
+						newChunk.notifyColumnChunkAdded();
+					}
 					newChunk.queueNew();
 				}
 				numberActiveChunks.incrementAndGet();
@@ -918,6 +920,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 
 		LightingManager<?>[] managers = getWorld().getLightingManagers();
+
+		if (managers.length == 0) return;
+
 		LocalRegionChunkHeightMapBufferWrapper heightMapBuffer = new LocalRegionChunkHeightMapBufferWrapper(this, LoadOption.LOAD_ONLY);
 		LocalRegionChunkCuboidBlockMaterialBufferWrapper blockMaterialBuffer = new LocalRegionChunkCuboidBlockMaterialBufferWrapper(this, LoadOption.LOAD_ONLY, BlockMaterial.UNGENERATED);
 		ChunkCuboidLightBufferWrapper<?>[] lightBuffers = lightBuffers = new ChunkCuboidLightBufferWrapper[managers.length];
@@ -1437,7 +1442,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		SpoutChunk chunk = chunks[regionChunkX][regionChunkY][regionChunkZ].get();
 		if (chunk == null) {
 			chunk = new SpoutChunk(getWorld(), this, chunkX, chunkY, chunkZ, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, new ManagedHashMap());
-			setChunk(chunk, regionChunkX, regionChunkY, regionChunkZ, null, false);
+			setChunk(chunk, regionChunkX, regionChunkY, regionChunkZ, null, false, false);
 		} else {
 			chunk.rawSetBlockStore(blockIds, blockData);
 		}
