@@ -169,7 +169,6 @@ public class SimpleRegionFile implements ByteArrayArray {
 			throw new SRFException("Read block index out of range");
 		}
 		refreshAccess();
-		//Lock lock = blockLock[i].readLock();
 		Lock lock = getLock(i).readLock();
 		lock.lock();
 		try {
@@ -188,7 +187,6 @@ public class SimpleRegionFile implements ByteArrayArray {
 			throw new SRFException("Read block index out of range");
 		}
 		refreshAccess();
-		//Lock lock = blockLock[i].readLock();
 		Lock lock = getLock(i).readLock();
 		lock.lock();
 		try {
@@ -221,7 +219,6 @@ public class SimpleRegionFile implements ByteArrayArray {
 			throw new SRFException("Read block index out of range");
 		}
 		refreshAccess();
-		//Lock lock = blockLock[i].writeLock();
 		Lock lock = getLock(i).writeLock();
 		lock.lock();
 		if (this.isClosed()) {
@@ -260,7 +257,6 @@ public class SimpleRegionFile implements ByteArrayArray {
 	@Override
 	public void delete(int i) throws IOException {
 		refreshAccess();
-		//Lock lock = blockLock[i].writeLock();
 		Lock lock = getLock(i).writeLock();
 		lock.lock();
 		try {

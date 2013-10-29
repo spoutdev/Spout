@@ -65,6 +65,7 @@ public class SpoutColumn {
 	private final AtomicInteger highestY = new AtomicInteger();
 	private final AtomicReference<int[][]> heights = new AtomicReference<>();
 	private final AtomicBoolean dirty = new AtomicBoolean(false);
+	// TODO - figure this out
 	private final AtomicBoolean dirtyArray[][];
 	private final BlockMaterial[][] topmostBlocks;
 	private final AtomicReference<BiomeManager> biomes = new AtomicReference<>();

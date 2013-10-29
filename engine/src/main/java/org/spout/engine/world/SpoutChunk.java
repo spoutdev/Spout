@@ -120,7 +120,6 @@ import org.spout.engine.world.physics.UpdateQueue;
 import org.spout.math.GenericMath;
 import org.spout.math.vector.Vector3;
 
-// TODO add a "reference" to the SpoutRegion that stores this
 public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<>(null);
 	//Not static to allow the engine to parse values first

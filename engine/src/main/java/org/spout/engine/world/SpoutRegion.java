@@ -238,17 +238,16 @@ public class SpoutRegion extends Region implements AsyncManager {
 			return chunk;
 		}
 
-		if (Spout.getPlatform() == Platform.CLIENT && (loadopt.loadIfNeeded() || loadopt.generateIfNeeded())) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			// Client should NEVER actually try to load or generate chunks
+			if (!(loadopt.loadIfNeeded() || loadopt.generateIfNeeded())) {
+				return null;
+			}
 			short[] blocks = new short[16 * 16 * 16];
 			Arrays.fill(blocks, BlockMaterial.UNGENERATED.getId());
 			SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getChunkX() + x, getChunkY() + y, getChunkZ() + z, SpoutChunk.PopulationState.UNTOUCHED, blocks, null, null);
 			chunks[x][y][z].set(newChunk);
 			return newChunk;
-		}
-
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			// Client should NEVER actually try to load or generate chunks
-			return null;
 		}
 
 
