@@ -42,6 +42,7 @@ public class AtomicShortIntUniformBackingArray extends AtomicShortIntBackingArra
 	private AtomicShortIntUniformBackingArray(int length, AtomicShortIntBackingArray previous) {
 		super(length);
 		if (previous == null) {
+			// TODO - 0 is an magic number here; we should verify we always initialize to something
 			store = new AtomicInteger(0);
 		} else {
 			store = new AtomicInteger(previous.get(0));

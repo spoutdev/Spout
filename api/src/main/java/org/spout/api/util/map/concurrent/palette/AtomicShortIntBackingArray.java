@@ -148,8 +148,6 @@ public abstract class AtomicShortIntBackingArray {
 			for (int i = 0; i < length; i++) {
 				set(i, previous.get(i));
 			}
-		} else {
-			set(0, 0);
 		}
 	}
 

@@ -63,6 +63,6 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			}
 			manager.deserialize(message.getBiomeData());
 		}
-		((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData(), message.getLight());
+		((SpoutClientWorld) world).addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockInfo(), message.getLight());
 	}
 }

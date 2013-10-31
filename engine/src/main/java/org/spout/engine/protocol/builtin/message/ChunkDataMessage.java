@@ -42,7 +42,7 @@ public class ChunkDataMessage extends SpoutMessage {
 	private final boolean unload;
 	// Block x, y, z
 	private final int x, y, z;
-	private final short[] blockIds, blockData;
+	private final int[] blockInfo;
 	private final Map<Short, byte[]> light;
 	//private final byte[] blockLight, skyLight;
 	private final byte[] biomeData;
@@ -54,8 +54,7 @@ public class ChunkDataMessage extends SpoutMessage {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.blockIds = null;
-		this.blockData = null;
+		this.blockInfo = null;
 		this.biomeData = null;
 		this.biomeManagerClass = null;
 		light = null;
@@ -66,8 +65,7 @@ public class ChunkDataMessage extends SpoutMessage {
 		this.x = snapshot.getX();
 		this.y = snapshot.getY();
 		this.z = snapshot.getZ();
-		this.blockIds = snapshot.getBlockIds();
-		this.blockData = snapshot.getBlockData();
+		this.blockInfo = snapshot.getBlocks();
 		light = new HashMap<>();
 		for (CuboidLightBuffer b : snapshot.getLightBuffers()) {
 			light.put(b.getManagerId(), b.serialize());
@@ -76,13 +74,12 @@ public class ChunkDataMessage extends SpoutMessage {
 		this.biomeManagerClass = snapshot.getBiomeManager() != null ? snapshot.getBiomeManager().getClass().getCanonicalName() : null;
 	}
 
-	public ChunkDataMessage(int x, int y, int z, short[] blockIds, short[] blockData, byte[] biomeData, String biomeManagerClass, Map<Short, byte[]> map) {
+	public ChunkDataMessage(int x, int y, int z, int[] blocks, byte[] biomeData, String biomeManagerClass, Map<Short, byte[]> map) {
 		this.unload = false;
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.blockIds = blockIds;
-		this.blockData = blockData;
+		this.blockInfo = blocks;
 		this.biomeData = biomeData;
 		this.biomeManagerClass = biomeManagerClass;
 		this.light = map;
@@ -104,12 +101,8 @@ public class ChunkDataMessage extends SpoutMessage {
 		return z;
 	}
 
-	public short[] getBlockIds() {
-		return blockIds;
-	}
-
-	public short[] getBlockData() {
-		return blockData;
+	public int[] getBlockInfo() {
+		return blockInfo;
 	}
 
 	public byte[] getBiomeData() {
@@ -135,9 +128,8 @@ public class ChunkDataMessage extends SpoutMessage {
 				.append("x", x)
 				.append("y", y)
 				.append("z", z)
-				.append("blockIds", blockIds, false)
-				.append("blockData", blockData, false)
-						//.append("blockLigh", blockLight, false)
+				.append("blockInfo", blockInfo, false)
+						//.append("blockLight", blockLight, false)
 						//.append("skyLight", skyLigh, false)
 				.append("biomeData", biomeData, false)
 				.append("biomeManagerClass", biomeManagerClass)
@@ -151,8 +143,7 @@ public class ChunkDataMessage extends SpoutMessage {
 				.append(x)
 				.append(y)
 				.append(z)
-				.append(blockIds)
-				.append(blockData)
+				.append(blockInfo)
 						//.append(blockLight)
 						//.append(skyLight)
 				.append(biomeData)
@@ -169,8 +160,9 @@ public class ChunkDataMessage extends SpoutMessage {
 					.append(x, other.x)
 					.append(y, other.y)
 					.append(z, other.z)
-					.append(blockIds, other.blockIds)
-					.append(blockData, other.blockData)
+					.append(blockInfo, other.blockInfo)
+					//.append(blockIds, other.blockIds)
+					//.append(blockData, other.blockData)
 							//.append(blockLight, other.blockLight)
 							//.append(skyLight, other.skyLight)
 					.append(biomeData, other.biomeData)

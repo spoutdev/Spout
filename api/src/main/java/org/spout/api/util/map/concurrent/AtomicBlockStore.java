@@ -161,6 +161,13 @@ public interface AtomicBlockStore {
 	public boolean needsCompression();
 
 	/**
+	 * Gets a int array containing the block packed state in the store.<br> <br> If the store is updated while this snapshot is being taken, data tearing could occur.
+	 *
+	 * @return the array
+	 */
+	public int[] getBlockArray();
+
+	/**
 	 * Gets a short array containing the block ids in the store.<br> <br> If the store is updated while this snapshot is being taken, data tearing could occur.
 	 *
 	 * @return the array

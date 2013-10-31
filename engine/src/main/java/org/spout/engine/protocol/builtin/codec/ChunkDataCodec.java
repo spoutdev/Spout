@@ -78,13 +78,11 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			byte[] compressedData = new byte[dataSize];
 
 			int index = 0;
-			for (short s : message.getBlockIds()) {
-				uncompressedData[index++] = (byte) s;
-				uncompressedData[index++] = (byte) (s >> 8);
-			}
-			for (short s : message.getBlockData()) {
-				uncompressedData[index++] = (byte) s;
-				uncompressedData[index++] = (byte) (s >> 8);
+			for (int i : message.getBlockInfo()) {
+				uncompressedData[index++] = (byte) i;
+				uncompressedData[index++] = (byte) (i >> 8);
+				uncompressedData[index++] = (byte) (i >> 16);
+				uncompressedData[index++] = (byte) (i >> 24);
 			}
 			for (Entry<Short, byte[]> e : message.getLight().entrySet()) {
 				short s = e.getKey();
@@ -154,17 +152,13 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			}
 			inflater.end();
 
-			final short[] blockIds = new short[Chunk.BLOCKS.VOLUME];
-			final short[] blockData = new short[Chunk.BLOCKS.VOLUME];
+			final int[] blockInfo = new int[Chunk.BLOCKS.VOLUME];
 			final Map<Short, byte[]> light = new HashMap<>();
 			final byte[] biomeData = hasBiomes ? new byte[Chunk.BLOCKS.AREA] : null;
 
 			int index = 0;
-			for (int i = 0; i < blockIds.length; ++i) {
-				blockIds[i] = (short) (uncompressedData[index++] | (uncompressedData[index++] << 8));
-			}
-			for (int i = 0; i < blockData.length; ++i) {
-				blockData[i] = (short) (uncompressedData[index++] | (uncompressedData[index++] << 8));
+			for (int i = 0; i < blockInfo.length; ++i) {
+				blockInfo[i] = uncompressedData[index++] | (uncompressedData[index++] << 8) | (uncompressedData[index++] << 16) | (uncompressedData[index++] << 24);
 			}
 			for (int i = 0; i < lightSize; ++i) {
 				byte[] data = new byte[2048];
@@ -184,7 +178,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				throw new IllegalStateException(message);
 			}
 
-			return new ChunkDataMessage(x, y, z, blockIds, blockData, biomeData, biomeManagerClass, light);
+			return new ChunkDataMessage(x, y, z, blockInfo, biomeData, biomeManagerClass, light);
 		}
 	}
 }

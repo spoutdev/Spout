@@ -72,10 +72,17 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	}
 
 	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, short[] blocks, short[] data) {
+		this(shift, storeState, compress, dirtySize, toIntArray(blocks, data));
+	}
+
+	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, int[] initial) {
 		this.side = 1 << shift;
 		this.shift = shift;
 		this.doubleShift = shift << 1;
 		this.length = side * side * side;
+		if (initial != null && initial.length != length) {
+			throw new IllegalArgumentException("Provided length was not actual length!");
+		}
 		dirtyX = new byte[dirtySize];
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
@@ -86,12 +93,8 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 			oldState = null;
 			newState = null;
 		}
-		if (blocks != null) {
-			int[] initial = new int[Math.min(blocks.length, this.length)];
-			for (int i = 0; i < blocks.length; i++) {
-				short d = data != null ? data[i] : 0;
-				initial[i] = BlockFullState.getPacked(blocks[i], d);
-			}
+
+		if (initial != null) {
 			store = new AtomicShortIntArray(length, initial, true);
 		} else {
 			store = new AtomicShortIntArray(length);
@@ -104,6 +107,16 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 			throw new IllegalArgumentException("Cannot disable compression when loading from palette");
 		}
 		store.set(palette, blockArrayWidth, variableWidthBlockArray);
+	}
+
+	private static int[] toIntArray(short[] blocks, short[] data) {
+		if (blocks == null) return null;
+		int[] initial = new int[blocks.length];
+		for (int i = 0; i < blocks.length; i++) {
+			short d = data != null ? data[i] : 0;
+			initial[i] = BlockFullState.getPacked(blocks[i], d);
+		}
+		return initial;
 	}
 
 	@Override
@@ -174,6 +187,15 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	public boolean needsCompression() {
 		// TODO - needs removal or optimisation
 		return true;
+	}
+
+	@Override
+	public int[] getBlockArray() {
+		int[] array = new int[length];
+		for (int i = 0; i < length; i++) {
+			array[i] = store.get(i);
+		}
+		return array;
 	}
 
 	@Override

@@ -69,10 +69,10 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 	private static final SpoutProtocol PROTOCOL = new SpoutProtocol();
 	static final boolean[] allFalse = new boolean[16];
 	static final byte[][] columnData = new byte[16][10240];
-	static final short[] chunkData = new short[16 * 16 * 16];
+	static final int[] chunkData = new int[16 * 16 * 16];
 
 	static {
-		Arrays.fill(chunkData, (short) 0);
+		Arrays.fill(chunkData, 0);
 	}
 
 	static final byte[] biomeData1 = new byte[256];
@@ -83,7 +83,7 @@ public class SpoutProtocolTest extends BaseProtocolTest {
 	static final byte[] TEST_SERIALIZED_DATA = new ManagedHashMap().serialize();
 	private static final Message[] TEST_MESSAGES = new Message[] {
 			new BlockUpdateMessage(0, 0, 0, (short) 0, (short) 0),
-			new ChunkDataMessage(0, 0, 0, chunkData, chunkData, null, null, new HashMap<Short, byte[]>()),
+			new ChunkDataMessage(0, 0, 0, chunkData, null, null, new HashMap<Short, byte[]>()),
 			new ClickRequestMessage((byte) 0, (byte) 0, ClickRequestMessage.Action.LEFT),
 			new ClickResponseMessage((byte) 0, (byte) 0, ClickResponseMessage.Response.ALLOW),
 			new CommandMessage("test", "hi"),

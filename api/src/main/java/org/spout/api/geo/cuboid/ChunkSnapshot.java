@@ -58,18 +58,10 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	}
 
 	/**
-	 * Gets a copy of the raw block ids.
+	 * Gets a copy of the raw block information, packed.
 	 *
-	 * @return raw block ids
 	 */
-	public abstract short[] getBlockIds();
-
-	/**
-	 * Gets a copy of the raw block data.
-	 *
-	 * @return block data
-	 */
-	public abstract short[] getBlockData();
+	public abstract int[] getBlocks();
 
 	/**
 	 * Gets an array containing a copy of the light data arrays
@@ -129,10 +121,6 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 		 * Loads no block data (ids, data, skylight, blocklight) in the snapshot
 		 */
 		NO_BLOCK_DATA,
-		/**
-		 * Loads only block ids, no block data, skylight, or blocklight
-		 */
-		BLOCK_IDS_ONLY,
 		/**
 		 * Loads only block ids and block data, no skylight or blocklight
 		 */

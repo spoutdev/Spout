@@ -248,8 +248,8 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	/**
 	 * Chunk sending to client and client LOAD_GEN 
 	 */
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, ManagedHashMap extraData) {
-		this(world, region, x, y, z, popState, extraData, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, false, 10, blocks, data));
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] blocks, ManagedHashMap extraData) {
+		this(world, region, x, y, z, popState, extraData, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, false, 10, blocks));
 	}
 
 	/**
@@ -757,24 +757,19 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	public SpoutChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data, boolean palette) {
 		checkChunkLoaded();
-		short[] blockIds = null, blockData = null;
+		int[] blocks = null;
 		CuboidLightBuffer[] lightBuffersCopy = null;
 		switch (type) {
 			case NO_BLOCK_DATA:
 				break;
-			case BLOCK_IDS_ONLY:
-				blockIds = blockStore.getBlockIdArray();
-				break;
 			case BLOCKS_ONLY:
-				blockIds = blockStore.getBlockIdArray();
-				blockData = blockStore.getDataArray();
+				blocks = blockStore.getBlockArray();
 				break;
 			case LIGHT_ONLY:
 				lightBuffersCopy = copyLightBuffers();
 				break;
 			case BOTH:
-				blockIds = blockStore.getBlockIdArray();
-				blockData = blockStore.getDataArray();
+				blocks = blockStore.getBlockArray();
 				lightBuffersCopy = copyLightBuffers();
 				break;
 		}
@@ -782,7 +777,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		if (palette) {
 			return new SpoutChunkSnapshot(this, blockStore.getPalette(), blockStore.getPackedWidth(), blockStore.getPackedArray(), lightBuffersCopy, entities, data);
 		} else {
-			return new SpoutChunkSnapshot(this, blockIds, blockData, lightBuffersCopy, entities, data);
+			return new SpoutChunkSnapshot(this, blocks, lightBuffersCopy, entities, data);
 		}
 	}
 
@@ -2217,11 +2212,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	@ClientOnly
-	public void rawSetBlockStore(short[] blocks, short[] data) {
+	public void rawSetBlockStore(int[] blocks) {
 		if (Spout.getPlatform() != Platform.CLIENT) {
 			throw new UnsupportedOperationException("Cannot raw set the block store unless in client mode.");
 		}
-		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, false, false, 10, blocks, data);
+		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, false, false, 10, blocks);
 		// Basically a new chunk, we want to rerender everything
 		firstRender = true;
 	}

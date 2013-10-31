@@ -245,9 +245,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 		// Client should NEVER actually try to load or generate chunks
 		if (Spout.getPlatform() == Platform.CLIENT) {
-			short[] blocks = new short[16 * 16 * 16];
+			int[] blocks = new int[16 * 16 * 16];
 			Arrays.fill(blocks, BlockMaterial.UNGENERATED.getId());
-			SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getChunkX() + x, getChunkY() + y, getChunkZ() + z, SpoutChunk.PopulationState.UNTOUCHED, blocks, null, null);
+			SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getChunkX() + x, getChunkY() + y, getChunkZ() + z, SpoutChunk.PopulationState.UNTOUCHED, null, null);
 			chunks[x][y][z].set(newChunk);
 			return newChunk;
 		}
@@ -1431,16 +1431,16 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return region.getChunk(x, y, z, loadopt);
 	}
 
-	public SpoutChunk addChunk(int chunkX, int chunkY, int chunkZ, short[] blockIds, short[] blockData) {
+	public SpoutChunk addChunk(int chunkX, int chunkY, int chunkZ, int[] blockInfo) {
 		final int regionChunkX = chunkX & CHUNKS.MASK;
 		final int regionChunkY = chunkY & CHUNKS.MASK;
 		final int regionChunkZ = chunkZ & CHUNKS.MASK;
 		SpoutChunk chunk = chunks[regionChunkX][regionChunkY][regionChunkZ].get();
 		if (chunk == null) {
-			chunk = new SpoutChunk(getWorld(), this, chunkX, chunkY, chunkZ, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, new ManagedHashMap());
+			chunk = new SpoutChunk(getWorld(), this, chunkX, chunkY, chunkZ, SpoutChunk.PopulationState.POPULATED, blockInfo, new ManagedHashMap());
 			setChunk(chunk, regionChunkX, regionChunkY, regionChunkZ, null, false, false);
 		} else {
-			chunk.rawSetBlockStore(blockIds, blockData);
+			chunk.rawSetBlockStore(blockInfo);
 		}
 		checkChunkLoaded(chunk, LoadOption.LOAD_GEN);
 		return chunk;

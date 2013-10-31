@@ -63,8 +63,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final int[] palette;
 	private final int packedWidth;
 	private final int[] packedBlockArray;
-	private final short[] blockIds;
-	private final short[] blockData;
+	private final int[] blocks;
 	private final CuboidLightBuffer[] lightBuffers;
 	private final CuboidLightBuffer[] idLightBufferMap;
 	private final BiomeManager biomes;
@@ -72,15 +71,15 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final PopulationState populationState;
 	private boolean renderDirty = false;
 
-	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
-		this(chunk, blockIds, blockData, null, 0, null, lightBuffers, type, data);
+	public SpoutChunkSnapshot(SpoutChunk chunk, int[] blocks, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
+		this(chunk, blocks, null, 0, null, lightBuffers, type, data);
 	}
 
 	public SpoutChunkSnapshot(SpoutChunk chunk, int[] palette, int packedWidth, int[] packedBlockArray, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
-		this(chunk, null, null, palette, packedWidth, packedBlockArray, lightBuffers, type, data);
+		this(chunk, null, palette, packedWidth, packedBlockArray, lightBuffers, type, data);
 	}
 
-	private SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, int[] palette, int packedWidth, int[] packedBlockArray, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
+	private SpoutChunkSnapshot(SpoutChunk chunk, int[] blocks, int[] palette, int packedWidth, int[] packedBlockArray, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
 		super(chunk.getWorld(), chunk.getX() * CHUNK_SIZE, chunk.getY() * CHUNK_SIZE, chunk.getZ() * CHUNK_SIZE);
 		parentRegion = new WeakReference<Region>(chunk.getRegion());
 
@@ -108,8 +107,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 
 		// Cache blocks
-		this.blockIds = blockIds;
-		this.blockData = blockData;
+		this.blocks = blocks;
 		this.lightBuffers = lightBuffers;
 		if (this.lightBuffers == null || this.lightBuffers.length == 0) {
 			this.idLightBufferMap = new CuboidLightBuffer[0];
@@ -153,23 +151,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		renderDirty = chunk.isDirty();
 	}
 
-	//Maybe we can use that in ChunkMesh generation in SpoutRegion
-	public SnapshotType getSnapshotType() {
-		if (blockIds != null && blockData != null && lightBuffers != null) {
-			return SnapshotType.BOTH;
-		}
-
-		if (blockIds != null && blockData != null) {
-			return SnapshotType.BLOCKS_ONLY;
-		}
-
-		if (blockIds != null) {
-			return SnapshotType.BLOCK_IDS_ONLY;
-		}
-
-		return SnapshotType.NO_BLOCK_DATA;
-	}
-
 	private static List<EntitySnapshot> getEntities(SpoutChunk chunk) {
 		ArrayList<EntitySnapshot> entities = new ArrayList<>();
 		for (Entity e : chunk.getLiveEntities()) {
@@ -184,7 +165,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
-		if (blockIds == null) {
+		if (blocks == null) {
 			throw new UnsupportedOperationException("This chunk snapshot does not contain block ids");
 		}
 		BlockMaterial mat = BlockMaterial.get(getBlockId(x, y, z));
@@ -195,15 +176,15 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	private short getBlockId(int x, int y, int z) {
-		return blockIds[this.getBlockIndex(x, y, z)];
+		return BlockFullState.getId(blocks[this.getBlockIndex(x, y, z)]);
 	}
 
 	@Override
 	public short getBlockData(int x, int y, int z) {
-		if (blockData == null) {
+		if (blocks == null) {
 			throw new UnsupportedOperationException("This chunk snapshot does not contain block data");
 		}
-		return blockData[this.getBlockIndex(x, y, z)];
+		return BlockFullState.getData(blocks[this.getBlockIndex(x, y, z)]);
 	}
 
 	@Override
@@ -226,13 +207,8 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	@Override
-	public short[] getBlockIds() {
-		return blockIds;
-	}
-
-	@Override
-	public short[] getBlockData() {
-		return blockData;
+	public int[] getBlocks() {
+		return blocks;
 	}
 
 	public boolean isRenderDirty() {
