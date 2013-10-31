@@ -221,11 +221,12 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, final LoadOption loadopt) {
 		// If we're not waiting, then we don't care because it's async anyways
-		if (!loadopt.waitForLoadOrGen()) {
-		} else if (loadopt.generateIfNeeded()) {
-			TickStage.checkStage(~(TickStage.SNAPSHOT | TickStage.PRESNAPSHOT | TickStage.LIGHTING));
-		} else if (loadopt.loadIfNeeded()) {
-			TickStage.checkStage(~TickStage.SNAPSHOT);
+		if (loadopt.waitForLoadOrGen()) {
+			if (loadopt.generateIfNeeded()) {
+				TickStage.checkStage(~(TickStage.SNAPSHOT | TickStage.PRESNAPSHOT | TickStage.LIGHTING));
+			} else if (loadopt.loadIfNeeded()) {
+				TickStage.checkStage(~TickStage.SNAPSHOT);
+				}
 		}
 
 		x &= CHUNKS.MASK;
@@ -238,11 +239,12 @@ public class SpoutRegion extends Region implements AsyncManager {
 			return chunk;
 		}
 
+		if (!loadopt.loadIfNeeded()) {
+			return null;
+		}
+
+		// Client should NEVER actually try to load or generate chunks
 		if (Spout.getPlatform() == Platform.CLIENT) {
-			// Client should NEVER actually try to load or generate chunks
-			if (!(loadopt.loadIfNeeded() || loadopt.generateIfNeeded())) {
-				return null;
-			}
 			short[] blocks = new short[16 * 16 * 16];
 			Arrays.fill(blocks, BlockMaterial.UNGENERATED.getId());
 			SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getChunkX() + x, getChunkY() + y, getChunkZ() + z, SpoutChunk.PopulationState.UNTOUCHED, blocks, null, null);
@@ -250,24 +252,19 @@ public class SpoutRegion extends Region implements AsyncManager {
 			return newChunk;
 		}
 
-
-
-		if (!loadopt.loadIfNeeded()) {
-			return null;
-		}
 		if (loadopt.waitForLoadOrGen()) {
 			return loadOrGenChunkImmediately(x, y, z, loadopt);
-		} else {
-			final int finalX = x;
-			final int finalY = y;
-			final int finalZ = z;
-			((SpoutScheduler) Spout.getScheduler()).coreAsyncTask(new Runnable() {
-				@Override
-				public void run() {
-					loadOrGenChunkImmediately(finalX, finalY, finalZ, loadopt);
-				}
-			});
 		}
+
+		final int finalX = x;
+		final int finalY = y;
+		final int finalZ = z;
+		((SpoutScheduler) Spout.getScheduler()).coreAsyncTask(new Runnable() {
+			@Override
+			public void run() {
+				loadOrGenChunkImmediately(finalX, finalY, finalZ, loadopt);
+			}
+		});
 		return null;
 	}
 

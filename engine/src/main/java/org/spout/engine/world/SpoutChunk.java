@@ -2198,7 +2198,9 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	@Override
 	public void sync(NetworkComponent network) {
-		if (!isDirtyOverflow() && !isLightDirty()) {
+		if (isLightDirty() || isDirtyOverflow()) {
+			network.callProtocolEvent(new ChunkSendEvent(this));
+		} else {
 			for (int i = 0; true; i++) {
 				Vector3 block = getDirtyBlock(i);
 				if (block == null) {
@@ -2211,8 +2213,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Exception thrown by plugin when attempting to send a block update");
 				}
 			}
-		} else {
-			network.callProtocolEvent(new ChunkSendEvent(this));
 		}
 	}
 
