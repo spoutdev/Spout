@@ -272,10 +272,13 @@ public class NetworkComponent extends EntityComponent {
 		}
 		//Entity changed chunks as observer OR observer status changed so update
 		WrappedSerizableIterator old = getData().get(OBSERVER_ITERATOR);
-		if (getOwner().getPhysics().getPosition().getChunk(LoadOption.NO_LOAD) != live.getPosition().getChunk(LoadOption.NO_LOAD) && isObserver()
+		Chunk snapChunk = getOwner().getPhysics().getPosition().getChunk(LoadOption.NO_LOAD);
+		Chunk liveChunk = live.getPosition().getChunk(LoadOption.NO_LOAD);
+		if (isObserver() && 
+			((snapChunk == null ? liveChunk == null : snapChunk.equals(liveChunk))
 				|| liveObserverIterator.get() != old
 				|| old == INITIAL_TICK
-				|| observeChunksFailed) {
+				|| observeChunksFailed)) {
 			updateObserver();
 		}
 	}
@@ -332,10 +335,10 @@ public class NetworkComponent extends EntityComponent {
 		observingChunks.removeAll(observing);
 		// For every chunk that we were observing but not anymore
 		for (Chunk chunk : observingChunks) {
-			// TODO: it shouldn't matter if the chunk is loaded?
-			if (chunk.isLoaded()) {
-				chunk.removeObserver(getOwner());
+			if (!chunk.isLoaded()) {
+				throw new IllegalStateException("Chunk(" + chunk.getX() + " " + chunk.getY() + " " + chunk.getZ() + ") was unloaded while being observed!");
 			}
+			chunk.removeObserver(getOwner());
 		}
 		observingChunks.clear();
 		observingChunks.addAll(observing);

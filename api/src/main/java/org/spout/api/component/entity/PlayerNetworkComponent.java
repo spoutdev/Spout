@@ -27,11 +27,9 @@
 package org.spout.api.component.entity;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -61,6 +59,7 @@ import org.spout.api.protocol.event.EntityUpdateEvent;
 import org.spout.api.protocol.event.WorldChangeProtocolEvent;
 import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.api.protocol.reposition.RepositionManager;
+import org.spout.api.util.ChunkReference;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.SyncedStringMap;
 import org.spout.api.util.set.concurrent.TSyncIntHashSet;
@@ -74,24 +73,20 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	private final AtomicReference<Session> session = new AtomicReference<>(null);
 	protected final TSyncIntHashSet synchronizedEntities = new TSyncIntHashSet();
 	private Point lastChunkCheck = Point.invalid;
-	// Base points used so as not to load chunks unnecessarily
-	private final Set<Point> chunkInitQueue = new LinkedHashSet<>();
-	private final Set<Point> priorityChunkSendQueue = new LinkedHashSet<>();
-	private final Set<Point> chunkSendQueue = new LinkedHashSet<>();
-	private final Set<Point> chunkFreeQueue = new LinkedHashSet<>();
-	/**
-	 * Chunks that have initialized on the client. May also have chunks that have been sent.
-	 */
-	private final Set<Point> initializedChunks = new LinkedHashSet<>();
+
+	private final Set<ChunkReference> chunkSendQueuePriority = new LinkedHashSet<>();
+	private final Set<ChunkReference> chunkSendQueueRegular = new LinkedHashSet<>();
+	private final Set<ChunkReference> chunkFreeQueue = new LinkedHashSet<>();
 	/**
 	 * Chunks that have been sent to the client
 	 */
-	private final Set<Point> activeChunks = new LinkedHashSet<>();
-	protected volatile boolean worldChanged = false;
+	private final Set<ChunkReference> activeChunks = new LinkedHashSet<>();
 	/**
-	 * Includes chunks that need to be observed. When observation is successfully attained or no longer wanted, point is removed
+	 * Includes chunks that need to be sent.
 	 */
-	private final Set<Point> chunksToObserve = new LinkedHashSet<>();
+	private final Set<ChunkReference> futureChunksToSend = new LinkedHashSet<>();
+
+	protected volatile boolean worldChanged = false;
 	private boolean sync = false;
 	protected int tickCounter = 0;
 	private int chunksSent = 0;
@@ -137,7 +132,7 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	/**
 	 * Gets the {@link InetAddress} of the session
 	 *
-	 * @return The adress of the session
+	 * @return The address of the session
 	 */
 	public final InetAddress getAddress() {
 		return getSession().getAddress().getAddress();
@@ -184,14 +179,6 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	}
 
 	@ServerOnly
-	protected void clearObservers() {
-		chunksToObserve.clear();
-		for (Point p : initializedChunks) {
-			removeObserver(p);
-		}
-	}
-
-	@ServerOnly
 	public void forceSync() {
 		sync = true;
 	}
@@ -208,6 +195,74 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 			this.rm.set(NullRepositionManager.getInstance());
 		} else {
 			this.rm.set(rm);
+		}
+	}
+
+
+
+	/**
+	 * Checks for chunk updates that might have from movement.
+	 */
+	private void checkChunkUpdates(Point currentPosition) {
+		// Recalculating these
+		if (!chunkFreeQueue.isEmpty()) {
+			throw new IllegalStateException("chunkFreeQueue is not empty!");
+		}
+		chunkSendQueuePriority.clear();
+		chunkSendQueueRegular.clear();
+		futureChunksToSend.clear();
+
+		final World world = currentPosition.getWorld();
+		final int bx = (int) currentPosition.getX();
+		final int by = (int) currentPosition.getY();
+		final int bz = (int) currentPosition.getZ();
+		final int cx = bx >> Chunk.BLOCKS.BITS;
+		final int cy = by >> Chunk.BLOCKS.BITS;
+		final int cz = bz >> Chunk.BLOCKS.BITS;
+		Point playerChunkBase = Chunk.pointToBase(currentPosition);
+		for (ChunkReference ref : activeChunks) {
+			Point p = ref.getBase();
+			if (!isInViewVolume(p, playerChunkBase, getSyncDistance())) {
+				chunkFreeQueue.add(ref);
+			}
+		}
+
+		// TODO: could we use getSyncIterator?
+		Iterator<IntVector3> itr = getViewableVolume(cx, cy, cz, getSyncDistance());
+		while (itr.hasNext()) {
+			IntVector3 v = itr.next();
+			Point base = new Point(world, v.getX() << Chunk.BLOCKS.BITS, v.getY() << Chunk.BLOCKS.BITS, v.getZ() << Chunk.BLOCKS.BITS);
+			ChunkReference ref = new ChunkReference(base);
+			if (activeChunks.contains(ref)) {
+				continue;
+			}
+			boolean inTargetArea = playerChunkBase.getMaxDistance(base) <= (getSyncDistance() / 2); // TODO: do we need to move blockMinViewDistance?
+			boolean needGen = !inTargetArea;
+			// If it's in the target area, we first check if we can just load it. If so, do that
+			// If not, queue it for LOAD_GEN, but don't wait
+			// If it's not in the target area, don't even wait for load
+			if (inTargetArea && ref.refresh(LoadOption.LOAD_ONLY) == null) {
+					needGen = true;
+			}
+			if (needGen) {
+				ref.refresh(LoadOption.LOAD_GEN_NOWAIT);
+			}
+
+			futureChunksToSend.add(ref);
+		}
+	
+	}
+
+	private void updateSendLists(Point currentPosition) {
+		Point playerChunkBase = Chunk.pointToBase(currentPosition);
+		for (ChunkReference ref : futureChunksToSend) {
+			if (ref.refresh(LoadOption.NO_LOAD) == null) continue;
+			boolean inTargetArea = playerChunkBase.getMaxDistance(ref.getBase()) <= (getSyncDistance() / 2); // TODO: do we need to move blockMinViewDistance?
+			if (inTargetArea) {
+				chunkSendQueuePriority.add(ref);
+			} else {
+				chunkSendQueueRegular.add(ref);
+			}
 		}
 	}
 
@@ -233,33 +288,14 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 		//final int currentViewDistance = ((SpoutPlayer) player).getViewDistanceLive() >> Chunk.BLOCKS.BITS;
 		final Point currentPosition = live.getPosition();
 		if (getOwner().getPhysics().isWorldDirty()) {
-			clearObservers();
 			worldChanged = true;
 		}
 		if (prevSyncDistance != currentSyncDistance || worldChanged || (!currentPosition.equals(lastChunkCheck) && currentPosition.getManhattanDistance(lastChunkCheck) > (Chunk.BLOCKS.SIZE / 2))) {
 			checkChunkUpdates(currentPosition);
 			lastChunkCheck = currentPosition;
 		}
-		if (!worldChanged) {
-			for (Point p : chunkFreeQueue) {
-				if (initializedChunks.contains(p)) {
-					removeObserver(p);
-				}
-			}
-			// Check from previous tick
-			checkObserverUpdateQueue();
-			// Then add new ones
-			for (Point p : chunkInitQueue) {
-				if (!initializedChunks.contains(p)) {
-					Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.NO_LOAD);
-					if (c != null) {
-						observe(c);
-					} else {
-						chunksToObserve.add(p);
-					}
-				}
-			}
-		}
+
+		updateSendLists(currentPosition);
 	}
 
 	/**
@@ -292,65 +328,60 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 			worldChanged = false;
 			sync = true;
 		} else {
-			// Free chunks first
-			freeChunks();
-
-			// Then initialize new ones
-			initChunks();
-
 			// We will update old chunks, but not new ones
-			List<Point> prevActive = new ArrayList<>(activeChunks);
+			Set<ChunkReference> toSync = new LinkedHashSet<>(activeChunks);
 
 			// Now send new chunks
 			chunksSent = 0;
 
 			// Send priority chunks first
-			sendPriorityChunks();
+			sendChunks(chunkSendQueuePriority.iterator(), true);
 
 			// If we didn't send all the priority chunks, don't send position or regular chunks yet
-			if (priorityChunkSendQueue.isEmpty()) {
+			if (chunkSendQueuePriority.isEmpty()) {
 				// Send position
 				sendPositionUpdates(live);
 
 				// Then regular chunks
-				sendRegularChunks();
+				sendChunks(chunkSendQueueRegular.iterator(), false);
 			}
 
-			// Check all active old chunks for updates
-			for (Point p : prevActive) {
-				Chunk chunk = p.getChunk(LoadOption.NO_LOAD);
+			Set<ChunkReference> freeChunks = freeChunks();
+			if (!freeChunks.isEmpty() && !toSync.removeAll(freeChunks)) {
+				throw new IllegalStateException("There were freed chunks, but they were not removed.");
+			}
+
+			for (Iterator<ChunkReference> it = toSync.iterator(); it.hasNext();) {
+				ChunkReference ref = it.next();
+				Chunk chunk = ref.get();
 				if (chunk == null) {
+					System.out.println("Active chunk (" + ref.getBase().getChunkX() + " " + ref.getBase().getChunkY() + " " + ref.getBase().getChunkZ() + ") has been unloaded! Adding toChunkFreeQueue");
+					chunkFreeQueue.add(ref);
 					continue;
 				}
 				chunk.sync(this);
 			}
+
+			// We run another free to be sure all chunks that became free are now freed, this tick
+			freeChunks();
 		}
 	}
 
-	private void freeChunks() {
-		for (Point p : chunkFreeQueue) {
-			if (initializedChunks.remove(p)) {
-				callProtocolEvent(new ChunkFreeEvent(p), getOwner());
-				activeChunks.remove(p);
-			}
+	private Set<ChunkReference> freeChunks() {
+		HashSet<ChunkReference> freed = new HashSet<>();
+		for (ChunkReference ref : chunkFreeQueue) {
+			callProtocolEvent(new ChunkFreeEvent(ref.getBase()), getOwner());
+			freed.add(ref);
+			activeChunks.remove(ref);
 		}
 		chunkFreeQueue.clear();
+		return freed;
 	}
 
-	private void initChunks() {
-		for (Point p : chunkInitQueue) {
-			if (initializedChunks.add(p)) {
-				// TODO: protocol - init chunks?
-			}
-		}
-		chunkInitQueue.clear();
-	}
-
-	private void sendPriorityChunks() {
-		Iterator<Point> i = priorityChunkSendQueue.iterator();
-		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
-			Point p = i.next();
-			if (attemptSendChunk(true, p)) {
+	private void sendChunks(Iterator<ChunkReference> i, boolean priority) {
+		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && (!priority || Spout.getScheduler().getRemainingTickTime() > 0)) {
+			Chunk c = i.next().get();
+			if (c == null || attemptSendChunk(c)) {
 				i.remove();
 			}
 		}
@@ -363,27 +394,16 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 		}
 	}
 
-	private void sendRegularChunks() {
-		Iterator<Point> i = chunkSendQueue.iterator();
-		while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && Spout.getScheduler().getRemainingTickTime() > 0) {
-			Point p = i.next();
-			if (attemptSendChunk(false, p)) {
-				i.remove();
-			}
-		}
-	}
-
 	/**
 	 * Resets all chunk stores for the client.  This method is only called during the pre-snapshot part of the tick.
 	 */
 	@ServerOnly
 	protected void resetChunks() {
-		priorityChunkSendQueue.clear();
-		chunkSendQueue.clear();
+		futureChunksToSend.clear();
+		chunkSendQueuePriority.clear();
+		chunkSendQueueRegular.clear();
 		chunkFreeQueue.clear();
-		chunkInitQueue.clear();
 		activeChunks.clear();
-		initializedChunks.clear();
 		lastChunkCheck = Point.invalid;
 		synchronizedEntities.clear();
 	}
@@ -392,55 +412,41 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 		return true;
 	}
 
-	private boolean attemptSendChunk(boolean priority, Point p) {
-		Chunk c = p.getWorld().getChunkFromBlock(p, priority ? LoadOption.LOAD_ONLY : LoadOption.LOAD_GEN_NOWAIT);
-		if (c == null) {
-			return false;
-		}
+	private boolean attemptSendChunk(Chunk c) {
 		if (!canSendChunk(c)) {
 			return false;
 		}
 
 		callProtocolEvent(new ChunkSendEvent(c), getOwner());
-		Point base = c.getBase();
-		if (initializedChunks.contains(base)) {
-			activeChunks.add(base);
-		}
+		ChunkReference ref = new ChunkReference(c);
+		activeChunks.add(ref);
 		chunksSent++;
 		return true;
 	}
 
-	private void checkObserverUpdateQueue() {
-		Iterator<Point> i = chunksToObserve.iterator();
-		while (i.hasNext()) {
-			Point p = i.next();
-			if (!chunkInitQueue.contains(p) && !this.initializedChunks.contains(p)) {
-				i.remove();
-			} else {
-				Chunk c = p.getChunk(LoadOption.NO_LOAD);
-				if (c != null) {
-					observe(c);
-					i.remove();
-				}
+	/**
+	 * Returns a copy of all currently active sent chunks to this player
+	 *
+	 * @return active chunks
+	 */
+	@ServerOnly
+	public Set<Chunk> getActiveChunks() {
+		HashSet<Chunk> chunks = new HashSet<>();
+		for (ChunkReference p : activeChunks) {
+			Chunk get = p.get();
+			if (get != null) {
+				chunks.add(get);
 			}
 		}
+		return chunks;
 	}
 
-	private void observe(Chunk c) {
-		c.refreshObserver(getOwner());
+	@Override
+	public void onDetached() {
+		super.onDetached();
+		session.set(null);
 	}
 
-	private void removeObserver(Point p) {
-		Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.NO_LOAD);
-		if (c != null) {
-			removeObserver(c);
-		}
-		chunksToObserve.remove(p);
-	}
-
-	private void removeObserver(Chunk c) {
-		c.removeObserver(getOwner());
-	}
 
 	/**
 	 * Gets the viewable volume centered on the given chunk coordinates and the given view distance
@@ -456,66 +462,5 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 	 */
 	public boolean isInViewVolume(Point playerChunkBase, Point testChunkBase, int viewDistance) {
 		return testChunkBase.getManhattanDistance(playerChunkBase) <= (viewDistance << Chunk.BLOCKS.BITS);
-	}
-
-	/**
-	 * Checks for chunk updates that might have from movement.
-	 */
-	private void checkChunkUpdates(Point currentPosition) {
-		// Recalculating these
-		priorityChunkSendQueue.clear();
-		chunkSendQueue.clear();
-		chunkFreeQueue.clear();
-		chunkInitQueue.clear();
-		final World world = currentPosition.getWorld();
-		final int bx = (int) currentPosition.getX();
-		final int by = (int) currentPosition.getY();
-		final int bz = (int) currentPosition.getZ();
-		final int cx = bx >> Chunk.BLOCKS.BITS;
-		final int cy = by >> Chunk.BLOCKS.BITS;
-		final int cz = bz >> Chunk.BLOCKS.BITS;
-		Point playerChunkBase = Chunk.pointToBase(currentPosition);
-		for (Point p : initializedChunks) {
-			if (!isInViewVolume(p, playerChunkBase, getSyncDistance())) {
-				chunkFreeQueue.add(p);
-			}
-		}
-		// TODO: could we use getSyncIterator?
-		Iterator<IntVector3> itr = getViewableVolume(cx, cy, cz, getSyncDistance());
-		while (itr.hasNext()) {
-			IntVector3 v = itr.next();
-			Point base = new Point(world, v.getX() << Chunk.BLOCKS.BITS, v.getY() << Chunk.BLOCKS.BITS, v.getZ() << Chunk.BLOCKS.BITS);
-			boolean inTargetArea = playerChunkBase.getMaxDistance(base) <= (getSyncDistance() / 2); // TODO: do we need to move blockMinViewDistance?
-			if (!activeChunks.contains(base)) {
-				if (inTargetArea) {
-					priorityChunkSendQueue.add(base);
-				} else {
-					chunkSendQueue.add(base);
-				}
-			}
-			if (!initializedChunks.contains(base)) {
-				chunkInitQueue.add(base);
-			}
-		}
-	}
-
-	/**
-	 * Returns a copy of all currently active sent chunks to this player
-	 *
-	 * @return active chunks
-	 */
-	@ServerOnly
-	public Set<Chunk> getActiveChunks() {
-		HashSet<Chunk> chunks = new HashSet<>();
-		for (Point p : activeChunks) {
-			chunks.add(p.getWorld().getChunkFromBlock(p));
-		}
-		return chunks;
-	}
-
-	@Override
-	public void onDetached() {
-		super.onDetached();
-		session.set(null);
 	}
 }
