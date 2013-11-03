@@ -167,10 +167,11 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid) {
 		this.engine = engine;
 		if (!name.matches("^[a-zA-Z0-9_]+")) {
-			name = Long.toHexString(System.currentTimeMillis());
-			getEngine().getLogger().severe("World name " + name + " is not valid, using " + name + " instead");
+			this.name = Long.toHexString(System.currentTimeMillis());
+			engine.getLogger().severe("World name " + name + " is not valid, using " + this.name + " instead");
+		} else {
+			this.name = name;
 		}
-		this.name = name;
 		this.uid = uid;
 		this.seed = seed;
 
