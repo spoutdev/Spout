@@ -238,7 +238,7 @@ public class BaseComponentOwner implements ComponentOwner {
 	@Override
 	public boolean hasComponents() {
 		synchronized (components) {
-			return components.isEmpty();
+			return !components.isEmpty();
 		}
 	}
 

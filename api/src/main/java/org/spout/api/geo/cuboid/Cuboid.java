@@ -63,6 +63,10 @@ public class Cuboid implements WorldSource {
 		this.z = (int) (base.getZ() / size.getZ());
 	}
 
+	/**
+	 * Returns a point represented by block coords of this Cuboid of the base.
+	 * @return the base in block coords.
+	 */
 	public Point getBase() {
 		return base;
 	}
