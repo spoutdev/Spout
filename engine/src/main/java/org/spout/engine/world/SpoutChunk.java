@@ -151,7 +151,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	 * Indicates that the chunk should be saved if unloaded
 	 */
 	protected final AtomicReference<SaveState> saveState = new AtomicReference<>(SaveState.NONE);
-	private final ChunkSetQueueElement<Cube> saveMarkedElement;
+	private final ChunkSetQueueElement saveMarkedElement;
 	/**
 	 * The parent region that manages this chunk
 	 */
@@ -206,13 +206,12 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	 */
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
-	private final ChunkSetQueueElement<SpoutChunk> unloadQueueElement;
-	private final ChunkSetQueueElement<SpoutChunk> populationQueueElement;
-	private final ChunkSetQueueElement<SpoutChunk> populationPriorityQueueElement;
-	private final ChunkSetQueueElement<SpoutChunk> localPhysicsChunkQueueElement;
-	private final ChunkSetQueueElement<SpoutChunk> globalPhysicsChunkQueueElement;
-	private final ChunkSetQueueElement<SpoutChunk> dirtyChunkQueueElement;
-	private final ChunkSetQueueElement<SpoutChunk> newChunkQueueElement;
+	private final ChunkSetQueueElement populationQueueElement;
+	private final ChunkSetQueueElement populationPriorityQueueElement;
+	private final ChunkSetQueueElement localPhysicsChunkQueueElement;
+	private final ChunkSetQueueElement globalPhysicsChunkQueueElement;
+	private final ChunkSetQueueElement dirtyChunkQueueElement;
+	private final ChunkSetQueueElement newChunkQueueElement;
 	// TODO: remove this and replace with above;
 	private boolean firstRender = true;
 	// Rendering
@@ -282,14 +281,13 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		// loaded chunk
 		selfReference = new WeakReference<>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
-		this.saveMarkedElement = new ChunkSetQueueElement<>(getRegion().saveMarkedQueue, this);
-		this.unloadQueueElement = new ChunkSetQueueElement<>(getRegion().unloadQueue, this);
-		this.populationQueueElement = new ChunkSetQueueElement<>(getRegion().populationQueue, this);
-		this.populationPriorityQueueElement = new ChunkSetQueueElement<>(getRegion().populationPriorityQueue, this);
-		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement<>(getRegion().localPhysicsChunkQueue, this);
-		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<>(getRegion().globalPhysicsChunkQueue, this);
-		this.dirtyChunkQueueElement = new ChunkSetQueueElement<>(getRegion().dirtyChunkQueue, this);
-		this.newChunkQueueElement = new ChunkSetQueueElement<>(getRegion().newChunkQueue, this);
+		this.saveMarkedElement = new ChunkSetQueueElement(getRegion().saveMarkedQueue, this);
+		this.populationQueueElement = new ChunkSetQueueElement(getRegion().populationQueue, this);
+		this.populationPriorityQueueElement = new ChunkSetQueueElement(getRegion().populationPriorityQueue, this);
+		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement(getRegion().localPhysicsChunkQueue, this);
+		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement(getRegion().globalPhysicsChunkQueue, this);
+		this.dirtyChunkQueueElement = new ChunkSetQueueElement(getRegion().dirtyChunkQueue, this);
+		this.newChunkQueueElement = new ChunkSetQueueElement(getRegion().newChunkQueue, this);
 	}
 
 	@Override
@@ -669,7 +667,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		SaveState.save(saveState);
 	}
 
-	private void markForSaveUnload() {
+	protected void markForSaveUnload() {
 		saveMarkedElement.add();
 	}
 
@@ -688,6 +686,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	// Saves the chunk data - this occurs directly after a snapshot update
 	public void syncSave() {
+		// TODO - does chunkModified factor in block components?
 		if (this.chunkModified.get() || entitiesModified.get() || this.hasEntities()) {
 			chunkModified.set(false);
 			entitiesModified.set(false);
@@ -832,7 +831,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 		expiredObserversQueue.add((SpoutEntity) entity);
 		if (!isObserved()) {
-			this.unloadQueueElement.add();
+			this.saveMarkedElement.add();
 		}
 		return true;
 	}
@@ -1439,19 +1438,17 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public boolean isReapable() {
-		if (Spout.getPlatform() == Platform.SERVER) {
-			return isReapable(getWorld().getAge());
-		} else {
+		if (Spout.getPlatform() != Platform.SERVER) {
 			return false;
 		}
-	}
 
-	private boolean isReapable(long worldAge) {
+		long worldAge = getWorld().getAge();
 		if (lastUnloadCheck.get() + SpoutConfiguration.CHUNK_REAP_DELAY.getLong() >= worldAge) {
 			return false;
 		}
 
 		lastUnloadCheck.set(worldAge);
+
 		return !isObserved();
 	}
 
@@ -2060,14 +2057,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		return newArray;
 	}
 
-	private class ChunkSetQueueElement<T extends Cube> extends SetQueueElement<T> {
+	private class ChunkSetQueueElement extends SetQueueElement<SpoutChunk> {
 		private final boolean validIfUnloaded;
 
-		public ChunkSetQueueElement(SetQueue<T> queue, T value) {
+		public ChunkSetQueueElement(SetQueue<SpoutChunk> queue, SpoutChunk value) {
 			this(queue, value, false);
 		}
 
-		public ChunkSetQueueElement(SetQueue<T> queue, T value, boolean validIfUnloaded) {
+		public ChunkSetQueueElement(SetQueue<SpoutChunk> queue, SpoutChunk value, boolean validIfUnloaded) {
 			super(queue, value);
 			this.validIfUnloaded = validIfUnloaded;
 		}

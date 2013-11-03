@@ -58,6 +58,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.Region;
+import static org.spout.api.geo.cuboid.Region.CHUNKS;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.lighting.LightingManager;
@@ -107,8 +108,8 @@ import org.spout.physics.math.Quaternion;
 
 public class SpoutRegion extends Region implements AsyncManager {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
-	protected final SetQueue<Cube> saveMarkedQueue = new SetQueue<>(CHUNKS.VOLUME + 1);
-	private final RegionSetQueueElement saveMarkedElement = new RegionSetQueueElement(saveMarkedQueue, this);
+	protected final SetQueue<SpoutChunk> saveMarkedQueue = new SetQueue<>(CHUNKS.VOLUME + 1);
+	private boolean saveMarked = false;
 	private Thread executionThread;
 	@SuppressWarnings ("unchecked")
 	public AtomicReference<SpoutChunk>[][][] chunks = new AtomicReference[CHUNKS.SIZE][CHUNKS.SIZE][CHUNKS.SIZE];
@@ -133,7 +134,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 */
 	private final BAAWrapper chunkStore;
 	private final Queue<SpoutChunkSnapshotFuture> snapshotQueue = new ConcurrentLinkedQueue<>();
-	protected SetQueue<SpoutChunk> unloadQueue = new SetQueue<>(CHUNKS.VOLUME);
 	/**
 	 * The sequence number for executing inter-region physics and dynamic updates
 	 */
@@ -499,7 +499,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	}
 
 	public void markForSaveUnload() {
-		saveMarkedElement.add();
+		saveMarked = true;
 	}
 
 	@Override
@@ -510,53 +510,68 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 		dynamicBlockTree.setRegionThread(Thread.currentThread());
 
-		boolean empty = false;
-		Cube cube;
-		while ((cube = saveMarkedQueue.poll()) != null) {
-			if (Spout.getPlatform() == Platform.SERVER) {
-				if (cube == this) {
-					for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-						for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-							for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-								SpoutChunk c = getChunk(dx, dy, dz, LoadOption.NO_LOAD);
-								if (processChunkSaveUnload(c)) {
-									empty = true;
-								}
+		if (Spout.getPlatform() == Platform.SERVER) {
+			if (saveMarked) {
+				boolean hasChunks = false;
+				for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+					for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
+						for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+							SpoutChunk c = getChunk(dx, dy, dz, LoadOption.NO_LOAD);
+							if (processChunkSaveUnload(c)) {
+								hasChunks = true;
 							}
 						}
 					}
-					// No point in checking any others, since all processed
-					saveMarkedQueue.clear();
-					break;
 				}
 
-				empty |= processChunkSaveUnload((SpoutChunk) cube);
+				// No point in checking any others, since all processed
+				saveMarkedQueue.clear();
+				if (!hasChunks) {
+					source.removeRegion(this);
+				}
+			} else {
+				int unloadAmt = SpoutConfiguration.UNLOAD_CHUNKS_PER_TICK.getInt();
+				SpoutChunk toUnload;
+				while (unloadAmt > 0 && (toUnload = saveMarkedQueue.poll()) != null) {
+					unloadAmt--;
+					boolean do_unload = true;
+					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
+						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(toUnload));
+						if (event.isCancelled()) {
+							do_unload = false;
+						}
+					}
+					if (do_unload) {
+						toUnload.unload(true);
+					}
+					processChunkSaveUnload(toUnload);
+				}
 			}
 		}
 
 		// Updates on nulled chunks
 		snapshotManager.copyAllSnapshots();
-
-		if (empty) {
-			source.removeRegion(this);
-		}
 	}
 
+	/**
+	 * @return true if chunk exists
+	 */
 	public boolean processChunkSaveUnload(SpoutChunk c) {
-		boolean empty = false;
-		if (c != null) {
-			SpoutChunk.SaveState oldState = c.getAndResetSaveState();
-			if (oldState.isSave()) {
-				c.syncSave();
-			}
-			if (oldState.isUnload() && !c.isObserved()) {
-				// TODO: this is getting called when it should not
-				if (removeChunk(c)) {
-					empty = true;
-				}
+		if (c == null) {
+			return false;
+		}
+
+		SpoutChunk.SaveState oldState = c.getAndResetSaveState();
+		if (oldState.isSave()) {
+			c.syncSave();
+		}
+		if (oldState.isUnload() && !c.isObserved()) {
+			// TODO: this is getting called when it should not
+			if (removeChunk(c)) {
+				return false;
 			}
 		}
-		return empty;
+		return true;
 	}
 
 	@ServerOnly
@@ -648,25 +663,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 	}
 
-	@ServerOnly
-	private void unloadChunks() {
-		int unloadAmt = SpoutConfiguration.UNLOAD_CHUNKS_PER_TICK.getInt();
-		SpoutChunk toUnload;
-		while (unloadAmt > 0 && (toUnload = unloadQueue.poll()) != null) {
-			unloadAmt--;
-			boolean do_unload = true;
-			if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
-				ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(toUnload));
-				if (event.isCancelled()) {
-					do_unload = false;
-				}
-			}
-			if (do_unload) {
-				toUnload.unload(true);
-			}
-		}
-	}
-
 	/**
 	 * Updates physics in this region Steps simulation forward and finally alerts the API in components.
 	 */
@@ -697,7 +693,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 					if (RUN_POPULATION) {
 						updatePopulation();
 					}
-					unloadChunks();
 				}
 				break;
 			}
@@ -737,22 +732,17 @@ public class SpoutRegion extends Region implements AsyncManager {
 					}
 				}
 				SpoutChunk chunk = chunks[reapX][reapY][reapZ].get();
-				if (chunk != null) {
-					chunk.compressIfRequired();
-					boolean doUnload;
-					if (doUnload = chunk.isReapable()) {
-						if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
-							ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
-							if (event.isCancelled()) {
-								doUnload = false;
-							}
-						}
-					}
-					if (doUnload) {
-						chunk.unload(true);
-					} else if (!chunk.isPopulated()) {
-						chunk.queueForPopulation(false);
-					}
+				if (chunk == null) {
+					continue;
+				}
+
+				chunk.compressIfRequired();
+				if (chunk.isReapable()) {
+					// TODO - be sure this is what we want
+					chunk.markForSaveUnload();
+				} else if (!chunk.isPopulated()) {
+					// TODO - why is reaping related to population?
+					chunk.queueForPopulation(false);
 				}
 			}
 		}

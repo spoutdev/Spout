@@ -64,9 +64,6 @@ public class WorldSavingThread extends Thread {
 	}
 
 	public static void saveChunk(SpoutChunk chunk) {
-		if (Spout.getEngine() instanceof Client) {
-			throw new IllegalStateException("Client mode is not allowed to save chunks");
-		}
 		instance.addChunk(chunk);
 	}
 
