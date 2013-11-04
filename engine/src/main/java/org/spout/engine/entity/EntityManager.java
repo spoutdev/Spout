@@ -28,6 +28,7 @@ package org.spout.engine.entity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -210,19 +211,28 @@ public class EntityManager {
 		if (!(Spout.getPlatform() == Platform.SERVER)) {
 			throw new UnsupportedOperationException("Must be in server mode to sync entities");
 		}
-		for (Entity observed : getAll()) {
+		for (SpoutEntity observed : getAll()) {
 			if (observed.getId() == SpoutEntity.NOTSPAWNEDID) {
 				throw new IllegalStateException("Attempt to sync entity with not spawned id.");
 			}
-			if (observed.getChunk() == null) {
+			if (observed.getChunkLive() == null) {
 				continue;
 			}
-			//Players observing the chunk this entity is in
-			Set<? extends Entity> observers = observed.getChunk().getObservers();
+			// Observers from previous chunk
+			Set<SpoutEntity> observersSnap = observed.getChunk() == null ? new HashSet<SpoutEntity>() : observed.getChunk().getObservers();
+			Set<SpoutEntity> observersLive = observed.getChunkLive() == null ? new HashSet<SpoutEntity>() : observed.getChunkLive().getObservers();
+			Set<SpoutEntity> exObserversSnap = observed.getChunk() == null ? new HashSet<SpoutEntity>() : observed.getChunk().getObservers();
+			Set<SpoutEntity> exObserversLive = observed.getChunk() == null ? new HashSet<SpoutEntity>() : observed.getChunkLive().getObservers();
+
+			Set<SpoutEntity> observers = new HashSet<>();
+			observers.addAll(observersSnap);
+			observers.addAll(observersLive);
 			syncEntity(observed, observers, false);
 
-			//TODO: Why do we need this...?
-			Set<? extends Entity> expiredObservers = ((SpoutChunk) observed.getChunk()).getExpiredObservers();
+			Set<SpoutEntity> expiredObservers = new HashSet<>();
+			observers.addAll(exObserversSnap);
+			observers.addAll(exObserversLive);
+			expiredObservers.removeAll(observers);
 			syncEntity(observed, expiredObservers, true);
 		}
 	}
@@ -256,7 +266,7 @@ public class EntityManager {
 					// TODO use POSITION?
 					action = UpdateAction.TRANSFORM;
 				}
-			} else if (!tooFar && !isInvisible) {
+			} else if (!forceDestroy && !tooFar && !isInvisible) {
 				action =  UpdateAction.ADD;
 			} else {
 				continue;

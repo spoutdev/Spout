@@ -237,6 +237,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 *
 	 * @return List containing the observing players
 	 */
+	@LiveRead
 	public abstract Set<? extends Player> getObservingPlayers();
 
 	/**
@@ -244,6 +245,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 *
 	 * @return Set containing the observing players
 	 */
+	@LiveRead
 	public abstract Set<? extends Entity> getObservers();
 
 	/**

@@ -262,12 +262,12 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 	}
 
 	@Override
-	public Chunk getChunk() {
-		return physics.getPosition().getChunk(LoadOption.NO_LOAD);
+	public SpoutChunk getChunk() {
+		return (SpoutChunk) physics.getPosition().getChunk(LoadOption.NO_LOAD);
 	}
 
-	public Chunk getChunkLive() {
-		return physics.getTransformLive().getPosition().getChunk(LoadOption.NO_LOAD);
+	public SpoutChunk getChunkLive() {
+		return (SpoutChunk) physics.getTransformLive().getPosition().getChunk(LoadOption.NO_LOAD);
 	}
 
 	@Override
