@@ -108,7 +108,7 @@ import org.spout.physics.math.Quaternion;
 
 public class SpoutRegion extends Region implements AsyncManager {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
-	protected final SetQueue<SpoutChunk> saveMarkedQueue = new SetQueue<>(CHUNKS.VOLUME + 1);
+	protected final SetQueue<SpoutChunk> saveUnloadMarkedQueue = new SetQueue<>(CHUNKS.VOLUME + 1);
 	private boolean saveMarked = false;
 	private Thread executionThread;
 	@SuppressWarnings ("unchecked")
@@ -516,8 +516,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 				for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 					for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 						for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+							// TODO: can we change to direct access
 							SpoutChunk c = getChunk(dx, dy, dz, LoadOption.NO_LOAD);
-							if (processChunkSaveUnload(c)) {
+							if (!processChunkSaveUnload(c)) {
 								hasChunks = true;
 							}
 						}
@@ -525,27 +526,20 @@ public class SpoutRegion extends Region implements AsyncManager {
 				}
 
 				// No point in checking any others, since all processed
-				saveMarkedQueue.clear();
+				saveUnloadMarkedQueue.clear();
 				if (!hasChunks) {
 					source.removeRegion(this);
 				}
 			} else {
-				int unloadAmt = SpoutConfiguration.UNLOAD_CHUNKS_PER_TICK.getInt();
 				SpoutChunk toUnload;
-				while (unloadAmt > 0 && (toUnload = saveMarkedQueue.poll()) != null) {
-					unloadAmt--;
-					boolean do_unload = true;
-					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
-						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(toUnload));
-						if (event.isCancelled()) {
-							do_unload = false;
-						}
-					}
-					if (do_unload) {
-						toUnload.unload(true);
-					}
+				while ((toUnload = saveUnloadMarkedQueue.poll()) != null) {
 					processChunkSaveUnload(toUnload);
 				}
+				// TODO: we should be able to put this here
+				/*
+				if (numberActiveChunks.get() == 0) {
+					markForSaveUnload();
+				}*/
 			}
 		}
 
@@ -554,11 +548,11 @@ public class SpoutRegion extends Region implements AsyncManager {
 	}
 
 	/**
-	 * @return true if chunk exists
+	 * @return true if chunk was unloaded or was empty
 	 */
-	public boolean processChunkSaveUnload(SpoutChunk c) {
+	private boolean processChunkSaveUnload(SpoutChunk c) {
 		if (c == null) {
-			return false;
+			return true;
 		}
 
 		SpoutChunk.SaveState oldState = c.getSaveState();
@@ -566,12 +560,20 @@ public class SpoutRegion extends Region implements AsyncManager {
 			c.asyncSave();
 		}
 		if (oldState.isUnload() && !c.isObserved()) {
-			// TODO: this is getting called when it should not
-			if (removeChunk(c)) {
-				return false;
+			boolean do_unload = true;
+			if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
+				ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(c));
+				if (event.isCancelled()) {
+					do_unload = false;
+				}
+			}
+			if (do_unload) {
+				// TODO: this is getting called when it should not
+				removeChunk(c);
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	@ServerOnly

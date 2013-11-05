@@ -281,7 +281,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		// loaded chunk
 		selfReference = new WeakReference<>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
-		this.saveMarkedElement = new ChunkSetQueueElement(getRegion().saveMarkedQueue, this);
+		this.saveMarkedElement = new ChunkSetQueueElement(getRegion().saveUnloadMarkedQueue, this);
 		this.populationQueueElement = new ChunkSetQueueElement(getRegion().populationQueue, this);
 		this.populationPriorityQueueElement = new ChunkSetQueueElement(getRegion().populationPriorityQueue, this);
 		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement(getRegion().localPhysicsChunkQueue, this);

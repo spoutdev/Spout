@@ -297,7 +297,7 @@ public class SpoutEntity extends BaseComponentOwner implements Entity, Snapshota
 		//	builder.append(component + "\n");
 		//}
 		//return builder.toString();
-		return "SpoutEntity {id= " + getId() + ", {" + physics + "}}";
+		return this.getClass().getSimpleName() + " {id= " + getId() + ", {" + physics + "}}";
 	}
 
 	@Override
