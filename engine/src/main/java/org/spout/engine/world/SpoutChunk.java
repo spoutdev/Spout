@@ -672,20 +672,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public void saveComplete() {
-		if (isObserved()) {
-			SaveState.resetPostSaving(saveState);
-		} else {
-			SaveState.setPostSaved(saveState);
-		}
-		saveMarkedElement.add();
-	}
-
-	public SaveState getAndResetSaveState() {
-		return SaveState.getAndResetSaveState(saveState);
+		SaveState.finishSave(saveState);
 	}
 
 	// Saves the chunk data - this occurs directly after a snapshot update
-	public void syncSave() {
+	public void asyncSave() {
 		// TODO - does chunkModified factor in block components?
 		if (this.chunkModified.get() || entitiesModified.get() || this.hasEntities()) {
 			chunkModified.set(false);
@@ -814,7 +805,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				}
 			}
 		}
-		SaveState.resetPostSaving(saveState);
+		SaveState.cancelUnload(saveState);
 		return true;
 	}
 
@@ -975,7 +966,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	private void setUnloadedRaw(boolean saveColumn) {
-		SaveState oldState = saveState.getAndSet(SaveState.UNLOADED);
+		SaveState oldState = SaveState.getAndSetUnloaded(saveState);
 		//Clear as much as possible to limit the damage of a potential leak
 		this.blockStore = null;
 		this.dataMap.clear();
@@ -999,28 +990,41 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public enum SaveState {
+		/**
+		 * Chunk has been queued for both unload and save.
+		 */
 		UNLOAD_SAVE,
+		/**
+		 * Chunk has been queued for unload but not save.
+		 */
 		UNLOAD,
+		/**
+		 * Chunk has been queued for save but not unload.
+		 */
 		SAVE,
+		/**
+		 * Chunk is normal. Not queued for save or unload.
+		 */
 		NONE,
-		SAVING,
-		POST_SAVED,
+		/**
+		 * Chunk has been unloaded is no longer valid; however, it still is queued to be saved.
+		 */
+		UNLOADED_SAVE,
+		/**
+		 * Chunk has been unloaded is no longer valid.
+		 */
 		UNLOADED;
 
 		public boolean isSave() {
-			return this == SAVE || this == UNLOAD_SAVE;
+			return this == SAVE || this == UNLOAD_SAVE || this == UNLOADED_SAVE;
 		}
 
 		public boolean isUnload() {
-			return this == UNLOAD || this == POST_SAVED;
-		}
-
-		public boolean isPostUnload() {
-			return this == SAVING;
+			return this == UNLOAD || this == UNLOAD_SAVE;
 		}
 
 		public boolean isUnloaded() {
-			return this == UNLOADED;
+			return this == UNLOADED || this == UNLOADED_SAVE;
 		}
 
 		public static boolean cancelUnload(AtomicReference<SaveState> saveState) {
@@ -1036,20 +1040,17 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 					case UNLOAD:
 						nextState = SaveState.NONE;
 						break;
-					case POST_SAVED:
-						nextState = SaveState.NONE;
-						break;
 					case SAVE:
 						nextState = SaveState.SAVE;
 						break;
 					case NONE:
 						nextState = SaveState.NONE;
 						break;
+					case UNLOADED_SAVE:
+						nextState = SaveState.SAVE;
+						break;
 					case UNLOADED:
 						nextState = SaveState.UNLOADED;
-						break;
-					case SAVING:
-						nextState = SaveState.NONE;
 						break;
 					default:
 						throw new IllegalStateException("Unknown save state: " + oldState);
@@ -1071,20 +1072,17 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 					case UNLOAD:
 						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
 						break;
-					case POST_SAVED:
-						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.POST_SAVED;
-						break;
 					case SAVE:
 						nextState = SaveState.UNLOAD_SAVE;
 						break;
 					case NONE:
 						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
 						break;
+					case UNLOADED_SAVE:
+						nextState = SaveState.UNLOADED_SAVE;
+						break;
 					case UNLOADED:
 						nextState = SaveState.UNLOADED;
-						break;
-					case SAVING:
-						nextState = SaveState.SAVING;
 						break;
 					default:
 						throw new IllegalStateException("Unknown save state: " + state);
@@ -1105,20 +1103,17 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 					case UNLOAD:
 						nextState = SaveState.UNLOAD_SAVE;
 						break;
-					case POST_SAVED:
-						nextState = SaveState.UNLOAD_SAVE;
-						break;
 					case SAVE:
 						nextState = SaveState.SAVE;
 						break;
 					case NONE:
 						nextState = SaveState.SAVE;
 						break;
-					case UNLOADED:
+					case UNLOADED_SAVE:
 						nextState = SaveState.UNLOADED;
 						break;
-					case SAVING:
-						nextState = SaveState.SAVING;
+					case UNLOADED:
+						nextState = SaveState.UNLOADED;
 						break;
 					default:
 						throw new IllegalStateException("Unknown save state: " + state);
@@ -1127,21 +1122,18 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			}
 		}
 
-		public static SaveState getAndResetSaveState(AtomicReference<SaveState> saveState) {
+		public static void finishSave(AtomicReference<SaveState> saveState) {
 			boolean success = false;
-			SaveState old = null;
+			SaveState oldState = null;
 			while (!success) {
-				old = saveState.get();
+				oldState = saveState.get();
 				SaveState nextState;
-				switch (old) {
+				switch (oldState) {
 					case UNLOAD_SAVE:
-						nextState = SaveState.SAVING;
+						nextState = SaveState.UNLOAD;
 						break;
 					case UNLOAD:
 						nextState = SaveState.UNLOAD;
-						break;
-					case POST_SAVED:
-						nextState = SaveState.POST_SAVED;
 						break;
 					case SAVE:
 						nextState = SaveState.NONE;
@@ -1149,27 +1141,24 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 					case NONE:
 						nextState = SaveState.NONE;
 						break;
+					case UNLOADED_SAVE:
+						nextState = SaveState.UNLOADED;
+						break;
 					case UNLOADED:
 						nextState = SaveState.UNLOADED;
 						break;
-					case SAVING:
-						nextState = SaveState.SAVING;
-						break;
 					default:
-						throw new IllegalStateException("Unknown save state: " + old);
+						throw new IllegalStateException("Unknown save state: " + oldState);
 				}
-				success = saveState.compareAndSet(old, nextState);
+				success = saveState.compareAndSet(oldState, nextState);
 			}
-			return old;
 		}
 
-		public static void resetPostSaving(AtomicReference<SaveState> saveState) {
-			saveState.compareAndSet(SaveState.SAVING, SaveState.NONE);
-			saveState.compareAndSet(SaveState.POST_SAVED, SaveState.NONE);
-		}
-
-		public static void setPostSaved(AtomicReference<SaveState> saveState) {
-			saveState.compareAndSet(SAVING, POST_SAVED);
+		public static SaveState getAndSetUnloaded(AtomicReference<SaveState> saveState) {
+			SaveState oldState = saveState.get();
+			saveState.compareAndSet(SaveState.UNLOAD_SAVE, UNLOADED_SAVE);
+			saveState.compareAndSet(SaveState.UNLOAD, UNLOADED);
+			return oldState;
 		}
 	}
 

@@ -561,9 +561,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 			return false;
 		}
 
-		SpoutChunk.SaveState oldState = c.getAndResetSaveState();
+		SpoutChunk.SaveState oldState = c.getSaveState();
 		if (oldState.isSave()) {
-			c.syncSave();
+			c.asyncSave();
 		}
 		if (oldState.isUnload() && !c.isObserved()) {
 			// TODO: this is getting called when it should not
