@@ -1028,11 +1028,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 
 		public static boolean cancelUnload(AtomicReference<SaveState> saveState) {
-			boolean success = false;
-			SaveState oldState = null;
-			while (!success) {
+			SaveState oldState;
+			SaveState nextState;
+			do {
 				oldState = saveState.get();
-				SaveState nextState;
 				switch (oldState) {
 					case UNLOAD_SAVE:
 						nextState = SaveState.SAVE;
@@ -1047,7 +1046,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 						nextState = SaveState.NONE;
 						break;
 					case UNLOADED_SAVE:
-						nextState = SaveState.SAVE;
+						nextState = SaveState.UNLOADED_SAVE;
 						break;
 					case UNLOADED:
 						nextState = SaveState.UNLOADED;
@@ -1055,17 +1054,17 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 					default:
 						throw new IllegalStateException("Unknown save state: " + oldState);
 				}
-				success = saveState.compareAndSet(oldState, nextState);
-			}
-			return oldState != SaveState.UNLOADED;
+			} while (!saveState.compareAndSet(oldState, nextState));
+
+			return !nextState.isUnloaded();
 		}
 
 		public static void unload(AtomicReference<SaveState> saveState, boolean save) {
-			boolean success = false;
-			while (!success) {
-				SaveState state = saveState.get();
-				SaveState nextState;
-				switch (state) {
+			SaveState oldState;
+			SaveState nextState;
+			do {
+				oldState = saveState.get();
+				switch (oldState) {
 					case UNLOAD_SAVE:
 						nextState = SaveState.UNLOAD_SAVE;
 						break;
@@ -1085,18 +1084,17 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 						nextState = SaveState.UNLOADED;
 						break;
 					default:
-						throw new IllegalStateException("Unknown save state: " + state);
+						throw new IllegalStateException("Unknown save state: " + oldState);
 				}
-				success = saveState.compareAndSet(state, nextState);
-			}
+			} while (!saveState.compareAndSet(oldState, nextState));
 		}
 
 		public static void save(AtomicReference<SaveState> saveState) {
-			boolean success = false;
-			while (!success) {
-				SaveState state = saveState.get();
-				SaveState nextState;
-				switch (state) {
+			SaveState oldState;
+			SaveState nextState;
+			do {
+				oldState = saveState.get();
+				switch (oldState) {
 					case UNLOAD_SAVE:
 						nextState = SaveState.UNLOAD_SAVE;
 						break;
@@ -1116,18 +1114,16 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 						nextState = SaveState.UNLOADED;
 						break;
 					default:
-						throw new IllegalStateException("Unknown save state: " + state);
+						throw new IllegalStateException("Unknown save state: " + oldState);
 				}
-				success = saveState.compareAndSet(state, nextState);
-			}
+			} while (!saveState.compareAndSet(oldState, nextState));
 		}
 
 		public static void finishSave(AtomicReference<SaveState> saveState) {
-			boolean success = false;
-			SaveState oldState = null;
-			while (!success) {
+			SaveState oldState;
+			SaveState nextState;
+			do {
 				oldState = saveState.get();
-				SaveState nextState;
 				switch (oldState) {
 					case UNLOAD_SAVE:
 						nextState = SaveState.UNLOAD;
@@ -1150,11 +1146,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 					default:
 						throw new IllegalStateException("Unknown save state: " + oldState);
 				}
-				success = saveState.compareAndSet(oldState, nextState);
-			}
+			} while (!saveState.compareAndSet(oldState, nextState));
 		}
 
-		public static SaveState getAndSetUnloaded(AtomicReference<SaveState> saveState) {
+	public static SaveState getAndSetUnloaded(AtomicReference<SaveState> saveState) {
 			SaveState oldState = saveState.get();
 			saveState.compareAndSet(SaveState.UNLOAD_SAVE, UNLOADED_SAVE);
 			saveState.compareAndSet(SaveState.UNLOAD, UNLOADED);
@@ -1166,6 +1161,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		UNTOUCHED((byte) 0),
 		CLEAR_POPULATED((byte) 1),
 		POPULATED((byte) 2);
+
 		private final byte id;
 		private static final PopulationState[] BY_ID;
 
