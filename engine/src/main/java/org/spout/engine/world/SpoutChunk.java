@@ -805,6 +805,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				}
 			}
 		}
+		expiredObserversQueue.remove((SpoutEntity) entity);
 		SaveState.cancelUnload(saveState);
 		return true;
 	}
@@ -861,9 +862,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		expiredObservers.clear();
 		SpoutEntity e;
 		while ((e = expiredObserversQueue.poll()) != null) {
-			if (!observers.contains(e)) {
-				expiredObservers.add(e);
-			}
+			expiredObservers.add(e);
 		}
 	}
 
