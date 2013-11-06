@@ -237,6 +237,8 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 	 */
 	public abstract TaskManager getTaskManager();
 
+	public abstract boolean isLoaded();
+
 	@Override
 	public Iterator<Chunk> iterator() {
 		return new ChunkIterator();

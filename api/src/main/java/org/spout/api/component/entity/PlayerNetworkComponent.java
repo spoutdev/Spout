@@ -255,9 +255,11 @@ public class PlayerNetworkComponent extends NetworkComponent implements Listener
 
 	private void updateSendLists(Point currentPosition) {
 		Point playerChunkBase = Chunk.pointToBase(currentPosition);
-		for (ChunkReference ref : futureChunksToSend) {
+		for (Iterator<ChunkReference> it = futureChunksToSend.iterator(); it.hasNext();) {
+			ChunkReference ref = it.next();
 			if (ref.refresh(LoadOption.NO_LOAD) == null) continue;
-			boolean inTargetArea = playerChunkBase.getMaxDistance(ref.getBase()) <= (getSyncDistance() / 2); // TODO: do we need to move blockMinViewDistance?
+			it.remove();
+			boolean inTargetArea = playerChunkBase.getMaxDistance(ref.getBase()) <= (getSyncDistance() / 2);
 			if (inTargetArea) {
 				chunkSendQueuePriority.add(ref);
 			} else {

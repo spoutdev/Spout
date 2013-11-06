@@ -29,51 +29,43 @@ package org.spout.api.util;
 import java.lang.ref.WeakReference;
 
 import org.spout.api.geo.LoadOption;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 
 /**
- * This holds a {@code WeakReference<Chunk>} that can be used streamline the get() with a isLoaded check. It also adds a
- * store of a {@code Point} representing the base. Because of this, a ChunkReference may contain only base info.
+ * This holds a {@code WeakReference<Region>} that can be used streamline the get() with a isLoaded check. It also adds a
+ * store of a {@code Point} representing the base. Because of this, a RegionReference may contain only base info.
  */
-public class ChunkReference {
+public class RegionReference {
 	private final Point base;
-	private final RegionReference region;
-	private WeakReference<Chunk> chunk;
-	public ChunkReference(Chunk referent) {
-		this.chunk = new WeakReference<>(referent);
-		this.region = new RegionReference(referent.getRegion());
-		this.base = referent.getBase();
+	private WeakReference<Region> region;
+	public RegionReference(Region referent) {
+		this.region = new WeakReference<>(referent);
+		base = referent.getBase();
 	}
 
-	public ChunkReference(Point base) {
-		this.chunk = null;
-		this.region = new RegionReference(new Point(base.getWorld(), base.getFloorX() >> Region.BLOCKS.BITS, base.getFloorY() >> Region.BLOCKS.BITS, base.getFloorZ() >> Region.BLOCKS.BITS));
+	public RegionReference(Point base) {
+		region = null;
 		this.base = base;
 	}
 
-	public Chunk get() {
-		Chunk get = chunk == null ? null : chunk.get();
+	public Region get() {
+		Region get = region == null ? null : region.get();
 		if (get != null) {
 			if (!get.isLoaded()) {
-				chunk = null;
+				region = null;
 				return null;
 			}
 		}
 		return get;
 	}
 
-	public Chunk refresh(LoadOption opt) {
-		Chunk newChunk = get();
-		if (newChunk != null) return newChunk;
-
-		Region newRegion = region.refresh(opt);
-		if (newRegion == null) return null;
-
-		newChunk = newRegion.getChunkFromBlock(base, opt);
-		this.chunk = newChunk == null ? null : new WeakReference<>(newChunk);
-		return newChunk;
+	public Region refresh(LoadOption opt) {
+		Region newRegion = get();
+		if (newRegion != null) return newRegion;
+		newRegion = base.getRegion(opt);
+		this.region = newRegion == null ? null : new WeakReference<>(newRegion);
+		return newRegion;
 	}
 
 	@Override
@@ -83,8 +75,8 @@ public class ChunkReference {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof ChunkReference) {
-			return base.equals(((ChunkReference) obj).base);
+		if (obj instanceof RegionReference) {
+			return base.equals(((RegionReference) obj).base);
 		}
 		return false;
 	}

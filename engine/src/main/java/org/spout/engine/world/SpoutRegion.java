@@ -112,6 +112,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	private boolean saveMarked = false;
 	private Thread executionThread;
 	@SuppressWarnings ("unchecked")
+	// TODO: possibly have a SoftReference of unloaded chunks to allow for quicker loading of chunk
 	public AtomicReference<SpoutChunk>[][][] chunks = new AtomicReference[CHUNKS.SIZE][CHUNKS.SIZE][CHUNKS.SIZE];
 	/**
 	 * The maximum number of chunks that will be processed for population each tick.
@@ -156,6 +157,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 	private int lightingUpdates = 0;
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
 	private final LinkedDynamicsWorld simulation;
+	// TODO: unloaded checks?
+	private boolean isUnloaded = false;
 
 	@SuppressWarnings ("unchecked")
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
@@ -529,6 +532,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 				saveUnloadMarkedQueue.clear();
 				if (!hasChunks) {
 					source.removeRegion(this);
+					isUnloaded = true;
 				}
 			} else {
 				SpoutChunk toUnload;
@@ -1603,6 +1607,11 @@ public class SpoutRegion extends Region implements AsyncManager {
 			return null;
 		}
 		return c.getLightBuffer(manager);
+	}
+
+	@Override
+	public boolean isLoaded() {
+		return !isUnloaded;
 	}
 
 	public LinkedDynamicsWorld getSimulation() {

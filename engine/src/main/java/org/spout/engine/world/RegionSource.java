@@ -46,12 +46,13 @@ import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 
+// TODO: possibly have a SoftReference of unloaded regions to allow for quicker loading of regions
 public class RegionSource implements Iterable<Region> {
 	private final static int REGION_MAP_BITS = 6;
 	private final static AtomicInteger regionsLoaded = new AtomicInteger(0);
 	private final static AtomicInteger warnThreshold = new AtomicInteger(Integer.MAX_VALUE);
 	/**
-	 * A map of loaded regions, mapped to their x and z values.
+	 * A map of loaded regions, mapped to their x, y, and z values.
 	 */
 	private final TripleIntObjectMap<Region> loadedRegions;
 	/**
