@@ -65,13 +65,8 @@ public class CommonHandler extends SimpleChannelInboundHandler<Message> {
 	 * @param upstream If the connections are going to the server
 	 */
 	public CommonHandler(CommonEncoder encoder, CommonDecoder decoder) {
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			this.engine = (Client) Spout.getEngine();
-			this.onClient = true;
-		} else {
-			this.engine = (Server) Spout.getEngine();
-			this.onClient = false;
-		}
+		this.onClient = Spout.getPlatform() == Platform.CLIENT;
+		this.engine = Spout.getEngine();
 		this.encoder = encoder;
 		this.decoder = decoder;
 	}
@@ -79,7 +74,7 @@ public class CommonHandler extends SimpleChannelInboundHandler<Message> {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) {
 		final Channel c = ctx.channel();
-		// ctx.getPipeline().addBefore("2", "messagePrinter", new MessagePrintingHandler());
+		// ctx.pipeline().addBefore("2", "messagePrinter", new MessagePrintingHandler());
 		if (onClient) {
 			// Client
 			engine.getLogger().info("Upstream channel connected: " + c + ".");
@@ -146,7 +141,7 @@ public class CommonHandler extends SimpleChannelInboundHandler<Message> {
 		if (!this.session.compareAndSet(null, session)) {
 			throw new IllegalStateException("Session may not be set more than once");
 		}
-		decoder.setProtocol(session.getProtocol());
-		encoder.setProtocol(session.getProtocol());
+		decoder.setSession(session);
+		encoder.setSession(session);
 	}
 }

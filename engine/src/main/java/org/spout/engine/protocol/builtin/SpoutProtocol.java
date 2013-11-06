@@ -126,8 +126,8 @@ public class SpoutProtocol extends Protocol {
 
 	@Override
 	public ByteBuf writeHeader(MessageCodec<?> codec, ByteBuf data) {
-		ByteBuf buf = Unpooled.buffer(4);
-		buf.writeShort(codec.getOpcode());
+		ByteBuf buf = Unpooled.buffer();
+		buf.writeShort(codec.getOutgoingOpcode());
 		//if (Spout.debugMode()) System.out.println("Writing codec header: " + codec.getOpcode());
 		buf.writeInt(data.writerIndex());
 		return buf;

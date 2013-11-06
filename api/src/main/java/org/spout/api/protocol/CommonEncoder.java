@@ -33,14 +33,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 
-import org.spout.api.Client;
-import org.spout.api.Spout;
-
 /**
  * A {@link MessageToMessageEncoder} which encodes into {@link ByteBuf}s.
  */
 public class CommonEncoder extends ProcessingEncoder {
-	private volatile Protocol protocol = null;
+	private volatile Session session = null;
 	private final boolean onClient;
 
 	public CommonEncoder(boolean onClient) {
@@ -51,26 +48,29 @@ public class CommonEncoder extends ProcessingEncoder {
 	@Override
 	protected void encodePreProcess(ChannelHandlerContext ctx, final Object msg, List<Object> out) throws IOException {
 		if (msg instanceof Message) {
-			if (protocol == null) {
-				if (onClient) {
-					protocol = ((Client) Spout.getEngine()).getAddress().getProtocol();
-				} else {
-					protocol = Spout.getEngine().getProtocol(ctx.channel().localAddress());
-				}
+			if (session == null) {
+				throw new IllegalStateException("Session has not yet been set for " + ctx);
 			}
 			final Message message = (Message) msg;
 			final Class<? extends Message> clazz = message.getClass();
-			final MessageCodec<Message> codec = (MessageCodec<Message>) protocol.getCodecLookupService().find(clazz);
+			final MessageCodec<Message> codec = (MessageCodec<Message>) session.getProtocol().getCodecLookupService().find(clazz);
 			if (codec == null) {
 				throw new IOException("Unknown message type: " + clazz + ".");
 			}
 			final ByteBuf messageBuf = codec.encode(onClient, message);
-			final ByteBuf headerBuf = protocol.writeHeader(codec, messageBuf);
+			final ByteBuf headerBuf = session.getProtocol().writeHeader(codec, messageBuf);
+			if (message instanceof ProtocolChangeMessage) {
+				Protocol nextProtocol = ((ProtocolChangeMessage) message).getNextProtocol();
+				if (nextProtocol == null) {
+					throw new IOException("Null next protocol provided by " + message);
+				}
+				session.setProtocol(nextProtocol);
+			}
 			out.add(Unpooled.wrappedBuffer(headerBuf, messageBuf));
 		}
 	}
 
-	void setProtocol(Protocol protocol) {
-		this.protocol = protocol;
+	void setSession(Session session) {
+		this.session = session;
 	}
 }

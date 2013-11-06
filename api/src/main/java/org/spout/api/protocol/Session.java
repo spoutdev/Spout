@@ -165,6 +165,12 @@ public interface Session {
 	public Player getPlayer();
 
 	/**
+	 * Change the session's protocol after all packets currently in the queue have been sent.
+	 * @param protocol
+	 */
+	public void setProtocol(Protocol protocol);
+
+	/**
 	 * Sets aux Channel when operating as a proxy server.
 	 */
 	public void bindAuxChannel(Channel c);

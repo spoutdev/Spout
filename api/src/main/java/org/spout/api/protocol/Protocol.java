@@ -39,7 +39,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import io.netty.buffer.ByteBuf;
 
 import org.spout.api.Spout;
-import org.spout.api.command.Command;
 import org.spout.api.command.CommandArguments;
 import org.spout.api.component.entity.PlayerNetworkComponent;
 import org.spout.api.exception.UnknownPacketException;
@@ -108,8 +107,12 @@ public abstract class Protocol {
 	 * @return The instantiated codec
 	 */
 	public <T extends Message, C extends MessageCodec<T>> C registerPacket(Class<C> codecClazz, MessageHandler<T> handler) {
+		return registerPacket(codecClazz, handler, CodecLookupService.ProtocolSide.CLIENT, CodecLookupService.ProtocolSide.SERVER);
+	}
+
+	public <T extends Message, C extends MessageCodec<T>> C registerPacket(Class<C> codecClazz, MessageHandler<T> handler, CodecLookupService.ProtocolSide... side) {
 		try {
-			C codec = getCodecLookupService().bind(codecClazz);
+			C codec = getCodecLookupService().bind(codecClazz, side);
 			if (handler != null) {
 				getHandlerLookupService().bind(codec.getType(), handler);
 			}
@@ -142,7 +145,7 @@ public abstract class Protocol {
 	 * @return The correct codec
 	 * @throws UnknownPacketException when the opcode does not have an associated codec and the packet length is unknown
 	 */
-	public abstract MessageCodec<?> readHeader(ByteBuf buf) throws UnknownPacketException;
+	public abstract MessageCodec<?> readHeader(ByteBuf buf) throws IOException;
 
 	/**
 	 * Writes a packet header to a new buffer.

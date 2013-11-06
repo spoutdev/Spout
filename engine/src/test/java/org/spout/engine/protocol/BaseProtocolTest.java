@@ -58,8 +58,14 @@ public abstract class BaseProtocolTest {
 		for (Message message : testMessages) {
 			MessageCodec<?> codec = codecLookup.find(message.getClass());
 			assertNotNull("Message " + message + " did not have a codec!", codec);
-			MessageCodec<?> idCodec = codecLookup.find(codec.getOpcode());
-			assertNotNull("No codec for opcode " + codec.getOpcode() + " in codec lookup!", idCodec);
+			if (codec.getToClientOpcode() != -1) {
+				MessageCodec<?> idCodec = codecLookup.find(codec.getToClientOpcode(), CodecLookupService.ProtocolSide.CLIENT);
+				assertNotNull("No codec for to-client opcode " + codec.getToClientOpcode() + " in codec lookup!", idCodec);
+			}
+			if (codec.getToServerOpcode() != -1) {
+				MessageCodec<?> idCodec = codecLookup.find(codec.getToServerOpcode(), CodecLookupService.ProtocolSide.SERVER);
+				assertNotNull("No codec for to-server opcode " + codec.getToServerOpcode() + " in codec lookup!", idCodec);
+			}
 		}
 	}
 
@@ -91,15 +97,18 @@ public abstract class BaseProtocolTest {
 
 	@Test
 	public void testTestCompleteness() {
-		final TIntSet testedOpcodes = new TIntHashSet();
+		final TIntSet testedClientOpcodes = new TIntHashSet();
+		final TIntSet testedServerOpcodes = new TIntHashSet();
 		for (Message message : testMessages) {
 			MessageCodec<?> codec = codecLookup.find(message.getClass());
 			if (codec != null) {
-				testedOpcodes.add(codec.getOpcode());
+				testedClientOpcodes.add(codec.getToClientOpcode());
+				testedServerOpcodes.add(codec.getToServerOpcode());
 			}
 		}
 		for (MessageCodec<?> codec : codecLookup.getCodecs()) {
-			assertTrue("Opcode " + codec.getOpcode() + " not tested", testedOpcodes.contains(codec.getOpcode()));
+			assertTrue("To-client Opcode " + codec.getToClientOpcode() + " not tested", testedClientOpcodes.contains(codec.getToClientOpcode()));
+			assertTrue("To-server Opcode " + codec.getToServerOpcode() + " not tested", testedServerOpcodes.contains(codec.getToServerOpcode()));
 		}
 	}
 }

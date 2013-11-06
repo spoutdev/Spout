@@ -30,6 +30,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,6 +47,50 @@ import org.spout.api.util.SyncedStringMap;
  * A class used to lookup message codecs.
  */
 public class CodecLookupService implements EventableListener<SyncedMapEvent> {
+	public static enum ProtocolSide {
+		CLIENT {
+			MessageCodec<?> fromEnt(MessageEnt ent) {
+				return ent.toClient;
+			}
+
+			void toEnt(MessageEnt ent, MessageCodec<?> codec) {
+				ent.toClient = codec;
+			}
+
+			void applyNextId(CodecLookupService instance, MessageCodec<?> codec) {
+				codec.setToClientOpcode(instance.nextToClientId.getAndIncrement());
+			}
+
+			int getOpcode(MessageCodec<?> codec) {
+				return codec.getToClientOpcode();
+			}
+		}, SERVER {
+			MessageCodec<?> fromEnt(MessageEnt ent) {
+				return ent.toServer;
+			}
+
+			void toEnt(MessageEnt ent, MessageCodec<?> codec) {
+				ent.toServer = codec;
+			}
+
+			void applyNextId(CodecLookupService instance, MessageCodec<?> codec) {
+				codec.setToServerOpcode(instance.nextToServerId.getAndIncrement());
+			}
+
+			int getOpcode(MessageCodec<?> codec) {
+				return codec.getToServerOpcode();
+			}
+		};
+
+		abstract MessageCodec<?> fromEnt(MessageEnt ent);
+		abstract void toEnt(MessageEnt ent, MessageCodec<?> codec);
+		abstract void applyNextId(CodecLookupService instance, MessageCodec<?> codec);
+		abstract int getOpcode(MessageCodec<?> codec);
+	}
+	private static class MessageEnt {
+		public MessageCodec<?> toClient, toServer;
+	}
+
 	/**
 	 * A lookup table for the Message classes mapped to their Codec.
 	 */
@@ -56,11 +102,12 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 	/**
 	 * Lookup table for opcodes mapped to their codecs.
 	 */
-	private final MessageCodec<?>[] opcodeTable;
+	private final MessageEnt[] opcodeTable;
+
 	/**
 	 * Stores the next opcode available.
 	 */
-	private final AtomicInteger nextId;
+	private final AtomicInteger nextToServerId, nextToClientId;
 	/**
 	 * The {@link ClassLoader} for the codecs.
 	 */
@@ -75,9 +122,10 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 	 */
 	protected CodecLookupService(ClassLoader loader, SyncedStringMap dynamicPacketMap, int size) {
 		this.classTable = new ConcurrentHashMap<>(size, 1.0f);
-		this.opcodeTable = new MessageCodec<?>[size];
+		this.opcodeTable = new MessageEnt[size];
 		this.dynamicPacketMap = dynamicPacketMap;
-		this.nextId = new AtomicInteger(0);
+		this.nextToClientId = new AtomicInteger(0);
+		this.nextToServerId = new AtomicInteger(0);
 		this.loader = loader;
 	}
 
@@ -93,41 +141,58 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 	 */
 	@SuppressWarnings ("unchecked")
 	protected <T extends Message, C extends MessageCodec<T>> C bind(Class<C> clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		boolean dynamicId = false;
+		return bind(clazz, ProtocolSide.CLIENT, ProtocolSide.SERVER);
+	}
+
+
+	protected <T extends Message, C extends MessageCodec<T>> C bind(Class<C> clazz, ProtocolSide... registerTo) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		Constructor<C> constructor;
+		C codec;
 		try {
 			constructor = clazz.getConstructor();
+			codec = constructor.newInstance();
 		} catch (NoSuchMethodException e) {
 			try {
-				constructor = clazz.getConstructor(int.class);
-				dynamicId = true;
+				constructor = clazz.getConstructor(int.class, int.class); // server, client
+				codec = constructor.newInstance(-1, -1);
+				codec.setDynamic(true);
 			} catch (NoSuchMethodException e1) {
-				throw (InstantiationException) new InstantiationException().initCause(e1);
+				try {
+					constructor = clazz.getConstructor(int.class);
+					codec = constructor.newInstance(-1);
+					codec.setDynamic(true);
+				} catch (NoSuchMethodException e2) {
+					throw (InstantiationException) new InstantiationException().initCause(e1);
+				}
 			}
 		}
-		if (dynamicPacketMap.getKeys().contains(clazz.getName())) {
+		/*if (dynamicPacketMap.getKeys().contains(clazz.getName())) {
 			//Already bound, return codec
 			return (C) find(dynamicPacketMap.register(clazz.getName()));
+		}*/
+
+		for (ProtocolSide side : registerTo) {
+			bind(codec, side);
 		}
-		final C codec;
-		if (dynamicId) {
-			int id;
-			do {
-				id = nextId.getAndIncrement();
-			} while (find(id) != null);
-			codec = constructor.newInstance(id);
-			codec.setDynamic(true);
+		classTable.put(codec.getType(), codec);
+		return codec;
+
+	}
+	private <T extends Message, C extends MessageCodec<T>> void bind(C codec, ProtocolSide registerTo) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		if (codec.isDynamic()) {
+			registerTo.applyNextId(this, codec);
 		} else {
-			//Codec is static
-			codec = constructor.newInstance();
-			final MessageCodec<?> prevCodec = find(codec.getOpcode());
+			if (registerTo.getOpcode(codec) == -1) {
+				return;
+			}
+			final MessageCodec<?> prevCodec = find(registerTo.getOpcode(codec), registerTo);
 			if (prevCodec != null) {
-				throw new IllegalStateException("Trying to bind a static opcode where one already exists. Static: " + clazz.getSimpleName() + " Other: " + prevCodec.getClass().getSimpleName());
+				throw new IllegalStateException("Trying to bind a static opcode where one already exists. Static: " + codec.getClass().getSimpleName() + " Other: " + prevCodec.getClass().getSimpleName());
 			}
 		}
-		register(codec);
-		dynamicPacketMap.register(clazz.getName(), codec.getOpcode());
-		return codec;
+
+		registerOpcode(codec, registerTo);
+		dynamicPacketMap.register(registerTo + ":" + codec.getClass().getName(), registerTo.getOpcode(codec));
 	}
 
 	/**
@@ -137,9 +202,15 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 	 * @param <C> The type of codec
 	 * @param codec The codec to be registered
 	 */
-	private <T extends Message, C extends MessageCodec<T>> void register(C codec) {
-		opcodeTable[codec.getOpcode()] = codec;
-		classTable.put(codec.getType(), codec);
+	private <T extends Message, C extends MessageCodec<T>> void registerOpcode(C codec, ProtocolSide registerTo) {
+		final int opcode = registerTo.getOpcode(codec);
+
+		MessageEnt ent = opcodeTable[opcode];
+		if (ent == null) {
+			ent = new MessageEnt();
+			opcodeTable[opcode] = ent;
+		}
+		registerTo.toEnt(ent, codec);
 	}
 
 	/**
@@ -149,10 +220,18 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 	 * @return The codec, null if not found.
 	 */
 	public MessageCodec<?> find(int opcode) {
+		return find(opcode, ProtocolSide.SERVER);
+	}
+
+	public MessageCodec<?> find(int opcode, ProtocolSide side) {
 		if (opcode < 0 || opcode >= opcodeTable.length) {
 			throw new IllegalArgumentException("Opcode " + opcode + " is out of bounds");
 		}
-		return opcodeTable[opcode];
+		MessageEnt ent = opcodeTable[opcode];
+		if (ent == null) {
+			return null;
+		}
+		return side.fromEnt(ent);
 	}
 
 	/**
@@ -191,22 +270,56 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 			case ADD:
 				for (Pair<Integer, String> item : event.getModifiedElements()) {
 					final int id = item.getLeft();
-					final String className = item.getRight();
+					final String[] classEntry = item.getRight().split(":");
+					final ProtocolSide side = ProtocolSide.valueOf(classEntry[0]);
+					final String className = classEntry[1];
 					if (id >= opcodeTable.length) {
 						throw new IllegalStateException("Server sent a packet id which is greater than the client has allowed.");
 					}
-					MessageCodec<?> codec = opcodeTable[id];
-					if (codec != null) {
-						if (codec.getClass().getName().equals(className)) {
+					MessageEnt ent = opcodeTable[id];
+					if (ent != null) {
+						MessageCodec<?> sideCodec = side.fromEnt(ent);
+						if (sideCodec != null && sideCodec.getClass().getName().equals(className)) {
 							continue;
 						}
 						throw new IllegalArgumentException("Trying to register a codec where one already exists: " + className);
 					}
 					try {
+						MessageCodec<?> codec;
 						final Class<? extends MessageCodec> clazz = Class.forName(className, true, loader).asSubclass(MessageCodec.class);
-						final Constructor<? extends MessageCodec> constr = clazz.getConstructor(int.class);
-						codec = constr.newInstance(id);
-						register(codec);
+						try {
+						final Constructor<? extends MessageCodec> constr = clazz.getConstructor(int.class, int.class);
+						switch (side) {
+							case SERVER:
+								codec = constr.newInstance(id, -1);
+								break;
+							case CLIENT:
+								codec = constr.newInstance(-1, id);
+								break;
+							default:
+								throw new IllegalArgumentException("Unknown side" + side);
+						}
+						} catch (NoSuchMethodException e) {
+							final Constructor<? extends MessageCodec> constr = clazz.getConstructor(int.class);
+							codec = constr.newInstance(-1);
+						}
+
+						if (classTable.containsKey(codec.getType())) {
+							codec = classTable.get(codec.getType());
+							switch (side) {
+								case SERVER:
+									codec.setToServerOpcode(id);
+									break;
+								case CLIENT:
+									codec.setToClientOpcode(id);
+									break;
+								default:
+									throw new IllegalArgumentException("Unknown side: " + side);
+							}
+						} else {
+							classTable.put(codec.getType(), codec);
+						}
+						registerOpcode(codec, side);
 					} catch (ClassCastException | ClassNotFoundException | NoSuchMethodException // Squash everything unless debug mode, since the server is *supposed* to send correct data
 							| IllegalAccessException | InstantiationException | InvocationTargetException e) { // We may want to print errors for missing packets -- could indicate missing plugins
 						if (Spout.debugMode()) {
@@ -217,9 +330,12 @@ public class CodecLookupService implements EventableListener<SyncedMapEvent> {
 				break;
 			case REMOVE:
 				for (Pair<Integer, String> item : event.getModifiedElements()) {
-					MessageCodec<?> codec = find(item.getLeft());
-					if (codec != null && codec.getClass().getName().equals(item.getRight())) {
-						opcodeTable[codec.getOpcode()] = null;
+					final String[] classEntry = item.getRight().split(":");
+					final ProtocolSide side = ProtocolSide.valueOf(classEntry[0]);
+					MessageCodec<?> codec = find(item.getLeft(), side);
+					final String codecClass = classEntry[1];
+					if (codec != null && codec.getClass().getName().equals(codecClass)) {
+						side.toEnt(opcodeTable[item.getLeft()], null);
 						classTable.remove(codec.getType());
 					}
 				}

@@ -44,7 +44,7 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 	private final int previousMask = 0x1F;
 	private int[] previousOpcodes = new int[previousMask + 1];
 	private int opcodeCounter = 0;
-	private volatile Protocol protocol;
+	private volatile Session session;
 	private final boolean onClient;
 
 	public CommonDecoder(boolean onClient) {
@@ -54,17 +54,14 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 
 	@Override
 	protected Object decodeProcessed(ChannelHandlerContext ctx, Channel c, ByteBuf buf) throws Exception {
-		if (protocol == null) {
-			if (Spout.getEngine() instanceof Client) {
-				protocol = ((Client) Spout.getEngine()).getAddress().getProtocol();
-			} else {
-				protocol = Spout.getEngine().getProtocol(c.localAddress());
-			}
+		if (session == null) {
+			throw new IllegalStateException("Session has not been set for decoder!");
 		}
 
 		MessageCodec<?> codec;
 		try {
-			codec = protocol.readHeader(buf);
+			System.out.println("Reading with " + session.getProtocol());
+			codec = session.getProtocol().readHeader(buf);
 		} catch (UnknownPacketException e) {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < previousMask; i++) {
@@ -80,13 +77,20 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 			return buf;
 		}
 
-		previousOpcodes[(opcodeCounter++) & previousMask] = codec.getOpcode();
-		Object decoded = codec.decode(onClient, buf);
+		previousOpcodes[(opcodeCounter++) & previousMask] = codec.getIncomingOpcode();
+		Message decoded = codec.decode(onClient, buf);
+		if (decoded instanceof ProtocolChangeMessage) {
+			Protocol nextProtocol = ((ProtocolChangeMessage) decoded).getNextProtocol();
+			if (nextProtocol == null) {
+				throw new IOException("Null next protocol provided by " + decoded);
+			}
+			session.setProtocol(nextProtocol);
+		}
 		buf.release();
 		return decoded;
 	}
 
-	void setProtocol(Protocol proto) {
-		this.protocol = proto;
+	void setSession(Session session) {
+		this.session = session;
 	}
 }

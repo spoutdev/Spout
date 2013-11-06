@@ -29,27 +29,70 @@ package org.spout.api.protocol;
 import java.io.IOException;
 
 import io.netty.buffer.ByteBuf;
+import org.spout.api.Client;
+import org.spout.api.Engine;
+import org.spout.api.Server;
+import org.spout.api.Spout;
 
 public abstract class MessageCodec<T extends Message> {
 	private final Class<T> clazz;
 	private boolean dynamic;
-	private int opcode;
+	private int toClientOpcode, toServerOpcode;
 
 	public MessageCodec(Class<T> clazz, int opcode) {
+		this(clazz, opcode, opcode);
+	}
+
+	public MessageCodec(Class<T> clazz, int toServerOpcode, int toClientOpcode) {
 		this.clazz = clazz;
-		this.opcode = opcode;
+		this.toClientOpcode = toClientOpcode;
+		this.toServerOpcode = toServerOpcode;
 	}
 
 	public final Class<T> getType() {
 		return clazz;
 	}
 
-	public final int getOpcode() {
-		return opcode;
+	public final int getToServerOpcode() {
+		return toServerOpcode;
 	}
 
-	void setOpcode(int opcode) {
-		this.opcode = opcode;
+	void setToServerOpcode(int opcode) {
+		this.toServerOpcode = opcode;
+	}
+
+	public final int getToClientOpcode() {
+		return toClientOpcode;
+	}
+
+	void setToClientOpcode(int opcode) {
+		this.toClientOpcode = opcode;
+	}
+
+	public int getOutgoingOpcode() {
+		Engine e = Spout.getEngine();
+		if (e instanceof Server) {
+			return getToClientOpcode();
+		} else if (e instanceof Client) {
+			return getToServerOpcode();
+		} else {
+			return -1;
+		}	}
+
+	public int getIncomingOpcode() {
+		Engine e = Spout.getEngine();
+		if (e instanceof Server) {
+			return getToServerOpcode();
+		} else if (e instanceof Client) {
+			return getToClientOpcode();
+		} else {
+			return -1;
+		}
+	}
+
+	@Deprecated
+	public int getOpcode() {
+		return getOutgoingOpcode();
 	}
 
 	public boolean isDynamic() {

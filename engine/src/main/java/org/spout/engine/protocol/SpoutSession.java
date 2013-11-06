@@ -148,6 +148,10 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		return player.get();
 	}
 
+	public void setProtocol(Protocol protocol) {
+		this.protocol.set(protocol);
+	}
+
 	/**
 	 * Sets the player associated with this session.
 	 *
