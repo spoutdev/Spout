@@ -89,6 +89,30 @@ public class GenericMath {
 	 * @param vec of the axis to get the length of
 	 * @return the length
 	 */
+	public static long length(long... vec) {
+		return (long) Math.sqrt(lengthSquared(vec));
+	}
+
+	/**
+	 * Calculates the squared length of all axis offsets given
+	 *
+	 * @param vec of the axis to get the squared length of
+	 * @return the squared length
+	 */
+	public static long lengthSquared(long... vec) {
+		int lengthSquared = 0;
+		for (long comp : vec) {
+			lengthSquared += comp * comp;
+		}
+		return lengthSquared;
+	}
+
+	/**
+	 * Calculates the length of all axis offsets given
+	 *
+	 * @param vec of the axis to get the length of
+	 * @return the length
+	 */
 	public static double length(double... vec) {
 		return Math.sqrt(lengthSquared(vec));
 	}

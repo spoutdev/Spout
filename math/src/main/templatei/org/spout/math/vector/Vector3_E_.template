@@ -27,11 +27,11 @@
 package org.spout.math.vector;
 
 import java.io.Serializable;
+import java.lang.Override;
 import java.util.Random;
 
 import org.spout.math.GenericMath;
 import org.spout.math.HashFunctions;
-import org.spout.math.#ETrig#;
 
 public class Vector3#E# implements Vector#E#, Comparable<Vector3#E#>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
@@ -54,7 +54,7 @@ public class Vector3#E# implements Vector#E#, Comparable<Vector3#E#>, Serializab
 	}
 
 	public Vector3#E#(Vector2#E# v) {
-		this(v, 0);
+		this(v, (#e#) 0);
 	}
 
 	// TODO: #e# overload
@@ -95,18 +95,6 @@ public class Vector3#E# implements Vector#E#, Comparable<Vector3#E#>, Serializab
 
 	public #e# getZ() {
 		return z;
-	}
-
-	public int getFloorX() {
-		return GenericMath.floor(x);
-	}
-
-	public int getFloorY() {
-		return GenericMath.floor(y);
-	}
-
-	public int getFloorZ() {
-		return GenericMath.floor(z);
 	}
 
 	public Vector3#E# add(Vector3#E# v) {
@@ -184,7 +172,7 @@ public class Vector3#E# implements Vector#E#, Comparable<Vector3#E#>, Serializab
 	}
 
 	public #e# dot(#e# x, #e# y, #e# z) {
-		return this.x * x + this.y * y + this.z * z;
+		return (#e#) (this.x * x + this.y * y + this.z * z);
 	}
 
 	public Vector3#E# cross(Vector3#E# v) {
@@ -206,21 +194,6 @@ public class Vector3#E# implements Vector#E#, Comparable<Vector3#E#>, Serializab
 	@Override
 	public Vector3#E# pow(#e# power) {
 		return new Vector3#E#(Math.pow(x, power), Math.pow(y, power), Math.pow(z, power));
-	}
-
-	@Override
-	public Vector3#E# ceil() {
-		return new Vector3#E#(Math.ceil(x), Math.ceil(y), Math.ceil(z));
-	}
-
-	@Override
-	public Vector3#E# floor() {
-		return new Vector3#E#(GenericMath.floor(x), GenericMath.floor(y), GenericMath.floor(z));
-	}
-
-	@Override
-	public Vector3#E# round() {
-		return new Vector3#E#(Math.round(x), Math.round(y), Math.round(z));
 	}
 
 	@Override
@@ -289,12 +262,6 @@ public class Vector3#E# implements Vector#E#, Comparable<Vector3#E#>, Serializab
 	@Override
 	public #e# length() {
 		return (#e#) GenericMath.length(x, y, z);
-	}
-
-	@Override
-	public Vector3#E# normalize() {
-		final #e# length = length();
-		return new Vector3#E#(x / length, y / length, z / length);
 	}
 
 	/**
@@ -411,30 +378,5 @@ public class Vector3#E# implements Vector#E#, Comparable<Vector3#E#>, Serializab
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ")";
-	}
-
-	/**
-	 * Gets the direction vector of a random pitch and yaw using the random specified.
-	 *
-	 * @param random to use
-	 * @return the random direction vector
-	 */
-	public static Vector3#E# createRandomDirection(Random random) {
-		return createDirection(random.next#ES#() * (#e#) #ETrig#.TWO_PI,
-				random.next#ES#() * (#e#) #ETrig#.TWO_PI);
-	}
-
-	// TODO: add overloads for #EOverload#s and degree angles
-
-	/**
-	 * Gets the direction vector of a certain yaw and pitch.
-	 *
-	 * @param azimuth in radians
-	 * @param inclination in radians
-	 * @return the random direction vector
-	 */
-	public static Vector3#E# createDirection(#e# azimuth, #e# inclination) {
-		final #e# yFact = #ETrig#.cos(inclination);
-		return new Vector3#E#(yFact * #ETrig#.cos(azimuth), #ETrig#.sin(inclination), yFact * #ETrig#.sin(azimuth));
 	}
 }

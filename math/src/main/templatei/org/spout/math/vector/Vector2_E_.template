@@ -32,7 +32,6 @@ import java.util.Random;
 
 import org.spout.math.GenericMath;
 import org.spout.math.HashFunctions;
-import org.spout.math.#ETrig#;
 
 public class Vector2#E# implements Vector#E#, Comparable<Vector2#E#>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1;
@@ -80,14 +79,6 @@ public class Vector2#E# implements Vector#E#, Comparable<Vector2#E#>, Serializab
 
 	public #e# getY() {
 		return y;
-	}
-
-	public int getFloorX() {
-		return GenericMath.floor(x);
-	}
-
-	public int getFloorY() {
-		return GenericMath.floor(y);
 	}
 
 	public Vector2#E# add(Vector2#E# v) {
@@ -165,7 +156,7 @@ public class Vector2#E# implements Vector#E#, Comparable<Vector2#E#>, Serializab
 	}
 
 	public #e# dot(#e# x, #e# y) {
-		return this.x * x + this.y * y;
+		return (#e#) (this.x * x + this.y * y);
 	}
 
 	public Vector2#E# pow(#EOverload# pow) {
@@ -175,21 +166,6 @@ public class Vector2#E# implements Vector#E#, Comparable<Vector2#E#>, Serializab
 	@Override
 	public Vector2#E# pow(#e# power) {
 		return new Vector2#E#(Math.pow(x, power), Math.pow(y, power));
-	}
-
-	@Override
-	public Vector2#E# ceil() {
-		return new Vector2#E#(Math.ceil(x), Math.ceil(y));
-	}
-
-	@Override
-	public Vector2#E# floor() {
-		return new Vector2#E#(GenericMath.floor(x), GenericMath.floor(y));
-	}
-
-	@Override
-	public Vector2#E# round() {
-		return new Vector2#E#(Math.round(x), Math.round(y));
 	}
 
 	@Override
@@ -258,12 +234,6 @@ public class Vector2#E# implements Vector#E#, Comparable<Vector2#E#>, Serializab
 	@Override
 	public #e# length() {
 		return (#e#) GenericMath.length(x, y);
-	}
-
-	@Override
-	public Vector2#E# normalize() {
-		final #e# length = length();
-		return new Vector2#E#(x / length, y / length);
 	}
 
 	/**
@@ -380,27 +350,5 @@ public class Vector2#E# implements Vector#E#, Comparable<Vector2#E#>, Serializab
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ")";
-	}
-
-	/**
-	 * Gets the direction vector of a random angle using the random specified.
-	 *
-	 * @param random to use
-	 * @return the random direction vector
-	 */
-	public static Vector2#E# createRandomDirection(Random random) {
-		return createDirection(random.next#ES#() * (#e#) #ETrig#.TWO_PI);
-	}
-
-	// TODO: add overloads for #EOverload#s and degree angles
-
-	/**
-	 * Gets the direction vector of a certain angle.
-	 *
-	 * @param angle in radians
-	 * @return the direction vector
-	 */
-	public static Vector2#E# createDirection(#e# angle) {
-		return new Vector2#E#(#ETrig#.cos(angle), #ETrig#.sin(angle));
 	}
 }

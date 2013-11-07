@@ -162,14 +162,14 @@ public class Vector3#E#Test {
 
 	@Test
 	public void testDoubleComponentsMultiplication() {
-		Vector3#E# vector = new Vector3#E#(2, 3, 4).mul(2d);
-		TestUtil#E#.assertEquals(vector, 4, 6, 8);
+		Vector3#E# vector = new Vector3#E#(2, 3, 4).mul(1.5, 2.5, 3.5);
+		TestUtil#E#.assertEquals(vector, 3, (#e#) 7.5, 14);
 	}
 
 	@Test
 	public void testFloatComponentsMultiplication() {
-		Vector3#E# vector = new Vector3#E#(2, 3, 4).mul(2);
-		TestUtil#E#.assertEquals(vector, 4, 6, 8);
+		Vector3#E# vector = new Vector3#E#(2, 3, 4).mul(1.5f, 2.5f, 3.5f);
+		TestUtil#E#.assertEquals(vector, 3, (#e#) 7.5, 14);
 	}
 
 	@Test
