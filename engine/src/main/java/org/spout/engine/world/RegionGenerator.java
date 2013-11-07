@@ -58,9 +58,7 @@ import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.math.GenericMath;
 
 public class RegionGenerator implements Named {
-	private final static ExecutorService pool = new ThreadPoolExecutor(1,
-		Runtime.getRuntime().availableProcessors() * 3 + 1, 120L, TimeUnit.SECONDS,
-		new LinkedBlockingQueue<Runnable>(),
+	private final static ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 1,
 		new NamedThreadFactory("RegionGenerator - async pool", false));
 
 	private final SpoutRegion region;

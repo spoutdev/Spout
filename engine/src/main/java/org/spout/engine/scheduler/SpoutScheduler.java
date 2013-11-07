@@ -37,11 +37,10 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -185,7 +184,7 @@ public final class SpoutScheduler implements Scheduler {
 			meshThread = null;
 		}
 
-		executorService = new ThreadPoolExecutor(1, Runtime.getRuntime().availableProcessors() * 3 + 1, 120L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new MarkedNamedThreadFactory("SpoutScheduler - AsyncManager executor service", false));
+		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 1, new MarkedNamedThreadFactory("SpoutScheduler - AsyncManager executor service", false));
 
 		taskManager = new SpoutTaskManager(this, mainThread);
 	}
@@ -861,7 +860,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 		time += System.currentTimeMillis();
 		if (Spout.debugMode() && time > PULSE_EVERY) {
-			//Spout.getLogger().info("Task " + TickStage.getStage(TickStage.getStageInt()) + " took " + time + "ms");
+			Spout.getLogger().info("Task " + TickStage.getStage(TickStage.getStageInt()) + " took " + time + "ms");
 		}
 	}
 

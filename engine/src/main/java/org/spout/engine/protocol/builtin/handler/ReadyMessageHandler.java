@@ -36,8 +36,5 @@ public class ReadyMessageHandler extends MessageHandler<ReadyMessage> {
 	@Override
 	public void handleServer(ServerSession session, ReadyMessage message) {
 		session.setState(Session.State.GAME);
-		if (Spout.debugMode()) {
-			System.out.println("Packets: " + session.getProtocol().getDynamicallyRegisteredPackets());
-		}
 	}
 }
