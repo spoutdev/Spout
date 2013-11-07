@@ -33,7 +33,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.block.BlockFace;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 /**
  * This class performs ray tracing and iterates along blocks on a line
@@ -42,9 +42,9 @@ public class BlockIterator implements Iterator<Block> {
 	// World to iterate in
 	private final World world;
 	// Starting position
-	private final Vector3 origin;
+	private final Vector3f origin;
 	// Direction of the ray
-	private final Vector3 direction;
+	private final Vector3f direction;
 	// Max distance
 	private final float range;
 	// Current position
@@ -66,7 +66,7 @@ public class BlockIterator implements Iterator<Block> {
 	 * @param direction The direction of the trace
 	 * @param maxDistance This is the maximum distance in blocks for the trace.
 	 */
-	public BlockIterator(World world, Vector3 origin, Vector3 direction, float maxDistance) {
+	public BlockIterator(World world, Vector3f origin, Vector3f direction, float maxDistance) {
 		this.world = world;
 		this.origin = origin;
 		this.direction = direction;

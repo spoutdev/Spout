@@ -31,7 +31,7 @@ import java.util.List;
 import org.spout.api.ServerOnly;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.lighting.LightingManager;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
@@ -101,7 +101,7 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 * @return the chunk
 	 */
 	@LiveRead
-	public Chunk getChunkFromBlock(Vector3 position);
+	public Chunk getChunkFromBlock(Vector3f position);
 
 	/**
 	 * Gets the {@link Chunk} at the given position
@@ -111,7 +111,7 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 * @return the chunk
 	 */
 	@LiveRead
-	public Chunk getChunkFromBlock(Vector3 position, LoadOption loadopt);
+	public Chunk getChunkFromBlock(Vector3f position, LoadOption loadopt);
 
 	/**
 	 * True if the region has a loaded chunk at the (x, y, z).
@@ -169,7 +169,7 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 * @param chunks a list of chunk coordinates
 	 */
 	@ServerOnly
-	public void queueChunksForGeneration(List<Vector3> chunks);
+	public void queueChunksForGeneration(List<Vector3f> chunks);
 
 	/**
 	 * Queues a chunk for generation.  The Vector3 value is in chunk coords.
@@ -177,7 +177,7 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 * @param chunks a list of chunk coordinates
 	 */
 	@ServerOnly
-	public void queueChunkForGeneration(Vector3 chunk);
+	public void queueChunkForGeneration(Vector3f chunk);
 
 	/**
 	 * Gets the lighting buffer associated with the given manager

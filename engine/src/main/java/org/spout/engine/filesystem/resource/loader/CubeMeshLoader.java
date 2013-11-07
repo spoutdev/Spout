@@ -33,7 +33,7 @@ import java.util.Scanner;
 import org.spout.api.model.mesh.CubeMeshFactory;
 import org.spout.api.model.mesh.OrientedMesh;
 import org.spout.api.resource.ResourceLoader;
-import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector2f;
 
 public class CubeMeshLoader extends ResourceLoader {
 	public CubeMeshLoader() {
@@ -41,44 +41,44 @@ public class CubeMeshLoader extends ResourceLoader {
 	}
 
 	private static OrientedMesh loadObj(InputStream stream) {
-		ArrayList<Vector2[]> textures;
+		ArrayList<Vector2f[]> textures;
 		try (Scanner scan = new Scanner(stream)) {
 			textures = new ArrayList<>();
-			ArrayList<Vector2> uvs = new ArrayList<>();
-			Vector2 scale = Vector2.ONE;
-			Vector2 size = Vector2.ONE;
-			Vector2 sizeScaled = Vector2.ONE;
+			ArrayList<Vector2f> uvs = new ArrayList<>();
+			Vector2f scale = Vector2f.ONE;
+			Vector2f size = Vector2f.ONE;
+			Vector2f sizeScaled = Vector2f.ONE;
 			while (scan.hasNext()) {
 				String s = scan.nextLine();
 				if (s.startsWith("#")) {
 					continue;
 				} else if (s.startsWith("scale ") || s.startsWith("subtextures")) {
 					String[] sp = s.split(" ");
-					scale = new Vector2(1f / Float.parseFloat(sp[1]), 1f / Float.parseFloat(sp[2]));
+					scale = new Vector2f(1f / Float.parseFloat(sp[1]), 1f / Float.parseFloat(sp[2]));
 					sizeScaled = scale.mul(size);
 				} else if (s.startsWith("size ")) {
 					String[] sp = s.split(" ");
-					size = new Vector2(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]));
+					size = new Vector2f(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]));
 					sizeScaled = scale.mul(size);
 				} else if (s.startsWith("rect ")) {
 					String[] sp = s.split(" ");
-					Vector2 base = scale.mul(new Vector2(Integer.parseInt(sp[1]), Integer.parseInt(sp[2])));
-					textures.add(new Vector2[] {
+					Vector2f base = scale.mul(new Vector2f(Integer.parseInt(sp[1]), Integer.parseInt(sp[2])));
+					textures.add(new Vector2f[] {
 							base,
 							base.add(0f, sizeScaled.getY()),
 							base.add(sizeScaled.getX(), sizeScaled.getY()),
 							base.add(sizeScaled.getX(), 0f)});
 				} else if (s.startsWith("vt ")) {
 					String[] sp = s.split(" ");
-					uvs.add(scale.mul(new Vector2(Float.parseFloat(sp[1]), 1 - Float.parseFloat(sp[2]))));
+					uvs.add(scale.mul(new Vector2f(Float.parseFloat(sp[1]), 1 - Float.parseFloat(sp[2]))));
 				} else if (s.startsWith("f ")) {
 					String[] sp = s.split(" ");
-					ArrayList<Vector2> ar = new ArrayList<>();
+					ArrayList<Vector2f> ar = new ArrayList<>();
 					for (int i = 1; i < sp.length; i++) {
 						int uv = Integer.parseInt(sp[i]) - 1; //Begin at 1 ?
 						ar.add(uvs.get(uv));
 					}
-					textures.add(ar.toArray(new Vector2[ar.size()]));
+					textures.add(ar.toArray(new Vector2f[ar.size()]));
 					ar.clear();
 				} else if (s.startsWith("rotate ")) { // rotate Phi Theta
 					String[] sp = s.split(" ");
@@ -89,35 +89,35 @@ public class CubeMeshLoader extends ResourceLoader {
 						// Rotation around y axe
 						for (int i = 0; i < Phi; i++) {
 							// Faces rotation
-							Vector2[] temp = textures.get(2);
+							Vector2f[] temp = textures.get(2);
 							textures.set(2, textures.get(4));
 							textures.set(4, textures.get(3));
 							textures.set(3, textures.get(5));
 							textures.set(5, temp);
 							// Top and bot textures rotation
-							textures.set(1, new Vector2[] {textures.get(1)[1], textures.get(1)[2], textures.get(1)[3], textures.get(1)[0]});
-							textures.set(0, new Vector2[] {textures.get(0)[3], textures.get(0)[0], textures.get(0)[1], textures.get(0)[2]});
+							textures.set(1, new Vector2f[] {textures.get(1)[1], textures.get(1)[2], textures.get(1)[3], textures.get(1)[0]});
+							textures.set(0, new Vector2f[] {textures.get(0)[3], textures.get(0)[0], textures.get(0)[1], textures.get(0)[2]});
 						}
 						// Rotation around z axe
 						for (int i = 0; i < Theta; i++) {
 							// Faces rotation
-							Vector2[] temp = textures.get(0);
+							Vector2f[] temp = textures.get(0);
 							textures.set(0, textures.get(3));
 							textures.set(3, textures.get(1));
 							textures.set(1, textures.get(2));
 							textures.set(2, temp);
 							// East and Weast textures rotation
-							textures.set(4, new Vector2[] {textures.get(4)[1], textures.get(4)[2], textures.get(4)[3], textures.get(4)[0]});
-							textures.set(5, new Vector2[] {textures.get(5)[3], textures.get(5)[0], textures.get(5)[1], textures.get(5)[2]});
+							textures.set(4, new Vector2f[] {textures.get(4)[1], textures.get(4)[2], textures.get(4)[3], textures.get(4)[0]});
+							textures.set(5, new Vector2f[] {textures.get(5)[3], textures.get(5)[0], textures.get(5)[1], textures.get(5)[2]});
 							// Others textures rotation fixes
-							textures.set(2, new Vector2[] {textures.get(2)[2], textures.get(2)[3], textures.get(2)[0], textures.get(2)[1]});
-							textures.set(3, new Vector2[] {textures.get(3)[2], textures.get(3)[3], textures.get(3)[0], textures.get(3)[1]});
+							textures.set(2, new Vector2f[] {textures.get(2)[2], textures.get(2)[3], textures.get(2)[0], textures.get(2)[1]});
+							textures.set(3, new Vector2f[] {textures.get(3)[2], textures.get(3)[3], textures.get(3)[0], textures.get(3)[1]});
 						}
 					}
 				}
 			}
 		}
-		return CubeMeshFactory.generateCubeMesh(textures.toArray(new Vector2[textures.size()][]));
+		return CubeMeshFactory.generateCubeMesh(textures.toArray(new Vector2f[textures.size()][]));
 	}
 
 	@Override

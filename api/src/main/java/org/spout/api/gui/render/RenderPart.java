@@ -31,9 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.spout.api.math.Rectangle;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.model.mesh.Vertex;
-import org.spout.math.vector.Vector2;
 
 /**
  * Represents anything that can be rendered on the client.
@@ -125,15 +125,15 @@ public class RenderPart implements Comparable<RenderPart> {
 	 */
 	public List<Vertex> getVertices() {
 		List<Vertex> face = new ArrayList<>();
-		Vector3 p1 = new Vector3(sprite.getX(), sprite.getY(), 0);
-		Vector3 p2 = new Vector3(sprite.getX() + sprite.getWidth(), sprite.getY(), 0);
-		Vector3 p3 = new Vector3(sprite.getX() + sprite.getWidth(), sprite.getY() - sprite.getHeight(), 0);
-		Vector3 p4 = new Vector3(sprite.getX(), sprite.getY() - sprite.getHeight(), 0);
+		Vector3f p1 = new Vector3f(sprite.getX(), sprite.getY(), 0);
+		Vector3f p2 = new Vector3f(sprite.getX() + sprite.getWidth(), sprite.getY(), 0);
+		Vector3f p3 = new Vector3f(sprite.getX() + sprite.getWidth(), sprite.getY() - sprite.getHeight(), 0);
+		Vector3f p4 = new Vector3f(sprite.getX(), sprite.getY() - sprite.getHeight(), 0);
 
-		Vector2 t1 = new Vector2(source.getX(), source.getY());
-		Vector2 t2 = new Vector2(source.getX() + source.getWidth(), source.getY());
-		Vector2 t3 = new Vector2(source.getX() + source.getWidth(), source.getY() + source.getHeight());
-		Vector2 t4 = new Vector2(source.getX(), source.getY() + source.getHeight());
+		Vector2f t1 = new Vector2f(source.getX(), source.getY());
+		Vector2f t2 = new Vector2f(source.getX() + source.getWidth(), source.getY());
+		Vector2f t3 = new Vector2f(source.getX() + source.getWidth(), source.getY() + source.getHeight());
+		Vector2f t4 = new Vector2f(source.getX(), source.getY() + source.getHeight());
 
 		face.add(Vertex.createVertexPositionTexture0(p1, t1));
 		face.add(Vertex.createVertexPositionTexture0(p2, t2));

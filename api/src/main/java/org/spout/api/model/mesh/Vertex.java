@@ -29,9 +29,9 @@ package org.spout.api.model.mesh;
 import java.awt.Color;
 import java.io.Serializable;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.StringUtil;
-import org.spout.math.vector.Vector2;
 
 public class Vertex implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -41,84 +41,84 @@ public class Vertex implements Serializable {
 	public static final int NORMAL_LAYER = 2;
 	public static final int TEXTURE0_LAYER = 3;
 	public static final int TEXTURE1_LAYER = 4;
-	public Vector3 position;
+	public Vector3f position;
 	public Color color;
-	public Vector3 normal;
-	public Vector2 texCoord0;
-	public Vector2 texCoord1;
+	public Vector3f normal;
+	public Vector2f texCoord0;
+	public Vector2f texCoord1;
 	public int id;
 
 	/**
 	 * Create a vertex with a position
 	 */
-	public static Vertex createVertexPosition(Vector3 position) {
-		return new Vertex(position, Vector3.ZERO, Vector2.ZERO, null, 0);
+	public static Vertex createVertexPosition(Vector3f position) {
+		return new Vertex(position, Vector3f.ZERO, Vector2f.ZERO, null, 0);
 	}
 
 	/**
 	 * Create a vertex with a position and a normal
 	 */
-	public static Vertex createVertexPositionNormal(Vector3 position, Vector3 normal) {
-		return new Vertex(position, normal, Vector2.ZERO, null, 0);
+	public static Vertex createVertexPositionNormal(Vector3f position, Vector3f normal) {
+		return new Vertex(position, normal, Vector2f.ZERO, null, 0);
 	}
 
 	/**
 	 * Create a vertex with a position and a texture
 	 */
-	public static Vertex createVertexPositionTexture0(Vector3 position, Vector2 texture) {
-		return new Vertex(position, Vector3.ZERO, texture, null, 0);
+	public static Vertex createVertexPositionTexture0(Vector3f position, Vector2f texture) {
+		return new Vertex(position, Vector3f.ZERO, texture, null, 0);
 	}
 
 	/**
 	 * Create a vertex with a position, a normal and a color
 	 */
-	public static Vertex createVertexPositionNormalColor(Vector3 position, Vector3 normal, Color color) {
-		return new Vertex(position, normal, Vector2.ZERO, color, 0);
+	public static Vertex createVertexPositionNormalColor(Vector3f position, Vector3f normal, Color color) {
+		return new Vertex(position, normal, Vector2f.ZERO, color, 0);
 	}
 
 	/**
 	 * Create a vertex with a position, a normal and a texture
 	 */
-	public static Vertex createVertexPositionNormaTexture0(Vector3 position, Vector3 normal, Vector2 texture) {
+	public static Vertex createVertexPositionNormaTexture0(Vector3f position, Vector3f normal, Vector2f texture) {
 		return new Vertex(position, normal, texture, null, 0);
 	}
 
 	/**
 	 * Create a vertex with a position, a normal, a texture and a color
 	 */
-	public static Vertex createVertexPositionNormalTexture0Color(Vector3 position, Vector3 normal, Vector2 texture, Color color) {
+	public static Vertex createVertexPositionNormalTexture0Color(Vector3f position, Vector3f normal, Vector2f texture, Color color) {
 		return new Vertex(position, normal, texture, color, 0);
 	}
 
 	/**
 	 * Create a vertex with a position, a normal, a texture and a vertice index
 	 */
-	public static Vertex createVertexPositionNormalTexture0Index(Vector3 position, Vector3 normal, Vector2 texture, int id) {
+	public static Vertex createVertexPositionNormalTexture0Index(Vector3f position, Vector3f normal, Vector2f texture, int id) {
 		return new Vertex(position, normal, texture, null, id);
 	}
 
 	/**
 	 * Create a vertex with a position, a normal and a vertice index
 	 */
-	public static Vertex createVertexPositionNormalIndex(Vector3 position, Vector3 normal, int id) {
-		return new Vertex(position, normal, Vector2.ZERO, null, id);
+	public static Vertex createVertexPositionNormalIndex(Vector3f position, Vector3f normal, int id) {
+		return new Vertex(position, normal, Vector2f.ZERO, null, id);
 	}
 
 	/**
 	 * Create a vertex with a position and a vertice index
 	 */
-	public static Vertex createVertexPositionIndex(Vector3 position, int id) {
-		return new Vertex(position, Vector3.ZERO, Vector2.ZERO, null, id);
+	public static Vertex createVertexPositionIndex(Vector3f position, int id) {
+		return new Vertex(position, Vector3f.ZERO, Vector2f.ZERO, null, id);
 	}
 
 	/**
 	 * Create a vertex with a position, a texture and a vertice index
 	 */
-	public static Vertex createVertexPositionTexture0Index(Vector3 position, Vector2 texture, int id) {
-		return new Vertex(position, Vector3.ZERO, texture, null, id);
+	public static Vertex createVertexPositionTexture0Index(Vector3f position, Vector2f texture, int id) {
+		return new Vertex(position, Vector3f.ZERO, texture, null, id);
 	}
 
-	public Vertex(Vector3 position, Vector3 normal, Vector2 texture, Color color, int id) {
+	public Vertex(Vector3f position, Vector3f normal, Vector2f texture, Color color, int id) {
 		this.position = position;
 		this.normal = normal;
 		this.texCoord0 = texture;
@@ -128,10 +128,10 @@ public class Vertex implements Serializable {
 
 	public Vertex(Vertex v) {
 		this.color = v.color == null ? null : new Color(v.color.getRed(), v.color.getGreen(), v.color.getBlue(), v.color.getAlpha());
-		this.position = v.position == null ? null : new Vector3(v.position);
-		this.normal = v.normal == null ? null : new Vector3(v.normal);
-		this.texCoord0 = v.texCoord0 == null ? null : new Vector2(v.texCoord0);
-		this.texCoord1 = v.texCoord1 == null ? null : new Vector2(v.texCoord1);
+		this.position = v.position == null ? null : new Vector3f(v.position);
+		this.normal = v.normal == null ? null : new Vector3f(v.normal);
+		this.texCoord0 = v.texCoord0 == null ? null : new Vector2f(v.texCoord0);
+		this.texCoord1 = v.texCoord1 == null ? null : new Vector2f(v.texCoord1);
 		this.id = v.id;
 	}
 

@@ -28,14 +28,14 @@ package org.spout.engine.world.dynamic;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class ChunkPoint extends Point {
 	public ChunkPoint(Point point) {
 		super(point);
 	}
 
-	public ChunkPoint(Vector3 vector, World w) {
+	public ChunkPoint(Vector3f vector, World w) {
 		super(vector, w);
 	}
 

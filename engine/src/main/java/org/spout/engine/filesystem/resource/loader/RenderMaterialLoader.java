@@ -34,10 +34,12 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector4f;
 import org.yaml.snakeyaml.Yaml;
 
 import org.spout.api.Spout;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.plugin.PluginClassLoader;
 import org.spout.api.render.Texture;
 import org.spout.api.render.effect.RenderEffect;
@@ -45,8 +47,6 @@ import org.spout.api.render.shader.Shader;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
 import org.spout.engine.filesystem.resource.ClientRenderMaterial;
-import org.spout.math.vector.Vector2;
-import org.spout.math.vector.Vector4;
 
 public class RenderMaterialLoader extends ResourceLoader {
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
@@ -156,7 +156,7 @@ public class RenderMaterialLoader extends ResourceLoader {
 						throw new IllegalArgumentException("Vector2 needs 2 components");
 					}
 
-					paramsNew.put(key, new Vector2(
+					paramsNew.put(key, new Vector2f(
 							Float.parseFloat(values[0]),
 							Float.parseFloat(values[1])
 					));
@@ -168,7 +168,7 @@ public class RenderMaterialLoader extends ResourceLoader {
 						throw new IllegalArgumentException("Vector3 needs 3 components");
 					}
 
-					paramsNew.put(key, new Vector3(
+					paramsNew.put(key, new Vector3f(
 							Float.parseFloat(values[0]),
 							Float.parseFloat(values[1]),
 							Float.parseFloat(values[2])
@@ -181,7 +181,7 @@ public class RenderMaterialLoader extends ResourceLoader {
 						throw new IllegalArgumentException("Vector4 needs 4 components");
 					}
 
-					paramsNew.put(key, new Vector4(
+					paramsNew.put(key, new Vector4f(
 							Float.parseFloat(values[0]),
 							Float.parseFloat(values[1]),
 							Float.parseFloat(values[2]),

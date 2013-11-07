@@ -40,11 +40,11 @@ import org.spout.api.render.Camera;
 import org.spout.api.render.Font;
 
 import org.spout.engine.mesh.BaseMesh;
-import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix3f;
 
 public class ClientTextModelComponent extends TextModelComponent {
 	private BaseMesh mesh;
-	private static Matrix3 id3 = new Matrix3();// TODO: ClientTextModelComponent shouldn't use gui shader
+	private static Matrix3f id3 = new Matrix3f();// TODO: ClientTextModelComponent shouldn't use gui shader
 
 	public void updateMesh() {
 		ArrayList<MeshFace> faces = new ArrayList<>();

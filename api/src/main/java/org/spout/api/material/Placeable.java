@@ -29,7 +29,7 @@ package org.spout.api.material;
 import org.spout.api.event.Cause;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockFace;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 /**
  * An interface defining a {@link Material} that can be placed
@@ -45,7 +45,7 @@ public interface Placeable {
 	 * @param cause the cause of the placement
 	 * @return true if placement is allowed
 	 */
-	public boolean canPlace(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock, Cause<?> cause);
+	public boolean canPlace(Block block, short data, BlockFace against, Vector3f clickedPos, boolean isClickedBlock, Cause<?> cause);
 
 	/**
 	 * Called when this block is placed, handling the actual placement<br> This method should only change properties that rely on the face it is placed against, or in what way it is placed. All other
@@ -58,5 +58,5 @@ public interface Placeable {
 	 * @param isClickedBlock whether the block is being placed at the clicked block
 	 * @param cause the cause of the placement
 	 */
-	public void onPlacement(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock, Cause<?> cause);
+	public void onPlacement(Block block, short data, BlockFace against, Vector3f clickedPos, boolean isClickedBlock, Cause<?> cause);
 }

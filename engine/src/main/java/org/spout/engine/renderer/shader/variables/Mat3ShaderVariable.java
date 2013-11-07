@@ -32,18 +32,18 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
 import org.spout.engine.SpoutRenderer;
-import org.spout.math.matrix.Matrix3;
+import org.spout.math.matrix.Matrix3f;
 
 public class Mat3ShaderVariable extends ShaderVariable {
 	public static final FloatBuffer buffer = BufferUtils.createFloatBuffer(9);
-	Matrix3 value;
+	Matrix3f value;
 
-	public Mat3ShaderVariable(int program, String name, Matrix3 value) {
+	public Mat3ShaderVariable(int program, String name, Matrix3f value) {
 		super(program, name);
 		this.value = value;
 	}
 
-	public Matrix3 get() {
+	public Matrix3f get() {
 		return value;
 	}
 

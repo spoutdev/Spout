@@ -40,7 +40,7 @@ import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.tickable.BasicTickable;
-import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector2f;
 
 public class Screen extends BasicTickable implements Container {
 	private final HashMap<Widget, Plugin> widgets = new LinkedHashMap<>();
@@ -57,7 +57,7 @@ public class Screen extends BasicTickable implements Container {
 	public Widget getWidgetAt(int x, int y) {
 		for (Widget w : getWidgets()) {
 			Rectangle bounds = w.getBounds();
-			Vector2 res = ((Client) Spout.getEngine()).getResolution();
+			Vector2f res = ((Client) Spout.getEngine()).getResolution();
 			int startX = (int) (res.getX() / 2) + (toPixelsX(bounds.getX()) / 2);
 			int startY = (int) (res.getY() / 2) + (toPixelsY(bounds.getY()) / 2);
 			int endX = startX + toPixelsX(bounds.getWidth() / 2);

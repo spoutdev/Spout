@@ -1,0 +1,433 @@
+/*
+ * This file is part of Spout.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
+ *
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
+package org.spout.math.test.vector;
+
+import static org.spout.math.test.TestUtil#E#.SQRT5;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import org.spout.math.#ETrig#;
+import org.spout.math.test.TestUtil#E#;
+import org.spout.math.vector.Vector2#E#;
+import org.spout.math.vector.Vector3#E#;
+import org.spout.math.vector.Vector4#E#;
+import org.spout.math.vector.VectorN#E#;
+
+public class Vector4#E#Test {
+	@Test
+	public void testEmptyConstructor() {
+		Vector4#E# vector = new Vector4#E#();
+		TestUtil#E#.assertEquals(vector, 0, 0, 0, 0);
+	}
+
+	@Test
+	public void testCopyVector2DefaultZWConstructor() {
+		Vector4#E# vector = new Vector4#E#(new Vector2#E#(0, 1));
+		TestUtil#E#.assertEquals(vector, 0, 1, 0, 0);
+	}
+
+	@Test
+	public void testCopyVector2FloatZWConstructor() {
+		Vector4#E# vector = new Vector4#E#(new Vector2#E#(0, 1), 1, 2);
+		TestUtil#E#.assertEquals(vector, 0, 1, 1, 2);
+	}
+
+	@Test
+	public void testCopyVector3DefaultWConstructor() {
+		Vector4#E# vector = new Vector4#E#(new Vector3#E#(0, 1, 1), 2);
+		TestUtil#E#.assertEquals(vector, 0, 1, 1, 2);
+	}
+
+	@Test
+	public void testCopyVector3FloatWConstructor() {
+		Vector4#E# vector = new Vector4#E#(new Vector3#E#(0, 1, 1), 2);
+		TestUtil#E#.assertEquals(vector, 0, 1, 1, 2);
+	}
+
+	@Test
+	public void testCopyVector4Constructor() {
+		Vector4#E# vector = new Vector4#E#(new Vector4#E#(0, 1, 1, 2));
+		TestUtil#E#.assertEquals(vector, 0, 1, 1, 2);
+	}
+
+	@Test
+	public void testCopyVectorNConstructor() {
+		Vector4#E# vector = new Vector4#E#(new VectorN#E#(0, 1, 1, 2, 5));
+		TestUtil#E#.assertEquals(vector, 0, 1, 1, 2);
+	}
+
+	@Test
+	public void testDoubleComponentsConstructor() {
+		Vector4#E# vector = new Vector4#E#(0.5, 1.7, 3.8, 5.5);
+		TestUtil#E#.assertEquals(vector, (#e#) 0.5, (#e#) 1.7, (#e#) 3.8, (#e#) 5.5);
+	}
+
+	@Test
+	public void testFloatComponentsConstructor() {
+		Vector4#E# vector = new Vector4#E#(0.5f, 1.7f, 3.8f, 5.5f);
+		TestUtil#E#.assertEquals(vector, 0.5f, 1.7f, 3.8f, 5.5f);
+	}
+
+	@Test
+	public void testGetters() {
+		Vector4#E# vector = new Vector4#E#(0.5, 1.7, 3.8, 5.5);
+		TestUtil#E#.assertEquals(vector.getX(), (#e#) 0.5);
+		TestUtil#E#.assertEquals(vector.getY(), (#e#) 1.7);
+		TestUtil#E#.assertEquals(vector.getZ(), (#e#) 3.8);
+		TestUtil#E#.assertEquals(vector.getW(), (#e#) 5.5);
+	}
+
+	@Test
+	public void testFloorGetters() {
+		Vector4#E# vector = new Vector4#E#(0.5, 1.7, 3.8, 5.5);
+		TestUtil#E#.assertEquals(vector.getFloorX(), 0);
+		TestUtil#E#.assertEquals(vector.getFloorY(), 1);
+		TestUtil#E#.assertEquals(vector.getFloorZ(), 3);
+		TestUtil#E#.assertEquals(vector.getFloorW(), 5);
+	}
+
+	@Test
+	public void testVector4Addition() {
+		Vector4#E# vector = new Vector4#E#(0, 1, 1, 1).add(new Vector4#E#(5.5, -0.5, 3.8, 5.5));
+		TestUtil#E#.assertEquals(vector, (#e#) 5.5, (#e#) 0.5, (#e#) 4.8, (#e#) 6.5);
+	}
+
+	@Test
+	public void testDoubleComponentsAddition() {
+		Vector4#E# vector = new Vector4#E#(0, 1, 1, 1).add(5.5, -0.5, 3.8, 5.5);
+		TestUtil#E#.assertEquals(vector, (#e#) 5.5, (#e#) 0.5, (#e#) 4.8, (#e#) 6.5);
+	}
+
+	@Test
+	public void testFloatComponentsAddition() {
+		Vector4#E# vector = new Vector4#E#(0, 1, 1, 1).add(5.5f, -0.5f, 3.8f, 5.5f);
+		TestUtil#E#.assertEquals(vector, 5.5f, 0.5f, (#e#) 4.8, 6.5f);
+	}
+
+	@Test
+	public void testVector4Subtraction() {
+		Vector4#E# vector = new Vector4#E#(10, 5, 1, 1).sub(new Vector4#E#(9, 4.5, 2, 1));
+		TestUtil#E#.assertEquals(vector, 1, (#e#) 0.5, -1, 0);
+	}
+
+	@Test
+	public void testDoubleComponentsSubtraction() {
+		Vector4#E# vector = new Vector4#E#(10, 5, 1, 1).sub(9, 4.5, 2, 1);
+		TestUtil#E#.assertEquals(vector, 1, (#e#) 0.5, -1, 0);
+	}
+
+	@Test
+	public void testFloatComponentsSubtraction() {
+		Vector4#E# vector = new Vector4#E#(10, 5, 1, 1).sub(9, 4.5f, 2f, 1f);
+		TestUtil#E#.assertEquals(vector, 1, 0.5f, -1, 0);
+	}
+
+	@Test
+	public void testDoubleFactorMultiplication() {
+		Vector4#E# vector = new Vector4#E#(2, 3, 4, 5).mul(1.5);
+		TestUtil#E#.assertEquals(vector, 3, (#e#) 4.5, 6, (#e#) 7.5);
+	}
+
+	@Test
+	public void testFloatFactorMultiplication() {
+		Vector4#E# vector = new Vector4#E#(2, 3, 4, 5).mul(1.5f);
+		TestUtil#E#.assertEquals(vector, 3, 4.5f, 6, 7.5f);
+	}
+
+	@Test
+	public void testVector4Multiplication() {
+		Vector4#E# vector = new Vector4#E#(2, 3, 4, 5).mul(new Vector4#E#(1.5, 2.5, 3.5, 4.5));
+		TestUtil#E#.assertEquals(vector, 3, (#e#) 7.5, 14, (#e#) 22.5);
+	}
+
+	@Test
+	public void testDoubleComponentsMultiplication() {
+		Vector4#E# vector = new Vector4#E#(2, 3, 4, 5).mul(2d);
+		TestUtil#E#.assertEquals(vector, 4, 6, 8, 10);
+	}
+
+	@Test
+	public void testFloatComponentsMultiplication() {
+		Vector4#E# vector = new Vector4#E#(2, 3, 4, 5).mul(2);
+		TestUtil#E#.assertEquals(vector, 4, 6, 8, 10);
+	}
+
+	@Test
+	public void testDoubleFactorDivision() {
+		Vector4#E# vector = new Vector4#E#(2, 3, 4, 5).div(2d);
+		TestUtil#E#.assertEquals(vector, 1, (#e#) 1.5, 2, (#e#) 2.5);
+	}
+
+	@Test
+	public void testFloatFactorDivision() {
+		Vector4#E# vector = new Vector4#E#(2, 3, 4, 5).div(2);
+		TestUtil#E#.assertEquals(vector, 1, 1.5f, 2, 2.5f);
+	}
+
+	@Test
+	public void testVector4Division() {
+		Vector4#E# vector = new Vector4#E#(2, 6, 12, 16).div(new Vector4#E#(2, 4, 8, 8));
+		TestUtil#E#.assertEquals(vector, 1, (#e#) 1.5, (#e#) 1.5, 2f);
+	}
+
+	@Test
+	public void testDoubleComponentsDivision() {
+		Vector4#E# vector = new Vector4#E#(2, 6, 16, 18).div(2d, 4d, 8d, 9d);
+		TestUtil#E#.assertEquals(vector, 1, (#e#) 1.5, 2, 2);
+	}
+
+	@Test
+	public void testFloatComponentsDivision() {
+		Vector4#E# vector = new Vector4#E#(2, 6, 16, 18).div(2, 4, 8, 9);
+		TestUtil#E#.assertEquals(vector, 1, 1.5f, 2, 2);
+	}
+
+	@Test
+	public void testVector4DotProduct() {
+		#e# f = new Vector4#E#(2, 3, 4, 5).dot(new Vector4#E#(6, 7, 8, 9));
+		TestUtil#E#.assertEquals(f, 110);
+	}
+
+	@Test
+	public void testDoubleComponentsDotProduct() {
+		#e# f = new Vector4#E#(2, 3, 4, 5).dot(6d, 7d, 8d, 9d);
+		TestUtil#E#.assertEquals(f, 110);
+	}
+
+	@Test
+	public void testFloatComponentsDotProduct() {
+		#e# f = new Vector4#E#(2, 3, 4, 5).dot(6, 7, 8, 9);
+		TestUtil#E#.assertEquals(f, 110);
+	}
+
+	@Test
+	public void testRaiseToFloatPower() {
+		Vector4#E# vector = new Vector4#E#(2, 6, 8, 5.5).pow(2);
+		TestUtil#E#.assertEquals(vector, 4, 36, 64, 30.25f);
+	}
+
+	@Test
+	public void testRaiseToDoublePower() {
+		Vector4#E# vector = new Vector4#E#(2, 6, 8, 5.5).pow(2d);
+		TestUtil#E#.assertEquals(vector, 4, 36, 64, (#e#) 30.25);
+	}
+
+	@Test
+	public void testCeiling() {
+		Vector4#E# vector = new Vector4#E#(2.5, 6.7, 7.9, 8.1).ceil();
+		TestUtil#E#.assertEquals(vector, 3, 7, 8, 9);
+	}
+
+	@Test
+	public void testFloor() {
+		Vector4#E# vector = new Vector4#E#(2.5, 6.7, 7.8, 9.1).floor();
+		TestUtil#E#.assertEquals(vector, 2, 6, 7, 9);
+	}
+
+	@Test
+	public void testRound() {
+		Vector4#E# vector = new Vector4#E#(2.2, 6.7, 7.8, 9.1).round();
+		TestUtil#E#.assertEquals(vector, 2, 7, 8, 9);
+	}
+
+	@Test
+	public void testAbsolute() {
+		Vector4#E# vector1 = new Vector4#E#(-2.5, -6.7, -55, 0).abs();
+		TestUtil#E#.assertEquals(vector1, (#e#) 2.5, (#e#) 6.7, 55, 0);
+		Vector4#E# vector2 = new Vector4#E#(2.5, 6.7, 55, 0).abs();
+		TestUtil#E#.assertEquals(vector2, (#e#) 2.5, (#e#) 6.7, 55, 0);
+	}
+
+	@Test
+	public void testNegate() {
+		Vector4#E# vector = new Vector4#E#(2.2, -6.7, 15.8, 20).negate();
+		TestUtil#E#.assertEquals(vector, (#e#) -2.2, (#e#) 6.7, (#e#) -15.8, -20);
+	}
+
+	@Test
+	public void testVector4Minimum() {
+		Vector4#E# vector = new Vector4#E#(2, 6, -1, 0).min(new Vector4#E#(3, 4, 10, -1));
+		TestUtil#E#.assertEquals(vector, 2, 4, -1, -1);
+	}
+
+	@Test
+	public void testDoubleComponentsMinimum() {
+		Vector4#E# vector = new Vector4#E#(2, 6, -1, 0).min(3, 4, 10, -1.1);
+		TestUtil#E#.assertEquals(vector, 2, 4, -1, (#e#) -1.1);
+	}
+
+	@Test
+	public void testFloatComponentsMinimum() {
+		Vector4#E# vector = new Vector4#E#(2, 6, -1, 0).min(3, 4, 10, -1.1f);
+		TestUtil#E#.assertEquals(vector, 2, 4, -1, -1.1f);
+	}
+
+	@Test
+	public void testVector4Maximum() {
+		Vector4#E# vector = new Vector4#E#(2, 6, -1, 0).max(new Vector4#E#(3, 4, 10, -1));
+		TestUtil#E#.assertEquals(vector, 3, 6, 10, 0);
+	}
+
+	@Test
+	public void testDoubleComponentsMaximum() {
+		Vector4#E# vector = new Vector4#E#(2, 6, -1, 0).max(3, 4, 10, -1.1);
+		TestUtil#E#.assertEquals(vector, 3, 6, 10, 0);
+	}
+
+	@Test
+	public void testFloatComponentsMaximum() {
+		Vector4#E# vector = new Vector4#E#(2, 6, -1, 0).max(3, 4, 10, -1.1f);
+		TestUtil#E#.assertEquals(vector, 3, 6, 10, 0);
+	}
+
+	@Test
+	public void testVector4DistanceSquared() {
+		#e# f = new Vector3#E#(2, 3, 4).distanceSquared(new Vector3#E#(5, 6, 7));
+		TestUtil#E#.assertEquals(f, 27);
+	}
+
+	@Test
+	public void testDoubleComponentsDistanceSquared() {
+		#e# f = new Vector4#E#(2, 3, 4, 1).distanceSquared(5d, 6d, 7d, 1d);
+		TestUtil#E#.assertEquals(f, 27);
+	}
+
+	@Test
+	public void testFloatComponentsDistanceSquared() {
+		#e# f = new Vector4#E#(2, 3, 4, 5).distanceSquared(5, 6, 7, 5);
+		TestUtil#E#.assertEquals(f, 27);
+	}
+
+	@Test
+	public void testVector4Distance() {
+		#e# f = new Vector4#E#(0, 2, 4, 8).distance(new Vector4#E#(0, 8, 16, 8));
+		TestUtil#E#.assertEquals(f, 6 * SQRT5);
+	}
+
+	@Test
+	public void testDoubleComponentsDistance() {
+		#e# f = new Vector4#E#(0, 2, 4, 8).distance(new Vector4#E#(0d, 8d, 16d, 8d));
+		TestUtil#E#.assertEquals(f, 6 * SQRT5);
+	}
+
+	@Test
+	public void testFloatComponentsDistance() {
+		#e# f = new Vector4#E#(0, 2, 4, 8).distance(new Vector4#E#(0, 8, 16, 8));
+		TestUtil#E#.assertEquals(f, 6 * SQRT5);
+	}
+
+	@Test
+	public void testLength() {
+		#e# f = new Vector4#E#(3, 4, 5, 6).length();
+		TestUtil#E#.assertEquals(f, (#e#) Math.sqrt(86));
+	}
+
+	@Test
+	public void testLengthSquared() {
+		#e# f = new Vector4#E#(3, 4, 5, 6).lengthSquared();
+		TestUtil#E#.assertEquals(f, 86);
+	}
+
+	@Test
+	public void testNormalize() {
+		Vector4#E# v1 = new Vector4#E#(1, 1, 0, 0).normalize();
+		TestUtil#E#.assertEquals(v1, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, 0);
+		Vector4#E# v2 = new Vector4#E#(0, 1, 0, 1).normalize();
+		TestUtil#E#.assertEquals(v2, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO, 0, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testGetMinAxis() {
+		Vector4#E# vector1 = new Vector4#E#(1, 2, 3, 4);
+		TestUtil#E#.assertEquals(vector1.getMinAxis(), 0);
+		Vector4#E# vector2 = new Vector4#E#(2, 1, 3, 4);
+		TestUtil#E#.assertEquals(vector2.getMinAxis(), 1);
+		Vector4#E# vector3 = new Vector4#E#(3, 2, 1, 4);
+		TestUtil#E#.assertEquals(vector3.getMinAxis(), 2);
+		Vector4#E# vector4 = new Vector4#E#(4, 2, 3, 1);
+		TestUtil#E#.assertEquals(vector4.getMinAxis(), 3);
+	}
+
+	@Test
+	public void testGetMaxAxis() {
+		Vector4#E# vector1 = new Vector4#E#(4, 2, 3, 1);
+		TestUtil#E#.assertEquals(vector1.getMaxAxis(), 0);
+		Vector4#E# vector2 = new Vector4#E#(1, 4, 3, 2);
+		TestUtil#E#.assertEquals(vector2.getMaxAxis(), 1);
+		Vector4#E# vector3 = new Vector4#E#(1, 2, 4, 3);
+		TestUtil#E#.assertEquals(vector3.getMaxAxis(), 2);
+		Vector4#E# vector4 = new Vector4#E#(1, 2, 3, 4);
+		TestUtil#E#.assertEquals(vector4.getMaxAxis(), 3);
+	}
+
+	@Test
+	public void testConvertToVector2() {
+		Vector2#E# vector = new Vector4#E#(1, 2, 3, 4).toVector2();
+		TestUtil#E#.assertEquals(vector, 1, 2);
+	}
+
+	@Test
+	public void testConvertToVector3() {
+		Vector3#E# vector = new Vector4#E#(1, 2, 3, 4).toVector3();
+		TestUtil#E#.assertEquals(vector, 1, 2, 3);
+	}
+
+	@Test
+	public void testConvertToVectorN() {
+		VectorN#E# vector = new Vector4#E#(1, 2, 3, 4).toVectorN();
+		TestUtil#E#.assertEquals(vector, 1, 2, 3, 4);
+	}
+
+	@Test
+	public void testConvertToArray() {
+		#e#[] array = new Vector4#E#(1, 2, 3, 4).toArray();
+		TestUtil#E#.assertEquals(array, 1, 2, 3, 4);
+	}
+
+	@Test
+	public void testComparison() {
+		int c1 = new Vector4#E#(10, 20, 30, 40).compareTo(new Vector4#E#(20, 20, 30, 40));
+		Assert.assertTrue(c1 < 0);
+		int c2 = new Vector4#E#(10, 20, 30, 40).compareTo(new Vector4#E#(10, 20, 30, 40));
+		Assert.assertTrue(c2 == 0);
+		int c3 = new Vector4#E#(10, 20, 30, 40).compareTo(new Vector4#E#(10, 10, 30, 40));
+		Assert.assertTrue(c3 > 0);
+	}
+
+	@Test
+	public void testEquals() {
+		Assert.assertTrue(new Vector4#E#(122, 43, 96, 50).equals(new Vector4#E#(122, 43, 96, 50)));
+		Assert.assertFalse(new Vector4#E#(122, 43, 96, 50).equals(new Vector4#E#(378, 95, 96, 0)));
+	}
+
+	@Test
+	public void testCloning() {
+		Vector4#E# vector = new Vector4#E#(3, 2, 5, 6);
+		Assert.assertEquals(vector, vector.clone());
+	}
+}

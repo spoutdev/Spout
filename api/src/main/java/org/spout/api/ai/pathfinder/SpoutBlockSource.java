@@ -29,7 +29,7 @@ package org.spout.api.ai.pathfinder;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.Material;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class SpoutBlockSource extends AbstractBlockSource {
 	private final World world;
@@ -44,12 +44,12 @@ public class SpoutBlockSource extends AbstractBlockSource {
 	}
 
 	@Override
-	public int getBlockTypeIdAt(Vector3 pos) {
+	public int getBlockTypeIdAt(Vector3f pos) {
 		return getMaterialAt(pos).getId();
 	}
 
 	@Override
-	public Material getMaterialAt(Vector3 pos) {
+	public Material getMaterialAt(Vector3f pos) {
 		return world.getBlockMaterial(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
 	}
 }

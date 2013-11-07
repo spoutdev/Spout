@@ -118,7 +118,7 @@ import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 import org.spout.math.GenericMath;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<>(null);
@@ -371,7 +371,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		blockStore.writeLock();
 
 		try {
-			Vector3 base = buffer.getBase();
+			Vector3f base = buffer.getBase();
 			int x = base.getFloorX();
 			int y = base.getFloorY();
 			int z = base.getFloorZ();
@@ -390,7 +390,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	@Override
 	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-		Vector3 base = buffer.getBase();
+		Vector3f base = buffer.getBase();
 		setCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer, cause);
 	}
 
@@ -398,7 +398,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public void setCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 		blockStore.writeLock();
 		try {
-			Vector3 size = buffer.getSize();
+			Vector3f size = buffer.getSize();
 
 			int startX = Math.max(bx, this.getBlockX());
 			int startY = Math.max(by, this.getBlockY());
@@ -408,7 +408,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			int endY = Math.min(by + size.getFloorY(), this.getBlockY() + BLOCKS.SIZE - 1);
 			int endZ = Math.min(bz + size.getFloorZ(), this.getBlockZ() + BLOCKS.SIZE - 1);
 
-			Vector3 base = buffer.getBase();
+			Vector3f base = buffer.getBase();
 
 			int offX = bx - base.getFloorX();
 			int offY = by - base.getFloorY();
@@ -432,7 +432,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public boolean testCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer) {
 		blockStore.writeLock();
 		try {
-			Vector3 size = buffer.getSize();
+			Vector3f size = buffer.getSize();
 
 			int startX = Math.max(bx, this.getBlockX());
 			int startY = Math.max(by, this.getBlockY());
@@ -442,7 +442,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			int endY = Math.min(by + size.getFloorY(), this.getBlockY() + BLOCKS.SIZE - 1);
 			int endZ = Math.min(bz + size.getFloorZ(), this.getBlockZ() + BLOCKS.SIZE - 1);
 
-			Vector3 base = buffer.getBase();
+			Vector3f base = buffer.getBase();
 
 			int offX = bx - base.getFloorX();
 			int offY = by - base.getFloorY();
@@ -493,7 +493,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	@Override
 	public void getCuboid(CuboidBlockMaterialBuffer buffer) {
-		Vector3 base = buffer.getBase();
+		Vector3f base = buffer.getBase();
 		getCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer);
 	}
 
@@ -501,7 +501,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public void getCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer) {
 		blockStore.writeLock();
 		try {
-			Vector3 size = buffer.getSize();
+			Vector3f size = buffer.getSize();
 
 			int startX = Math.max(bx, this.getBlockX());
 			int startY = Math.max(by, this.getBlockY());
@@ -511,7 +511,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			int endY = Math.min(by + size.getFloorY(), this.getBlockY() + BLOCKS.SIZE);
 			int endZ = Math.min(bz + size.getFloorZ(), this.getBlockZ() + BLOCKS.SIZE);
 
-			Vector3 base = buffer.getBase();
+			Vector3f base = buffer.getBase();
 
 			int offX = bx - base.getFloorX();
 			int offY = by - base.getFloorY();
@@ -936,7 +936,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		return blockStore.getMinDirty();
 	}
 
-	protected Vector3 getDirtyBlock(int i) {
+	protected Vector3f getDirtyBlock(int i) {
 		return blockStore.getDirtyBlock(i);
 	}
 
@@ -1585,7 +1585,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	@Override
-	public Block getBlock(Vector3 position) {
+	public Block getBlock(Vector3f position) {
 		return getBlock(position.getX(), position.getY(), position.getZ());
 	}
 
@@ -2153,7 +2153,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			}
 			int size = BLOCKS.SIZE;
 			for (int i = 0; i < dirtyBlocks; i++) {
-				Vector3 blockPos = getDirtyBlock(i);
+				Vector3f blockPos = getDirtyBlock(i);
 				BlockMaterial material = getBlockMaterial(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ());
 				ByteBitSet occlusion = material.getOcclusion(material.getData());
 				for (BlockFace face : BlockFace.values()) {
@@ -2163,7 +2163,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 					if (occlusion.get(face)) {
 						continue;
 					}
-					Vector3 neighborPos = blockPos.add(face.getOffset());
+					Vector3f neighborPos = blockPos.add(face.getOffset());
 					int nx = neighborPos.getFloorX();
 					int ny = neighborPos.getFloorX();
 					int nz = neighborPos.getFloorX();
@@ -2193,7 +2193,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public void sync(NetworkComponent network) {
 		if (!isDirtyOverflow() && !isLightDirty()) {
 			for (int i = 0; true; i++) {
-				Vector3 block = getDirtyBlock(i);
+				Vector3f block = getDirtyBlock(i);
 				if (block == null) {
 					break;
 				}

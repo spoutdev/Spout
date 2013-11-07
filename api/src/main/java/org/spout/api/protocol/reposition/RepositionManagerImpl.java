@@ -29,7 +29,7 @@ package org.spout.api.protocol.reposition;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public abstract class RepositionManagerImpl implements RepositionManager {
 	@Override
@@ -93,16 +93,16 @@ public abstract class RepositionManagerImpl implements RepositionManager {
 
 	@Override
 	public Point convert(Point p) {
-		Point newP = new Point(convert((Vector3) p), p.getWorld());
+		Point newP = new Point(convert((Vector3f) p), p.getWorld());
 		return newP;
 	}
 
 	@Override
-	public Vector3 convert(Vector3 v) {
+	public Vector3f convert(Vector3f v) {
 		float newX = convertX(v.getX());
 		float newY = convertY(v.getY());
 		float newZ = convertZ(v.getZ());
-		Vector3 newP = new Vector3(newX, newY, newZ);
+		Vector3f newP = new Vector3f(newX, newY, newZ);
 		return newP;
 	}
 }

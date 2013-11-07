@@ -27,13 +27,13 @@
 package org.spout.api.geo.cuboid;
 
 import org.spout.api.geo.discrete.Point;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 /**
  * Represents a Cube that is located somewhere in a world.
  */
 public class Cube extends Cuboid {
 	public Cube(Point base, float size) {
-		super(base, new Vector3(size, size, size));
+		super(base, new Vector3f(size, size, size));
 	}
 }

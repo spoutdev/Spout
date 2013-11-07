@@ -29,7 +29,7 @@ package org.spout.api.ai.pathfinder;
 import java.util.List;
 
 import org.spout.api.ai.AStarNode;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 import com.google.common.collect.Lists;
 
@@ -38,9 +38,9 @@ public class VectorNode extends AStarNode implements PathPoint {
 	private final BlockSource blockSource;
 	List<PathCallback> callbacks;
 	private final BlockExaminer[] examiners;
-	final Vector3 location;
+	final Vector3f location;
 
-	public VectorNode(Vector3 location, BlockSource source, BlockExaminer... examiners) {
+	public VectorNode(Vector3f location, BlockSource source, BlockExaminer... examiners) {
 		this.location = location; // TODO: possibly set to blockX values.
 		this.blockSource = source;
 		this.examiners = examiners == null ? new BlockExaminer[] {} : examiners;
@@ -54,7 +54,7 @@ public class VectorNode extends AStarNode implements PathPoint {
 		callbacks.add(callback);
 	}
 
-	boolean at(Vector3 goal) {
+	boolean at(Vector3f goal) {
 		return location.distanceSquared(goal) <= 4;
 	}
 
@@ -106,7 +106,7 @@ public class VectorNode extends AStarNode implements PathPoint {
 					if (x == 0 && y == 0 && z == 0) {
 						continue;
 					}
-					Vector3 mod = location.add(x, y, z);
+					Vector3f mod = location.add(x, y, z);
 					if (mod.equals(location)) {
 						continue;
 					}
@@ -121,12 +121,12 @@ public class VectorNode extends AStarNode implements PathPoint {
 		return nodes;
 	}
 
-	private VectorNode getNewNode(Vector3 mod) {
+	private VectorNode getNewNode(Vector3f mod) {
 		return new VectorNode(mod, blockSource, examiners);
 	}
 
 	@Override
-	public Vector3 getVector() {
+	public Vector3f getVector() {
 		return location;
 	}
 
@@ -136,7 +136,7 @@ public class VectorNode extends AStarNode implements PathPoint {
 		return prime + ((location == null) ? 0 : location.hashCode());
 	}
 
-	public float heuristicDistance(Vector3 goal) {
+	public float heuristicDistance(Vector3f goal) {
 		return (float) (location.distance(goal) + getBlockCost()) * TIEBREAKER;
 	}
 

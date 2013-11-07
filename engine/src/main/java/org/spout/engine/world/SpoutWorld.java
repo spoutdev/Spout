@@ -96,7 +96,7 @@ import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 import org.spout.math.GenericMath;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public abstract class SpoutWorld extends BaseComponentOwner implements AsyncManager, World {
 	protected SnapshotManager snapshotManager = new SnapshotManager();
@@ -222,7 +222,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	}
 
 	@Override
-	public SpoutBlock getBlock(Vector3 position) {
+	public SpoutBlock getBlock(Vector3f position) {
 		return this.getBlock(position.getX(), position.getY(), position.getZ());
 	}
 
@@ -290,12 +290,12 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	}
 
 	@Override
-	public SpoutRegion getRegionFromBlock(Vector3 position) {
+	public SpoutRegion getRegionFromBlock(Vector3f position) {
 		return getRegionFromBlock(position, LoadOption.LOAD_GEN);
 	}
 
 	@Override
-	public SpoutRegion getRegionFromBlock(Vector3 position, LoadOption loadopt) {
+	public SpoutRegion getRegionFromBlock(Vector3f position, LoadOption loadopt) {
 		return this.getRegionFromBlock(position.getFloorX(), position.getFloorY(), position.getFloorZ(), loadopt);
 	}
 
@@ -325,12 +325,12 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	}
 
 	@Override
-	public SpoutChunk getChunkFromBlock(Vector3 position) {
+	public SpoutChunk getChunkFromBlock(Vector3f position) {
 		return this.getChunkFromBlock(position, LoadOption.LOAD_GEN);
 	}
 
 	@Override
-	public SpoutChunk getChunkFromBlock(Vector3 position, LoadOption loadopt) {
+	public SpoutChunk getChunkFromBlock(Vector3f position, LoadOption loadopt) {
 		return this.getChunkFromBlock(position.getFloorX(), position.getFloorY(), position.getFloorZ(), loadopt);
 	}
 
@@ -1045,7 +1045,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	}
 
 	private SpoutChunk[][][] getChunks(final int startX, final int startY, final int startZ, CuboidBlockMaterialBuffer buffer) {
-		Vector3 size = buffer.getSize();
+		Vector3f size = buffer.getSize();
 
 		final int endX = startX + size.getFloorX();
 		final int endY = startY + size.getFloorY();
@@ -1107,7 +1107,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 
 	@Override
 	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-		Vector3 base = buffer.getBase();
+		Vector3f base = buffer.getBase();
 		setCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer, cause);
 	}
 
@@ -1129,7 +1129,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 
 	@Override
 	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-		Vector3 base = buffer.getBase();
+		Vector3f base = buffer.getBase();
 		int x = base.getFloorX();
 		int y = base.getFloorY();
 		int z = base.getFloorZ();
@@ -1140,7 +1140,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 
 	protected boolean commitCuboid(SpoutChunk[][][] chunks, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 
-		Vector3 base = buffer.getBase();
+		Vector3f base = buffer.getBase();
 		int x = base.getFloorX();
 		int y = base.getFloorY();
 		int z = base.getFloorZ();
@@ -1238,7 +1238,7 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 
 	@Override
 	public void getCuboid(CuboidBlockMaterialBuffer buffer) {
-		Vector3 base = buffer.getBase();
+		Vector3f base = buffer.getBase();
 		getCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer);
 	}
 
@@ -1316,14 +1316,14 @@ public abstract class SpoutWorld extends BaseComponentOwner implements AsyncMana
 	}
 
 	@Override
-	public void queueChunksForGeneration(List<Vector3> chunks) {
-		for (Vector3 v : chunks) {
+	public void queueChunksForGeneration(List<Vector3f> chunks) {
+		for (Vector3f v : chunks) {
 			queueChunkForGeneration(v);
 		}
 	}
 
 	@Override
-	public void queueChunkForGeneration(final Vector3 chunk) {
+	public void queueChunkForGeneration(final Vector3f chunk) {
 		final int rx = (chunk.getFloorX() >> Region.CHUNKS.BITS);
 		final int ry = (chunk.getFloorY() >> Region.CHUNKS.BITS);
 		final int rz = (chunk.getFloorZ() >> Region.CHUNKS.BITS);

@@ -42,7 +42,7 @@ import org.spout.api.audio.SoundListener;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
 import org.spout.api.geo.discrete.Point;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 import static org.lwjgl.openal.AL10.alGenSources;
 import static org.lwjgl.openal.AL10.alIsBuffer;
@@ -67,8 +67,8 @@ public class SpoutSoundManager implements SoundManager {
 
 		// Initialize the listener
 		listener.setPosition(new Point(Spout.getEngine().getDefaultWorld(), 0, 0, 0));
-		listener.setVelocity(Vector3.ZERO);
-		listener.setOrientation(Vector3.ZERO, Vector3.ZERO);
+		listener.setVelocity(Vector3f.ZERO);
+		listener.setOrientation(Vector3f.ZERO, Vector3f.ZERO);
 	}
 
 	@Override

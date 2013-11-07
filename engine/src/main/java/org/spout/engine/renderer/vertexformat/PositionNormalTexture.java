@@ -26,41 +26,41 @@
  */
 package org.spout.engine.renderer.vertexformat;
 
-import org.spout.math.vector.Vector2;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3f;
 
 public class PositionNormalTexture {
-	private Vector3 position;
-	private Vector3 normal;
-	private Vector2 texture;
+	private Vector3f position;
+	private Vector3f normal;
+	private Vector2f texture;
 
-	public PositionNormalTexture(Vector3 position, Vector3 normal, Vector2 uv) {
+	public PositionNormalTexture(Vector3f position, Vector3f normal, Vector2f uv) {
 		this.position = position;
 		this.normal = normal;
 		this.texture = uv;
 	}
 
-	public Vector3 getPosition() {
+	public Vector3f getPosition() {
 		return position;
 	}
 
-	public Vector3 getNormal() {
+	public Vector3f getNormal() {
 		return normal;
 	}
 
-	public Vector2 getTexture() {
+	public Vector2f getTexture() {
 		return texture;
 	}
 
-	public void setPosition(Vector3 position) {
+	public void setPosition(Vector3f position) {
 		this.position = position;
 	}
 
-	public void setNormal(Vector3 normal) {
+	public void setNormal(Vector3f normal) {
 		this.normal = normal;
 	}
 
-	public void setTexture(Vector2 texture) {
+	public void setTexture(Vector2f texture) {
 		this.texture = texture;
 	}
 }

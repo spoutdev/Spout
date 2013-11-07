@@ -27,28 +27,28 @@
 package org.spout.api.math;
 
 import java.io.Serializable;
-import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector2f;
 
 public class Rectangle implements Serializable {
 	private static final long serialVersionUID = 2080093328836030546L;
 	public static final Rectangle ZERO = new Rectangle(0, 0, 0, 0);
-	final Vector2 position;
-	final Vector2 extents;
+	final Vector2f position;
+	final Vector2f extents;
 
-	public Rectangle(Vector2 position, Vector2 extents) {
+	public Rectangle(Vector2f position, Vector2f extents) {
 		this.position = position;
 		this.extents = extents;
 	}
 
 	public Rectangle(float x, float y, float w, float h) {
-		this(new Vector2(x, y), new Vector2(w, h));
+		this(new Vector2f(x, y), new Vector2f(w, h));
 	}
 
-	public Vector2 getPosition() {
+	public Vector2f getPosition() {
 		return position;
 	}
 
-	public Vector2 getExtents() {
+	public Vector2f getExtents() {
 		return extents;
 	}
 
@@ -68,11 +68,11 @@ public class Rectangle implements Serializable {
 		return extents.getY();
 	}
 
-	public Rectangle multiply(Vector2 that) {
+	public Rectangle multiply(Vector2f that) {
 		return new Rectangle(position.mul(that), extents.mul(that));
 	}
 
-	public Rectangle divide(Vector2 by) {
+	public Rectangle divide(Vector2f by) {
 		return new Rectangle(position.div(by), extents.div(by));
 	}
 

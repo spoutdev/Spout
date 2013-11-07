@@ -33,24 +33,24 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import org.spout.api.math.IntVector3;
 import org.spout.api.util.bytebit.ByteBitMask;
 
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 
 /**
  * Indicates the facing of a Block
  */
 public enum BlockFace implements ByteBitMask, Serializable {
-	TOP(0x1, 0, 1, 0, Quaternion.fromAngleDegAxis(-90, 1, 0, 0)),
-	BOTTOM(0x2, 0, -1, 0, Quaternion.fromAngleDegAxis(90, 1, 0, 0), TOP),
-	NORTH(0x4, -1, 0, 0, Quaternion.fromAngleDegAxis(-90, 0, 1, 0)),
-	SOUTH(0x8, 1, 0, 0, Quaternion.fromAngleDegAxis(90, 0, 1, 0), NORTH),
-	EAST(0x10, 0, 0, -1, Quaternion.fromAngleDegAxis(180, 0, 1, 0)),
-	WEST(0x20, 0, 0, 1, Quaternion.fromAngleDegAxis(0, 0, 1, 0), EAST),
-	THIS(0x40, 0, 0, 0, Quaternion.IDENTITY);
+	TOP(0x1, 0, 1, 0, Quaternionf.fromAngleDegAxis(-90, 1, 0, 0)),
+	BOTTOM(0x2, 0, -1, 0, Quaternionf.fromAngleDegAxis(90, 1, 0, 0), TOP),
+	NORTH(0x4, -1, 0, 0, Quaternionf.fromAngleDegAxis(-90, 0, 1, 0)),
+	SOUTH(0x8, 1, 0, 0, Quaternionf.fromAngleDegAxis(90, 0, 1, 0), NORTH),
+	EAST(0x10, 0, 0, -1, Quaternionf.fromAngleDegAxis(180, 0, 1, 0)),
+	WEST(0x20, 0, 0, 1, Quaternionf.fromAngleDegAxis(0, 0, 1, 0), EAST),
+	THIS(0x40, 0, 0, 0, Quaternionf.IDENTITY);
 	private final byte mask;
-	private final Vector3 offset;
+	private final Vector3f offset;
 	private final IntVector3 intOffset;
-	private final Quaternion direction;
+	private final Quaternionf direction;
 	private BlockFace opposite = this;
 	private static final TIntObjectHashMap<BlockFace> OFFSET_MAP = new TIntObjectHashMap<>(7);
 	private static final long serialVersionUID = 1L;
@@ -61,20 +61,20 @@ public enum BlockFace implements ByteBitMask, Serializable {
 		}
 	}
 
-	private BlockFace(int mask, int dx, int dy, int dz, Quaternion direction, BlockFace opposite) {
+	private BlockFace(int mask, int dx, int dy, int dz, Quaternionf direction, BlockFace opposite) {
 		this(mask, dx, dy, dz, direction);
 		this.opposite = opposite;
 		opposite.opposite = this;
 	}
 
-	private BlockFace(int mask, int dx, int dy, int dz, Quaternion direction) {
-		this.offset = new Vector3(dx, dy, dz);
+	private BlockFace(int mask, int dx, int dy, int dz, Quaternionf direction) {
+		this.offset = new Vector3f(dx, dy, dz);
 		this.intOffset = new IntVector3(dx, dy, dz);
 		this.direction = direction;
 		this.mask = (byte) mask;
 	}
 
-	private static int getOffsetHash(Vector3 offset) {
+	private static int getOffsetHash(Vector3f offset) {
 		int x = offset.getFloorX();
 		int y = offset.getFloorY();
 		int z = offset.getFloorZ();
@@ -89,7 +89,7 @@ public enum BlockFace implements ByteBitMask, Serializable {
 	 *
 	 * @return the direction of the blockface.
 	 */
-	public Quaternion getDirection() {
+	public Quaternionf getDirection() {
 		return this.direction;
 	}
 
@@ -98,7 +98,7 @@ public enum BlockFace implements ByteBitMask, Serializable {
 	 *
 	 * @return the offset of this directional.
 	 */
-	public Vector3 getOffset() {
+	public Vector3f getOffset() {
 		return this.offset;
 	}
 
@@ -135,7 +135,7 @@ public enum BlockFace implements ByteBitMask, Serializable {
 		return BlockFaces.WSEN.get(Math.round(yaw / 90f) & 0x3);
 	}
 
-	public static BlockFace fromOffset(Vector3 offset) {
+	public static BlockFace fromOffset(Vector3f offset) {
 		offset = offset.normalize().round();
 		return OFFSET_MAP.get(getOffsetHash(offset));
 	}

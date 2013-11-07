@@ -29,8 +29,8 @@ package org.spout.api.io.nbt;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.Tag;
@@ -41,14 +41,14 @@ public class TransformTag extends CompoundTag {
 	}
 
 	public TransformTag(String name, float px, float py, float pz, float qx, float qy, float qz, float qw, float sx, float sy, float sz) {
-		this(name, new Vector3(px, py, pz), new Quaternion(qx, qy, qz, qw), new Vector3(sx, sy, sz));
+		this(name, new Vector3f(px, py, pz), new Quaternionf(qx, qy, qz, qw), new Vector3f(sx, sy, sz));
 	}
 
-	public TransformTag(String name, Vector3 p, Quaternion q, Vector3 s) {
+	public TransformTag(String name, Vector3f p, Quaternionf q, Vector3f s) {
 		super(name, toMap(p, q, s));
 	}
 
-	private static CompoundMap toMap(Vector3 p, Quaternion q, Vector3 s) {
+	private static CompoundMap toMap(Vector3f p, Quaternionf q, Vector3f s) {
 		CompoundMap map = new CompoundMap();
 		map.put(new Vector3Tag("pos", p));
 		map.put(new QuaternionTag("rot", q));
@@ -75,11 +75,11 @@ public class TransformTag extends CompoundTag {
 		if (map == null || w == null) {
 			return null;
 		}
-		Vector3 pVector = Vector3Tag.getValue(map.get("pos"));
+		Vector3f pVector = Vector3Tag.getValue(map.get("pos"));
 
-		Quaternion r = QuaternionTag.getValue(map.get("rot"));
+		Quaternionf r = QuaternionTag.getValue(map.get("rot"));
 
-		Vector3 s = Vector3Tag.getValue(map.get("scale"));
+		Vector3f s = Vector3Tag.getValue(map.get("scale"));
 
 		if (pVector == null || r == null || s == null) {
 			return null;

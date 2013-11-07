@@ -31,8 +31,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.spout.api.geo.cuboid.Cuboid;
-import org.spout.math.matrix.Matrix4;
-import org.spout.math.vector.Vector3;
+import org.spout.math.matrix.Matrix4f;
+import org.spout.math.vector.Vector3f;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -53,33 +53,33 @@ public class ViewFrustumTest {
 
 	@Test
 	public void testUpdate() {
-		Matrix4 projection = Matrix4.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix4 view = Matrix4.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix4f projection = Matrix4f.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix4f view = Matrix4f.createLookAt(new Vector3f(0, 0, 0), new Vector3f(0, 0, 1000), Vector3f.UP);
 
-		frustum.update(projection, view, new Vector3(0, 0, 0));
+		frustum.update(projection, view, new Vector3f(0, 0, 0));
 
-		assertEquals(new Vector3(0, 0, 0), frustum.position);
+		assertEquals(new Vector3f(0, 0, 0), frustum.position);
 		// TODO test the created planes... a more patient person can do this
 	}
 
 	@Test
 	public void testIntersects() {
-		Matrix4 projection = Matrix4.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix4 view = Matrix4.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix4f projection = Matrix4f.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix4f view = Matrix4f.createLookAt(new Vector3f(0, 0, 0), new Vector3f(0, 0, 1000), Vector3f.UP);
 
-		frustum.update(projection, view, new Vector3(0, 0, 0));
+		frustum.update(projection, view, new Vector3f(0, 0, 0));
 
-		Vector3[] vertices = new Vector3[8];
+		Vector3f[] vertices = new Vector3f[8];
 		// Front
-		vertices[0] = new Vector3(0, 0, 16);
-		vertices[1] = new Vector3(16, 0, 16);
-		vertices[2] = new Vector3(16, 16, 16);
-		vertices[3] = new Vector3(0, 16, 16);
+		vertices[0] = new Vector3f(0, 0, 16);
+		vertices[1] = new Vector3f(16, 0, 16);
+		vertices[2] = new Vector3f(16, 16, 16);
+		vertices[3] = new Vector3f(0, 16, 16);
 		// Back
-		vertices[4] = new Vector3(0, 0, 0);
-		vertices[5] = new Vector3(16, 0, 0);
-		vertices[6] = new Vector3(16, 16, 0);
-		vertices[7] = new Vector3(0, 16, 0);
+		vertices[4] = new Vector3f(0, 0, 0);
+		vertices[5] = new Vector3f(16, 0, 0);
+		vertices[6] = new Vector3f(16, 16, 0);
+		vertices[7] = new Vector3f(0, 16, 0);
 
 		Cuboid c = mock(Cuboid.class);
 		when(c.getVertices()).thenReturn(vertices);
@@ -89,22 +89,22 @@ public class ViewFrustumTest {
 
 	@Test
 	public void testIntersectsFalse() {
-		Matrix4 projection = Matrix4.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix4 view = Matrix4.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix4f projection = Matrix4f.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix4f view = Matrix4f.createLookAt(new Vector3f(0, 0, 0), new Vector3f(0, 0, 1000), Vector3f.UP);
 
-		frustum.update(projection, view, new Vector3(0, 0, 0));
+		frustum.update(projection, view, new Vector3f(0, 0, 0));
 
-		Vector3[] vertices = new Vector3[8];
+		Vector3f[] vertices = new Vector3f[8];
 		// Front
-		vertices[0] = new Vector3(-32, -32, -16);
-		vertices[1] = new Vector3(-16, -32, -16);
-		vertices[2] = new Vector3(-16, -16, -16);
-		vertices[3] = new Vector3(-32, -16, -16);
+		vertices[0] = new Vector3f(-32, -32, -16);
+		vertices[1] = new Vector3f(-16, -32, -16);
+		vertices[2] = new Vector3f(-16, -16, -16);
+		vertices[3] = new Vector3f(-32, -16, -16);
 		// Back
-		vertices[4] = new Vector3(-32, -32, -32);
-		vertices[5] = new Vector3(-16, -32, -32);
-		vertices[6] = new Vector3(-16, -16, -32);
-		vertices[7] = new Vector3(-32, -16, -32);
+		vertices[4] = new Vector3f(-32, -32, -32);
+		vertices[5] = new Vector3f(-16, -32, -32);
+		vertices[6] = new Vector3f(-16, -16, -32);
+		vertices[7] = new Vector3f(-32, -16, -32);
 
 		Cuboid c = mock(Cuboid.class);
 		when(c.getVertices()).thenReturn(vertices);
@@ -114,10 +114,10 @@ public class ViewFrustumTest {
 
 	@Test
 	public void testContains() {
-		Matrix4 projection = Matrix4.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix4 view = Matrix4.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix4f projection = Matrix4f.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix4f view = Matrix4f.createLookAt(new Vector3f(0, 0, 0), new Vector3f(0, 0, 1000), Vector3f.UP);
 
-		frustum.update(projection, view, new Vector3(0, 0, 0));
+		frustum.update(projection, view, new Vector3f(0, 0, 0));
 
 		//assertTrue(frustum.contains(new Vector3(0, 0, 2)));
 		//assertTrue(frustum.contains(new Vector3(0, 0, 100)));

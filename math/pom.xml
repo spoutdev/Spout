@@ -20,4 +20,63 @@
 	<properties>
 		<project.root>..</project.root>
 	</properties>
+	
+	<!-- Build configuration -->
+	<build>
+		<!-- Build plugins -->
+		<plugins>
+			<!-- Template parsing plugin -->
+			<plugin>
+				<groupId>com.github.wolf480pl.maven-plugins</groupId>
+				<artifactId>template-maven-plugin</artifactId>
+				<version>1.0.1-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<id>generate</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test-generate</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>test-generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<types>
+						<type>
+							<primitive>float</primitive>
+							<wrapper>Float</wrapper>
+							<abbreviation>f</abbreviation>
+							<max_value>Float.POSITIVE_INFINITY</max_value>
+							<min_value>Float.NEGATIVE_INFINITY</min_value>
+							<placeholders>
+								<Overload>double</Overload>
+								<S>Float</S>
+								<Trig>TrigMath</Trig>
+								<eps>0.00001f</eps>
+							</placeholders>
+						</type>
+						<type>
+							<primitive>double</primitive>
+							<wrapper>Double</wrapper>
+							<abbreviation>d</abbreviation>
+							<max_value>Double.POSITIVE_INFINITY</max_value>
+							<min_value>Double.NEGATIVE_INFINITY</min_value>
+							<placeholders>
+								<Overload>float</Overload>
+								<S>Double</S>
+								<Trig>TrigMath</Trig>
+								<eps>0.00000006</eps>
+							</placeholders>
+						</type>
+					</types>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

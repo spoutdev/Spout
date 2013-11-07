@@ -28,7 +28,7 @@ package org.spout.api.protocol.reposition;
 
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public interface RepositionManager {
 	/**
@@ -134,7 +134,7 @@ public interface RepositionManager {
 	 *
 	 * @param p the point
 	 */
-	public Vector3 convert(Vector3 p);
+	public Vector3f convert(Vector3f p);
 
 	/**
 	 * Gets the inverse RepositionManager that reverses changes made by this manager.

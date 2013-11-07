@@ -27,14 +27,14 @@
 package org.spout.api.ai.pathfinder;
 
 import org.spout.api.material.Material;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public interface BlockSource {
 	int getBlockTypeIdAt(int x, int y, int z);
 
-	int getBlockTypeIdAt(Vector3 pos);
+	int getBlockTypeIdAt(Vector3f pos);
 
 	Material getMaterialAt(int x, int y, int z);
 
-	Material getMaterialAt(Vector3 pos);
+	Material getMaterialAt(Vector3f pos);
 }

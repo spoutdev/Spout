@@ -28,7 +28,7 @@ package org.spout.api.util.cuboid;
 
 import org.spout.api.geo.cuboid.Chunk;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 /**
  * This class implements a Cuboid common methods for a one dimensional array Cuboid Buffer
@@ -45,11 +45,11 @@ import org.spout.math.vector.Vector3;
  * TODO is this the best package to put this?
  */
 public abstract class CuboidBuffer {
-	protected final Vector3 size;
+	protected final Vector3f size;
 	protected final int sizeX;
 	protected final int sizeY;
 	protected final int sizeZ;
-	protected final Vector3 base;
+	protected final Vector3f base;
 	protected final int baseX;
 	protected final int baseY;
 	protected final int baseZ;
@@ -57,7 +57,7 @@ public abstract class CuboidBuffer {
 	 * Note: These values are not actually within the cuboid The cuboid goes
 	 * from baseX to baseX + sizeX - 1 top = base + size
 	 */
-	protected final Vector3 top;
+	protected final Vector3f top;
 	protected final int topX;
 	protected final int topY;
 	protected final int topZ;
@@ -70,19 +70,19 @@ public abstract class CuboidBuffer {
 		this.sizeY = sizeY;
 		this.sizeZ = sizeZ;
 
-		this.size = new Vector3(sizeX, sizeY, sizeZ);
+		this.size = new Vector3f(sizeX, sizeY, sizeZ);
 
 		this.baseX = baseX;
 		this.baseY = baseY;
 		this.baseZ = baseZ;
 
-		this.base = new Vector3(baseX, baseY, baseZ);
+		this.base = new Vector3f(baseX, baseY, baseZ);
 
 		this.topX = baseX + sizeX;
 		this.topY = baseY + sizeY;
 		this.topZ = baseZ + sizeZ;
 
-		this.top = new Vector3(this.topX, this.topY, this.topZ);
+		this.top = new Vector3f(this.topX, this.topY, this.topZ);
 
 		Yinc = sizeZ * (Zinc = sizeX * (Xinc = 1));
 	}
@@ -91,14 +91,14 @@ public abstract class CuboidBuffer {
 		this((int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ);
 	}
 
-	protected CuboidBuffer(Vector3 base, Vector3 size) {
+	protected CuboidBuffer(Vector3f base, Vector3f size) {
 		this(base.getX(), base.getY(), base.getZ(), size.getX(), size.getY(), size.getZ());
 	}
 
 	/**
 	 * Gets a Point representing the base of this CuboidBuffer
 	 */
-	public Vector3 getBase() {
+	public Vector3f getBase() {
 		return base;
 	}
 
@@ -132,7 +132,7 @@ public abstract class CuboidBuffer {
 	/**
 	 * Gets the size of the CuboidBuffer
 	 */
-	public Vector3 getSize() {
+	public Vector3f getSize() {
 		return size;
 	}
 
@@ -146,7 +146,7 @@ public abstract class CuboidBuffer {
 	/**
 	 * Gets the top-coordinates of the CuboidBuffer, these are outside this buffer<br> These coordinates are an addition of base and size
 	 */
-	public Vector3 getTop() {
+	public Vector3f getTop() {
 		return top;
 	}
 

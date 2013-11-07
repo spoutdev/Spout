@@ -32,7 +32,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import org.spout.engine.renderer.shader.variables.Mat4ShaderVariable;
-import org.spout.math.matrix.Matrix4;
+import org.spout.math.matrix.Matrix4f;
 
 public class BasicShader extends ClientShader {
 	FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
@@ -75,27 +75,27 @@ public class BasicShader extends ClientShader {
 		}
 	}
 
-	public void setModelViewMatrix(Matrix4 mat) {
+	public void setModelViewMatrix(Matrix4f mat) {
 		setUniform("Model", mat);
 	}
 
-	public Matrix4 getModelViewMatrix() {
+	public Matrix4f getModelViewMatrix() {
 		return ((Mat4ShaderVariable) variables.get("Model")).get();
 	}
 
-	public void setViewMatrix(Matrix4 mat) {
+	public void setViewMatrix(Matrix4f mat) {
 		setUniform("View", mat);
 	}
 
-	public Matrix4 getViewMatrix() {
+	public Matrix4f getViewMatrix() {
 		return ((Mat4ShaderVariable) variables.get("View")).get();
 	}
 
-	public Matrix4 getProjectionMatrix() {
+	public Matrix4f getProjectionMatrix() {
 		return ((Mat4ShaderVariable) variables.get("Projection")).get();
 	}
 
-	public void setProjectionMatrix(Matrix4 mat) {
+	public void setProjectionMatrix(Matrix4f mat) {
 		setUniform("Projection", mat);
 	}
 }

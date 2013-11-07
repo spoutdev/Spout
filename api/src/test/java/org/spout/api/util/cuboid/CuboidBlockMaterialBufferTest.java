@@ -28,7 +28,7 @@ package org.spout.api.util.cuboid;
 
 import org.junit.Test;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -40,8 +40,8 @@ public class CuboidBlockMaterialBufferTest {
 		final int yStart = 6, height = 8;
 		final short id = 12, data = 14;
 		buffer.setHorizontalLayer(yStart, height, id, data);
-		Vector3 base = buffer.getBase();
-		Vector3 top = buffer.getTop();
+		Vector3f base = buffer.getBase();
+		Vector3f top = buffer.getTop();
 		for (int x = base.getFloorX(); x < top.getFloorX(); x++) {
 			for (int z = base.getFloorZ(); z < top.getFloorZ(); z++) {
 				for (int y = base.getFloorZ(); y < top.getFloorY(); y++) {

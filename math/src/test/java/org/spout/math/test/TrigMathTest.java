@@ -26,18 +26,24 @@
  */
 package org.spout.math.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import org.spout.math.TrigMath;
-import org.spout.math.vector.Vector2;
-import org.spout.math.vector.Vector3;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.spout.math.vector.Vector2d;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3d;
+import org.spout.math.vector.Vector3f;
 
 public class TrigMathTest {
 	private void testValue(float angle, float result, float realValue) {
 		assertTrue("angle=" + angle + " expected " + realValue + " but got " + result, Math.abs(result - realValue) < 0.0001);
+	}
+
+	private void testValueD(double angle, double result, double realValue) {
+		assertTrue("angle=" + angle + " expected " + realValue + " but got " + result, Math.abs(result - realValue) < 0.000002);
 	}
 
 	private void testSin(float value) {
@@ -46,6 +52,14 @@ public class TrigMathTest {
 
 	private void testCos(float value) {
 		testValue(value, TrigMath.cos(value), (float) Math.cos(value));
+	}
+
+	private void testSin(double value) {
+		testValueD(value, TrigMath.sin(value), Math.sin(value));
+	}
+
+	private void testCos(double value) {
+		testValueD(value, TrigMath.cos(value), Math.cos(value));
 	}
 
 	@Test
@@ -57,22 +71,40 @@ public class TrigMathTest {
 		}
 	}
 
-	private void assert2D(float angle, Vector2 vector, float x, float y) {
+	private void assert2D(float angle, Vector2f vector, float x, float y) {
 		String msg = "angle=" + angle + " expected [" + x + ", " + y + "] but got [" + vector.getX() + ", " + vector.getY() + "]";
 		assertTrue(msg, vector.sub(x, y).lengthSquared() < 0.001);
 	}
 
-	private void assert3D(float yaw, float pitch, Vector3 vector, float x, float y, float z) {
+	private void assert3D(float yaw, float pitch, Vector3f vector, float x, float y, float z) {
 		String msg = "[yaw=" + yaw + ", pitch=" + pitch + "] expected [" + x + ", " + y + ", " + z + "] but got [" + vector.getX() + ", " + vector.getY() + ", " + vector.getZ() + "]";
 		assertTrue(msg, vector.sub(x, y, z).lengthSquared() < 0.001);
 	}
 
+	private void assert2D(double angle, Vector2d vector, double x, double y) {
+		String msg = "angle=" + angle + " expected [" + x + ", " + y + "] but got [" + vector.getX() + ", " + vector.getY() + "]";
+		assertTrue(msg, vector.sub(x, y).lengthSquared() < 0.00000001);
+	}
+
+	private void assert3D(double yaw, double pitch, Vector3d vector, double x, double y, double z) {
+		String msg = "[yaw=" + yaw + ", pitch=" + pitch + "] expected [" + x + ", " + y + ", " + z + "] but got [" + vector.getX() + ", " + vector.getY() + ", " + vector.getZ() + "]";
+		assertTrue(msg, vector.sub(x, y, z).lengthSquared() < 0.00000001);
+	}
+
 	private void test2D(float angle, float x, float y) {
-		assert2D(angle, Vector2.createDirection(angle), x, y);
+		assert2D(angle, Vector2f.createDirection(angle), x, y);
 	}
 
 	private void test3D(float yaw, float pitch, float x, float y, float z) {
-		assert3D(yaw, pitch, Vector3.createDirection(yaw, pitch), x, y, z);
+		assert3D(yaw, pitch, Vector3f.createDirection(yaw, pitch), x, y, z);
+	}
+
+	private void test2D(double angle, double x, double y) {
+		assert2D(angle, Vector2d.createDirection(angle), x, y);
+	}
+
+	private void test3D(double yaw, double pitch, double x, double y, double z) {
+		assert3D(yaw, pitch, Vector3d.createDirection(yaw, pitch), x, y, z);
 	}
 
 	@Test
@@ -85,8 +117,8 @@ public class TrigMathTest {
 		// verify that the 2D axis are the same for 3D axis without pitch
 		float step = (float) (TrigMath.TWO_PI / 50.0); //50 steps in the circle
 		for (float i = (float) -TrigMath.PI; i < TrigMath.TWO_PI; i += step) {
-			Vector2 vec2D = Vector2.createDirection(i);
-			Vector3 vec3D = Vector3.createDirection(i, 0);
+			Vector2f vec2D = Vector2f.createDirection(i);
+			Vector3f vec3D = Vector3f.createDirection(i, 0);
 			assertEquals(vec2D.getX(), vec3D.getX(), 0.001f);
 			assertEquals(vec2D.getY(), vec3D.getZ(), 0.001f);
 		}
@@ -99,6 +131,32 @@ public class TrigMathTest {
 		test2D((float) TrigMath.PI, -1.0f, 0.0f);
 		test2D((float) TrigMath.THREE_PI_HALVES, 0.0f, -1.0f);
 		test2D((float) TrigMath.QUARTER_PI, (float) TrigMath.HALF_SQRT_OF_TWO, (float) TrigMath.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void test3DAxisD() {
+		test3D(0.0, 0.0, 1.0, 0.0, 0.0);
+		test3D(TrigMath.HALF_PI, TrigMath.PI, 0.0, 0.0, -1.0);
+		test3D(TrigMath.QUARTER_PI, TrigMath.QUARTER_PI, 0.5f, TrigMath.HALF_SQRT_OF_TWO, 0.5);
+		test3D(0.0, TrigMath.HALF_PI, 0.0, 1.0, 0.0);
+		test3D(0.0, TrigMath.THREE_PI_HALVES, 0.0, -1.0, 0.0);
+		// verify that the 2D axis are the same for 3D axis without pitch
+		double step = (TrigMath.TWO_PI / 50.0); // 50 steps in the circle
+		for (float i = (float) -TrigMath.PI; i < TrigMath.TWO_PI; i += step) {
+			Vector2d vec2D = Vector2d.createDirection(i);
+			Vector3d vec3D = Vector3d.createDirection(i, 0);
+			assertEquals(vec2D.getX(), vec3D.getX(), 0.001);
+			assertEquals(vec2D.getY(), vec3D.getZ(), 0.001);
+		}
+	}
+
+	@Test
+	public void test2DAxisD() {
+		test2D(0.0, 1.0, 0.0);
+		test2D(TrigMath.HALF_PI, 0.0, 1.0);
+		test2D(TrigMath.PI, -1.0, 0.0);
+		test2D(TrigMath.THREE_PI_HALVES, 0.0, -1.0);
+		test2D(TrigMath.QUARTER_PI, TrigMath.HALF_SQRT_OF_TWO, TrigMath.HALF_SQRT_OF_TWO);
 	}
 
 	private void testValue(double value, double result, double realValue) {

@@ -33,7 +33,7 @@ import org.junit.Test;
 
 import org.spout.api.ai.pathfinder.VectorNode;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -42,7 +42,7 @@ public class VectorNodeTest {
 	@Test
 	public void testOverridesHashCode() {
 		Map<VectorNode, Float> costMap = new HashMap<>();
-		costMap.put(new VectorNode(Vector3.ONE, null), 2F);
-		assertThat(costMap.get(new VectorNode(Vector3.ONE, null)), equalTo(2F));
+		costMap.put(new VectorNode(Vector3f.ONE, null), 2F);
+		assertThat(costMap.get(new VectorNode(Vector3f.ONE, null)), equalTo(2F));
 	}
 }

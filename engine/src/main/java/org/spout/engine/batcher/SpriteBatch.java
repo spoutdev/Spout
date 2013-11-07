@@ -41,18 +41,18 @@ import org.spout.api.render.effect.SnapshotRender;
 
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
-import org.spout.math.matrix.Matrix;
-import org.spout.math.matrix.Matrix4;
+import org.spout.math.matrix.Matrix4f;
+import org.spout.math.matrix.Matrixf;
 
 public class SpriteBatch {
 	private BatchVertexRenderer renderer;
 	private final ArrayList<RenderPartPack> sprites = new ArrayList<>();
-	private final Matrix4 view;
-	private final Matrix4 projection;
+	private final Matrix4f view;
+	private final Matrix4f projection;
 
 	public SpriteBatch() {
-		this.projection = Matrix4.IDENTITY;
-		this.view = Matrix4.IDENTITY;
+		this.projection = Matrix4f.IDENTITY;
+		this.view = Matrix4f.IDENTITY;
 	}
 
 	public void begin() {
@@ -168,7 +168,7 @@ public class SpriteBatch {
 		renderer.flush(true);
 	}
 
-	public void render(Matrix model) {
+	public void render(Matrixf model) {
 		if (renderer == null) {
 			return;
 		}

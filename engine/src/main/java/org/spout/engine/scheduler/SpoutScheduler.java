@@ -84,7 +84,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.world.RegionGenerator;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
-import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector2f;
 
 import static org.spout.engine.world.SpoutChunk.meshesGenerated;
 
@@ -516,7 +516,7 @@ public final class SpoutScheduler implements Scheduler {
 		mainThread.start();
 	}
 
-	public SpoutRenderer startRenderThread(Vector2 resolution, boolean ccoverride, Canvas parent) {
+	public SpoutRenderer startRenderThread(Vector2f resolution, boolean ccoverride, Canvas parent) {
 		if (renderThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the render thread twice");
 		}

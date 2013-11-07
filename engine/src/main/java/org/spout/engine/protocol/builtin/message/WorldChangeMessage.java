@@ -41,16 +41,16 @@ import org.spout.api.datatable.delta.DeltaMap;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.SpoutToStringStyle;
-import org.spout.math.imaginary.Quaternion;
 
 public class WorldChangeMessage extends DatatableMessage {
 	private final String worldName;
 	private final UUID worldUUID;
-	private final Vector3 position;
-	private final Quaternion rotation;
-	private final Vector3 scale;
+	private final Vector3f position;
+	private final Quaternionf rotation;
+	private final Vector3f scale;
 
 	public WorldChangeMessage(World world, Transform playerTransform, ManagedMap data) {
 		this(world.getName(), world.getUID(), playerTransform, data.getDeltaMap().serialize(), data.getDeltaMap().getType());
@@ -61,12 +61,12 @@ public class WorldChangeMessage extends DatatableMessage {
 		this.worldName = worldName;
 		this.worldUUID = worldUUID;
 		// This MUST copy as a Vector3 for tests
-		this.position = new Vector3(playerTransform.getPosition());
+		this.position = new Vector3f(playerTransform.getPosition());
 		this.rotation = playerTransform.getRotation();
 		this.scale = playerTransform.getScale();
 	}
 
-	public WorldChangeMessage(String worldName, UUID worldUUID, Vector3 position, Quaternion rotation, Vector3 scale, byte[] compressedData, DeltaMap.DeltaType type) {
+	public WorldChangeMessage(String worldName, UUID worldUUID, Vector3f position, Quaternionf rotation, Vector3f scale, byte[] compressedData, DeltaMap.DeltaType type) {
 		super(compressedData, type);
 		this.worldName = worldName;
 		this.worldUUID = worldUUID;
@@ -94,15 +94,15 @@ public class WorldChangeMessage extends DatatableMessage {
 		}
 	}
 
-	public Vector3 getPosition() {
+	public Vector3f getPosition() {
 		return position;
 	}
 
-	public Quaternion getRotation() {
+	public Quaternionf getRotation() {
 		return rotation;
 	}
 
-	public Vector3 getScale() {
+	public Vector3f getScale() {
 		return scale;
 	}
 

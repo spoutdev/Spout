@@ -30,16 +30,16 @@ import java.util.List;
 
 import org.spout.api.event.HandlerList;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 /**
  * Called when {@link Block} data in {@link Chunk} has been updated.
  */
 public class ChunkUpdatedEvent extends ChunkEvent {
 	private static HandlerList handlers = new HandlerList();
-	private final List<Vector3> blocks;
+	private final List<Vector3f> blocks;
 
-	public ChunkUpdatedEvent(Chunk chunk, List<Vector3> blocks) {
+	public ChunkUpdatedEvent(Chunk chunk, List<Vector3f> blocks) {
 		super(chunk);
 		this.blocks = blocks;
 	}
@@ -72,7 +72,7 @@ public class ChunkUpdatedEvent extends ChunkEvent {
 	 * @param n index of block update
 	 * @return chunk-relative coordinates of updated block, or null if bad index or whole chunk update
 	 */
-	public Vector3 getBlockUpdate(int n) {
+	public Vector3f getBlockUpdate(int n) {
 		if ((blocks != null) && (n >= 0) && (n < blocks.size())) {
 			return blocks.get(n);
 		}

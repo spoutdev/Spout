@@ -31,21 +31,21 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.spout.api.material.block.BlockFace;
-import org.spout.math.vector.Vector2;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3f;
 
 public class CubeMeshFactory {
-	public static OrientedMesh generateCubeMesh(Vector2[][] uvs) {
+	public static OrientedMesh generateCubeMesh(Vector2f[][] uvs) {
 		ArrayList<OrientedMeshFace> list = new ArrayList<>(12);
 
-		Vector3 vertex0 = new Vector3(0, 0, 0);
-		Vector3 vertex1 = new Vector3(0, 1, 0);
-		Vector3 vertex2 = new Vector3(1, 1, 0);
-		Vector3 vertex3 = new Vector3(1, 0, 0);
-		Vector3 vertex4 = new Vector3(0, 0, 1);
-		Vector3 vertex5 = new Vector3(0, 1, 1);
-		Vector3 vertex6 = new Vector3(1, 1, 1);
-		Vector3 vertex7 = new Vector3(1, 0, 1);
+		Vector3f vertex0 = new Vector3f(0, 0, 0);
+		Vector3f vertex1 = new Vector3f(0, 1, 0);
+		Vector3f vertex2 = new Vector3f(1, 1, 0);
+		Vector3f vertex3 = new Vector3f(1, 0, 0);
+		Vector3f vertex4 = new Vector3f(0, 0, 1);
+		Vector3f vertex5 = new Vector3f(0, 1, 1);
+		Vector3f vertex6 = new Vector3f(1, 1, 1);
+		Vector3f vertex7 = new Vector3f(1, 0, 1);
 
 		Vertex v1 = null, v2 = null, v3 = null, v4 = null;
 
@@ -104,7 +104,7 @@ public class CubeMeshFactory {
 		return new OrientedMesh(list);
 	}
 
-	private static Vector2 getUV(Vector2[][] uvs, int face, int vertex) {
+	private static Vector2f getUV(Vector2f[][] uvs, int face, int vertex) {
 		int i = face % uvs.length; //Allow to render all face of a cube with a one face specified
 		return uvs[i][vertex % uvs[i].length];
 	}

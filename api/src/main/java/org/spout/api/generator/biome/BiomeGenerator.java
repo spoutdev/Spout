@@ -37,7 +37,7 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
 /**
@@ -91,7 +91,7 @@ public abstract class BiomeGenerator implements WorldGenerator {
 			}
 			manager = temp;
 		} else {
-			final Vector3 size = blockData.getSize();
+			final Vector3f size = blockData.getSize();
 			final int xSize = size.getFloorX();
 			final int zSize = size.getFloorZ();
 			int xChunkSize = xSize >> Chunk.BLOCKS.BITS;

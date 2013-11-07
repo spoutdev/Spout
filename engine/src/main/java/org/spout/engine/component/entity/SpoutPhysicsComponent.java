@@ -36,8 +36,8 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.ReactConverter;
 
 import org.spout.engine.world.SpoutRegion;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 import org.spout.physics.body.MobileRigidBody;
 import org.spout.physics.body.RigidBody;
 import org.spout.physics.body.RigidBodyMaterial;
@@ -154,12 +154,12 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public Quaternion getRotation() {
+	public Quaternionf getRotation() {
 		return snapshot.getRotation();
 	}
 
 	@Override
-	public SpoutPhysicsComponent setRotation(Quaternion rotation) {
+	public SpoutPhysicsComponent setRotation(Quaternionf rotation) {
 		if (rotation == null) {
 			throw new IllegalArgumentException("rotation cannot be null!");
 		}
@@ -174,12 +174,12 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public Vector3 getScale() {
+	public Vector3f getScale() {
 		return snapshot.getScale();
 	}
 
 	@Override
-	public SpoutPhysicsComponent setScale(Vector3 scale) {
+	public SpoutPhysicsComponent setScale(Vector3f scale) {
 		if (scale == null) {
 			throw new IllegalArgumentException("scale cannot be null!");
 		}
@@ -204,13 +204,13 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public SpoutPhysicsComponent translate(Vector3 point) {
+	public SpoutPhysicsComponent translate(Vector3f point) {
 		live.translate(point);
 		return this;
 	}
 
 	@Override
-	public SpoutPhysicsComponent rotate(Quaternion rotate) {
+	public SpoutPhysicsComponent rotate(Quaternionf rotate) {
 		if (rotate == null) {
 			throw new IllegalArgumentException("rotate cannot be null!");
 		}
@@ -220,7 +220,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public SpoutPhysicsComponent scale(Vector3 scale) {
+	public SpoutPhysicsComponent scale(Vector3f scale) {
 		if (scale == null) {
 			throw new IllegalArgumentException("scale cannot be null!");
 		}
@@ -230,17 +230,17 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public PhysicsComponent impulse(Vector3 impulse, Vector3 offset) {
+	public PhysicsComponent impulse(Vector3f impulse, Vector3f offset) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public PhysicsComponent impulse(Vector3 impulse) {
+	public PhysicsComponent impulse(Vector3f impulse) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public PhysicsComponent force(Vector3 force, boolean ignoreGravity) {
+	public PhysicsComponent force(Vector3f force, boolean ignoreGravity) {
 		if (body == null) {
 			throw new IllegalStateException("Cannot force a null body. If the entity is activated, make sure it is spawned as well");
 		}
@@ -253,12 +253,12 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public PhysicsComponent force(Vector3 force) {
+	public PhysicsComponent force(Vector3f force) {
 		return force(force, false);
 	}
 
 	@Override
-	public PhysicsComponent torque(Vector3 torque) {
+	public PhysicsComponent torque(Vector3f torque) {
 		if (body == null) {
 			throw new IllegalStateException("Cannot torque a null body. If the entity is activated, make sure it is spawned as well");
 		}
@@ -267,7 +267,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public PhysicsComponent impulseTorque(Vector3 torque) {
+	public PhysicsComponent impulseTorque(Vector3f torque) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
@@ -331,7 +331,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public Vector3 getMovementVelocity() {
+	public Vector3f getMovementVelocity() {
 		if (body == null) {
 			throw new IllegalStateException("Cannot get velocity of a null body. If the entity is activated, make sure it is spawned as well");
 		}
@@ -339,7 +339,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public PhysicsComponent setMovementVelocity(Vector3 velocity) {
+	public PhysicsComponent setMovementVelocity(Vector3f velocity) {
 		if (body == null) {
 			throw new IllegalStateException("Cannot set velocity of a null body. If the entity is activated, make sure it is spawned as well");
 		}
@@ -351,7 +351,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public Vector3 getRotationVelocity() {
+	public Vector3f getRotationVelocity() {
 		if (body == null) {
 			throw new IllegalStateException("Cannot get rotation velocity of a null body. If the entity is activated, make sure it is spawned as well");
 		}
@@ -359,7 +359,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public PhysicsComponent setRotationVelocity(Vector3 velocity) {
+	public PhysicsComponent setRotationVelocity(Vector3f velocity) {
 		if (body == null) {
 			throw new IllegalStateException("Cannot set rotation velocity of a null body. If the entity is activated, make sure it is spawned as well");
 		}
@@ -424,13 +424,13 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			final float step = dt * (60f / 20f);
 
 			final Point position = live.getPosition();
-			final Quaternion rotation = live.getRotation();
-			final Vector3 scale = live.getScale();
+			final Quaternionf rotation = live.getRotation();
+			final Vector3f scale = live.getScale();
 
 			render.setPosition(render.getPosition().mul(1 - step).add(position.mul(dt)));
 
-			final Quaternion renderRot = render.getRotation();
-			render.setRotation(new Quaternion(
+			final Quaternionf renderRot = render.getRotation();
+			render.setRotation(new Quaternionf(
 					renderRot.getX() * (1 - step) + rotation.getX() * step,
 					renderRot.getY() * (1 - step) + rotation.getY() * step,
 					renderRot.getZ() * (1 - step) + rotation.getZ() * step,

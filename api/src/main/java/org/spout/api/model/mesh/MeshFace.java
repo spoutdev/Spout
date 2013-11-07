@@ -31,9 +31,9 @@ import java.util.Iterator;
 
 import org.apache.commons.collections.iterators.ArrayIterator;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.StringUtil;
-import org.spout.math.vector.Vector2;
 
 /**
  * Represents a Triangle for a model face
@@ -52,22 +52,22 @@ public class MeshFace implements Iterable<Vertex>, Serializable {
 	 * Recalculates the normals for this triangle. All points must be 0'd before this.
 	 */
 	protected void doRecalculateNormals() {
-		Vector3 trinormal = verts[0].position.sub(verts[1].position).cross(verts[1].position.sub(verts[2].position)).normalize();
+		Vector3f trinormal = verts[0].position.sub(verts[1].position).cross(verts[1].position.sub(verts[2].position)).normalize();
 		verts[0].normal = verts[0].normal.add(trinormal).normalize();
 		verts[1].normal = verts[1].normal.add(trinormal).normalize();
 		verts[2].normal = verts[2].normal.add(trinormal).normalize();
 	}
 
-	Vector3[] getPositions() {
-		return new Vector3[] {verts[0].position, verts[1].position, verts[2].position};
+	Vector3f[] getPositions() {
+		return new Vector3f[] {verts[0].position, verts[1].position, verts[2].position};
 	}
 
-	Vector3[] getNormals() {
-		return new Vector3[] {verts[0].normal, verts[1].normal, verts[2].normal};
+	Vector3f[] getNormals() {
+		return new Vector3f[] {verts[0].normal, verts[1].normal, verts[2].normal};
 	}
 
-	Vector2[] getUVs() {
-		return new Vector2[] {verts[0].texCoord0, verts[1].texCoord0, verts[2].texCoord0};
+	Vector2f[] getUVs() {
+		return new Vector2f[] {verts[0].texCoord0, verts[1].texCoord0, verts[2].texCoord0};
 	}
 
 	@Override

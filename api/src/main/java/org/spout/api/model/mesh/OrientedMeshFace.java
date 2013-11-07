@@ -34,14 +34,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.spout.api.material.block.BlockFace;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 /**
  * Represents a Triangle for a model face
  */
 public class OrientedMeshFace extends MeshFace {
 	public final static BlockFace[] shouldRender = new BlockFace[] {BlockFace.TOP, BlockFace.BOTTOM, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
-	private final static Map<BlockFace, List<Vector3>> faceMap = new HashMap<>();
+	private final static Map<BlockFace, List<Vector3f>> faceMap = new HashMap<>();
 	private static final long serialVersionUID = 1L;
 
 	static {
@@ -57,12 +57,12 @@ public class OrientedMeshFace extends MeshFace {
 
 		//TODO : extract vector in variable
 
-		faceMap.put(BlockFace.TOP, new ArrayList<>(Arrays.asList(new Vector3(-1, 1, -1).normalize(), new Vector3(1, 1, -1).normalize(), new Vector3(-1, 1, 1).normalize(), new Vector3(1, 1, 1).normalize())));
-		faceMap.put(BlockFace.BOTTOM, new ArrayList<>(Arrays.asList(new Vector3(-1, -1, -1).normalize(), new Vector3(1, -1, -1).normalize(), new Vector3(-1, -1, 1).normalize(), new Vector3(1, -1, 1).normalize())));
-		faceMap.put(BlockFace.NORTH, new ArrayList<>(Arrays.asList(new Vector3(-1, -1, -1).normalize(), new Vector3(-1, 1, -1).normalize(), new Vector3(-1, 1, 1).normalize(), new Vector3(-1, -1, 1).normalize())));
-		faceMap.put(BlockFace.SOUTH, new ArrayList<>(Arrays.asList(new Vector3(1, -1, -1).normalize(), new Vector3(1, -1, 1).normalize(), new Vector3(1, 1, -1).normalize(), new Vector3(1, 1, 1).normalize())));
-		faceMap.put(BlockFace.WEST, new ArrayList<>(Arrays.asList(new Vector3(-1, 1, 1).normalize(), new Vector3(-1, -1, 1).normalize(), new Vector3(1, -1, 1).normalize(), new Vector3(1, 1, 1).normalize())));
-		faceMap.put(BlockFace.EAST, new ArrayList<>(Arrays.asList(new Vector3(-1, -1, -1).normalize(), new Vector3(-1, 1, -1).normalize(), new Vector3(1, -1, -1).normalize(), new Vector3(1, 1, -1).normalize())));
+		faceMap.put(BlockFace.TOP, new ArrayList<>(Arrays.asList(new Vector3f(-1, 1, -1).normalize(), new Vector3f(1, 1, -1).normalize(), new Vector3f(-1, 1, 1).normalize(), new Vector3f(1, 1, 1).normalize())));
+		faceMap.put(BlockFace.BOTTOM, new ArrayList<>(Arrays.asList(new Vector3f(-1, -1, -1).normalize(), new Vector3f(1, -1, -1).normalize(), new Vector3f(-1, -1, 1).normalize(), new Vector3f(1, -1, 1).normalize())));
+		faceMap.put(BlockFace.NORTH, new ArrayList<>(Arrays.asList(new Vector3f(-1, -1, -1).normalize(), new Vector3f(-1, 1, -1).normalize(), new Vector3f(-1, 1, 1).normalize(), new Vector3f(-1, -1, 1).normalize())));
+		faceMap.put(BlockFace.SOUTH, new ArrayList<>(Arrays.asList(new Vector3f(1, -1, -1).normalize(), new Vector3f(1, -1, 1).normalize(), new Vector3f(1, 1, -1).normalize(), new Vector3f(1, 1, 1).normalize())));
+		faceMap.put(BlockFace.WEST, new ArrayList<>(Arrays.asList(new Vector3f(-1, 1, 1).normalize(), new Vector3f(-1, -1, 1).normalize(), new Vector3f(1, -1, 1).normalize(), new Vector3f(1, 1, 1).normalize())));
+		faceMap.put(BlockFace.EAST, new ArrayList<>(Arrays.asList(new Vector3f(-1, -1, -1).normalize(), new Vector3f(-1, 1, -1).normalize(), new Vector3f(1, -1, -1).normalize(), new Vector3f(1, 1, -1).normalize())));
 	}
 
 	private boolean[] seeFromFace = new boolean[shouldRender.length];
@@ -72,16 +72,16 @@ public class OrientedMeshFace extends MeshFace {
 
 		// Calculate two vectors from the three points
 
-		Vector3 vector1 = verts[0].position.sub(verts[1].position);
-		Vector3 vector2 = verts[1].position.sub(verts[2].position);
+		Vector3f vector1 = verts[0].position.sub(verts[1].position);
+		Vector3f vector2 = verts[1].position.sub(verts[2].position);
 
 		// Take the cross product of the two vectors to get
 		// the normal vector which will be stored in out
 
-		Vector3 norm = vector1.cross(vector2).normalize();
+		Vector3f norm = vector1.cross(vector2).normalize();
 
 		for (int i = 0; i < shouldRender.length; i++) {
-			for (Vector3 edge : faceMap.get(shouldRender[i])) {
+			for (Vector3f edge : faceMap.get(shouldRender[i])) {
 				if (norm.distance(edge) < 1) {
 					seeFromFace[i] = true;
 				}

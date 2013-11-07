@@ -26,20 +26,20 @@
  */
 package org.spout.api.geo.discrete;
 
-import org.spout.math.imaginary.Complex;
-import org.spout.math.matrix.Matrix3;
-import org.spout.math.vector.Vector2;
+import org.spout.math.imaginary.Complexf;
+import org.spout.math.matrix.Matrix3f;
+import org.spout.math.vector.Vector2f;
 
 public class Transform2D {
-	private Vector2 position;
-	private Complex rotation;
-	private Vector2 scale;
+	private Vector2f position;
+	private Complexf rotation;
+	private Vector2f scale;
 
 	public Transform2D() {
-		this(Vector2.ZERO, Complex.IDENTITY, Vector2.ONE);
+		this(Vector2f.ZERO, Complexf.IDENTITY, Vector2f.ONE);
 	}
 
-	public Transform2D(Vector2 position, Complex rotation, Vector2 scale) {
+	public Transform2D(Vector2f position, Complexf rotation, Vector2f scale) {
 		this.position = position;
 		this.rotation = rotation;
 		this.scale = scale;
@@ -50,49 +50,49 @@ public class Transform2D {
 	}
 
 	public void setPosition(float x, float y) {
-		this.position = new Vector2(x, y);
+		this.position = new Vector2f(x, y);
 	}
 
-	public void setPosition(Vector2 position) {
+	public void setPosition(Vector2f position) {
 		this.position = position;
 	}
 
-	public Vector2 getPosition() {
+	public Vector2f getPosition() {
 		return position;
 	}
 
 	public void setScale(float scale) {
-		this.scale = new Vector2(scale, scale);
+		this.scale = new Vector2f(scale, scale);
 	}
 
 	public void setScale(float scaleX, float scaleY) {
-		this.scale = new Vector2(scaleX, scaleY);
+		this.scale = new Vector2f(scaleX, scaleY);
 	}
 
-	public void setScale(Vector2 scale) {
+	public void setScale(Vector2f scale) {
 		this.scale = scale;
 	}
 
-	public Vector2 getScale() {
+	public Vector2f getScale() {
 		return scale;
 	}
 
 	public void setRotation(float angle) {
-		this.rotation = Complex.fromAngleDeg(angle);
+		this.rotation = Complexf.fromAngleDeg(angle);
 	}
 
-	public void setRotation(Complex rotation) {
+	public void setRotation(Complexf rotation) {
 		this.rotation = rotation;
 	}
 
-	public Complex getRotation() {
+	public Complexf getRotation() {
 		return rotation;
 	}
 
-	public Matrix3 toMatrix() {
-		Matrix3 rotation = Matrix3.createRotation(this.rotation);
-		Matrix3 translation = Matrix3.createTranslation(position);
-		Matrix3 scale = Matrix3.createScaling(this.scale.toVector3(1));
+	public Matrix3f toMatrix() {
+		Matrix3f rotation = Matrix3f.createRotation(this.rotation);
+		Matrix3f translation = Matrix3f.createTranslation(position);
+		Matrix3f scale = Matrix3f.createScaling(this.scale.toVector3(1));
 		return scale.mul(rotation).mul(translation);
 	}
 }

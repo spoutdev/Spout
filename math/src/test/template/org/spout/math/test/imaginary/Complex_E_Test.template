@@ -1,0 +1,264 @@
+/*
+ * This file is part of Spout.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
+ *
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
+package org.spout.math.test.imaginary;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import org.spout.math.#ETrig#;
+import org.spout.math.imaginary.Complex#E#;
+import org.spout.math.test.TestUtil#E#;
+import org.spout.math.vector.Vector2#E#;
+
+public class Complex#E#Test {
+	@Test
+	public void testDefaultConstructor() {
+		Complex#E# complex = new Complex#E#();
+		TestUtil#E#.assertEquals(complex, 1, 0);
+	}
+
+	@Test
+	public void testDoubleComponentsConstructor() {
+		Complex#E# complex = new Complex#E#(2d, 3d);
+		TestUtil#E#.assertEquals(complex, 2, 3);
+	}
+
+	@Test
+	public void testFloatComponentsConstructor() {
+		Complex#E# complex = new Complex#E#(2, 3);
+		TestUtil#E#.assertEquals(complex, 2, 3);
+	}
+
+	@Test
+	public void testCopyConstructor() {
+		Complex#E# complex = new Complex#E#(new Complex#E#(2, 3));
+		TestUtil#E#.assertEquals(complex, 2, 3);
+	}
+
+	@Test
+	public void testGetters() {
+		Complex#E# complex = new Complex#E#(2, 3);
+		TestUtil#E#.assertEquals(complex.getX(), 2);
+		TestUtil#E#.assertEquals(complex.getY(), 3);
+	}
+
+	@Test
+	public void testComplexAddition() {
+		Complex#E# vector = new Complex#E#(0, 1).add(new Complex#E#(5.5, -0.5));
+		TestUtil#E#.assertEquals(vector, (#e#) 5.5, (#e#) 0.5);
+	}
+
+	@Test
+	public void testDoubleComponentsAddition() {
+		Complex#E# complex = new Complex#E#(0, 1).add(5.5, -0.5);
+		TestUtil#E#.assertEquals(complex, (#e#) 5.5, (#e#) 0.5);
+	}
+
+	@Test
+	public void testFloatComponentsAddition() {
+		Complex#E# complex = new Complex#E#(0, 1).add(5.5f, -0.5f);
+		TestUtil#E#.assertEquals(complex, 5.5f, 0.5f);
+	}
+
+	@Test
+	public void testComplexSubtraction() {
+		Complex#E# complex = new Complex#E#(10, 5).sub(new Complex#E#(9f, 4.5));
+		TestUtil#E#.assertEquals(complex, 1, (#e#) 0.5);
+	}
+
+	@Test
+	public void testDoubleComponentsSubtraction() {
+		Complex#E# complex = new Complex#E#(10, 5).sub(9, 4.5);
+		TestUtil#E#.assertEquals(complex, 1, (#e#) 0.5);
+	}
+
+	@Test
+	public void testFloatComponentsSubtraction() {
+		Complex#E# complex = new Complex#E#(10, 5).sub(9f, 4.5f);
+		TestUtil#E#.assertEquals(complex, 1, 0.5f);
+	}
+
+	@Test
+	public void testDoubleFactorMultiplication() {
+		Complex#E# complex = new Complex#E#(2, 3).mul(1.5);
+		TestUtil#E#.assertEquals(complex, 3, (#e#) 4.5);
+	}
+
+	@Test
+	public void testFloatFactorMultiplication() {
+		Complex#E# complex = new Complex#E#(2, 3).mul(1.5f);
+		TestUtil#E#.assertEquals(complex, 3, 4.5f);
+	}
+
+	@Test
+	public void testComplexMultiplication() {
+		Complex#E# complex = new Complex#E#(2, 3).mul(new Complex#E#(6, 9));
+		TestUtil#E#.assertEquals(complex, -15, 36);
+	}
+
+	@Test
+	public void testDoubleComponentsMultiplication() {
+		Complex#E# complex = new Complex#E#(2, 3).mul(6d, 9d);
+		TestUtil#E#.assertEquals(complex, -15, 36);
+	}
+
+	@Test
+	public void testFloatComponentsMultiplication() {
+		Complex#E# complex = new Complex#E#(2, 3).mul(6, 9);
+		TestUtil#E#.assertEquals(complex, -15, 36);
+	}
+
+	@Test
+	public void testDoubleFactorDivision() {
+		Complex#E# complex = new Complex#E#(2, 3).div(2d);
+		TestUtil#E#.assertEquals(complex, 1, (#e#) 1.5);
+	}
+
+	@Test
+	public void testFloatFactorDivision() {
+		Complex#E# complex = new Complex#E#(2, 3).div(2);
+		TestUtil#E#.assertEquals(complex, 1, (#e#) 1.5);
+	}
+
+	@Test
+	public void testComplexDotProduct() {
+		#e# f = new Complex#E#(2, 3).dot(new Complex#E#(4, 5));
+		TestUtil#E#.assertEquals(f, 23);
+	}
+
+	@Test
+	public void testDoubleComponentsDotProduct() {
+		#e# f = new Complex#E#(2, 3).dot(4d, 5d);
+		TestUtil#E#.assertEquals(f, 23);
+	}
+
+	@Test
+	public void testFloatComponentsDotProduct() {
+		#e# f = new Complex#E#(2, 3).dot(4, 5);
+		TestUtil#E#.assertEquals(f, 23);
+	}
+
+	@Test
+	public void testDirection() {
+		Vector2#E# vector = new Complex#E#(4, 3).getDirection();
+		TestUtil#E#.assertEquals(vector, (#e#) 0.8, (#e#) 0.6);
+	}
+
+	@Test
+	public void testAngleRadians() {
+		#e# f = new Complex#E#((#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO).getAngleRad();
+		TestUtil#E#.assertEquals(f, (#e#) #ETrig#.QUARTER_PI);
+	}
+
+	@Test
+	public void testAngleDegrees() {
+		#e# f = new Complex#E#((#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO).getAngleDeg();
+		TestUtil#E#.assertEquals(f, 45);
+	}
+
+	@Test
+	public void testConjugate() {
+		Complex#E# complex = new Complex#E#(2, 3).conjugate();
+		TestUtil#E#.assertEquals(complex, 2, -3);
+	}
+
+	@Test
+	public void testInvert() {
+		Complex#E# complex = new Complex#E#(2, 3).invert();
+		TestUtil#E#.assertEquals(complex, (#e#) (2/13d), (#e#) (-3/13d));
+	}
+
+	@Test
+	public void testLengthSquared() {
+		#e# f = new Complex#E#(3, 4).lengthSquared();
+		TestUtil#E#.assertEquals(f, 25);
+	}
+
+	@Test
+	public void testLength() {
+		#e# f = new Complex#E#(3, 4).length();
+		TestUtil#E#.assertEquals(f, 5);
+	}
+
+	@Test
+	public void testNormalize() {
+		Complex#E# complex = new Complex#E#(3, 4).normalize();
+		TestUtil#E#.assertEquals(complex, (#e#) 0.6, (#e#) 0.8);
+	}
+
+	@Test
+	public void testEquals() {
+		Assert.assertTrue(new Complex#E#(122, 43).equals(new Complex#E#(122, 43)));
+		Assert.assertFalse(new Complex#E#(122, 43).equals(new Complex#E#(378, 95)));
+	}
+
+	@Test
+	public void testComparison() {
+		int c1 = new Complex#E#(10, 20).compareTo(new Complex#E#(20, 20));
+		Assert.assertTrue(c1 < 0);
+		int c2 = new Complex#E#(10, 20).compareTo(new Complex#E#(10, 20));
+		Assert.assertTrue(c2 == 0);
+		int c3 = new Complex#E#(10, 20).compareTo(new Complex#E#(10, 10));
+		Assert.assertTrue(c3 > 0);
+	}
+
+	@Test
+	public void testCloning() {
+		Complex#E# complex = new Complex#E#(3, 2);
+		Assert.assertEquals(complex, complex.clone());
+	}
+
+	@Test
+	public void testCreateFromRotationBetweenTwoVector2() {
+		Complex#E# complex = Complex#E#.fromRotationTo(new Vector2#E#(0, 1), new Vector2#E#(-1, 0));
+		TestUtil#E#.assertEquals(complex, 0, 1);
+	}
+
+	@Test
+	public void testCreateFromDoubleAngleDegrees() {
+		Complex#E# complex = Complex#E#.fromAngleDeg(45d);
+		TestUtil#E#.assertEquals(complex, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromFloatAngleDegrees() {
+		Complex#E# complex = Complex#E#.fromAngleDeg(45);
+		TestUtil#E#.assertEquals(complex, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromDoubleAngleRadians() {
+		Complex#E# complex = Complex#E#.fromAngleRad(#ETrig#.QUARTER_PI);
+		TestUtil#E#.assertEquals(complex, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+
+	@Test
+	public void testCreateFromFloatAngleRadians() {
+		Complex#E# complex = Complex#E#.fromAngleRad((#e#) #ETrig#.QUARTER_PI);
+		TestUtil#E#.assertEquals(complex, (#e#) #ETrig#.HALF_SQRT_OF_TWO, (#e#) #ETrig#.HALF_SQRT_OF_TWO);
+	}
+}

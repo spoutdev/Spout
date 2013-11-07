@@ -28,7 +28,7 @@ package org.spout.api.util.cuboid;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class ImmutableHeightMapBuffer extends CuboidBuffer {
 	protected final int[] heightMap;
@@ -63,7 +63,7 @@ public class ImmutableHeightMapBuffer extends CuboidBuffer {
 		this((int) baseX, (int) baseZ, (int) sizeX, (int) sizeZ, new int[(int) (sizeX * sizeZ)]);
 	}
 
-	public ImmutableHeightMapBuffer(Vector3 base, Vector3 size) {
+	public ImmutableHeightMapBuffer(Vector3f base, Vector3f size) {
 		this((int) base.getX(), (int) base.getZ(), (int) size.getX(), (int) size.getZ(), new int[(int) (size.getX() * size.getZ())]);
 	}
 

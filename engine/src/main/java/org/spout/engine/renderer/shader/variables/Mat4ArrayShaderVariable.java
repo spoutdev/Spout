@@ -32,17 +32,17 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
 import org.spout.engine.SpoutRenderer;
-import org.spout.math.matrix.Matrix4;
+import org.spout.math.matrix.Matrix4f;
 
 public class Mat4ArrayShaderVariable extends ShaderVariable {
-	Matrix4[] value;
+	Matrix4f[] value;
 
-	public Mat4ArrayShaderVariable(int program, String name, Matrix4[] value) {
+	public Mat4ArrayShaderVariable(int program, String name, Matrix4f[] value) {
 		super(program, name);
 		this.value = value;
 	}
 
-	public Matrix4[] get() {
+	public Matrix4f[] get() {
 		return value;
 	}
 

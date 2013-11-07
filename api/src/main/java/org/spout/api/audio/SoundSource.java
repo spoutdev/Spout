@@ -30,7 +30,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 /**
  * Represents a source of sound in the game.
@@ -223,7 +223,7 @@ public abstract class SoundSource {
 	 * @return the Vector3 velocity of the SoundSource
 	 * @see #setVelocity
 	 */
-	public abstract Vector3 getVelocity();
+	public abstract Vector3f getVelocity();
 
 	/**
 	 * Sets the velocity of the SoundSource to the given vector. Used for doppler effects.
@@ -231,7 +231,7 @@ public abstract class SoundSource {
 	 * @param velocity velocity value
 	 * @see #getVelocity
 	 */
-	public abstract void setVelocity(Vector3 velocity);
+	public abstract void setVelocity(Vector3f velocity);
 
 	/**
 	 * Gets the direction of the SoundSource.
@@ -239,7 +239,7 @@ public abstract class SoundSource {
 	 * @return the Vector3 direction of the SoundSource
 	 * @see #setDirection
 	 */
-	public abstract Vector3 getDirection();
+	public abstract Vector3f getDirection();
 
 	/**
 	 * Sets the direction of the SoundSource to the given vector.
@@ -247,7 +247,7 @@ public abstract class SoundSource {
 	 * @param direction direction value
 	 * @see #getDirection
 	 */
-	public abstract void setDirection(Vector3 direction);
+	public abstract void setDirection(Vector3f direction);
 
 	/**
 	 * Gets the current state of the SoundSource.

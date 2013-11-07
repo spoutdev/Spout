@@ -55,8 +55,8 @@ import org.spout.api.util.map.WeakValueHashMap;
 
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.versioned.WorldFiles;
-import org.spout.math.imaginary.Quaternion;
-import org.spout.math.vector.Vector3;
+import org.spout.math.imaginary.Quaternionf;
+import org.spout.math.vector.Vector3f;
 
 public class SpoutServerWorld extends SpoutWorld {
 	/**
@@ -101,7 +101,7 @@ public class SpoutServerWorld extends SpoutWorld {
 
 		regionFileManager = new RegionFileManager(worldDirectory);
 
-		spawnLocation.set(new Transform(new Point(this, 1, 20, 1), Quaternion.IDENTITY, Vector3.ONE));
+		spawnLocation.set(new Transform(new Point(this, 1, 20, 1), Quaternionf.IDENTITY, Vector3f.ONE));
 		selfReference = new WeakReference<>(this);
 	}
 

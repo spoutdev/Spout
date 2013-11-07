@@ -46,7 +46,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.BitSize;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
@@ -352,7 +352,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @param opt True to load the chunk if it is not yet loaded
 	 * @return The Chunk, or null if not loaded and load is False
 	 */
-	public Chunk getRelative(Vector3 offset, LoadOption opt) {
+	public Chunk getRelative(Vector3f offset, LoadOption opt) {
 		return this.getWorld().getChunk(this.getX() + (int) offset.getX(), this.getY() + (int) offset.getY(), this.getZ() + (int) offset.getZ(), opt);
 	}
 
@@ -362,7 +362,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @param offset of the chunk relative to this chunk
 	 * @return The Chunk
 	 */
-	public Chunk getRelative(Vector3 offset) {
+	public Chunk getRelative(Vector3f offset) {
 		return this.getRelative(offset, LoadOption.LOAD_GEN);
 	}
 

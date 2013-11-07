@@ -31,7 +31,7 @@ import java.util.Set;
 
 import org.spout.api.io.store.map.MemoryStoreMap;
 import org.spout.api.io.store.map.SimpleStoreMap;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 /**
  * A simple store wrapper that holds biomes and the selector.
@@ -61,7 +61,7 @@ public final class BiomeMap {
 		return getBiome(x, 0, z, seed);
 	}
 
-	public Biome getBiome(Vector3 position, long seed) {
+	public Biome getBiome(Vector3f position, long seed) {
 		return getBiome((int) position.getX(), (int) position.getY(), (int) position.getZ(), seed);
 	}
 

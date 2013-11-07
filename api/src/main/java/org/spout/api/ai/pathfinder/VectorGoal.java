@@ -26,12 +26,12 @@
  */
 package org.spout.api.ai.pathfinder;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class VectorGoal implements org.spout.api.ai.AStarGoal<VectorNode> {
-	private final Vector3 goal;
+	private final Vector3f goal;
 
-	public VectorGoal(Vector3 goal) {
+	public VectorGoal(Vector3f goal) {
 		this.goal = goal;
 	}
 

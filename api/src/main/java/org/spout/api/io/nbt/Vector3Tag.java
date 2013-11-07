@@ -29,18 +29,18 @@ package org.spout.api.io.nbt;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.nbt.FloatTag;
 import org.spout.nbt.ListTag;
 import org.spout.nbt.Tag;
 import org.spout.nbt.util.NBTMapper;
 
 public class Vector3Tag extends ListTag<FloatTag> {
-	public Vector3Tag(String name, Vector3 v) {
+	public Vector3Tag(String name, Vector3f v) {
 		super(name, FloatTag.class, vector3ToList(v));
 	}
 
-	private static List<FloatTag> vector3ToList(Vector3 v) {
+	private static List<FloatTag> vector3ToList(Vector3f v) {
 		List<FloatTag> list = new ArrayList<>(3);
 		list.add(new FloatTag("", v.getX()));
 		list.add(new FloatTag("", v.getY()));
@@ -49,7 +49,7 @@ public class Vector3Tag extends ListTag<FloatTag> {
 	}
 
 	@SuppressWarnings ("unchecked")
-	public static Vector3 getValue(Tag<?> tag) {
+	public static Vector3f getValue(Tag<?> tag) {
 		try {
 			return getValue((ListTag<FloatTag>) tag);
 		} catch (ClassCastException e) {
@@ -57,14 +57,14 @@ public class Vector3Tag extends ListTag<FloatTag> {
 		}
 	}
 
-	public static Vector3 getValue(ListTag<FloatTag> list) {
+	public static Vector3f getValue(ListTag<FloatTag> list) {
 		if (list == null) {
 			return null;
 		}
 		return getValue(list.getValue());
 	}
 
-	public static Vector3 getValue(List<FloatTag> list) {
+	public static Vector3f getValue(List<FloatTag> list) {
 		if (list == null || list.size() != 3) {
 			return null;
 		}
@@ -76,6 +76,6 @@ public class Vector3Tag extends ListTag<FloatTag> {
 			return null;
 		}
 
-		return new Vector3(x, y, z);
+		return new Vector3f(x, y, z);
 	}
 }

@@ -31,12 +31,12 @@ import java.util.Random;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector2f;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.engine.filesystem.resource.ClientTexture;
 import org.spout.math.GenericMath;
-import org.spout.math.vector.Vector2;
 
 //Crysis method of SSAO
 //Following the excellent John-chapman tutorial here: http://www.john-chapman.net/content.php?id=8
@@ -46,16 +46,16 @@ public class SSAOPostProcessEffect implements RenderEffect {
 	//Noise demensions.  texture is square.
 	public static final int noiseSize = 2;
 	public static final float radius = 1.0f;
-	final Vector3[] kernel;
+	final Vector3f[] kernel;
 	final ClientTexture noise;
-	final Vector2 noiseScale;
+	final Vector2f noiseScale;
 
 	public SSAOPostProcessEffect() {
-		kernel = new Vector3[kernelSize];
+		kernel = new Vector3f[kernelSize];
 		Random rng = new Random();
 		for (int i = 0; i < kernelSize; i++) {
 			//Create a set of random vectors along the surface of a hemisphere.
-			kernel[i] = new Vector3((rng.nextFloat() * 2) - 1, (rng.nextFloat() * 2) - 1, rng.nextFloat());
+			kernel[i] = new Vector3f((rng.nextFloat() * 2) - 1, (rng.nextFloat() * 2) - 1, rng.nextFloat());
 			//Normalize the vector
 			kernel[i] = kernel[i].normalize();
 
@@ -73,8 +73,8 @@ public class SSAOPostProcessEffect implements RenderEffect {
 			Color c = new Color(rng.nextFloat(), rng.nextFloat(), 0);
 			texture[i] = c.getRGB();
 		}
-		Vector2 resolution = ((Client) Spout.getEngine()).getResolution();
-		noiseScale = new Vector2(resolution.getX() / noiseSize, resolution.getY() / noiseSize);
+		Vector2f resolution = ((Client) Spout.getEngine()).getResolution();
+		noiseScale = new Vector2f(resolution.getX() / noiseSize, resolution.getY() / noiseSize);
 		noise = new ClientTexture(texture, noiseSize, noiseSize);
 	}
 

@@ -32,7 +32,7 @@ import org.junit.Test;
 
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -45,7 +45,7 @@ public class CuboidTest {
 	@Before
 	public void setup() {
 		world = mock(World.class);
-		instance = new Cuboid(new Point(world, 0, 0, 0), Vector3.ONE.mul(16.0));
+		instance = new Cuboid(new Point(world, 0, 0, 0), Vector3f.ONE.mul(16.0));
 	}
 
 	@After
@@ -57,27 +57,27 @@ public class CuboidTest {
 	@Test
 	public void testContains() {
 		// test out
-		Vector3 vec = new Vector3(-1, -0.5, -1);
+		Vector3f vec = new Vector3f(-1, -0.5, -1);
 		assertFalse(instance.contains(vec));
 
 		// test in
-		vec = new Vector3(1, 1, 1);
+		vec = new Vector3f(1, 1, 1);
 		assertTrue(instance.contains(vec));
 
 		// Exclusive max
-		vec = new Vector3(16, 16, 16);
+		vec = new Vector3f(16, 16, 16);
 		assertFalse(instance.contains(vec));
 
 		// Exclusive max
-		vec = new Vector3(16, 14, 5);
+		vec = new Vector3f(16, 14, 5);
 		assertFalse(instance.contains(vec));
 
 		// Inclusive min
-		vec = new Vector3(0, 0, 0);
+		vec = new Vector3f(0, 0, 0);
 		assertTrue(instance.contains(vec));
 
 		// Inclusive min
-		vec = new Vector3(0, 14, 5);
+		vec = new Vector3f(0, 14, 5);
 		assertTrue(instance.contains(vec));
 	}
 }

@@ -29,18 +29,18 @@ package org.spout.api.io.nbt;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spout.math.imaginary.Quaternion;
+import org.spout.math.imaginary.Quaternionf;
 import org.spout.nbt.FloatTag;
 import org.spout.nbt.ListTag;
 import org.spout.nbt.Tag;
 import org.spout.nbt.util.NBTMapper;
 
 public class QuaternionTag extends ListTag<FloatTag> {
-	public QuaternionTag(String name, Quaternion q) {
+	public QuaternionTag(String name, Quaternionf q) {
 		super(name, FloatTag.class, quaternionToList(q));
 	}
 
-	private static List<FloatTag> quaternionToList(Quaternion q) {
+	private static List<FloatTag> quaternionToList(Quaternionf q) {
 		List<FloatTag> list = new ArrayList<>(4);
 		list.add(new FloatTag("", q.getX()));
 		list.add(new FloatTag("", q.getY()));
@@ -50,7 +50,7 @@ public class QuaternionTag extends ListTag<FloatTag> {
 	}
 
 	@SuppressWarnings ("unchecked")
-	public static Quaternion getValue(Tag<?> tag) {
+	public static Quaternionf getValue(Tag<?> tag) {
 		try {
 			return getValue((ListTag<FloatTag>) tag);
 		} catch (ClassCastException e) {
@@ -58,14 +58,14 @@ public class QuaternionTag extends ListTag<FloatTag> {
 		}
 	}
 
-	public static Quaternion getValue(ListTag<FloatTag> list) {
+	public static Quaternionf getValue(ListTag<FloatTag> list) {
 		if (list == null) {
 			return null;
 		}
 		return getValue(list.getValue());
 	}
 
-	public static Quaternion getValue(List<FloatTag> list) {
+	public static Quaternionf getValue(List<FloatTag> list) {
 		if (list == null || list.size() != 4) {
 			return null;
 		}
@@ -76,6 +76,6 @@ public class QuaternionTag extends ListTag<FloatTag> {
 		if (x == null || y == null || z == null || w == null) {
 			return null;
 		}
-		return new Quaternion(x, y, z, w);
+		return new Quaternionf(x, y, z, w);
 	}
 }

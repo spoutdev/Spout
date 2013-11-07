@@ -28,16 +28,16 @@ package org.spout.api.render;
 
 import org.spout.api.geo.cuboid.Cuboid;
 
-import org.spout.math.matrix.Matrix4;
-import org.spout.math.vector.Vector3;
+import org.spout.math.matrix.Matrix4f;
+import org.spout.math.vector.Vector3f;
 
 public class ViewFrustum {
 	// This is the renderer subsize in bloc scale ( because it is in aggregator scale when it's pass through intersects )
-	Vector3 rendererSize = new Vector3(2, 2, 2);
-	Vector3 position = null;
+	Vector3f rendererSize = new Vector3f(2, 2, 2);
+	Vector3f position = null;
 	float[][] frustum = new float[6][4];
 
-	public void update(Matrix4 projection, Matrix4 view, Vector3 paramPosition) {
+	public void update(Matrix4f projection, Matrix4f view, Vector3f paramPosition) {
 
 		position = paramPosition;
 
@@ -108,7 +108,7 @@ public class ViewFrustum {
 	 * @param v The vector
 	 * @return The distance
 	 */
-	private float distance(int p, Vector3 v) {
+	private float distance(int p, Vector3f v) {
 		return frustum[p][0] * v.getX() + frustum[p][1] * v.getY() + frustum[p][2] * v.getZ() + frustum[p][3];
 	}
 
@@ -120,7 +120,7 @@ public class ViewFrustum {
 	 */
 	public boolean intersects(Cuboid c) {
 
-		Vector3[] vertices = c.getVertices();
+		Vector3f[] vertices = c.getVertices();
 
 		for (int i = 0; i < 6; i++) {
 
@@ -168,7 +168,7 @@ public class ViewFrustum {
 	 * @param vec The Vector3 to check the frustum against.
 	 * @return True if the frustum contains the Vector3.
 	 */
-	public boolean contains(Vector3 vec) {
+	public boolean contains(Vector3f vec) {
 		for (int p = 0; p < 6; p++) {
 			if (distance(p, vec) <= 0) {
 				return false;

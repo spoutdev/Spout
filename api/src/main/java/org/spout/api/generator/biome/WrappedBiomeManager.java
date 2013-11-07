@@ -29,7 +29,7 @@ package org.spout.api.generator.biome;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector2f;
 
 /**
  * Wraps multiple BiomeManagers into a single BiomeManager
@@ -73,8 +73,8 @@ public class WrappedBiomeManager extends BiomeManager {
 	 *
 	 * @return The vector representing the size of this wrapped biome manager, in chunks.
 	 */
-	public Vector2 getChunkSize() {
-		return new Vector2(subManagers.length, subManagers[0].length);
+	public Vector2f getChunkSize() {
+		return new Vector2f(subManagers.length, subManagers[0].length);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class WrappedBiomeManager extends BiomeManager {
 	 *
 	 * @return The vector representing the size of this wrapped biome manager, in block.
 	 */
-	public Vector2 getSize() {
+	public Vector2f getSize() {
 		return getChunkSize().mul(Chunk.BLOCKS.SIZE);
 	}
 

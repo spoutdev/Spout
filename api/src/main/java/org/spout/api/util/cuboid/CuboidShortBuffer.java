@@ -27,7 +27,7 @@
 package org.spout.api.util.cuboid;
 
 import org.spout.api.material.Material;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 
 public class CuboidShortBuffer extends CuboidBuffer {
 	private final short[] buffer;
@@ -46,7 +46,7 @@ public class CuboidShortBuffer extends CuboidBuffer {
 		this((int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new short[(int) (sizeX * sizeY * sizeZ)]);
 	}
 
-	public CuboidShortBuffer(Vector3 base, Vector3 size) {
+	public CuboidShortBuffer(Vector3f base, Vector3f size) {
 		this((int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new short[(int) (size.getX() * size.getY() * size.getZ())]);
 	}
 

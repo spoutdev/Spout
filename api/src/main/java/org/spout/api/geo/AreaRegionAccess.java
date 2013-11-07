@@ -29,7 +29,7 @@ package org.spout.api.geo;
 import java.util.Collection;
 
 import org.spout.api.geo.cuboid.Region;
-import org.spout.math.vector.Vector3;
+import org.spout.math.vector.Vector3f;
 import org.spout.api.util.thread.annotation.LiveRead;
 
 public interface AreaRegionAccess extends AreaChunkAccess {
@@ -116,7 +116,7 @@ public interface AreaRegionAccess extends AreaChunkAccess {
 	 * @return the region
 	 */
 	@LiveRead
-	public Region getRegionFromBlock(Vector3 position);
+	public Region getRegionFromBlock(Vector3f position);
 
 	/**
 	 * Gets the {@link Region} at block coordinates (x, y, z)
@@ -126,5 +126,5 @@ public interface AreaRegionAccess extends AreaChunkAccess {
 	 * @return the region
 	 */
 	@LiveRead
-	public Region getRegionFromBlock(Vector3 position, LoadOption loadopt);
+	public Region getRegionFromBlock(Vector3f position, LoadOption loadopt);
 }

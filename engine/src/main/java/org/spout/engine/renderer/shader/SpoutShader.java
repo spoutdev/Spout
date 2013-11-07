@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.shader.Shader;
-import org.spout.math.matrix.Matrix4;
+import org.spout.math.matrix.Matrix4f;
 
 public interface SpoutShader extends Shader {
 	public abstract void enableAttribute(String name, int size, int type, int stride, long offset, int layout);
@@ -42,7 +42,7 @@ public interface SpoutShader extends Shader {
 	public abstract void setMaterialAssigned(RenderMaterial material);
 
 	@Override
-	public abstract void setUniform(String name, Matrix4[] matricies);
+	public abstract void setUniform(String name, Matrix4f[] matricies);
 
 	public abstract void checkUniform();
 

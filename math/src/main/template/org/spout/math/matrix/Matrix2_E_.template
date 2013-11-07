@@ -1,0 +1,407 @@
+/*
+ * This file is part of Spout.
+ *
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
+ *
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
+package org.spout.math.matrix;
+
+import java.io.Serializable;
+import java.lang.Override;
+
+import org.spout.math.GenericMath;
+import org.spout.math.HashFunctions;
+import org.spout.math.imaginary.Complex#E#;
+import org.spout.math.vector.Vector2#E#;
+
+public class Matrix2#E# implements Matrix#E#, Serializable, Cloneable {
+	private static final long serialVersionUID = 1;
+	public static final Matrix2#E# ZERO = new Matrix2#E#(
+			0, 0,
+			0, 0);
+	public static final Matrix2#E# IDENTITY = new Matrix2#E#();
+	private final #e# m00, m01;
+	private final #e# m10, m11;
+	private transient volatile boolean hashed = false;
+	private transient volatile int hashCode = 0;
+
+	public Matrix2#E#() {
+		this(
+				1, 0,
+				0, 1);
+	}
+
+	public Matrix2#E#(Matrix2#E# m) {
+		this(
+				m.m00, m.m01,
+				m.m10, m.m11);
+	}
+
+	public Matrix2#E#(Matrix3#E# m) {
+		this(
+				m.get(0, 0), m.get(0, 1),
+				m.get(1, 0), m.get(1, 1));
+	}
+
+	public Matrix2#E#(Matrix4#E# m) {
+		this(
+				m.get(0, 0), m.get(0, 1),
+				m.get(1, 0), m.get(1, 1));
+	}
+
+	public Matrix2#E#(MatrixN#E# m) {
+		this(
+				m.get(0, 0), m.get(0, 1),
+				m.get(1, 0), m.get(1, 1));
+	}
+
+	public Matrix2#E#(
+			#EOverload# m00, #EOverload# m01,
+			#EOverload# m10, #EOverload# m11) {
+		this(
+				(#e#) m00, (#e#) m01,
+				(#e#) m10, (#e#) m11);
+	}
+
+	public Matrix2#E#(
+			#e# m00, #e# m01,
+			#e# m10, #e# m11) {
+		this.m00 = m00;
+		this.m01 = m01;
+		this.m10 = m10;
+		this.m11 = m11;
+	}
+
+	@Override
+	public #e# get(int row, int col) {
+		switch (row) {
+		case 0:
+			switch (col) {
+			case 0:
+				return m00;
+			case 1:
+				return m01;
+			}
+		case 1:
+			switch (col) {
+			case 0:
+				return m10;
+			case 1:
+				return m11;
+			}
+		}
+		throw new IllegalArgumentException(
+				(row < 0 || row > 1 ? "row must be greater than zero and smaller than 2. " : "") +
+				(col < 0 || col > 1 ? "col must be greater than zero and smaller than 2." : ""));
+	}
+
+	@Override
+	public Vector2#E# getRow(int row) {
+		return new Vector2#E#(get(row, 0), get(row, 1));
+	}
+
+	@Override
+	public Vector2#E# getColumn(int col) {
+		return new Vector2#E#(get(0, col), get(1, col));
+	}
+
+	public Matrix2#E# add(Matrix2#E# m) {
+		return new Matrix2#E#(
+				m00 + m.m00, m01 + m.m01,
+				m10 + m.m10, m11 + m.m11);
+	}
+
+	public Matrix2#E# sub(Matrix2#E# m) {
+		return new Matrix2#E#(
+				m00 - m.m00, m01 - m.m01,
+				m10 - m.m10, m11 - m.m11);
+	}
+
+	public Matrix2#E# mul(#EOverload# a) {
+		return mul((#e#) a);
+	}
+
+	@Override
+	public Matrix2#E# mul(#e# a) {
+		return new Matrix2#E#(
+				m00 * a, m01 * a,
+				m10 * a, m11 * a);
+	}
+
+	public Matrix2#E# mul(Matrix2#E# m) {
+		return new Matrix2#E#(
+				m00 * m.m00 + m01 * m.m10, m00 * m.m01 + m01 * m.m11,
+				m10 * m.m00 + m11 * m.m10, m10 * m.m01 + m11 * m.m11);
+	}
+
+	public Matrix2#E# div(#EOverload# a) {
+		return div((#e#) a);
+	}
+
+	@Override
+	public Matrix2#E# div(#e# a) {
+		return new Matrix2#E#(
+				m00 / a, m01 / a,
+				m10 / a, m11 / a);
+	}
+
+	public Matrix2#E# div(Matrix2#E# m) {
+		return mul(m.invert());
+	}
+
+	public Matrix2#E# pow(#EOverload# pow) {
+		return pow((#e#) pow);
+	}
+
+	@Override
+	public Matrix2#E# pow(#e# pow) {
+		return new Matrix2#E#(
+				Math.pow(m00, pow), Math.pow(m01, pow),
+				Math.pow(m10, pow), Math.pow(m11, pow));
+	}
+
+	// TODO: add #EOverload# overload
+
+	public Matrix2#E# translate(#e# x) {
+		return createTranslation(x).mul(this);
+	}
+
+	public Matrix2#E# scale(#EOverload# scale) {
+		return scale((#e#) scale);
+	}
+
+	public Matrix2#E# scale(#e# scale) {
+		return scale(scale, scale);
+	}
+
+	public Matrix2#E# scale(Vector2#E# v) {
+		return scale(v.getX(), v.getY());
+	}
+
+	// TODO: add #EOverload# overload
+
+	public Matrix2#E# scale(#e# x, #e# y) {
+		return createScaling(x, y).mul(this);
+	}
+
+	public Matrix2#E# rotate(Complex#E# rot) {
+		return createRotation(rot).mul(this);
+	}
+
+	public Vector2#E# transform(Vector2#E# v) {
+		return transform(v.getX(), v.getY());
+	}
+
+	// TODO: add #EOverload# overload
+
+	public Vector2#E# transform(#e# x, #e# y) {
+		return new Vector2#E#(
+				m00 * x + m01 * y,
+				m10 * x + m11 * y);
+	}
+
+	@Override
+	public Matrix2#E# floor() {
+		return new Matrix2#E#(
+				GenericMath.floor(m00), GenericMath.floor(m01),
+				GenericMath.floor(m10), GenericMath.floor(m11));
+	}
+
+	@Override
+	public Matrix2#E# ceil() {
+		return new Matrix2#E#(
+				Math.ceil(m00), Math.ceil(m01),
+				Math.ceil(m10), Math.ceil(m11));
+	}
+
+	@Override
+	public Matrix2#E# round() {
+		return new Matrix2#E#(
+				Math.round(m00), Math.round(m01),
+				Math.round(m10), Math.round(m11));
+	}
+
+	@Override
+	public Matrix2#E# abs() {
+		return new Matrix2#E#(
+				Math.abs(m00), Math.abs(m01),
+				Math.abs(m10), Math.abs(m11));
+	}
+
+	@Override
+	public Matrix2#E# negate() {
+		return new Matrix2#E#(
+				-m00, -m01,
+				-m10, -m11);
+	}
+
+	@Override
+	public Matrix2#E# transpose() {
+		return new Matrix2#E#(
+				m00, m10,
+				m01, m11);
+	}
+
+	@Override
+	public #e# trace() {
+		return m00 + m11;
+	}
+
+	@Override
+	public #e# determinant() {
+		return m00 * m11 - m01 * m10;
+	}
+
+	@Override
+	public Matrix2#E# invert() {
+		final #e# det = determinant();
+		if (det == 0) {
+			return null;
+		}
+		return new Matrix2#E#(
+				m11 / det, -m01 / det,
+				-m10 / det, m00 / det);
+	}
+
+	public Matrix3#E# toMatrix3() {
+		return new Matrix3#E#(this);
+	}
+
+	public Matrix4#E# toMatrix4() {
+		return new Matrix4#E#(this);
+	}
+
+	public MatrixN#E# toMatrixN() {
+		return new MatrixN#E#(this);
+	}
+
+	public #e#[] toArray() {
+		return toArray(false);
+	}
+
+	@Override
+	public #e#[] toArray(boolean columnMajor) {
+		if (columnMajor) {
+			return new #e#[]{
+					m00, m10,
+					m01, m11
+			};
+		} else {
+			return new #e#[]{
+					m00, m01,
+					m10, m11
+			};
+		}
+	}
+
+    @Override
+    public Matrix2f toFloat() {
+        return new Matrix2f(m00, m01, m10, m11);
+    }
+
+    @Override
+    public Matrix2d toDouble() {
+        return new Matrix2d(m00, m01, m10, m11);
+    }
+
+    @Override
+	public String toString() {
+		return m00 + " " + m01 + "\n" + m10 + " " + m11;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Matrix2#E#)) {
+			return false;
+		}
+		final Matrix2#E# matrix2 = (Matrix2#E#) o;
+		if (#ET#.compare(matrix2.m00, m00) != 0) {
+			return false;
+		}
+		if (#ET#.compare(matrix2.m01, m01) != 0) {
+			return false;
+		}
+		if (#ET#.compare(matrix2.m10, m10) != 0) {
+			return false;
+		}
+		if (#ET#.compare(matrix2.m11, m11) != 0) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		if (!hashed) {
+			int result = (m00 != +0.0f ? HashFunctions.hash(m00) : 0);
+			result = 31 * result + (m01 != +0.0f ? HashFunctions.hash(m01) : 0);
+			result = 31 * result + (m10 != +0.0f ? HashFunctions.hash(m10) : 0);
+			hashCode = 31 * result + (m11 != +0.0f ? HashFunctions.hash(m11) : 0);
+			hashed = true;
+		}
+		return hashCode;
+	}
+
+	@Override
+	public Matrix2#E# clone() {
+		return new Matrix2#E#(this);
+	}
+
+	public static Matrix2#E# createScaling(#EOverload# scale) {
+		return createScaling((#e#) scale);
+	}
+
+	public static Matrix2#E# createScaling(#e# scale) {
+		return createScaling(scale, scale);
+	}
+
+	public static Matrix2#E# createScaling(Vector2#E# v) {
+		return createScaling(v.getX(), v.getY());
+	}
+
+	// TODO: add #EOverload# overload
+
+	public static Matrix2#E# createScaling(#e# x, #e# y) {
+		return new Matrix2#E#(
+				x, 0,
+				0, y);
+	}
+
+	// TODO: add #EOverload# overload
+
+	public static Matrix2#E# createTranslation(#e# x) {
+		return new Matrix2#E#(
+				1, x,
+				0, 1);
+	}
+
+	public static Matrix2#E# createRotation(Complex#E# rot) {
+		rot = rot.normalize();
+		return new Matrix2#E#(
+				rot.getX(), -rot.getY(),
+				rot.getY(), rot.getX());
+	}
+}

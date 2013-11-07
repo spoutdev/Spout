@@ -85,7 +85,7 @@ import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.world.SpoutClientWorld;
 import org.spout.engine.world.SpoutRegion;
-import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector2f;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<>();
@@ -158,7 +158,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
-		this.renderer = getScheduler().startRenderThread(new Vector2(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f), ccoverride, null);
+		this.renderer = getScheduler().startRenderThread(new Vector2f(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f), ccoverride, null);
 		getScheduler().startMeshThread();
 		getScheduler().startGuiThread();
 
@@ -430,7 +430,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public Vector2 getResolution() {
+	public Vector2f getResolution() {
 		return renderer.getResolution();
 	}
 
