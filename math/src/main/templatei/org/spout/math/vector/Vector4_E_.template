@@ -51,7 +51,7 @@ public class Vector4#E# implements Vector#E#, Comparable<Vector4#E#>, Serializab
 	}
 
 	public Vector4#E#(Vector2#E# v) {
-		this(v, 0, 0);
+		this(v, (#e#) 0, (#e#) 0);
 	}
 
 	// TODO: add #EOverload# overloads
@@ -61,7 +61,7 @@ public class Vector4#E# implements Vector#E#, Comparable<Vector4#E#>, Serializab
 	}
 
 	public Vector4#E#(Vector3#E# v) {
-		this(v, 0);
+		this(v, (#e#) 0);
 	}
 
 	// TODO: add #EOverload# overloads
@@ -103,22 +103,6 @@ public class Vector4#E# implements Vector#E#, Comparable<Vector4#E#>, Serializab
 
 	public #e# getW() {
 		return w;
-	}
-
-	public int getFloorX() {
-		return GenericMath.floor(x);
-	}
-
-	public int getFloorY() {
-		return GenericMath.floor(y);
-	}
-
-	public int getFloorZ() {
-		return GenericMath.floor(z);
-	}
-
-	public int getFloorW() {
-		return GenericMath.floor(w);
 	}
 
 	public Vector4#E# add(Vector4#E# v) {
@@ -196,7 +180,7 @@ public class Vector4#E# implements Vector#E#, Comparable<Vector4#E#>, Serializab
 	}
 
 	public #e# dot(#e# x, #e# y, #e# z, #e# w) {
-		return this.x * x + this.y * y + this.z * z + this.w * w;
+		return (#e#) (this.x * x + this.y * y + this.z * z + this.w * w);
 	}
 
 	public Vector4#E# pow(#EOverload# pow) {
@@ -206,21 +190,6 @@ public class Vector4#E# implements Vector#E#, Comparable<Vector4#E#>, Serializab
 	@Override
 	public Vector4#E# pow(#e# power) {
 		return new Vector4#E#(Math.pow(x, power), Math.pow(y, power), Math.pow(z, power), Math.pow(w, power));
-	}
-
-	@Override
-	public Vector4#E# ceil() {
-		return new Vector4#E#(Math.ceil(x), Math.ceil(y), Math.ceil(z), Math.ceil(w));
-	}
-
-	@Override
-	public Vector4#E# floor() {
-		return new Vector4#E#(GenericMath.floor(x), GenericMath.floor(y), GenericMath.floor(z), GenericMath.floor(w));
-	}
-
-	@Override
-	public Vector4#E# round() {
-		return new Vector4#E#(Math.round(x), Math.round(y), Math.round(z), Math.round(w));
 	}
 
 	@Override
@@ -289,12 +258,6 @@ public class Vector4#E# implements Vector#E#, Comparable<Vector4#E#>, Serializab
 	@Override
 	public #e# length() {
 		return (#e#) GenericMath.length(x, y, z, w);
-	}
-
-	@Override
-	public Vector4#E# normalize() {
-		final #e# length = length();
-		return new Vector4#E#(x / length, y / length, z / length, w / length);
 	}
 
 	/**
@@ -379,6 +342,7 @@ public class Vector4#E# implements Vector#E#, Comparable<Vector4#E#>, Serializab
     public Vector4d toDouble() {
         return new Vector4d(x, y, z, w);
     }
+
 
     @Override
 	public int compareTo(Vector4#E# v) {

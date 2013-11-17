@@ -33,12 +33,6 @@ public interface Vector#E# {
 
 	public Vector#E# pow(#e# pow);
 
-	public Vector#E# ceil();
-
-	public Vector#E# floor();
-
-	public Vector#E# round();
-
 	public Vector#E# abs();
 
 	public Vector#E# negate();
@@ -46,8 +40,6 @@ public interface Vector#E# {
 	public #e# length();
 
 	public #e# lengthSquared();
-
-	public Vector#E# normalize();
 
 	public int getMinAxis();
 

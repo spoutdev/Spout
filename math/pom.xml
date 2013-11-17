@@ -32,6 +32,78 @@
 				<version>1.0.1-SNAPSHOT</version>
 				<executions>
 					<execution>
+						<id>generatei</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<templateDir>${basedir}/src/main/templatei</templateDir>
+							<types>
+								<type>
+									<primitive>int</primitive>
+									<wrapper>Integer</wrapper>
+									<abbreviation>i</abbreviation>
+									<max_value>Integer.MAX_VALUE</max_value>
+									<min_value>Integer.MIN_VALUE</min_value>
+									<placeholders>
+										<Overload>double</Overload>
+										<Overload1>float</Overload1>
+										<Overload2>long</Overload2>
+										<S>Int</S>
+									</placeholders>
+								</type>
+								<type>
+									<primitive>long</primitive>
+									<wrapper>Long</wrapper>
+									<abbreviation>l</abbreviation>
+									<max_value>Long.MAX_VALUE</max_value>
+									<min_value>Long.MIN_VALUE</min_value>
+									<placeholders>
+										<Overload>double</Overload>
+										<Overload1>float</Overload1>
+										<Overload2>int</Overload2>
+										<S>Long</S>
+									</placeholders>
+								</type>
+							</types>
+						</configuration>
+					</execution>
+					<execution>
+						<id>test-generatei</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>test-generate</goal>
+						</goals>
+						<configuration>
+							<templateDir>${basedir}/src/test/templatei</templateDir>
+							<types>
+								<type>
+									<primitive>int</primitive>
+									<wrapper>Integer</wrapper>
+									<abbreviation>i</abbreviation>
+									<max_value>Integer.MAX_VALUE</max_value>
+									<min_value>Integer.MIN_VALUE</min_value>
+									<placeholders>
+										<Overload>long</Overload>
+										<S>Int</S>
+									</placeholders>
+								</type>
+								<type>
+									<primitive>long</primitive>
+									<wrapper>Long</wrapper>
+									<abbreviation>l</abbreviation>
+									<max_value>Long.MAX_VALUE</max_value>
+									<min_value>Long.MIN_VALUE</min_value>
+									<placeholders>
+										<Overload>int</Overload>
+										<S>Long</S>
+									</placeholders>
+								</type>
+							</types>
+						</configuration>
+					</execution>
+					<execution>
 						<id>generate</id>
 						<phase>generate-sources</phase>
 						<goals>
@@ -56,6 +128,8 @@
 							<min_value>Float.NEGATIVE_INFINITY</min_value>
 							<placeholders>
 								<Overload>double</Overload>
+								<Overload1>int</Overload1>
+								<Overload2>long</Overload2>
 								<S>Float</S>
 								<Trig>TrigMath</Trig>
 								<eps>0.00001f</eps>
@@ -69,6 +143,8 @@
 							<min_value>Double.NEGATIVE_INFINITY</min_value>
 							<placeholders>
 								<Overload>float</Overload>
+								<Overload1>int</Overload1>
+								<Overload2>long</Overload2>
 								<S>Double</S>
 								<Trig>TrigMath</Trig>
 								<eps>0.00000006</eps>

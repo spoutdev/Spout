@@ -29,8 +29,6 @@ package org.spout.math.vector;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import org.spout.math.GenericMath;
-
 public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializable, Cloneable {
 	public static VectorN#E# ZERO_2 = new ImmutableZeroVectorN(0, 0);
 	public static VectorN#E# ZERO_3 = new ImmutableZeroVectorN(0, 0, 0);
@@ -94,16 +92,12 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		return vec[comp];
 	}
 
-	public int getFloored(int comp) {
-		return GenericMath.floor(get(comp));
-	}
-
 	public void set(int comp, #e# val) {
 		vec[comp] = val;
 	}
 
 	public void setZero() {
-		Arrays.fill(vec, 0);
+		Arrays.fill(vec, (#e#) 0);
 	}
 
 	public VectorN#E# resize(int size) {
@@ -123,7 +117,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		}
 		final VectorN#E# d = new VectorN#E#(size);
 		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = vec[comp] + v[comp];
+			d.vec[comp] = (#e#)(vec[comp] + v[comp]);
 		}
 		return d;
 	}
@@ -139,7 +133,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		}
 		final VectorN#E# d = new VectorN#E#(size);
 		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = vec[comp] - v[comp];
+			d.vec[comp] = (#e#)(vec[comp] - v[comp]);
 		}
 		return d;
 	}
@@ -153,7 +147,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		final int size = size();
 		final VectorN#E# d = new VectorN#E#(size);
 		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = vec[comp] * a;
+			d.vec[comp] = (#e#) (vec[comp] * a);
 		}
 		return d;
 	}
@@ -169,7 +163,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		}
 		final VectorN#E# d = new VectorN#E#(size);
 		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = vec[comp] * v[comp];
+			d.vec[comp] = (#e#) (vec[comp] * v[comp]);
 		}
 		return d;
 	}
@@ -183,7 +177,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		final int size = size();
 		final VectorN#E# d = new VectorN#E#(size);
 		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = vec[comp] / a;
+			d.vec[comp] = (#e#) (vec[comp] / a);
 		}
 		return d;
 	}
@@ -199,7 +193,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		}
 		final VectorN#E# d = new VectorN#E#(size);
 		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = vec[comp] / v[comp];
+			d.vec[comp] = (#e#) (vec[comp] / v[comp]);
 		}
 		return d;
 	}
@@ -215,7 +209,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		}
 		#e# d = 0;
 		for (int comp = 0; comp < size; comp++) {
-			d += vec[comp] * v[comp];
+			d += (#e#) (vec[comp] * v[comp]);
 		}
 		return d;
 	}
@@ -235,41 +229,11 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 	}
 
 	@Override
-	public VectorN#E# ceil() {
-		final int size = size();
-		final VectorN#E# d = new VectorN#E#(size);
-		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = (#e#) Math.ceil(vec[comp]);
-		}
-		return d;
-	}
-
-	@Override
-	public VectorN#E# floor() {
-		final int size = size();
-		final VectorN#E# d = new VectorN#E#(size);
-		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = GenericMath.floor(vec[comp]);
-		}
-		return d;
-	}
-
-	@Override
-	public VectorN#E# round() {
-		final int size = size();
-		final VectorN#E# d = new VectorN#E#(size);
-		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = Math.round(vec[comp]);
-		}
-		return d;
-	}
-
-	@Override
 	public VectorN#E# abs() {
 		final int size = size();
 		final VectorN#E# d = new VectorN#E#(size);
 		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = Math.abs(vec[comp]);
+			d.vec[comp] = (#e#) Math.abs(vec[comp]);
 		}
 		return d;
 	}
@@ -279,7 +243,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		final int size = size();
 		final VectorN#E# d = new VectorN#E#(size);
 		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = -vec[comp];
+			d.vec[comp] = (#e#) -vec[comp];
 		}
 		return d;
 	}
@@ -295,7 +259,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		}
 		final VectorN#E# d = new VectorN#E#(size);
 		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = Math.min(vec[comp], v[comp]);
+			d.vec[comp] = (#e#) Math.min(vec[comp], v[comp]);
 		}
 		return d;
 	}
@@ -311,7 +275,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		}
 		final VectorN#E# d = new VectorN#E#(size);
 		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = Math.max(vec[comp], v[comp]);
+			d.vec[comp] = (#e#) Math.max(vec[comp], v[comp]);
 		}
 		return d;
 	}
@@ -327,7 +291,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		}
 		final #e#[] d = new #e#[size];
 		for (int comp = 0; comp < size; comp++) {
-			d[comp] = vec[comp] - v[comp];
+			d[comp] = (#e#)(vec[comp] - v[comp]);
 		}
 		return lengthSquared(d);
 	}
@@ -343,7 +307,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 		}
 		final #e#[] d = new #e#[size];
 		for (int comp = 0; comp < size; comp++) {
-			d[comp] = vec[comp] - v[comp];
+			d[comp] = (#e#)(vec[comp] - v[comp]);
 		}
 		return length(d);
 	}
@@ -356,17 +320,6 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 	@Override
 	public #e# length() {
 		return length(vec);
-	}
-
-	@Override
-	public VectorN#E# normalize() {
-		final int size = size();
-		final #e# length = length();
-		final VectorN#E# d = new VectorN#E#(size);
-		for (int comp = 0; comp < size; comp++) {
-			d.vec[comp] = (#e#) (vec[comp] / length);
-		}
-		return d;
 	}
 
 	@Override
@@ -434,6 +387,7 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
         return new VectorNd(vec);
     }
 
+
     @Override
 	public int compareTo(VectorN#E# v) {
 		return (int) (lengthSquared() - v.lengthSquared());
@@ -472,13 +426,17 @@ public class VectorN#E# implements Vector#E#, Comparable<VectorN#E#>, Serializab
 	private static #e# lengthSquared(#e#... vec) {
 		#e# lengthSquared = 0;
 		for (#e# comp : vec) {
-			lengthSquared += comp * comp;
+			lengthSquared += (#e#) (comp * comp);
 		}
 		return lengthSquared;
 	}
 
 	private static class ImmutableZeroVectorN extends VectorN#E# {
 		public ImmutableZeroVectorN(#e#... v) {
+			super(v);
+		}
+
+		public ImmutableZeroVectorN(#EOverload#... v) {
 			super(v);
 		}
 
