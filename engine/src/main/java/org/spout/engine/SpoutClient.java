@@ -70,6 +70,7 @@ import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
+import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
 import org.spout.api.resource.FileSystem;
 
@@ -82,9 +83,13 @@ import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.SpoutClientSession;
+import org.spout.engine.renderer.SpoutCamera;
 import org.spout.engine.world.SpoutClientWorld;
 import org.spout.engine.world.SpoutRegion;
+import org.spout.math.imaginary.Quaternion;
+import org.spout.math.matrix.Matrix4;
 import org.spout.math.vector.Vector2;
+import org.spout.math.vector.Vector3;
 import org.spout.renderer.GLImplementation;
 import org.spout.renderer.GLVersioned.GLVersion;
 import org.spout.renderer.gl.GLFactory;
@@ -101,6 +106,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private SpoutRenderer renderer;
 	private SoundManager soundManager;
 	private SpoutInputManager inputManager;
+	private SpoutCamera camera;
 
 	public SpoutClient() {
 		logFile = "client-log-%D.txt";
@@ -125,7 +131,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			.handler(new CommonChannelInitializer())
 			.channel(NioSocketChannel.class)
 			.group(new NioEventLoopGroup());
-			
+
 		super.init(args);
 
 		final GLFactory gl = GLImplementation.get(GLVersion.valueOf(args.renderMode.toString()));
@@ -143,6 +149,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		audioConfig.load();
 		soundManager.setGain(AudioConfiguration.SOUND_VOLUME.getFloat());
 		soundManager.setMusicGain(AudioConfiguration.MUSIC_VOLUME.getFloat());
+
+		camera = new SpoutCamera(Matrix4.createOrthographic(1, 0, 1 / 60, 0, 0.1f, 1000));
 	}
 
 	@Override
@@ -446,5 +454,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	public SpoutRenderer getRenderer() {
 		return renderer;
+	}
+
+	@Override
+	public void setCamera(Camera camera) {
+		this.camera = (SpoutCamera) camera;
+	}
+
+	@Override
+	public SpoutCamera getCamera() {
+		return camera;
 	}
 }

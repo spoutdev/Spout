@@ -41,11 +41,11 @@ import gnu.trove.list.array.TIntArrayList;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.component.entity.CameraComponent;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.gui.FullScreen;
 
 import org.spout.engine.gui.SpoutScreenStack;
+import org.spout.engine.renderer.SpoutCamera;
 import org.spout.math.imaginary.Quaternion;
 import org.spout.math.matrix.Matrix4;
 import org.spout.math.vector.Vector2;
@@ -131,7 +131,6 @@ public class SpoutRenderer {
 	private Pipeline pipeline;
 	private Program program;
 	private Material material;
-	private final Camera camera = new ClientCamera();
 	private List<Model> renderList = new ArrayList<>();
 	private Model model;
 	// TODO: this should be a queue
@@ -144,6 +143,7 @@ public class SpoutRenderer {
 		context.setWindowSize(resolution);
 		context.create();
 		context.setClearColor(Color.DARK_GRAY);
+		SpoutCamera camera = ((SpoutClient) Spout.getEngine()).getCamera();
 		context.setCamera(camera);
 		context.enableCapability(Capability.DEPTH_TEST);
 		context.enableCapability(Capability.CULL_FACE);
@@ -217,23 +217,5 @@ public class SpoutRenderer {
 		}
 
 		chunkMeshes.clear();
-	}
-
-	private static class ClientCamera extends Camera {
-		public ClientCamera() {
-			super(Matrix4.ZERO);
-		}
-
-		@Override
-		public Matrix4 getProjectionMatrix() {
-			return ((Client) Spout.getEngine()).getPlayer().getType(CameraComponent.class).getProjection();
-		}
-
-		@Override
-		public Matrix4 getViewMatrix() {
-			final CameraComponent camera = ((Client) Spout.getEngine()).getPlayer().getType(CameraComponent.class);
-			camera.updateView();
-			return camera.getView();
-		}
 	}
 }

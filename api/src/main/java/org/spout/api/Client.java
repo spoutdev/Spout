@@ -32,7 +32,9 @@ import org.spout.api.geo.World;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.input.InputManager;
 import org.spout.api.protocol.PortBinding;
+import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
+import org.spout.math.matrix.Matrix4;
 import org.spout.math.vector.Vector2;
 
 /**
@@ -103,4 +105,8 @@ public interface Client extends Engine {
 	 * @return the screen stack.
 	 */
 	public ScreenStack getScreenStack();
+
+	public Camera getCamera();
+
+	public void setCamera(Camera camera);
 }
