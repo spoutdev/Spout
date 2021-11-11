@@ -235,6 +235,10 @@
 					</compilerArguments>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
+					<fork>true</fork>
+					<useIncrementalCompilation>true</useIncrementalCompilation>
+
+
 				</configuration>
 			</plugin>
 		</plugins>
